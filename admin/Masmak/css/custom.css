@@ -1,0 +1,63 @@
+#thmb_dim_w, #thmb_dim_h{
+    width: 90px; display: inline-block;
+}
+
+.img-thumb-item{
+    position: relative;
+}
+
+.kcheck {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    z-index: 10;
+}
+
+.cb-enable, .cb-disable, .cb-enable span, .cb-disable span { background: url(../images/switch.gif) repeat-x; display: block; float: left; }
+.cb-enable span, .cb-disable span { line-height: 30px; display: block; background-repeat: no-repeat; font-weight: bold; }
+.cb-enable span { background-position: left -90px; padding: 0 10px; }
+.cb-disable span { background-position: right -180px;padding: 0 10px; }
+.cb-disable.selected { background-position: 0 -30px; }
+.cb-disable.selected span { background-position: right -210px; color: #fff; }
+.cb-enable.selected { background-position: 0 -60px; }
+.cb-enable.selected span { background-position: left -150px; color: #fff; }
+.switch label { cursor: pointer; }
+.switch input { display: none; }
+
+.navbar-light  .navbar-sidenav .activex .first-level{
+    background-color: #4a7996 !important;
+    color: #fff !important;
+}
+
+.navbar-dark .navbar-sidenav .activex .first-level{
+    background-color: #000 !important;
+    color: #fff !important;
+}
+.navbar-light .nav-link:hover{
+    background-color: #ccc !important;
+}
+
+.navbar-dark .nav-link:hover{
+    background-color: #5e6872 !important;
+}
+
+.navbar-light ul.sidenav-second-level{
+    background-color: #e9ecef !important;
+}
+
+.navbar-dark ul.sidenav-second-level{
+    background-color: #495057 !important;
+}
+
+.nav-item a.first-level{
+    padding: 12px 15px !important;
+}
+
+.sidenav-second-level li a{
+    padding: 12px 20px !important;
+}
+
+#chart_stats{
+    margin: 0 auto;
+    overflow-x: scroll;
+}

@@ -1,0 +1,119 @@
+﻿
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+	<li class="breadcrumb-item active">{lang.R_REPORTS}</li>
+	<IF NAME="current_smt == show_h24"><li class="breadcrumb-item active"> {lang.SHOW_FROM_24H}</li></IF>
+</ol>
+
+
+<IF NAME="no_results">
+	<div class="alert alert-info">{lang.MESSAGE_NONE}</div>
+	<ELSE>
+
+
+
+<form method="post" name="reportform" action="{action}" id="reports_form">
+
+
+	<div id="accordion" role="tablist" aria-multiselectable="true">
+
+		<LOOP NAME="arr">
+			<div class="card mb-1" id="su[{{id}}]">
+				<div class="card-header" role="tab" id="heading{{id}}">
+
+					<h6 class="mb-0">
+						<input type="checkbox" class="custom-checkbox" name="del_{{id}}" value="{{id}}" onclick="change_color(this,'su[{{id}}]', 'bg-warning card', 'card');" rel="_del" />
+
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapse{{id}}" aria-expanded="false" aria-controls="collapse{{id}}">
+							{{name}}
+							<IF LOOP="sent"><i class="fa fa-reply" title="{lang.IS_SEND_MAIL}" data-toggle="tooltip"></i></IF>
+						</a>
+						<small class="pull-(lang.DIR==ltr?right:left)">{{human_time}}</small>
+					</h6>
+
+				</div>
+				<div id="collapse{{id}}" class="collapse" role="tabpanel" aria-labelledby="heading{{id}}">
+
+					<div class="card-body">
+						{{text}}
+						<br>
+						<br>
+						____<br>
+						<IF LOOP="mail"><span class="text-muted">{lang.EMAIL}:</span> {{mail}}<br></IF>
+						<span class="text-muted">{lang.IP}:</span> <a href="{{ip_finder}}" target="_blank">{{ip}}</a><br>
+						<span class="text-muted">{lang.TIME}:</span> {{time}}<br>
+						<span class="text-muted">{lang.URL}:</span> <a target="_blank" href="{{url}}">{lang.CLICKHERE}<a/><br>
+						<IF LOOP="mail">
+							<hr>
+							<a class="btn btn-primary" data-toggle="modal" data-target="#contactForm{{id}}" href="#">
+								{lang.REPLY_REPORT}
+							</a>
+						</IF>
+					</div>
+
+				</div>
+			</div>
+		</LOOP>
+	</div>
+
+
+
+
+<!-- pagination -->
+{page_nums}
+<div class="clearfix"></div>
+
+<br>
+<div class="row justify-content-between">
+	<div class="col col-md-auto">[ <a href="javascript:void(0);" onclick="checkAll(document.reportform, '_del', 'su', 'card bg-warning mb-1', 'card mb-1');">{lang.CHECK_ALL}</a> ]</div>
+	<div class="col col-md-auto"><input type="submit" class="btn btn-outline-primary" name="submit" value="{lang.DEL_SELECTED}" /></div>
+</div>
+
+
+{H_FORM_KEYS}
+</form>
+
+
+<!-- contact form modals -->
+<LOOP NAME="arr">
+	<div class="modal" id="contactForm{{id}}">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<form method="post" action="{action}" id="send_form" role="form">
+					<div class="modal-header">
+						<h5 class="modal-title">{lang.REPLY_REPORT}</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+
+					<div class="modal-body">
+						{{text}}
+						<br>
+						<br>
+						____<br>
+						<IF LOOP="mail"><span class="text-muted">{lang.EMAIL}:</span> {{mail}}<br></IF>
+						<br>
+
+						<textarea name="v_{{id}}" cols="80" class="form-control" rows="3" placeholder="{lang.TEXT}"></textarea>
+						<input type="hidden" name="reply_submit" value="1">
+
+					</div>
+					<div class="modal-footer">
+						<button type="submit" name="reply_submit" class="btn btn-primary btn-sm"><span>{lang.REPLY}</span></button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</LOOP>
+
+</IF>
+
+<IF NAME="there_queue">
+	<br><hr>
+	<div class="alert alert-info">{lang.DELETE_PROCESS_IN_WORK}</div>
+</IF>

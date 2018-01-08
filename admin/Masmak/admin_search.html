@@ -1,0 +1,177 @@
+<script type="text/javascript">
+function check_search_files_form(form) {
+    var do_it = false;
+    if (form.filename.value != '') {
+        do_it = true;
+    } else if (form.username.value != ''){
+        do_it = true;
+    }else if(form.ext.value != ''){
+            do_it = true;
+    }else if(form.size.value != ''){
+            do_it = true;
+    }else if(form.ups.value != ''){
+            do_it = true;
+    }else if(form.rep.value != ''){
+            do_it = true;
+    }else if(form.lastdown.value != ''){
+            do_it = true;
+    }else if(form.user_ip.value != ''){
+            do_it = true;
+    }
+
+	if(!do_it)
+	{
+		 alert("{lang.NO_SEARCH_WORD}");
+		 return false;
+	}
+}
+function check_search_users_form(form)
+{
+	var do_it = false;
+	if(form.username.value != '') {
+        do_it = true;
+    }else if(form.username.value != '') {
+        do_it = true;
+    }
+
+	if(!do_it)
+	{
+		 alert("{lang.NO_SEARCH_WORD}");
+		 return false;
+	}
+}
+</script>
+
+<IF NAME="current_smt==files">
+
+
+	<!-- Breadcrumbs -->
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+		<li class="breadcrumb-item active">{lang.SEARCH_FILES}</li>
+	</ol>
+
+
+<form method="post" action="{action}" onsubmit="return check_search_files_form(this);" id="adv_search">
+
+    <div class="form-group">
+        <label for="filename">{lang.FILENAME}</label>
+        <input type="text" class="form-control" id="filename" name="filename" placeholder="">
+    </div>
+
+    <div class="form-group">
+        <label for="username">{lang.USERNAME}</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="" value="{filled_username}">
+    </div>
+
+    <div class="form-group">
+        <label for="user_ip">{lang.IP}</label>
+        <input type="text" class="form-control" id="user_ip" name="user_ip" placeholder="" value="{filled_ip}">
+    </div>
+
+
+    <div class="form-group">
+        <label for="ext">{lang.FILETYPE}</label>
+        <input type="text" class="form-control" id="ext" name="ext" placeholder="">
+    </div>
+
+    <div class="form-group">
+        <label for="size">{lang.FILESIZE}</label>
+        <div class="input-group">
+          <span class="input-group-addon">
+                <select name="than">
+                 <option value="1">&gt;</option>
+                 <option value="2">&lt;</option>
+                </select>
+          </span>
+            <input type="text" class="form-control" id="size" name="size" placeholder="">
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="ups">{lang.FILEUPS}</label>
+        <div class="input-group">
+          <span class="input-group-addon">
+                <select name="uthan">
+                 <option value="1">&gt;</option>
+                 <option value="2">&lt;</option>
+                </select>
+          </span>
+            <input type="text" class="form-control" id="ups" name="ups" placeholder="">
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="rep">{lang.REPORT}</label>
+        <div class="input-group">
+          <span class="input-group-addon">
+                <select name="rthan">
+                 <option value="1">&gt;</option>
+                 <option value="2">&lt;</option>
+                </select>
+          </span>
+            <input type="text" class="form-control" id="rep" name="rep" placeholder="">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="lastdown">{lang.LAST_DOWN}</label>
+        <div class="input-group">
+            <span class="input-group-addon">{lang.WAS_B4}</span>
+            <input type="text" class="form-control" id="lastdown" name="lastdown" placeholder="">
+            <span class="input-group-addon">{lang.DAYS}</span>
+
+        </div>
+    </div>
+
+    <br>
+
+	<input type="submit" name="search_file" value="{lang.SEARCH_SUBMIT}" class="btn btn-primary btn-lg"/>
+
+
+{H_FORM_KEYS}
+</form>
+
+
+
+<ELSEIF NAME="current_smt==users">
+
+<!-- start users search  -->
+<IF NAME="default_user_system">
+
+	<!-- Breadcrumbs -->
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+		<li class="breadcrumb-item active">{lang.SEARCH_USERS}</li>
+	</ol>
+
+
+	<form method="post" action="{action}" onsubmit="return check_search_users_form(this);" id="user_search">
+
+        <div class="form-group">
+            <label for="username">{lang.USERNAME}</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="">
+        </div>
+
+        <div class="form-group">
+            <label for="usermail">{lang.EMAIL}</label>
+            <input type="text" class="form-control" id="usermail" name="usermail" placeholder="">
+        </div>
+
+
+
+        <br>
+
+        <input type="submit" name="search_user" value="{lang.SEARCH_SUBMIT}" class="btn btn-primary btn-lg"/>
+
+
+{H_FORM_KEYS2}
+</form>
+
+</IF>
+
+</IF>
+
+

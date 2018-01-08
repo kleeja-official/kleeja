@@ -1,0 +1,30 @@
+
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item active">{lang.R_RULES}</li>
+</ol>
+
+<div class="card">
+    <div class="card-body">
+        {lang.RULES_EXP}
+    </div>
+</div>
+
+<br>
+
+
+<form method="post" action="{action}" id="rules_form">
+
+    <div class="form-group">
+    <textarea class="form-control" name="rules_text" id="rules_text" rows="10">{rules}</textarea>
+    </div>
+
+    <br>
+
+    <input type="submit" name="submit" value="{lang.UPDATE_RULES}" class="btn btn-primary">
+
+
+    {H_FORM_KEYS}
+</form>

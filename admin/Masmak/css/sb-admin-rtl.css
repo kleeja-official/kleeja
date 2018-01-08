@@ -1,0 +1,30 @@
+@media (min-width: 992px) {
+    .content-wrapper {
+        margin-right: 250px;
+        margin-left: auto;
+    }
+
+    #mainNav .navbar-collapse .navbar-sidenav {
+        right: 0;
+        left: auto;
+    }
+}
+
+
+.card-body-icon { left: -25px; right: auto}
+
+
+
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse.collapsed:after {
+    content: '\f104';
+}
+
+
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse:after {
+    float: left;
+}
+
+#imgs_form .kcheck{
+    right: 20px;
+    left: auto;
+}

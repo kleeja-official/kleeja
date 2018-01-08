@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="{lang.LANG_SMALL_NAME}">
+<head>
+	<title>{lang.LOGIN} - {lang.KLEEJA_CP} - {config.sitename}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex" />
+	<link rel="shortcut icon" href="{STYLE_PATH_ADMIN}images/favicon.ico" />
+	<link rel="icon" href="{STYLE_PATH_ADMIN}images/favicon.png" />
+
+	<link rel="stylesheet" type="text/css" media="screen" href="{STYLE_PATH_ADMIN}css/bootstrap.min.css" />
+
+
+	<IF NAME="lang.DIR==rtl">
+		<link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH_ADMIN}css/bootstrap.rtl.min.css" />
+		<link rel="stylesheet" type="text/css" href="{STYLE_PATH_ADMIN}css/sb-admin-rtl.css" />
+
+	<style type="text/css">
+		body{font-family: "Tahoma",Arial,sans-serif;}
+		.container{
+			direction: rtl; /* placing it here fixes the issue with jquery white page bug */
+		}
+	</style>
+	</IF>
+
+	<style type="text/css">
+		body {
+			padding-top: 40px;
+			padding-bottom: 40px;
+			background:#fcedef;
+		}
+
+		.form-signin {
+			max-width: 330px;
+			padding: 15px;
+			margin: 50px auto;
+		}
+
+
+		.form-signin-logo{
+			display: block;
+			margin: 0 auto;
+			text-align: center;
+		}
+
+		.form-signin-heading{
+			font-size:16px;
+			color: darkslategray;
+		}
+
+
+		.form-signin .form-signin-heading, .form-signin-logo,
+		.form-signin .checkbox {
+			margin-bottom: 10px;
+		}
+		.form-signin .checkbox {
+			font-weight: normal;
+		}
+		.form-signin .form-control {
+			position: relative;
+			font-size: 16px;
+			height: auto;
+			padding: 10px;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+		.form-signin .form-control:focus {
+			z-index: 2;
+		}
+		.form-signin input[type="text"] {
+
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+		}
+		.form-signin input[type="password"] {
+			margin-bottom: 10px;
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+		}
+	</style>
+{extra_header_admin_login}
+</head>
+<body id="login_body">
+
+<div class="container">
+
+	<form action="{action}" method="post" style="clear: both;" id="login_form" class="form-signin">
+		<IF NAME="err">
+		<hr>
+		<div class="alert alert-danger">
+           {errs}
+		</div>
+		</IF>
+
+		<!--{lang.KLEEJA_CP}-->
+
+		<img src="{STYLE_PATH_ADMIN}images/kleeja.png" class="form-signin-logo">
+		<h2 class="form-signin-heading">{lang.WELCOME}</h2>
+		
+
+		<input type="text" class="form-control" placeholder="{lang.USERNAME}" readonly="readonly" value="{username}">
+
+		<input type="hidden" name="lname" id="lname" value="{username}" />
+		<input type="password" name="lpass_{KEY_FOR_PASS}" class="form-control" placeholder="{lang.PASSWORD}" autofocus>
+
+		<!-- captcha  -->
+        <IF NAME="show_captcha">
+        <div class="form-group text-center">
+            <p class="form-control-static">
+                <img style="vertical-align:middle;" id="kleeja_img_captcha" src="{captcha_file_path}" alt="{lang.REFRESH_CAPTCHA}"
+                         title="{lang.REFRESH_CAPTCHA}"
+                         onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
+            </p>
+
+            <input type="text" class="formin" name="kleeja_code_answer" id="kleeja_code_answer" tabindex="4" autocomplete="false" />
+
+            <p class="form-text text-muted">{lang.NOTE_CODE}</p>
+
+            </div>
+        </IF>
+		<!-- end captcha -->
+
+		<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">{lang.LOGIN}</button>
+
+		{H_FORM_KEYS}
+		<input type="hidden" name="kid" value="{KEY_FOR_WEE}" />
+
+		<hr>
+        <div class="row justify-content-between">
+			<small><a href="{config.siteurl}" title="{lang.RETURN_HOME}" class="muted"> &laquo; {lang.RETURN_HOME}</a></small>
+            <small>({not_you})</small>
+        </div>
+
+	</form>
+
+</div> <!-- /container -->
+</body>
+</html>

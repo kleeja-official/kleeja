@@ -1,0 +1,30 @@
+
+<IF NAME="current_smt == general">
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+	<li class="breadcrumb-item active">{lang.R_CHECK_UPDATE}</li>
+</ol>
+
+<div class="alert <IF NAME="error">alert-warning<ELSE>alert-info</IF>">{text}</div>
+
+
+<ELSEIF NAME="current_smt == howto">
+
+	<!-- Breadcrumbs -->
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+		<li class="breadcrumb-item active">{lang.HOW_UPDATE_KLEEJA}</li>
+	</ol>
+
+	<ul class="update_list">
+		<li>{lang.HOW_UPDATE_KLEEJA_STEP1}</li>
+		<li>{lang.HOW_UPDATE_KLEEJA_STEP2}</li>
+		<li>{lang.HOW_UPDATE_KLEEJA_STEP3}
+			<input class="form-control" type="text" value="{update_link}" readonly>
+		</li>
+	</ul>
+
+
+</IF>

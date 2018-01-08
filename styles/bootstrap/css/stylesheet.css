@@ -1,0 +1,81 @@
+/**
+ * Kleeja team
+ * 2017
+ */
+
+/* index_body */
+#content_index .jumbotron{
+    padding: 20px;
+}
+
+
+#content_index{
+    margin: 10px 0;
+}
+
+@media (min-width: 576px){
+  #content_index .jumbotron{
+      padding: 1.4rem 2rem;
+  }
+}
+
+.safe_code{
+    margin: 10px 0;
+}
+#kleeja_img_captcha{
+    cursor: pointer;
+}
+
+.who-online{
+    margin: 10px 0;
+}
+
+#loadbox{
+    margin-top: 10px;
+    display: none;
+}
+
+/* fileuser */
+.file-user-image{
+    border: 0;
+    position: relative;
+}
+.file-user-image img{
+    width: 100%;
+    transition: 0.2s ease-in-out;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+}
+
+.file-user-image img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+}
+
+.file-user-file:hover{
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+}
+
+
+@media (min-width: 992px) {
+    .card-columns {
+        column-count: 4;
+    }
+}
+
+.kcheck-image{
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    z-index: 10;
+}
+
+/* debug kleeja */
+.debug_kleeja{width:80%;margin:20px 0;background-color:white;border:1px #666 solid;}
+.debug_kleeja fieldset{margin:0 auto;width:80%;}
+
+
+.g-recaptcha div{
+    margin: 4px auto;
+    width: 100% !important;
+}

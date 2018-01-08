@@ -1,0 +1,53 @@
+
+<div class="mt-3 mb-3">
+	<h2>{title}</h2>
+	<p class="text-muted">{lang.LAST_1_H}</p>
+</div>
+
+
+
+<ul class="list-group col-md-7">
+
+	<li class="list-group-item justify-content-between">
+		<span class="text-muted">{lang.FILES_ST}</span>
+		<span>{files_st} {lang.FILE} {lang.AND} {imgs_st} {lang.IMAGE}</span>
+	</li>
+
+	<IF NAME="config.user_system==1">
+
+		<li class="list-group-item justify-content-between">
+			<span class="text-muted">{lang.USERS_ST}</span>
+			<span>{users_st} {lang.USER} </span>
+		</li>
+
+		<li class="list-group-item justify-content-between">
+			<span class="text-muted">{lang.LAST_REG}</span>
+			<span>{lst_reg}</span>
+		</li>
+
+	</IF>
+
+
+	<li class="list-group-item justify-content-between">
+		<span class="text-muted">{lang.SIZES_ST}</span>
+		<span>{sizes_st}</span>
+	</li>
+
+	<IF NAME="lst_dl_st">
+
+		<li class="list-group-item justify-content-between">
+			<span class="text-muted">{lang.LSTDELST}</span>
+			<span>{lst_dl_st}</span>
+		</li>
+
+	</IF>
+
+	<IF NAME="config.allow_online==1">
+
+		<li class="list-group-item justify-content-between">
+			<span class="text-muted">{lang.MOST_EVER_ONLINE}</span>
+			<span><b>({most_online})</b> {lang.ON}  {on_muoe}</span>
+		</li>
+
+	</IF>
+</ul>

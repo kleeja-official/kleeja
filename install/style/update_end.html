@@ -1,0 +1,49 @@
+<div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner"><div class="clr"></div>
+		<div id="Scro11">
+			<ul class="inside">
+				{{foreach($GLOBALS['update_msgs_arr'] as $m):}}
+				<li><img src="style/images/ok.png" class="img" alt="ok" /> {{echo $m}}</li>
+				{{endforeach;}}
+				{{if(is_array($GLOBALS['NOTES_CUP'])):foreach($GLOBALS['NOTES_CUP'] as $i=>$m):}}
+				<li><img src="style/images/ok.png" class="img" alt="ok" />{{echo $i;}} - {{echo $m}} </li>
+				{{endforeach;endif;}}
+			</ul>
+		</div>
+		<div class="clr"></div>
+        {{if($GLOBALS['complete_upate']):}} 
+			<div class="hr"></div>
+			<div class="notice">
+				<h6><img src="style/images/info2.png" class="img" alt="" /> {{echo $lang['INST_NOTES_UPDATE']}} :</h6>
+				<p><img src="style/images/inst_notes.png" class="img" alt="" />{{echo $lang['INST_NOTE_RC6_TO_1.0.0']}}</p>
+			</div>
+				{{if(is_array($GLOBALS['NOTES_CUP'])):foreach($GLOBALS['NOTES_CUP'] as $i=>$m):}}
+					<div id="Scro11">
+						<ul class="inside">
+							<li><img src="style/images/ok.png" class="img" alt="ok" />{{echo $i;}} - {{echo $m}} </li>
+						</ul>
+					</div>
+                {{endforeach;endif;}}  
+        {{else:}}
+			<div class="notice TN">
+				<p>{{echo $lang['INST_UPDATE_IS_FINISH']}}</p>
+				<p style="background:#EEE3C7;color:black !important">{{echo $lang['INST_KLEEJADEVELOPERS']}}</p>
+			</div>
+			<div class="hr"></div>
+        	<button type="button" class="btn" onclick="window.location.href='../index.php';"><span>{{echo $lang['INDEX']}}</span></button>
+			<button type="button" class="btn" onclick="window.location.href='../admin/';"><span>{{echo $lang['ADMINCP']}}</span></button>
+			<button type="button" class="btn" onclick="window.open(this.value,'_blank');return false;" value="http://www.kleeja.com"><span>kleeja.com</span></button>	
+        {{endif;}}
+<div class="clr"></div></div></div><div class="BoxBottomImg"></div></div>
+<script type="text/javascript">
+<!--
+jQuery(document).ready(function($){
+    // fixed error in the browser Explore
+    $('#Scro11').animate({scrollTop:$('#Scro11 > .inside').outerHeight() });
+	var elem = $('#Scro11');
+	var inside = $('#Scro11 > .inside');
+	if ( Math.abs(inside.offset().top) + elem.height() + elem.offset().top >= inside.outerHeight() ) {
+	  // We're at the bottom!
+	}
+});
+//-->
+</script>

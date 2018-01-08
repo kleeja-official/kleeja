@@ -1,0 +1,27 @@
+<div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner"><div class="clr"></div>
+	<form method="post" action="{{echo './install.php?step=f&amp;' . getlang(1)}}">
+		<div class="licens3" name="license">
+Kleeja, a PHP uploader program<br />
+Copyright (C) 2007-<?php echo date('Y');?> &lt;Kleeja Team&gt;<br />
+<br />
+Kleeja is free software; you can redistribute it and/or<br />
+modify it under the terms of the GNU Library General Public<br />
+License as published by the Free Software Foundation; either<br />
+version 2 of the License, or (at your option) any later version.<br />
+<br />
+This library is distributed in the hope that it will be useful,<br />
+but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<br />
+Library General Public License for more details.<br />
+<br />
+You should have received a copy of the GNU Library General Public<br />
+License along with this library; if not, write to the Free<br />
+Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.<br />
+		</div>
+		<div class="hr"></div>
+					<span style="color:green;" dir="{{echo $lang['DIR']}}">{{echo $lang['INST_AGR_LICENSE']}}</span>
+		<br />
+		<button onclick="window.location.href='./index.php?step=choose&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+		<button name="agres" id="agres" type="submit" class="btn"><span>{{echo $lang['YES'] . ', '.$lang['INST_NEXT']}} &raquo;</span></button>
+	</form>
+<div class="clr"></div></div></div><div class="BoxBottomImg"></div></div>

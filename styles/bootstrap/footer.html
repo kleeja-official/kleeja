@@ -1,0 +1,133 @@
+
+
+
+	<IF NAME="extras.footer">
+		<div class="extras_footer mt-5">{extras.footer}</div>
+	</IF>
+
+
+<footer class="mt-5">
+	<!-- Powered by kleeja.com -->
+
+	<div class="row justify-content-between">
+		<small class="col col-md-auto">{lang.COPYRIGHTS_X} &copy; <a href="{config.siteurl}">{config.sitename}</a></small>
+		<IF NAME="admin_page"><div class="col col-md-auto"><span class="btn btn-outline-primary">{admin_page}</span></div></IF>
+	</div>
+
+
+	<IF NAME="page_stats">
+	<!-- footer stats -->
+	<div class="text-muted">
+		<small>{page_stats}</small>
+	</div>
+	</IF>
+
+</footer>
+</div><!-- end container -->
+
+
+{googleanalytics}
+
+
+<script type="text/javascript" src="{STYLE_PATH}js/jquery.min.js"></script>
+<script type="text/javascript" src="{STYLE_PATH}js/tether.min.js"></script>
+<script type="text/javascript" src="{STYLE_PATH}js/bootstrap.min.js"></script>
+
+<!-- don't ever delete this -->
+{run_queue}
+
+<script type="text/javascript">
+$(function () {
+	$('[data-toggle="tooltip"]').tooltip()
+})
+
+<IF NAME="isset({js_allowed_extensions_types})">
+$(document).ready(function(){
+    $('#uploader').submit(function(){
+        var numfiles = 0;
+        $("#uploader input:file").each(function() {
+            if ($(this).get(0).files.length !== 0) {
+                numfiles++;
+            }
+        });
+
+
+    	<IF NAME="config.www_url == 0">
+        if(numfiles == 0){
+            alert('{lang.NO_FILE_SELECTED}');
+            return false;
+        }
+        </IF>
+
+        $('#loadbox').css('display', 'block');
+        $('#uploader').css('display', 'none');
+
+	});
+
+
+    $("#uploader input:file").change(function (){
+        if(!check_selected_file(this)){
+            $(this).val('');
+        }else{
+            if($(this).data('number') !== null){
+                var selected_text = $('#file-text' + $(this).data('number'));
+                selected_text.val($(this).val());
+                //show another one
+                var current_plus_one = Number($(this).data('number')) + 1;
+                if($('#file-block-' + current_plus_one) !== null){
+                    $('#file-block-' + current_plus_one).show();
+                }else{
+                    //alert reached limit
+                }
+            }
+        }
+    });
+
+});
+
+
+var allowed_exts = {js_allowed_extensions_types};
+var allowed_sizes = {js_allowed_extensions_sizes};
+
+function check_selected_file(file) {
+    var selected_file = file.files[0];
+    var file_name = selected_file.name;
+    var ext_dot_position = file_name.lastIndexOf(".");
+
+    if(ext_dot_position === -1){
+        alert('{lang.WRONG_F_NAME}'.replace('%s', file_name));
+        return false;
+    }
+    var file_extension = file_name.substring(ext_dot_position + 1).toLowerCase();
+    var file_size = selected_file.size;
+
+    if(!(allowed_exts.indexOf(file_extension) > -1)){
+        //extension not allowed message alert
+        alert('{lang.FORBID_EXT}'.replace('%s', file_extension));
+        return false;
+    }else{
+
+        //check size
+        var ext_allowed_size = allowed_sizes[allowed_exts.indexOf(file_extension)];
+        if(file_size > ext_allowed_size){
+            //size is larger than allowed message alert
+            alert('{lang.SIZE_F_BIG}'.replace('%1$s', file_name).replace('%2$s', (ext_allowed_size/1048576).toFixed(2) + ' MB'));
+            return false;
+        }
+    }
+
+    return true;
+}
+</IF>
+
+function update_kleeja_captcha(captcha_file, input_id)
+{
+    document.getElementById(input_id).value = '';
+    //Get a reference to CAPTCHA image
+    img = document.getElementById('kleeja_img_captcha');
+    //Change the image
+    img.src = captcha_file + '&' + Math.random();
+}
+</script>
+</body>
+</html>

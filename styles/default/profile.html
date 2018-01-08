@@ -1,0 +1,90 @@
+<!-- Profile template -->
+<div id="content" class="border_radius">
+
+	<!-- title -->
+	<h1 class="title">&#9679; {title}</h1>
+	<!-- @end-title -->
+
+	<!-- line top -->
+	<div class="line"></div>
+	<!-- @end-line -->
+	
+	<IF NAME="ERRORS">
+	<!-- msg, Infos & Alerts & Errors -->
+	<dl id="system-message">
+		<dd class="error">
+			<ul>
+				<li>
+				<LOOP NAME="ERRORS">
+				<strong>{lang.INFORMATION} : </strong>{%value%}<br />
+				</LOOP>
+				</li>
+			</ul>
+		</dd>
+	</dl>
+	<!-- @end-msg -->
+	</IF>
+
+	<IF NAME="data_forum">
+	<!-- profile -->
+	<form action="{action}" method="post">
+	<div id="profile">
+		<div class="boxdata">
+			<h6 class="tit">{lang.EDIT_U_DATA}</h6>
+			<div class="boxdata_inner">
+				<label>{lang.USERNAME}</label>
+				<input type="text" readonly="readonly" class="bu_username" value="{name}" />
+				<label>{lang.SHOW_MY_FILECP}</label>
+				<select name="show_my_filecp">
+					<option value="1" <IF NAME="show_my_filecp.show_my_filecp==1">selected="selected"</IF> >{lang.YES}</option>
+					<option value="0" <IF NAME="show_my_filecp.show_my_filecp==0">selected="selected"</IF> >{lang.NO}</option>
+				</select>
+			 </div>
+		</div>
+				
+		<div class="boxdata">
+			<h6 class="tit">{lang.EMAIL}</h6>
+			<div class="boxdata_inner">
+				<label>{lang.PASSWORD} :</label>
+				<input type="password" name="pppass_old" value="{t_pppass_old}" tabindex="1" />
+				<label>{lang.EMAIL} :</label>
+				<input type="text" name="pmail" value="{mail}" style="direction:ltr" tabindex="2" />
+			</div>
+		</div>
+			
+		<div class="boxdata">
+			<h6 class="tit">{lang.PASS_ON_CHANGE}</h6>
+			<div class="boxdata_inner">
+				<label>{lang.OLD} :</label>
+				<input type="password" name="ppass_old" value="{t_ppass_old}" tabindex="3" />
+				<label>{lang.NEW} :</label>
+				<input type="password" name="ppass_new" value="{t_ppass_new}" tabindex="4" />
+				<label>{lang.NEW_AGAIN} :</label>
+				<input type="password" name="ppass_new2" value="{t_ppass_new2}" tabindex="5" />
+				{H_FORM_KEYS}
+			</div>
+		</div>
+		<div class="boxdata" style="width:97%;height: 70px;">
+			<h6 class="tit">{lang.EDIT_U_AVATER}</h6>
+			<div class="boxdata_inner">
+             <div class="edit_avater_u"><span>{link_avater}</span></div>
+			 </div>
+		</div>
+		<div class="clr"></div>
+				
+		<!-- button -->
+		<div class="buttons_center"><input type="submit" name="submit_data" value="{lang.EDIT_U_DATA}" tabindex="6" /></div>
+		<!-- @end-button -->		
+	</div>	
+	</form>
+	<!-- @end-profile -->
+	
+	<ELSE>
+	
+	<div class="buttons_center"><a href="{goto_forum_link}">{lang.PFILE_4_FORUM}</a></div>
+	
+	</IF>
+	 
+	<div class="clr"></div>
+</div>
+<!-- @end-Profile-template -->

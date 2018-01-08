@@ -1,0 +1,34 @@
+
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+	<li class="breadcrumb-item active">{lang.R_BAN}</li>
+</ol>
+
+<div class="card">
+	<div class="card-body">
+	{lang.BAN_EXP1}
+		<br>
+		{lang.BAN_EXP2}
+	</div>
+</div>
+
+<br>
+
+<form method="post" action="{action}" id="ban_form">
+
+	<div class="form-group">
+	<!-- textarea -->
+	<textarea name="ban_text" class="form-control" rows="2" cols="20" style="width:99%; height: 100px;direction:ltr;">{ban}</textarea>
+	</div>
+
+	<br>
+
+	<input type="submit" name="submit" value="{lang.UPDATE_BAN}" class="btn btn-primary">
+
+
+{H_FORM_KEYS}
+</form>
+
+

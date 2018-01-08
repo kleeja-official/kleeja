@@ -1,0 +1,63 @@
+
+
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item">{lang.R_EXTRA}</li>
+    <IF NAME="current_smt == he">
+        <li class="breadcrumb-item active">{lang.ADD_HEADER_EXTRA}</li>
+        <ELSEIF NAME="current_smt == fe">
+            <li class="breadcrumb-item active">{lang.ADD_FOOTER_EXTRA}</li>
+       </IF>
+</ol>
+
+
+
+
+<form method="post" action="{action}" id="extra_form">
+<IF NAME="current_smt == he">
+
+    <div class="card">
+        <div class="card-body">
+            {lang.EX_HEADER_N}
+        </div>
+    </div>
+
+    <br>
+
+
+
+    <div class="form-group">
+    <textarea id="ex_header" name="ex_header" class="form-control" rows="8">{ex_header}</textarea>
+    </div>
+
+
+
+<ELSEIF NAME="current_smt == fe">
+
+    <div class="card">
+        <div class="card-body">
+            {lang.EX_FOOTER_N}
+        </div>
+    </div>
+
+    <br>
+
+    <div class="form-group">
+    <textarea id="ex_footer" name="ex_footer" class="form-control" rows="8">{ex_footer}</textarea>
+    </div>
+
+</IF>
+
+
+
+    <br>
+
+    <input type="submit" name="submit" value="{lang.UPDATE_EXTRA}" class="btn btn-primary">
+
+
+
+    {H_FORM_KEYS}
+</form>
+

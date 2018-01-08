@@ -1,0 +1,129 @@
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item">{lang.R_PLUGINS}</li>
+</ol>
+
+
+
+<IF NAME="no_plugins">
+
+    <div class="alert alert-info">
+        {lang.NO_PLUGINS}
+        <br>
+        <br>
+        <a class="btn btn-primary btn-lg text-center" href="#"  data-toggle="modal" data-target="#plugin_add_new">
+            <i class="fa fa-upload"></i> {lang.UPLOAD_LOCAL_PC}
+        </a>
+    </div>
+
+<ELSE>
+
+    <IF NAME="installed_plugins">
+    <div class="row">
+
+        <LOOP NAME="installed_plugins">
+
+        <div class="col-sm-12 col-md-3 mt-2">
+        <div class="card">
+            <img class="card-img-top" src="{{icon}}" alt="{{plg_name}}">
+            <div class="card-body">
+                <h4 class="card-title"  style="max-height: 30px; min-height: 30px; overflow-y: auto">
+                    <IF LOOP="plg_disabled">
+                        {{plg_name}}
+                        <i class="fa fa-toggle-off"></i>
+                        <ELSE>
+                            {{extra_info.plugin_title}} {{extra_info.plugin_version}}
+                    </IF>
+                </h4>
+                <p class="card-text" style="max-height: 100px; min-height: 100px; overflow-y: auto">
+                    <IF LOOP="plg_disabled">
+                        {{plg_dsc}}
+                        <ELSE>
+                            {{extra_info.plugin_description}}
+                    </IF>
+                    <br>
+                    <small>{{extra_info.plugin_developer}}</small>
+                </p>
+            </div>
+
+            <div class="card-footer">
+                <IF LOOP="plg_disabled">
+                    <a  class="btn btn-outline-primary btn-sm" href="{plugin_enable_link}{{plg_name}}" title="{lang.ENABLE}"><i class="fa fa-toggle-on" title="{lang.ENABLE}"></i> {lang.ENABLE}</a>
+                    <ELSE>
+                    <a class="btn btn-outline-primary btn-sm" href="{plugin_disable_link}{{plg_name}}" title="{lang.DISABLE}"><i class="fa fa-toggle-off" title="{lang.DISABLE}"></i> {lang.DISABLE}</a>
+                </IF>
+
+                <a class="btn btn-outline-primary btn-sm" href="{plugin_uninstall_link}{{plg_name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form();"><i class="fa fa-remove" title="{lang.DELETE}"></i> {lang.DELETE}</a>
+            </div>
+        </div>
+        </div>
+        </LOOP>
+
+    </div>
+
+        <br>
+        <hr>
+
+    </IF>
+
+<!-- available plugins -->
+
+    <nav class="breadcrumb">
+        <div class="breadcrumb-item align-middle">{lang.ADD_NEW_PLUGIN}</div>
+        <a class="btn btn-primary btn-sm float-right" href="#"  data-toggle="modal" data-target="#plugin_add_new">
+            <i class="fa fa-upload"></i> {lang.UPLOAD_LOCAL_PC}
+        </a>
+    </nav>
+
+
+    <br>
+
+    <ul class="list-unstyled list-group">
+        <LOOP NAME="available_plugins">
+        <li class="media d-flex justify-content-between list-group-item">
+            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{name}}" style="width: 75px">
+            <div class="media-body">
+                <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{name}}</h5>
+
+                <a class="btn btn-primary pull-(lang.DIR==ltr?right:left)" href="{plugin_install_link}{{name}}" title="{lang.ENABLE}" onclick="javascript:return confirm_form('{lang.PLUGIN_CONFIRM_ADD}');"><i class="fa fa-download" title="{lang.ENABLE}"></i></a>
+            </div>
+        </li>
+        </LOOP>
+    </ul>
+
+
+</IF>
+
+
+
+<!-- new plugin modal -->
+<div id="plugin_add_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewPlugin" aria-hidden="true">
+
+    <form method="post" action="{action}" id="add_plugin_form" enctype="multipart/form-data">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNewPlugin">{lang.ADD_NEW_PLUGIN}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <label class="form-control">
+                        <input type="file" id="file" name="plugin_file">
+                    </label>
+
+                    {H_FORM_KEYS}
+
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" name="newplugin" class="btn btn-primary" value="{lang.SUBMIT}">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- end new plugin modal -->

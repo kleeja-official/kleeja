@@ -1,0 +1,92 @@
+@charset "UTF-8";
+/*	--------------------------------------------------
+	Theme Name: 	default V1
+	Filename: 		styles/default/ltr.css
+	package:		Kleeja  copyright(c)2007-2010
+	version:		1.0.0
+	URL:			http://www.kleeja.com
+	Date:			2010-07-24
+	Author: 		Tar3Q
+	-------------------------------------------------- 
+	$Id: ltr.css 2129 2013-02-14 16:04:19Z developer.mahmoud $	
+	-------------------------------------------------- */
+
+ 	/* @HTML Tags -------------- */
+	body { font-family: Arial, Helvetica, Helvetica Neue, Verdana, sans-serif; font-size: 13px;}
+	input, textarea, select, option, input[type="text"], input[type="password"], input[type="file"],input[type="submit"] {font:normal 12px  Arial, Verdana, sans-serif, "Lucida Grande", "Lucida Sans Unicode"; }	
+	ol {margin-right:0;margin-left: 25px;}
+	option {padding-left: 1em;}
+	caption, th, td {text-align:left;}
+	/* @Misc -------------- */
+	.left, img.left {float:right;}
+	.right, img.right {float:left;}
+	/* @Pagination -------------- */
+	.pagination a, .pagination span.current, .pagination span.three_dots {float:left;margin-left:0;margin-right:3px;}
+	/* @verification code -------------- */
+	.safe_code {background:#F9F5F0 url(../images/saf3_code_ltr.gif) no-repeat 100% 50%;}
+	/* @captcha stuff -------------- */
+	#kleeja_img_captcha {float:left;}
+	/* @group Infos & Alerts & Errors -------------- */
+	dd.info  ul li, dd.error ul li,ul.index_info  li, ul.index_err li { background-position:left top;font-size:120%;}
+	/* @Main Structure -------------- */
+	#content {float:right;}
+	/* @Template & Header > header.html -------------- */
+	#header .logo {float:left;background-position:left center;margin:0 10px 0 40px;}
+	.top_nav .menu ul{float:left;}
+	.top_nav .menu li {float:left;margin-left:0;margin-right:2px;}
+	.top_nav .menu li a {float:left;}
+    #sidebar {float:left;padding: 5px 8px 10px 6px;}
+	#content_index {float: left;}
+	#content, #content_index {margin: 5px 10px 0 0;}
+	/* @Template & Index > index_body.html -------------- */
+	.waitloading{font-size:140%;}
+	.online{float:left;}
+	.onlineall, .onlinevisitor, .onlineusers, .name_users {float:left;margin-left:0;margin-right:6px;}
+	/* @Template & Downlod > download.html -------------- */
+	.data_file .data_menu td{padding-right:0;padding-left:5px;}
+	.data_file .data_menu .td  {width:125px;}
+	.data_file_down .wait {font-size:x-large;}
+	/* @Template & Stats > stats.html -------------- */
+	.stats  {font-size:100%;font-weight:400;background-position: 94% 50%;}
+	.stats  ul li {background-position:left center;padding-right:0;padding-left:10px;}
+	/* @Template & Rules > rules.html -------------- */
+	#rules {font-size:100%;font-weight:400;}
+	#rules .rut {text-indent:0;}
+	#rules .rls ul li {padding-right:0;padding-left:5px;}
+	/* @Template & Footer > footer.html -------------- */
+	#footer .footer_inner{font-size:100%;}
+	#footer .bu-panel{float:left;}
+	#footer .admin_cp_link span{font-weight:bold;padding:4px 35px;}
+	#footer .footer_stats, #footer .googleanalytics{float:right;font-size:100%;}
+	/* @Template & login > login.html -------------- */
+	.login {background-position:80% 50%;}
+	.title_login {background-position:1% 50%;}
+	input.username, input.password {float:left;padding:3px 20px 3px 6px;background-position: 98% 50%;}
+	.forget_pass {background-position: 2% 50%;float:right;}
+	/* @Template & Users Files > fileuser.html ------- */
+	#boxfileuser .box_user {float:right;}
+	#boxfileuser .us3r_n4me {float:left;}
+	#boxfileuser .box_user {float:left;}
+	#boxfileuser .us3r_n4me {float:right;}
+	/* @Template & Register > register.html ------ */
+	.register {background-position:85% 50%;}
+	/* @Template & Contact Us > call.html -------------- */
+	.call {background-position:100% 50%;}
+	/* @Template & Password Recovery > get_pass.html ------- */
+	.get_password{background-position:60% 50%;}
+	/* @Template & Report a File > report.html ----- */
+	.rebort{background-position:94% 50%;}
+	/* @Template & Profile > profile.html ---------- */
+	#profile .boxdata{float:right;}
+	#profile .boxdata .boxdata_inner label {text-align:left;font-size:90%;}
+	#profile .boxdata .boxdata_inner select {float:left;margin-right:0;margin-left:10px;}
+	/* @Template & File Manager users > filecp.html ------- */
+	.file_cp {background-position:60% 50%;}
+	.left_button {float:right;}
+	.file_cp .odd, .file_cp .nbr {text-align:left;}
+	/* @Template & List of allowed file upload > guide.html -------------- */
+	.guide_right_img img, .guide_left_img img{padding-left:0;padding-right:5px;}
+	/* @Template & Copy the links after upload > up_boxes.html --------- */
+	td.btitle {width:120px;border-left:1px solid #C8BD7C;border-right:none;}
+	td.all_box_link {border-right:1px solid #C8BD7C;border-left:none;}
+/* @end */

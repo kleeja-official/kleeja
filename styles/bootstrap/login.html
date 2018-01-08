@@ -1,0 +1,80 @@
+
+
+<div class="mt-3 mb-3">
+	<h2>{title}</h2>
+	<p class="text-muted">{lang.USER_LOGIN}</p>
+</div>
+
+
+
+<!-- error messages -->
+<IF NAME="ERRORS">
+	<div class="alert alert-danger">
+		<ul>
+			<LOOP NAME="ERRORS">
+				<li>{%value%}</li>
+			</LOOP>
+		</ul>
+	</div>
+</IF>
+
+
+<form action="{action}" method="post" name="login_form">
+
+	<div class="form-group">
+		<label for="lname">{lang.USERNAME}</label>
+		<input type="text" class="form-control" id="lname"  name="lname" value="{t_lname}" >
+	</div>
+
+
+
+	<div class="form-group">
+		<label for="lpass">{lang.PASSWORD}</label>
+		<input type="password" class="form-control" id="lpass"  name="lpass" value="{t_lpass}" >
+	</div>
+
+
+
+	<label class="custom-control custom-checkbox">
+		<input type="checkbox" class="custom-control-input" name="remme" value="31536000" checked="checked">
+		<span class="custom-control-indicator"></span>
+		<span class="custom-control-description">{lang.REMME} <small class="text-muted">({lang.REMME_EXP})</small></span>
+	</label>
+
+
+	<!-- verification code -->
+	<IF NAME="config.enable_captcha==1">
+
+		<div class="form-group safe_code">
+			<label for="kleeja_code_answer" class=" control-label">{lang.VERTY_CODE}</label>
+			<div class="">
+				<img style="vertical-align:middle;"
+					 id="kleeja_img_captcha"
+					 src="{captcha_file_path}"
+					 alt="{lang.REFRESH_CAPTCHA}"
+					 title="{lang.REFRESH_CAPTCHA}"
+					 onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
+
+				<input type="text" name="kleeja_code_answer" class="form-control" style="max-width: 300px" autocomplete="false" id="kleeja_code_answer" aria-describedby="kleeja_code_answer_help"/>
+				<small id="helpBlock" id="kleeja_code_answer_help" class="form-text text-muted">{lang.NOTE_CODE}</small>
+			</div>
+		</div>
+
+	</IF>
+
+	{H_FORM_KEYS}
+
+
+	<div class="row justify-content-between mt-3">
+		<div class="col col-md-auto">
+			<input type="submit" name="submit" value="{lang.LOGIN}" class="btn btn-primary" />
+		</div>
+
+		<div class="col col-md-auto">
+			<a href="{forget_pass_link}">{lang.LOSS_PASSWORD}</a>
+		</div>
+	</div>
+</form>
+
+
+
