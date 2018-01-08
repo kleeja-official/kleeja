@@ -1,0 +1,25 @@
+# Htaccess for Protection
+# Kleeja 2007 - 2010
+# $Id: .htaccess 1557 2010-08-08 10:09:50Z saanina $
+
+<Files ~ "^.*\.(php|php*|cgi|pl|phtml|shtml|sql|asp|aspx)">
+    Order allow,deny
+    Deny from all
+</Files>
+
+#Disable PHP engine in this folder
+<IfModule mod_php4.c>
+php_flag engine off
+</IfModule>
+
+#Disable PHP engine in this folder
+<IfModule mod_php5.c>
+php_flag engine off
+</IfModule>
+
+#Don't handle those types in this folder
+RemoveType .php .php* .phtml .pl .cgi .asp .aspx .sql
+
+#404 error should show something usefull
+#todo/ images->image info, another show our info page
+ErrorDocument 404 ../images/not_exists.jpg
