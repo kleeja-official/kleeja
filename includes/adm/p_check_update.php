@@ -46,8 +46,7 @@ else
 
 if(!$error)
 {
-
-	$version_data = trim(htmlspecialchars($matches[1]));
+	$version_data = trim(htmlspecialchars($matches[0][1]));
 
 	if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '<'))
 	{
