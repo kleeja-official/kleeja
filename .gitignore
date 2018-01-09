@@ -4,11 +4,13 @@ plugins/*.php
 config.php
 uploads/*
 !uploads/index.html
+!uploads/.htaccess
 !uploads/php.ini
 !uploads/thumbs
 uploads/thumbs/*
 !uploads/thumbs/index.html
 !uploads/thumbs/php.ini
+!uploads/thumbs/.htaccess
 .DS_Store
 */.DS_Store
 */*/.DS_Store

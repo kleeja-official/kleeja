@@ -23,7 +23,9 @@ if($current_smt == 'general'):
 
 //get data from kleeja database
 $b_url	= empty($_SERVER['SERVER_NAME']) ? $config['siteurl'] : $_SERVER['SERVER_NAME'];
-$b_data = fetch_remote_file('http://www.kleeja.com/check_vers/?i=' . urlencode($b_url) . '&v=' . KLEEJA_VERSION, false, 6);
+$b_data = fetch_remote_file('https://raw.githubusercontent.com/awssat/kleeja/master/includes/version.php', false, 6);
+
+
 
 if ($b_data === false && !ig('show_msg'))
 {
@@ -32,12 +34,20 @@ if ($b_data === false && !ig('show_msg'))
 }
 else
 {
-	//
-	// there is a file that we brought it !
-	//
-	$b_data = @explode('|', $b_data);
+	preg_match_all('/define\(\'KLEEJA_VERSION\',\s{1,4}\'([^\']+)\'\);/', $b_data, $matches, PREG_SET_ORDER, 0);
 
-	$version_data = trim(htmlspecialchars($b_data[0]));
+	if (empty($matches[0][1])) 
+	{
+		$text = $lang['ERROR_CHECK_VER'];
+		$error = true;
+	}
+}
+
+
+if(!$error)
+{
+
+	$version_data = trim(htmlspecialchars($matches[1]));
 
 	if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '<'))
 	{
@@ -77,8 +87,7 @@ else
 	$data	= array(
 					'version_number'	=> $version_data,
 					'last_check'		=> time(),
-					'msg_appeared'		=> ig('show_msg') ? true : false,
-					'copyrights'		=> !empty($b_data[1]) && strpos($b_data[1], 'yes') !== false ? true : false,
+					'msg_appeared'		=> ig('show_msg') ? true : false
 				);
 
 	$data = serialize($data);

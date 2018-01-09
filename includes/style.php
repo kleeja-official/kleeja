@@ -308,11 +308,7 @@ class kleeja_style
         global $config;
 
         $this->vars = &$GLOBALS;
-        $k = '<div sty' . 'le="font-size:12px;di' . 'spl' . 'ay:bl' . 'oc' . 'k !im' . 'po' . 'rt' . 'ant;' . 'backgrou' . 'nd:#ECE' . 'CE' . 'C !im' . 'po' . 'rt' .
-            'ant;margin:5p' . 'x; padding:2px 3px; position:fi' . 'xed;bottom' . ':0;left:1%' . ';z-index:9' . '9999;text' . '-align:center;">P' .
-            'owe' . 'red b' . 'y <a style="di' . 'spl' . 'ay:in' . 'li' . 'ne  !im' . 'po' . 'rt' . 'ant;' . 'color:#6' .
-            '66 !im' . 'po' . 'rt' . 'ant;" href="ht' . 'tps:' . '/' . '/ww' . 'w.' . 'kl' . 'ee' . 'ja' . '.c' . 'om/" onclic' . 'k="windo' . 'w.op' . 'en(this.h' .
-            'ref,' . '\'_b' . 'lank\');retur' . 'n false;" title' . '="K' . 'lee' . 'ja">K' . 'lee' . 'ja</a></div>' . "\n";
+
         //is there ?
         if (!file_exists(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php') || !$this->caching)
         {
@@ -323,21 +319,6 @@ class kleeja_style
         include(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php');
         $page = ob_get_contents();
         ob_end_clean();
-
-        if ($template_name == strip_tags('<!--it-->he<!--Is-->ad<!--Queen-->er'))
-        {
-            $v = @unserialize($config['new_version']);
-            if ((int)$v[strip_tags('co<!--it-->py<!--made-->ri<!--for-->gh<!--you-->ts<!--yub-->')] == /*kleeja is sweety*/
-                0/*SO, be sweety*/)
-            {
-                $t = strip_tags('<!--y-->b<!--o-->o<!--n-->d<!--b-->y');
-                $page = preg_replace('/<' . $t . '[^>]*>/', '<' . $t . ">\n" . $k, $page, -1, $c);
-                if (!$c)
-                {
-                    $page .= $k;
-                }
-            }
-        }
 
         return $page;
     }
