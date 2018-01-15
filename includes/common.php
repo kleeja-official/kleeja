@@ -308,7 +308,13 @@ if (file_exists(PATH . 'install') && !defined('IN_ADMIN') && !defined('IN_LOGIN'
 
 #is site close
 $login_page = '';
-if ($config['siteclose'] == '1' && !user_can('enter_acp') && !defined('IN_LOGIN') && !defined('IN_ADMIN'))
+if (
+	$config['siteclose'] == '1' && 
+	!user_can('enter_acp') && 
+	!defined('IN_LOGIN') && 
+	!defined('IN_ADMIN') && 
+	!(defined('IN_UCP') && in_array(g('go'), array('captcha', 'login', 'register')))
+	)
 {
 	//if download, images ?
 	if(
