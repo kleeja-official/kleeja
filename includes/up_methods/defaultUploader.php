@@ -335,8 +335,18 @@ class defaultUploader implements KleejaUploader
 
 
         #upload to this folder
-        $current_uploading_folder = $config['foldername'];
+        #added userid to organize upload folder
+        $current_uploading_folder = $usrcp->name() ? $config['foldername'].'/'.$usrcp->id():$config['foldername'];
 
+        #make dir if not exists
+        is_dir($current_uploading_folder)? :mkdir($current_uploading_folder,0777);
+        # add .htaccess and php.ini for security
+        $ht=file_get_contents($config['foldername']."/.htaccess");
+        $ph=file_get_contents($config['foldername']."/php.ini");
+
+        file_put_contents($current_uploading_folder."/.htaccess",$ht);
+        file_put_contents($current_uploading_folder."/php.ini",$ph);
+        file_put_contents($current_uploading_folder."/index.html",'');
         #current user id
         $current_user_id = $usrcp->name() ? $usrcp->id() : '-1';
 
