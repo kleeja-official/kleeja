@@ -306,6 +306,8 @@ if($cf_num > 3)
 	$prv_files = get_actual_stats('files');
 	$prev_imgs = get_actual_stats('imgs');
 	$prev_date = date('d-n-Y');	
+	$todayIsGone = false;
+
 	while($row=$SQL->fetch_array($cf_result))
 	{
 		#jump today
@@ -320,7 +322,17 @@ if($cf_num > 3)
 		$t_files = $prv_files - $s_files;
 		$t_imgs = $prev_imgs - $s_imgs;
 
-		$day = date('d-n-Y') == $prev_date ? $lang['TODAY'] . ' ~ ' . $lang['NOW'] : $prev_date;
+		if(date('d-n-Y') == $prev_date) {
+			$day = $lang['TODAY'] . ' ~ ' . $lang['NOW'];
+			
+			if($todayIsGone) {
+				continue;
+			}
+
+			$todayIsGone = true;
+		 } else {
+            $day = $prev_date;
+         }
 
 		$stats_chart .= ($comma ? ',': '') . "[[$t_files,$t_imgs],'" . ($cf_num > 6 ? str_replace(date('-Y'), '', $day) : $day) . "']";
 
