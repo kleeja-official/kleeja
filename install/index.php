@@ -18,7 +18,7 @@ define('IN_COMMON', true);
 
 //path to this file from Kleeja root folder
 $_path = '../';
-
+define('PATH', $_path);
 
 
 //before anything check PHP version compatibility

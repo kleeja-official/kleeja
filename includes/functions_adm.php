@@ -242,7 +242,7 @@ function build_search_query($search)
 	$search['ext']		= !isset($search['ext']) ? '' : $search['ext'];
 	$search['user_ip']	= !isset($search['user_ip']) ? '' : $search['user_ip'];
 
-	$file_namee	= $search['filename'] != '' ? 'AND f.real_filename LIKE \'%' . $SQL->escape($search['filename']) . '%\' ' : ''; 
+	$file_namee	= $search['filename'] != '' ? 'AND (f.real_filename LIKE \'%' . $SQL->escape($search['filename']) . '%\' OR f.name LIKE \'%' . $SQL->escape($search['filename']) . '%\')' : ''; 
 	$usernamee	= $search['username'] != '' ? 'AND u.name LIKE \'%' . $SQL->escape($search['username']) . '%\'' : ''; 
 	$size_than	= ' f.size ' . ($search['than']!=1 ? '<=' : '>=') . (intval($search['size']) * 1024) . ' ';
 	$ups_than	= $search['ups'] != '' ? 'AND f.uploads ' . ($search['uthan']!=1 ? '<' : '>') . intval($search['ups']) . ' ' : '';
