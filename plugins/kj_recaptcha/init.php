@@ -336,11 +336,11 @@ if(! function_exists('getReCaptchaInputHtml'))
 
         if($config['kj_recaptcha_invisible'] == 1)
         {
-           return '<div id="aarecaptcha" style="margin: 10px auto; text-align: center; max-width: 255px;"></div>';
+           return '<div id="aarecaptcha" style="margin: 10px 0; text-align: center; max-width: 255px;"></div>';
         }
         else
         {
-           return '<div class="g-recaptcha" data-sitekey="' . $config['kj_recaptcha_sitekey'] . '" style="margin: 10px auto; text-align: center; max-width: 255px;"></div>';
+           return '<div class="g-recaptcha" data-sitekey="' . $config['kj_recaptcha_sitekey'] . '" style="margin: 10px 0; text-align: center; max-width: 255px;"></div>';
         }
 
     }
@@ -415,10 +415,13 @@ if (!function_exists('isReCaptchaValid')) {
     {
         global $config;
 
-        if(!ip('g-recaptcha-response') || empty(p('g-recaptcha-response'))){
-            return false;
+        if(empty($config['kj_recaptcha_sitekey']) || empty($config['kj_recaptcha_secret'])){
+            return true;
         }
 
+        if (!ip('g-recaptcha-response') || empty(p('g-recaptcha-response'))) {
+            return false;
+        }
 
         try {
             $data = array(
