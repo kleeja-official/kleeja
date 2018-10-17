@@ -72,7 +72,7 @@ if (ip('style_choose') || ig('style_choose'))
             $plugins_required = array_map('trim', $plugins_required);
 
             $query = array(
-                'SELECT' => 'plg_name',
+                'SELECT' => 'plg_name, plg_disabled',
                 'FROM' => "{$dbprefix}plugins",
             );
 
@@ -83,7 +83,7 @@ if (ip('style_choose') || ig('style_choose'))
                 $plugins_required = array_flip($plugins_required);
                 while ($row = $SQL->fetch_array($result))
                 {
-                    if (in_array($row['plg_name'], $plugins_required))
+                    if (in_array($row['plg_name'], $plugins_required) and $row['plg_disabled'] != 1)
                     {
                         unset($plugins_required[$row['plg_name']]);
                     }
