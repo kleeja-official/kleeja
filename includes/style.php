@@ -22,6 +22,17 @@ class kleeja_style
     public $caching = true; #save templates as caches to not compiled a lot of times
 
     /**
+    * check if caching is not enabled and empty style cache files
+    */
+    public function __wakeup()
+    {
+        if(! $this->caching)
+        {
+            delete_cache(null, true);
+        }
+    }
+
+    /**
      * Function to load a template file.
      * @param $template_name
      */
