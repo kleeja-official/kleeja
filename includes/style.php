@@ -20,8 +20,7 @@ class kleeja_style
     protected $loop = array();
     protected $reg = array('var' => '/([{]{1,2})+([A-Z0-9_\.]+)[}]{1,2}/i');
     public $caching = true; #save templates as caches to not compiled a lot of times
-    public $except=array('.htaccess', 'index.html', 'php.ini', 'web.config','kleeja_log.log'); 
-  
+
     /**
     * check if caching is not enabled and empty style cache files
     */
@@ -29,8 +28,6 @@ class kleeja_style
     {
         if(! $this->caching)
         {
-            global $except;
-            $except=$this->except;
             delete_cache(null, true);
         }
     }
