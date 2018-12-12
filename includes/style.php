@@ -32,7 +32,7 @@ class kleeja_style
              $files = glob($this->cache_folder."/*".$cache_ext); //get all files ended with style caches file extention
              foreach ($files as $file)
               {
-              unlink($file);
+              delete_cache($file);
               }
        }
     }
