@@ -494,11 +494,17 @@ function fetch_remote_file($url, $save_in = false, $timeout = 20, $head_only = f
  */
 function delete_cache($name, $all=false)
 {
-	#Those files are exceptions and not for deletion
-        global $except;
-	$exceptions = empty($except) ? array('.htaccess', 'index.html', 'php.ini', 'web.config'):$except;
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('delete_cache_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+	#Those files are exceptions and not for deletion
+	$exceptions = array('.htaccess', 'index.html', 'php.ini', 'web.config');
+
+	#ignore kleeja.log in dev stage.
+	if(defined('DEV_STAGE'))
+	{
+		array_push($exceptions, 'kleeja_log.log');
+	}
+
+	is_array($plugin_run_result = Plugins::getInstance()->run('delete_cache_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 	//handle array of cached files
 	if(is_array($name))
