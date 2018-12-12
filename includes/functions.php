@@ -498,7 +498,7 @@ function delete_cache($name, $all=false)
 	#Those files are exceptions and not for deletion
 	$exceptions = array('.htaccess', 'index.html', 'php.ini', 'web.config');
 
-	#ignore kleeja.log in dev stage.
+	#ignore kleeja_log in dev stage.
 	if(defined('DEV_STAGE'))
 	{
 		array_push($exceptions, 'kleeja_log.log');
