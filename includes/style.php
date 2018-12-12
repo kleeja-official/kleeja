@@ -20,7 +20,22 @@ class kleeja_style
     protected $loop = array();
     protected $reg = array('var' => '/([{]{1,2})+([A-Z0-9_\.]+)[}]{1,2}/i');
     public $caching = true; #save templates as caches to not compiled a lot of times
-
+    public $cache_folder=PATH . 'cache';
+    public $cache_ext='.php';
+     /**
+     * check if caching is not enabled and empty style cache files
+    */
+    function __wakeup()
+    {
+      if(!$this->caching)
+      {
+             $files = glob($this->cache_folder."/*".$cache_ext); //get all files ended with style caches file extention
+             foreach ($files as $file)
+              {
+              unlink($file);
+              }
+       }
+    }
     /**
      * Function to load a template file.
      * @param $template_name
