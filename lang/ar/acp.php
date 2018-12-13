@@ -14,7 +14,7 @@ return array(
 	'SITEMAIL' 				=> 'بريد المركز',
 	'SITEMAIL2' 			=> 'بريد التبليغات , المراسلات',
 	'SITEURL' 				=> 'رابط المركز <small>(مع / بنهايته)</small>',
-	'FOLDERNAME' 			=> '</small>إسم مجلد التحميل <small>(يمكنك استخدام {year} و {month} و {day} و {week})',
+	'FOLDERNAME' 			=> '</small>إسم مجلد التحميل <small>(يمكنك استخدام {year} و {month} و {day} و {week},{username})',
 	'PREFIXNAME' 			=> 'بادئة أسماء الملفات <small>(مثلا : kleeja_ وستضاف قبل اسم كل ملف مرفوع, يمكن استخدام ايضا {rand:4} و {date:d_Y})</small>',
 	'FILESNUM' 				=> 'عدد حقول ملفات التحميل',
 	'FILESNUM_SHOW' 		=> 'عرض حقول حقول التحميل كلها',
