@@ -14,7 +14,7 @@ return array(
 	'SITEMAIL' 				=> 'Email address',
 	'SITEMAIL2' 			=> 'Email address of reports',
 	'SITEURL' 				=> 'Service URL with / at the end',
-	'FOLDERNAME' 			=> 'Folder name for uploaded files <small>(you can use {year}, {month}, {day} ,{week})</small>',
+	'FOLDERNAME' 			=> 'Folder name for uploaded files <small>(you can use {year}, {month}, {day} ,{week},{username})</small>',
 	'PREFIXNAME' 			=> 'Files name prefix <small>(you can also use {rand:4} , {date:d_Y})</small>',
 	'FILESNUM' 				=> 'Number of upload input fields',
 	'FILESNUM_SHOW' 		=> 'Show all upload inputs',
