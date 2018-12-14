@@ -321,7 +321,7 @@ switch (g('go'))
                 kleeja_info($lang['HV_NOT_PRVLG_ACCESS'], $lang['HV_NOT_PRVLG_ACCESS']);
             }
 
-            #fileuser is closed ?
+		#fileuser is closed ?
 		if ((int) $config['enable_userfile'] != 1 && !user_can('enter_acp'))
 		{
 			kleeja_info($lang['USERFILE_CLOSED'], $lang['CLOSED_FEATURE']);
@@ -381,11 +381,13 @@ switch (g('go'))
 		if($nums_rows != 0)
 		{
 			$no_results = false;
-            if (!ip('submit_all_files')) // in delete all files we do not need any limit;
-				{
-			$query['LIMIT'] = "$start, $perpage";
-                }
-            is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_files_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+			if (!ip('submit_all_files')) // in delete all files we do not need any limit;
+			{
+				$query['LIMIT'] = "$start, $perpage";
+			}
+
+			is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_files_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 			$result	= $SQL->build($query);
 
@@ -403,8 +405,8 @@ switch (g('go'))
 				$url_thumb = kleeja_get_link('thumb', $file_info);
 
 				$url_fileuser = $is_image
-                                ? $url
-                                : (file_exists("images/filetypes/".  $row['type'] . ".png") ? "images/filetypes/" . $row['type'] . ".png" : 'images/filetypes/file.png');
+						? $url
+						: (file_exists("images/filetypes/".  $row['type'] . ".png") ? "images/filetypes/" . $row['type'] . ".png" : 'images/filetypes/file.png');
 
                 $file_name = $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
 
@@ -462,10 +464,11 @@ switch (g('go'))
 
                 if (ip('submit_all_files') && $user_himself)
 				{
-                    is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_all_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-                         //delete all files
-                    foreach($arr as $row)
-                     {
+					is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_all_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+					
+					//delete all files
+					foreach($arr as $row)
+					{
 
                       @kleeja_unlink($row['folder'] . '/' . $row['name'] );
 
@@ -486,10 +489,8 @@ switch (g('go'))
 						}
 
 						$sizes += $r['size'];
-
-                     }
-
-                }
+					}
+				}
 			}
 
 			$SQL->freeresult($result_p);
@@ -578,13 +579,13 @@ switch (g('go'))
     	     }
 		}#num result
 
-            is_array($plugin_run_result = Plugins::getInstance()->run('end_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+        is_array($plugin_run_result = Plugins::getInstance()->run('end_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 		break;
 
 		case 'profile' :
 
-            //not a user
+		//not a user
 		if (!$usrcp->name())
 		{
 			kleeja_info($lang['USER_PLACE'], $lang['PLACE_NO_YOU']);
@@ -721,7 +722,7 @@ switch (g('go'))
 
 		}#else submit
 
-            is_array($plugin_run_result = Plugins::getInstance()->run('end_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+		is_array($plugin_run_result = Plugins::getInstance()->run('end_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 		break;
 
