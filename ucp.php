@@ -381,10 +381,8 @@ switch (g('go'))
 		if($nums_rows != 0)
 		{
 			$no_results = false;
-            if (!ip('submit_all_files')) // in delete all files we do not need any limit;
-				{
+
 			$query['LIMIT'] = "$start, $perpage";
-                }
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_files_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 			$result	= $SQL->build($query);
@@ -459,37 +457,6 @@ switch (g('go'))
 						$sizes += $row['size'];
 					}
 				}
-
-                if (ip('submit_all_files') && $user_himself)
-				{
-                    is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_all_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-                         //delete all files
-                    foreach($arr as $row)
-                     {
-
-                      @kleeja_unlink($row['folder'] . '/' . $row['name'] );
-
-						//delete thumb
-						if (file_exists($row['folder'] . '/thumbs/' . $row['name'] ))
-						{
-							@kleeja_unlink($row['folder'] . '/thumbs/' . $row['name'] );
-						}
-
-						$ids[] = $row['id'];
-						if($is_image)
-						{
-							$imgs_num++;
-						}
-						else
-						{
-							$files_num++;
-						}
-
-						$sizes += $r['size'];
-
-                     }
-
-                }
 			}
 
 			$SQL->freeresult($result_p);
@@ -531,51 +498,6 @@ switch (g('go'))
 					kleeja_info($lang['NO_FILE_SELECTED'], '', true, $linkgoto, 2);
 				}
 			}
-
-
-             if (ip('submit_all_files') && $user_himself)
-			 {
-                if(isset($ids) && !empty($ids))
-				{
-					$query_del = array(
-								'DELETE'	=> "{$dbprefix}files",
-								'WHERE'		=> "id IN (" . implode(',', $ids) . ")"
-							);
-
-                    is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-					$SQL->build($query_del);
-
-					if(($files_num <= $stat_files) && ($imgs_num <= $stat_imgs))
-					{
-						//update number of stats
-						$update_query	= array(
-									'UPDATE'	=> "{$dbprefix}stats",
-									'SET'		=> "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
-									);
-
-						$SQL->build($update_query);
-					}
-
-
-                    //write  all delete log for current user for last time only
-                    $log_msg=$usrcp->name()." has deleted all his/her files at this time : " . date('H:i a, d-m-Y') . "] \r\n".
-                    "files numbers:".$files_num."\r\n".
-                    "images numbers:".$imgs_num."\r\n";
-                    $last_id=PATH . 'cache/'.$usrcp->id().$usrcp->name();    //based on user id
-                    file_put_contents($last_id,$log_msg);
-
-                    //delete all files , show msg
-                     kleeja_info($lang['ALL_DELETED'], '', true, $linkgoto, 2);
-
-
-				}
-				else
-				{
-					//no file selected, show msg
-					kleeja_info($lang['NO_FILES_DELETE'], '', true, $linkgoto, 2);
-				}
-
-    	     }
 		}#num result
 
             is_array($plugin_run_result = Plugins::getInstance()->run('end_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
