@@ -1,9 +1,20 @@
 <div class="clr"></div></div><div class="ins_klj"></div>
 <!-- strart code java script -->
+<script type="text/javascript" src="{{echo getjquerylink()}}"></script>
+<script type="text/javascript">{{echo gettpl('javascript.js')}}</script>
+
 <script type="text/javascript">
-<!--
 $(document).ready(function() {
+	$("#lang").msDropDown();
+	$("#toggleElement").click(function() {		
+		$("#next").toggle(!$(this).attr('checked'));		
+	});
 	$('input:checkbox:not([safari])').checkbox();
+	$('#sitemail').keydown( function(e){
+		if( $(this).val().length > 1) { 
+			$('#email').val($(this).val());
+		}
+	});
 });
 /** By JavaScript Kit (http://javascriptkit.com) **/			
 function w_email(l){
@@ -133,7 +144,6 @@ function formCheck(formobj, fieldRequired){
         //message.innerHTML = "Passwords Do Not Match!"
       }
     } 
-//-->
 </script>
 </body>
 </html>

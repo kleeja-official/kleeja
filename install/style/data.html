@@ -60,19 +60,10 @@
 				<td class="tdd">{{echo $lang['URLS_TYPES']}}</td>
 				<td>
 					<script type="text/javascript">
-					//<![CDATA[
 						var explains = new Array(3);
 						explains["id"] = "{{echo $GLOBALS['urlsite']}}do.php?id=123";
 						explains["filename"] =  "{{echo $GLOBALS['urlsite']}}do.php?filename=12542219930.gif";
 						explains["direct"] = "{{echo $GLOBALS['urlsite']}}uploads/12542219930.gif";
-						$('document').ready( function(e){
-							$('#sitemail').keydown( function(e){
-								if( $(this).val().length > 1) { 
-									$('#email').val($(this).val());
-								}
-							});
-						});
-					//]]>
 					</script>
 					<select name="urls_type" onChange="document.getElementById('like_this').innerHTML=explains[this.options[this.selectedIndex].value]" style="width:30%">
 						<option value="id">{{echo $lang['DEFAULT']}}</option>
