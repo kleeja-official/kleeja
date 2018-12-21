@@ -1,0 +1,97 @@
+
+
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item">{lang.R_EXTRA}</li>
+    <IF NAME="current_smt == he">
+        <li class="breadcrumb-item active">{lang.ADD_HEADER_EXTRA}</li>
+        <ELSEIF NAME="current_smt == fe">
+            <li class="breadcrumb-item active">{lang.ADD_FOOTER_EXTRA}</li>
+    </IF>
+</ol>
+
+
+
+
+<form method="post" action="{action}" id="extra_form">
+    <IF NAME="current_smt == he">
+
+        <div class="card">
+            <div class="card-body">
+                {lang.EX_HEADER_N}
+            </div>
+        </div>
+
+        <br>
+
+        <div id="accordion" role="tablist">
+            <LOOP NAME="extra_pages.header">
+            <div class="card mt-2">
+                <div class="card-header" role="tab" id="heading{{name}}">
+                    <h6 class="mb-0">
+                        <a data-toggle="collapse" href="#collapse{{name}}" aria-expanded="true" aria-controls="collapse{{name}}">
+                           {olang.ADVANCED_EXTRAS_APPEAR_PAGE}: {{title}}
+                        </a>
+                    </h6>
+                </div>
+
+                <div id="collapse{{name}}" class="collapse " role="tabpanel" aria-labelledby="heading{{name}}" data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <textarea id="ex_header_{{name}}" name="ex_header_x[{{name}}]" class="form-control" rows="8">{{value}}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </LOOP>
+        </div>
+
+
+        <ELSEIF NAME="current_smt == fe">
+
+            <div class="card">
+                <div class="card-body">
+                    {lang.EX_FOOTER_N}
+                </div>
+            </div>
+
+            <br>
+
+            <div id="accordion" role="tablist">
+                <LOOP NAME="extra_pages.footer">
+                    <div class="card mt-2">
+                        <div class="card-header" role="tab" id="heading{{name}}">
+                            <h6 class="mb-0">
+                                <a data-toggle="collapse" href="#collapse{{name}}" aria-expanded="true" aria-controls="collapse{{name}}">
+                                    {olang.ADVANCED_EXTRAS_APPEAR_PAGE}: {{title}}
+                                </a>
+                            </h6>
+                        </div>
+
+                        <div id="collapse{{name}}" class="collapse " role="tabpanel" aria-labelledby="heading{{name}}" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <textarea id="ex_footer_{{name}}" name="ex_footer_x[{{name}}]" class="form-control" rows="8">{{value}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </LOOP>
+            </div>
+
+
+    </IF>
+
+
+
+    <br>
+
+    <input type="submit" name="submit" value="{lang.UPDATE_EXTRA}" class="btn btn-primary">
+
+
+
+    {H_FORM_KEYS}
+</form>
+
