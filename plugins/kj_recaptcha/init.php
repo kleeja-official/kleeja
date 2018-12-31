@@ -293,18 +293,15 @@ $kleeja_plugin['kj_recaptcha']['functions'] = array(
 
     'kleeja_check_captcha_func' => function($args){
 
-        if(defined('IN_REAL_INDEX') || defined('IN_ADMIN')){
+        if(defined('IN_REAL_INDEX')){
             $return = isReCaptchaValid();
             return compact('return');
         }
 
-
-
-        if(!defined('IN_ADMIN')) {
+        // if(defined('IN_ADMIN')) {
             $return = true;
             return compact('return');
-        }
-
+        // }
     },
 
     'ftpUploader_upload_1st' => function($args){
@@ -463,7 +460,7 @@ if (!function_exists('isReCaptchaValid')) {
                 return false;
             }
 
-            return json_decode($result)->success;
+            return (bool) json_decode($result)->success;
         }
         catch (Exception $e) {
             return null;

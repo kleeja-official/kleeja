@@ -16,7 +16,7 @@ if (!defined('IN_COMMON'))
 
 
 
-define('KLEEJA_VERSION', '2.4');
+define('KLEEJA_VERSION', '3.0');
 
 define('KLEEJA_DB_VERSION', '9');
 
