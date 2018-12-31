@@ -124,7 +124,7 @@ if (empty($dbname) || empty($dbuser))
 
 #include files .. & classes ..
 $root_path = PATH;
-$db_type = isset($db_type) ? $db_type : 'mysqli';
+// $db_type = isset($db_type) ? $db_type : 'mysqli';
 
 include PATH . 'includes/functions_alternative.php';
 include PATH . 'includes/version.php';
@@ -299,11 +299,13 @@ if(isset($_GET['go']) && $_GET['go'] == 'login')
 }
 
 #install.php exists
-if (file_exists(PATH . 'install') 
-	&& !defined('IN_ADMIN') 
-	&& !defined('IN_LOGIN') 
-	&& !defined('DEV_STAGE')
-	&& !(defined('IN_UCP') && in_array(g('go'), array('captcha', 'login')))
+if (
+	file_exists(PATH . 'install')  &&
+	!defined('IN_ADMIN') &&
+	!defined('IN_LOGIN') &&
+	!defined('DEV_STAGE') && 
+	!(defined('IN_GO') && in_array(g('go'), array('queue'))) &&
+	!(defined('IN_UCP') && in_array(g('go'), array('captcha', 'login')))
 	)
 {
 	#Different message for admins! delete install folder
@@ -318,7 +320,8 @@ if (
 	!user_can('enter_acp') && 
 	!defined('IN_LOGIN') && 
 	!defined('IN_ADMIN') && 
-	!(defined('IN_UCP') && in_array(g('go'), array('captcha', 'login', 'register')))
+	!(defined('IN_GO') && in_array(g('go'), array('queue'))) &&
+	!(defined('IN_UCP') && in_array(g('go'), array('captcha', 'login', 'register', 'logout')))
 	)
 {
 	//if download, images ?
