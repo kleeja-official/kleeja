@@ -1,0 +1,156 @@
+
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item">{olang.R_KJ_FTP_OPTIONS}</li>
+</ol>
+
+<a href="#" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#account_add_new">
+    <i class="fa fa-plus-circle"></i> {olang.KJ_FTP_ADD_NEW_ACCOUNT}
+</a>
+<div class="clearfix"></div>
+
+
+<div id="accordion" class="mt-3" role="tablist" aria-multiselectable="true">
+
+<LOOP NAME="ftp_accounts">
+
+    <div class="card mb-3">
+        <div class="card-header" role="tab" id="heading{{id}}">
+            <h5 class="mb-0">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{id}}" aria-expanded="true" aria-controls="collapse{{id}}" style="text-decoration: none">
+                   <IF LOOP="active">
+                       <i class="fa fa-check text-success" title="{olang.KJ_FTP_OPT_ACTIVE}" data-toggle="tooltip"></i>
+                   <ELSE>
+                       <i class="fa fa-pause-circle text-gray-dark"></i>
+                   </IF>
+                    <small class="badge badge-pill badge-dark">{{name}}</small>  {{host}}
+                </a>
+            </h5>
+        </div>
+
+        <div id="collapse{{id}}" class="collapse " role="tabpanel" aria-labelledby="heading{{id}}">
+            <div class="card-body">
+
+                <!-- edit form -->
+                <form method="post" action="{action}">
+
+                    <input type="hidden" value="{{id}}" name="id">
+
+                    <div class="form-group">
+                        <label for="name">{olang.KJ_FTP_OPT_NAME}</label>
+                        <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelp" placeholder="" value="{{name}}">
+                        <small id="nameHelp" class="form-text text-muted">{olang.KJ_FTP_OPT_NAME_HELP}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="host">{olang.KJ_FTP_OPT_HOST}</label>
+                        <input type="text" class="form-control" name="host" id="host" placeholder="" aria-describedby="hostHelp" value="{{host}}">
+                        <small id="hostHelp" class="form-text text-muted">{olang.KJ_FTP_OPT_HOST_HELP}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">{olang.KJ_FTP_OPT_USERNAME}</label>
+                        <input type="text" class="form-control" name="username" id="username" placeholder="" value="{{username}}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">{olang.KJ_FTP_OPT_PASSWORD}</label>
+                        <input type="text" class="form-control" name="password" id="password" placeholder="" value="">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="port">{olang.KJ_FTP_OPT_PORT}</label>
+                        <input type="text" class="form-control" name="port" id="port" placeholder="" value="{{port}}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="root">{olang.KJ_FTP_OPT_ROOT}</label>
+                        <input type="text" class="form-control" name="root" id="root" placeholder="" value="{{root}}">
+                        <small id="rootHelp" class="form-text text-muted">{olang.KJ_FTP_OPT_ROOT_HELP}</small>
+
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="link">{olang.KJ_FTP_OPT_LINK}</label>
+                        <input type="text" class="form-control" name="link" id="link" placeholder="" value="{{link}}">
+                        <small id="linkHelp" class="form-text text-muted">{olang.KJ_FTP_OPT_LINK_HELP}</small>
+                    </div>
+
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="passive"<IF LOOP="passive"> checked="checked"</IF>>
+                            Passive
+                        </label>
+
+                        <small id="passiveHelp" class="form-text text-muted">{olang.KJ_FTP_OPT_PASSIVE_HELP}</small>
+
+                    </div>
+
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="active"<IF LOOP="active"> checked="checked"</IF>>
+                            {olang.KJ_FTP_OPT_ACTIVE}
+                        </label>
+
+                        <small id="activeHelp" class="form-text text-muted">{olang.KJ_FTP_OPT_ACTIVE_HELP}</small>
+
+                    </div>
+
+
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="ssl"<IF LOOP="ssl"> checked="checked"</IF>>
+                            SSL
+                        </label>
+                    </div>
+
+                    <input type="submit" name="submit" class="btn btn-primary mt-2" value="{lang.UPDATE}">
+                    <input type="hidden" name="type" value="edit">
+
+                    {H_FORM_KEYS}
+
+                </form>
+                <!-- end edit form-->
+
+            </div>
+        </div>
+    </div>
+
+</LOOP>
+</div>
+
+
+
+<!-- new account modal -->
+<div id="account_add_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewAccount" aria-hidden="true">
+
+    <form method="post" action="{action}" id="add_account_form">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNewAccount">{olang.KJ_FTP_ADD_NEW_ACCOUNT}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="alert alert-info">
+                    {olang.KJ_FTP_ADD_NEW_ACCOUNT_EXP}
+                    </div>
+
+                    {H_FORM_KEYS}
+
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="type" value="new">
+                    <input type="submit" name="submit" class="btn btn-primary" value="{lang.YES}">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- end new account modal -->
