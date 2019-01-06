@@ -1434,7 +1434,7 @@ function get_ip()
 
 
     $return = preg_replace('/[^0-9a-z.:]/i', '', $ip);
-    is_array($plugin_run_result = Plugins::getInstance()->run('del_sql_delete_olang_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_get_ip_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 	return $return;
 }
 
