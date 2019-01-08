@@ -97,6 +97,20 @@ $kleeja_plugin['advanced_extras']['uninstall'] = function ($plg_id) {
     foreach (array('ar', 'en') as $language) {
         delete_olang(null, $language, $plg_id);
     }
+    
+            global $SQL , $dbprefix;
+        $update_query	= array(
+            'UPDATE'	=> "{$dbprefix}stats",
+            'SET'		=> "ex_footer = '' , ex_header = '' "
+        );
+
+        $SQL->build($update_query);
+
+        if($SQL->affected())
+        {
+            //delete cache ..
+            delete_cache('data_extra');
+        }
 };
 
 
