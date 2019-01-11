@@ -1,0 +1,60 @@
+
+<IF NAME="current_smt == general">
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+	<li class="breadcrumb-item active">{lang.R_CHECK_UPDATE}</li>
+</ol>
+
+<div class="alert <IF NAME="error">alert-warning<ELSE>alert-info</IF>">{text}</div>
+
+
+<ELSEIF NAME="current_smt == howto">
+
+	<!-- Breadcrumbs -->
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+		<li class="breadcrumb-item active">{lang.HOW_UPDATE_KLEEJA}</li>
+	</ol>
+
+	<ul class="update_list">
+		<li>{lang.HOW_UPDATE_KLEEJA_STEP1}</li>
+		<li>{lang.HOW_UPDATE_KLEEJA_STEP2}</li>
+		<li>{lang.HOW_UPDATE_KLEEJA_STEP3}
+			<input class="form-control" type="text" value="{update_link}" readonly>
+		</li>
+	</ul>
+
+<ELSEIF NAME="current_smt == check_plugin_update">	
+
+	<!-- Breadcrumbs -->
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+		<li class="breadcrumb-item active">{olang.CHECK_PLUGIN_UPDATE}</li>
+	</ol>
+     <IF NAME="connection_error">
+	 
+	  <div class="alert alert-warning"> {olang.ERR_CONN} </div>
+	 
+	 
+	 <ELSE>
+					<LOOP NAME="output">
+
+						<div class="alert alert-{{error}}">
+						 {{pluginName}} : {{report}}  
+						 
+						 <IF LOOP="error == warning"> 
+						( {olang.U_VERSION} = {{local_version}} / {olang.AP_VERSION} = {{online_version}} )
+						 </IF>
+						 
+						 
+						</div>
+						
+				</LOOP>
+				
+	</IF>
+		
+	
+
+</IF>
