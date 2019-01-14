@@ -1,0 +1,48 @@
+/* Essential FileDrop zone element configuration: */
+.fd-zone {
+  border: 2px solid #abb0b7 !important;
+  position: relative;
+  overflow: hidden;
+  /* The following are not required but create a pretty box: */
+  width: 100%;
+  padding: 40px 0;
+  margin: 0 auto;
+  text-align: center;
+  color: #414446 !important;
+  border-radius: 20px;
+  background: #d9edf7 url(../images/striped_lens.png);
+
+}
+
+.fd-zone-current{
+  background: #76858e !important;
+  color: #414446 !important;
+}
+
+.fd-zone p span, .fd-zone h3 span{
+  text-shadow: 2px 2px #fff;
+}
+
+.fd-zone p.img{
+  width: 120px;
+  margin: 0 auto;
+  height: 120px;
+  background-size: 120px 120px;
+  background-repeat: no-repeat;
+  background-image: url(../images/download2.png);
+}
+
+/* Hides <input type="file"> while simulating "Browse" button: */
+.fd-file {
+  opacity: 0;
+  font-size: 118px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  filter: alpha(opacity=0);
+  font-family: sans-serif;
+}

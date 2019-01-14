@@ -1,0 +1,28 @@
+#
+# This is a configuration file of the style.
+# Change those values when you create 
+# your style ...
+#
+
+#Style name
+name = DragDrop
+
+#Style desc
+desc:en = Based on Bootstrap style, has Drag & Drop feature
+desc:ar = مبني على ستايل بوت ستراب الافتراضي، لديه ميزة الجر والاسقاط للتحميل
+
+
+#Style copyright
+copyright = 2017 Kleeja.com
+
+#Version of style
+version = 1.0
+
+#Min. required version of kleeja
+kleeja_version = 2.0
+
+#name of the style required by this style 
+depend_on = bootstrap
+
+#plugins required to install this style
+#plugins_required = test, test2

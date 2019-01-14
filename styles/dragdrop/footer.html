@@ -1,0 +1,208 @@
+
+
+<UNLESS NAME="is_embedded">
+	<IF NAME="extras.footer">
+		<div class="extras_footer mt-5">{extras.footer}</div>
+	</IF>
+</UNLESS>
+
+<footer class="mt-5">
+	<!-- Powered by kleeja.com -->
+
+	<div class="row justify-content-between">
+		<small class="col col-md-auto">{lang.COPYRIGHTS_X} &copy; <a href="{config.siteurl}">{config.sitename}</a></small>
+		<IF NAME="admin_page"><div class="col col-md-auto"><span class="btn btn-outline-primary">{admin_page}</span></div></IF>
+	</div>
+
+
+	<IF NAME="page_stats">
+	<!-- footer stats -->
+	<div class="text-muted">
+		<small>{page_stats}</small>
+	</div>
+	</IF>
+
+</footer>
+</div><!-- end container -->
+
+
+{googleanalytics}
+
+
+<script type="text/javascript" src="{STYLE_PATH}js/jquery.min.js"></script>
+<script type="text/javascript" src="{STYLE_PATH}js/tether.min.js"></script>
+<script type="text/javascript" src="{STYLE_PATH}js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{THIS_STYLE_PATH}js/filedrop.js"></script>
+
+
+<!-- don't ever delete this -->
+{run_queue}
+
+<script type="text/javascript">
+$(function () {
+	$('[data-toggle="tooltip"]').tooltip()
+})
+
+<IF NAME="isset({js_allowed_extensions_types})">
+
+function show_messages(json_obj)
+{
+    if(typeof json_obj === 'string'){
+        json_obj = JSON.parse(json_obj);
+	}
+
+	var output="";
+	var message_type = "";
+	for (var i in json_obj)
+	{
+		message_type = json_obj[i].message_type === "info" ? '' : ' list-group-item-danger hide_after_seconds';
+		output+="<li class=\"list-group-item" + message_type + "\">" + json_obj[i].message_content +"</li>";
+	}
+
+	$('#messages').append(output);
+
+	setTimeout(function() {
+		$('.hide_after_seconds').fadeOut('fast');
+	}, 3000);
+}
+
+
+$(function () {
+    $('#zone').filedrop({
+        fallback_id: 'fallbackFile',   // an identifier of a standard file input element, becomes the target of "click" events on the dropzone
+        url: '{action}',				// upload handler, handles each file separately, can also be a function taking the file and returning a url
+        paramname: 'file',			// POST parameter name used on serverside to reference file, can also be a function taking the filename and returning the paramname
+//        withCredentials: true,			// make a cross-origin request with cookies
+        data: {
+            submitr: 1,
+            ajax: 1
+        },
+        error: function (err, file) {
+            switch (err) {
+                case 'BrowserNotSupported':
+                    alert('browser does not support HTML5 drag and drop');
+                    break;
+                case 'TooManyFiles':
+                    // user uploaded more than 'maxfiles'
+                    break;
+                case 'FileTooLarge':
+                    // program encountered a file whose size is greater than 'maxfilesize'
+                    // FileTooLarge also has access to the file which was too large
+                    // use file.name to reference the filename of the culprit file
+                    break;
+                case 'FileTypeNotAllowed':
+                    // The file type is not in the specified list 'allowedfiletypes'
+                    break;
+                case 'FileExtensionNotAllowed':
+                    // The file extension is not in the specified list 'allowedfileextensions'
+                    break;
+                default:
+                    break;
+            }
+
+            $('#loadbox').css('display', 'none');
+        },
+        maxfiles: 25,
+
+        uploadStarted: function (i, file, len) {
+            // a file began uploading
+            // i = index => 0, 1, 2, 3, 4 etc
+            // file is the actual file of the index
+            // len = total files user dropped
+
+			console.log('uploadStarted');
+            $('#loadbox').css('display', 'block');
+            $('#zone').addClass('fd-zone-current');
+        },
+        uploadFinished: function (i, file, response, time) {
+            console.log('uploadFinished');
+            // response is the data you got back from server in JSON format.
+            $('#loadbox').css('display', 'none');
+            show_messages(response);
+        },
+        progressUpdated: function (i, file, progress) {
+            console.log('progressUpdated');
+            // this function is used for large files and updates intermittently
+            // progress is the integer value of file being uploaded percentage to completion
+        },
+        globalProgressUpdated: function (progress) {
+            console.log('globalProgressUpdated');
+            // progress for all the files uploaded on the current instance (percentage)
+            // ex: $('#progress div').width(progress+"%");
+			$('#progress_data').html(progress + '/100');
+        },
+        speedUpdated: function (i, file, speed) {
+            console.log('speedUpdated');
+            // speed in kb/s
+        },
+        beforeEach: function (file) {
+            console.log('beforeEach');
+            // file is a file object
+            // return false to cancel upload
+
+            return check_selected_file(file);
+        },
+        beforeSend: function (file, i, done) {
+            console.log('beforeSend');
+            // file is a file object
+            // i is the file index
+            // call done() to start the upload
+            $('#loadbox').css('display', 'block');
+			done();
+        },
+        afterAll: function () {
+            console.log('afterAll');
+            // runs after all files have been uploaded or otherwise dealt with
+            $('#loadbox').css('display', 'none');
+            $('#zone').removeClass('fd-zone-current');
+        }
+    });
+});
+
+
+var allowed_exts = {js_allowed_extensions_types};
+var allowed_sizes = {js_allowed_extensions_sizes};
+
+function check_selected_file(selected_file) {
+    var file_name = selected_file.name;
+    var ext_dot_position = file_name.lastIndexOf(".");
+
+    if(ext_dot_position === -1){
+        alert('{lang.WRONG_F_NAME}'.replace('%s', file_name));
+        return false;
+    }
+
+
+    var file_extension = file_name.substring(ext_dot_position + 1);
+    var file_size = selected_file.size;
+
+    if(!(allowed_exts.indexOf(file_extension) > -1)){
+        //extension not allowed message alert
+        alert('{lang.FORBID_EXT}'.replace('%s', file_extension));
+        return false;
+    }else{
+
+        //check size
+        var ext_allowed_size = allowed_sizes[allowed_exts.indexOf(file_extension)];
+        if(file_size > ext_allowed_size){
+            //size is larger than allowed message alert
+            alert('{lang.SIZE_F_BIG}'.replace('%1$s', file_name).replace('%2$s', (ext_allowed_size/1048576).toFixed(2) + ' MB'));
+            return false;
+        }
+    }
+
+    return true;
+}
+</IF>
+
+function update_kleeja_captcha(captcha_file, input_id)
+{
+    document.getElementById(input_id).value = '';
+    //Get a reference to CAPTCHA image
+    img = document.getElementById('kleeja_img_captcha');
+    //Change the image
+    img.src = captcha_file + '&' + Math.random();
+}
+</script>
+</body>
+</html>
