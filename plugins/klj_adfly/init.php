@@ -218,7 +218,7 @@ $kleeja_plugin['klj_adfly']['functions'] = array(
  * special functions
  */
 
-if (!function_exists('genera_klj_adfly_link')) {
+if (!function_exists('generate_klj_adfly_link')) {
     function generate_klj_adfly_link($link)
     {
         global $config;

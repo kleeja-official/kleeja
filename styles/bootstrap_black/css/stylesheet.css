@@ -1,0 +1,17 @@
+/**
+ * Kleeja team
+ * 2017
+ */
+
+.btn-primary{
+    background-color: #1b1e21;
+    border-color: #1b1e21;
+}
+
+.btn-outline-primary{
+    border-color: #1b1e21;
+    color: #1b1e21 !important;
+}
+.btn-outline-primary span{
+    color: #1b1e21 !important;
+}
