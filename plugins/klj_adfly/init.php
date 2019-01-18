@@ -29,15 +29,15 @@ $kleeja_plugin['klj_adfly']['information'] = array(
     # Min version of Kleeja that's requiered to run this plugin
     'plugin_kleeja_version_min' => '2.0',
     # Max version of Kleeja that support this plugin, use 0 for unlimited
-    'plugin_kleeja_version_max' => '3.0',
+    'plugin_kleeja_version_max' => '3.9',
     # Should this plugin run before others?, 0 is normal, and higher number has high priority
     'plugin_priority' => 0
 );
 
 //after installation message, you can remove it, it's not requiered
 $kleeja_plugin['klj_adfly']['first_run']['ar'] = "
-شكراً لاستخدامك إضافة adf.ly ، قم بمراسلتنا بالأخطاء عند ظهورها على البريد: <br>
-info@kleeja.com
+شكراً لاستخدامك إضافة adf.ly ، قم بإعلامنا بالأخطاء عند ظهورها على: <br>
+https://github.com/awssat/kleeja/issues
 <hr>
 <br>
 <h3>لاحظ:</h3>
@@ -50,9 +50,9 @@ info@kleeja.com
 ";
 
 $kleeja_plugin['klj_adfly']['first_run']['en'] = "
-Thanks for using adf.ly plugin, to report bugs contact us: 
+Thanks for using adf.ly plugin, to report bugs: 
 <br>
-info@kleeja.com
+https://github.com/awssat/kleeja/issues
 <hr>
 <br>
 <h3>Note:</h3>

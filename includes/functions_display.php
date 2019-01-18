@@ -944,8 +944,8 @@ function configField($name, $type = 'text', $select_options = array())
         case 'select':
             $return_value = '<select id="' . $name . '" name="' . $name . '">' . "\n";
             foreach ($select_options as $title => $value) {
-                $return_value .= '<option <IF NAME="con.' . $name . '==' . $value . '">selected="selected"</IF> value="0">' . $title . '</option>' . "\n";
-            }
+                $return_value .= '<option <IF NAME="con.' . $name . '==' . $value . '">selected="selected"</IF> value="'.$value.'">' . $title . '</option>' . "\n";
+			}
 
             return $return_value . '</select>' . "\n";
     }

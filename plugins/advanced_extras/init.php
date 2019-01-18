@@ -32,7 +32,7 @@ $kleeja_plugin['advanced_extras']['information'] = array(
     # Min version of Kleeja that's requiered to run this plugin
     'plugin_kleeja_version_min' => '2.0',
     # Max version of Kleeja that support this plugin, use 0 for unlimited
-    'plugin_kleeja_version_max' => '3.0',
+    'plugin_kleeja_version_max' => '3.9',
     # Should this plugin run before others?, 0 is normal, and higher number has high priority
     'plugin_priority' => 0
 );
@@ -97,20 +97,20 @@ $kleeja_plugin['advanced_extras']['uninstall'] = function ($plg_id) {
     foreach (array('ar', 'en') as $language) {
         delete_olang(null, $language, $plg_id);
     }
-    
-            global $SQL , $dbprefix;
-        $update_query	= array(
-            'UPDATE'	=> "{$dbprefix}stats",
-            'SET'		=> "ex_footer = '' , ex_header = '' "
-        );
 
-        $SQL->build($update_query);
+    global $SQL , $dbprefix;
+    $update_query	= array(
+        'UPDATE'	=> "{$dbprefix}stats",
+        'SET'		=> "ex_footer = '' , ex_header = '' "
+    );
 
-        if($SQL->affected())
-        {
-            //delete cache ..
-            delete_cache('data_extra');
-        }
+    $SQL->build($update_query);
+
+    if($SQL->affected())
+    {
+        //delete cache ..
+        delete_cache('data_extra');
+    }
 };
 
 

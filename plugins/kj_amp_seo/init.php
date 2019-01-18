@@ -28,7 +28,7 @@ $kleeja_plugin['kj_amp_seo']['information'] = array(
     # min version of kleeja that's required to run this plugin
     'plugin_kleeja_version_min' => '2.0',
     # max version of kleeja that support this plugin, use 0 for unlimited
-    'plugin_kleeja_version_max' => '3.0',
+    'plugin_kleeja_version_max' => '3.9',
     # should this plugin run before others?, 0 is normal, and higher number has high priority
     'plugin_priority' => 0
 );
@@ -156,7 +156,10 @@ $kleeja_plugin['kj_amp_seo']['uninstall'] = function ($plg_id) {
     ));
 
 
-    delete_olang(null, null, $plg_id);
+    //delete language variables
+    foreach (['ar', 'en'] as $language) {
+        delete_olang(null, $language, $plg_id);
+    }
 };
 
 
@@ -230,7 +233,9 @@ $kleeja_plugin['kj_amp_seo']['functions'] = array(
         header('x-frame-options: SAMEORIGIN');
         header('x-xss-protection: 1; mode=block');
 
-        exit($tpl->display('amp', __DIR__));
+        echo $tpl->display('amp', __DIR__);
+
+        return ['show' => false];
     }
 );
 

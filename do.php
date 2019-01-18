@@ -535,7 +535,7 @@ else if (ig('down') || ig('downf') ||
 
         if(defined('TrottleLimit'))
         {
-            sleep(1);
+           usleep(1000000 * 0.3);
         }
     }
 
@@ -555,8 +555,14 @@ else if (ig('down') || ig('downf') ||
 //
 else
 {
+    $error = true;
+
     is_array($plugin_run_result = Plugins::getInstance()->run('err_navig_download_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-	kleeja_err($lang['ERROR_NAVIGATATION']);
+
+    if($error) 
+    {
+        kleeja_err($lang['ERROR_NAVIGATATION']);
+    }
 }
 
 is_array($plugin_run_result = Plugins::getInstance()->run('end_download_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook

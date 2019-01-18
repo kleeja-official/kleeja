@@ -30,7 +30,7 @@ $kleeja_plugin['kj_recaptcha']['information'] = array(
     # min version of kleeja that's required to run this plugin
     'plugin_kleeja_version_min' => '2.0',
     # max version of kleeja that support this plugin, use 0 for unlimited
-    'plugin_kleeja_version_max' => '3.0',
+    'plugin_kleeja_version_max' => '3.9',
     # should this plugin run before others?, 0 is normal, and higher number has high priority
     'plugin_priority' => 0
 );
