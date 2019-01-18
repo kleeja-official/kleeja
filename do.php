@@ -135,16 +135,20 @@ if (ig('id') || ig('filename'))
 		kleeja_err($lang['FILE_NO_FOUNDED']);
 	}
 
+    $show_style = true;
+
     is_array($plugin_run_result = Plugins::getInstance()->run('b4_showsty_downlaod_id_filename', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 	//add http reffer to session to prevent errors with some browsers !
     $_SESSION['HTTP_REFERER'] =  $file_info['id'];
 
-
-	// show style ...
-	Saaheader($title);
-	echo $tpl->display($sty);
-	Saafooter();
+    // show style
+    if($show_style)
+    {
+        Saaheader($title);
+        echo $tpl->display($sty);
+        Saafooter();
+    }
 }
 
 
