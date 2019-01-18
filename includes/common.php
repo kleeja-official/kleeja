@@ -364,6 +364,10 @@ if(empty($perpage) || intval($perpage) == 0)
 
 #captcha file
 $captcha_file_path = $config['siteurl'] . 'ucp.php?go=captcha';
+if(defined('STOP_CAPTCHA')) 
+{
+	$config['enable_captcha'] = 0;
+}
 
 is_array($plugin_run_result = Plugins::getInstance()->run('end_common', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 

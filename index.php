@@ -185,6 +185,8 @@ if ($show_online)
 }#allow_online
 
 
+$show_style = true;
+
 is_array($plugin_run_result = Plugins::getInstance()->run('end_index_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 
@@ -200,11 +202,11 @@ if(ip('ajax'))
 }
 
 
-//header
-Saaheader();
-//index
-echo $tpl->display(($config['filesnum'] > 0 ? "index_body" : "info"));
-//footer
-Saafooter();
-
+//show style
+if($show_style)
+{
+    Saaheader();
+    echo $tpl->display(($config['filesnum'] > 0 ? "index_body" : "info"));
+    Saafooter();
+}
 

@@ -21,6 +21,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('begin_usrcp_page', ge
 
 
 $extra = '';
+$show_style = true;
 
 switch (g('go'))
 {
@@ -924,9 +925,10 @@ is_array($plugin_run_result = Plugins::getInstance()->run('end_usrcp_page', get_
 $titlee = empty($titlee) ? $lang['USERS_SYSTEM'] : $titlee;
 $stylee = empty($stylee) ? 'info' : $stylee;
 
-//header
-Saaheader($titlee, $extra);
-
-echo $tpl->display($stylee);
-//footer
-Saafooter();
+//show style
+if($show_style)
+{
+	Saaheader($titlee, $extra);
+	echo $tpl->display($stylee);
+	Saafooter();
+}

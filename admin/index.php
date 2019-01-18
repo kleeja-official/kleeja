@@ -21,7 +21,7 @@ require_once PATH . 'includes/common.php';
 $go_to		= ig('cp') ? g('cp') : 'start';
 $username	= $usrcp->name();
 $AJAX_ACP	= defined('AJAX_ACP');
-$config['enable_captcha'] = 1;
+$config['enable_captcha'] = ! defined('STOP_CAPTCHA');
 
 
 #for security

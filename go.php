@@ -18,9 +18,9 @@ require_once 'includes/common.php';
 
 
 $current_go_case = g('go');
+$show_style = true;
 
 is_array($plugin_run_result = Plugins::getInstance()->run('begin_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
 
 switch($current_go_case)
 {
@@ -671,10 +671,10 @@ is_array($plugin_run_result = Plugins::getInstance()->run('end_go_page', get_def
 $stylee  = empty($stylee) ? 'info' : $stylee;
 $titlee  = empty($titlee) ? '' : $titlee;
 
-//header
-Saaheader($titlee);
-//tpl
+//show style
+if($show_style)
+{
+	Saaheader($titlee);
 	echo $tpl->display($stylee);
-//footer
-Saafooter();
-
+	Saafooter();
+}
