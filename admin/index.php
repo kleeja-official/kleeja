@@ -94,7 +94,7 @@ if(
 				{
 					//Wrong entries
 					$ERRORS[] = $lang['LOGIN_ERROR'];
-                    $_SESSION['SHOW_CAPTCHA'] = function_exists('gd_info');
+                    $_SESSION['SHOW_CAPTCHA'] = function_exists('gd_info') && ! defined('STOP_CAPTCHA');
 				}
 			}
 
