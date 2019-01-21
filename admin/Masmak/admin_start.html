@@ -387,45 +387,26 @@
 		<li class="breadcrumb-item active">{lang.KLEEJA_TEAM}</li>
 	</ol>
 
-
-	<ul class="list-group">
-		<div class="list-group-item list-group-item-action flex-column align-items-start ">
-			<div class="d-flex w-100 justify-content-between">
-				<h5 class="mb-1">Abdullrahman M. Alshuwayi</h5>
-				<small><a href="http://twitter.com/abdu1m" target="_blank">@abdu1m</a></small>
+	<ul class="list-group" id="gtresults">
+		<li class="list-group-item list-group-item-action d-flex justify-content-between" style="display: none !important" id="ghTemplate">
+			<div class="d-flex w-40 justify-content-between"> 
+				<img src="%avatarUrl%" alt="" class="img-thumbnail mx-2 rounded" style="width: 48px; height: 48px"> <a href="%htmlUrl%" target="_tab"><h5 class="mb-1">%login%</h5></a>
 			</div>
-			<p class="mb-1">Founder and main developer, skilled and has 13+ years of programming experience.
-				<br><small>2007-{current_year}</small></p>
-			<small style="font-family: Tahoma, sans-serif">عبدالرحمن الشويعي</small>
-		</div>
-		<div class="list-group-item list-group-item-action flex-column align-items-start ">
-			<div class="d-flex w-100 justify-content-between">
-				<h5 class="mb-1">Bader N. Al-Mutairi</h5>
-				<small><a href="http://twitter.com/phpfalcon" target="_blank">@phpfalcon</a></small>
-			</div>
-			<p class="mb-1">An app developer with a passion for making beautiful things.
-				<br><small>2009-2012</small></p>
-			<small style="font-family: Tahoma, sans-serif">بدر المطيري</small>
-		</div>
-		<div class="list-group-item list-group-item-action flex-column align-items-start ">
-			<div class="d-flex w-100 justify-content-between">
-				<h5 class="mb-1">Moayead Y. Hejazi</h5>
-			</div>
-			<p class="mb-1">Enthusiastic and Leader in customer support.
-				<br><small>2011-2017</small></p>
-			<small style="font-family: Tahoma, sans-serif">مؤيد حجازي</small>
-		</div>
+			<small><a href="https://github.com/awssat/kleeja/graphs/contributors" target="_blank">%contributions% <i class="fa fa-fw fa-code"></i></a></small>
+		</li>
 	</ul>
 
 
 
-<IF NAME="translator_copyrights">
-	<hr>
-	<small>{translator_copyrights}</small>
-</IF>
+	<IF NAME="translator_copyrights">
+		<hr>
+		<small>{translator_copyrights}</small>
+	</IF>
 
 	<hr>
-	<small>You can support Kleeja by reporting or fixing a bug, designing a style, building a plugin or even just sending a thank you message to info@kleeja.com.</small>
+	<p style="direction: ltr">
+<small>You can support Kleeja by reporting or fixing a bug, designing a style, building a plugin (see <a href="https://github.com/awssat/kleeja" target="_tab">github.com/awssat/kleeja</a>)</small>
+	</p>
 
 	<br>
 	<br>
