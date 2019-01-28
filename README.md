@@ -13,4 +13,5 @@ https://github.com/awssat/kleeja/releases
 ## More Information:
 http://awssat.com/kleeja/
 
-
+## غرفة كليجا للدعم والنقاش 
+https://discord.gg/xaCZ4cQ
