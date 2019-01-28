@@ -91,8 +91,8 @@ return array(
 	//UPDATOR
 	'INST_CHOOSE_UPDATE_FILE'		=>'قم بإختيار التحديث المناسب لك ومن ثم تابع التحديث ..',
 	'INST_ERR_NO_SELECTED_UPFILE_GOOD'		=>'ملف التحديث غير مناسب أو أنه غير موجود من الأساس ! ..',
-	'INST_UPDATE_CUR_VER_IS_UP'		=>'النسخة الحالية محدثة لهذا التحديث المحدد.',
-	
+	'INST_UPDATE_CUR_VER_IS_UP'		=>'نسختك الحالية محدثة لهذا التحديث المحدد.',
+
 	'INST_NOTES_UPDATE'		=>'ملاحظات التحديث',
 
 

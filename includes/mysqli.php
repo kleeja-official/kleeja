@@ -451,6 +451,7 @@ class KleejaDatabase
 		{
 			global $config;
             $error_message .= "<br /><strong>Your Kleeja database might be old, try to update it now from: " . rtrim($config['siteurl'], '/') . "/install</strong>";
+            $error_message .= "<br /><br><strong>If this error happened after installing a plugin, add <span style=\"background-color:#ccc; padding:2px\">define('STOP_PLUGINS', true);</span> to end of config.php file.</strong>";
 		}
 		$error_message .= "<br /><br /><strong>Script: Kleeja <br /><a href='http://www.kleeja.com'>Kleeja Website</a></strong>";
 		$error_message .= '</b></div>';

@@ -90,7 +90,7 @@ case 'action_file':
 				$file = str_replace('.php','', $file);
 				$db_ver = $order_update_files[$file];
 
-				var_dump($db_ver);
+				// var_dump($db_ver);
 
 				if((empty($config['db_version']) || $db_ver > $config['db_version']))
 				{
