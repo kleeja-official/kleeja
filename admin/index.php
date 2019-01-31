@@ -439,7 +439,11 @@ if(!ig('_ajax_'))
 else
 {
 	$is_ajax = 'yes';
-	echo_ajax(1, $tpl->display($stylee, $styleePath), $go_menu_html);
+
+	echo_ajax(1, 
+			empty($adminAjaxContent) ? $tpl->display($stylee, $styleePath) : $adminAjaxContent, 
+			$go_menu_html
+	);
 }
 
 //footer

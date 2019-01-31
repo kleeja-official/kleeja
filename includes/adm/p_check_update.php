@@ -15,57 +15,68 @@ if (!defined('IN_ADMIN'))
 
 $stylee	= "admin_check_update";
 $current_smt	= preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
-$error = false;
 $update_link = $config['siteurl'] . 'install/update.php?lang=' . $config['language'];
 
 #to prevent getting the url data for all cats
-if($current_smt == 'general'):
+if($current_smt == 'check'):
 
-//get data from kleeja database
-$b_url	= empty($_SERVER['SERVER_NAME']) ? $config['siteurl'] : $_SERVER['SERVER_NAME'];
-$b_data = fetch_remote_file('https://raw.githubusercontent.com/awssat/kleeja/master/includes/version.php', false, 6);
+	//get data from kleeja github repo
+	if (! ($version_data = $cache->get('kleeja_repo_version'))) 
+	{
+		$github_data = fetch_remote_file('https://raw.githubusercontent.com/awssat/kleeja/master/includes/version.php', false, 6);
 
+		if (! empty($github_data)) 
+		{
+			preg_match_all('/define\(\'KLEEJA_VERSION\',\s{1,4}\'([^\']+)\'\);/', $github_data, $matches, PREG_SET_ORDER, 0);
+			$version_data = trim(htmlspecialchars($matches[0][1]));
+			$cache->save('kleeja_repo_version', $version_data, 3600 * 2);
+		}
+	}
 
+	$error = 0;
 
-if ($b_data === false && !ig('show_msg'))
-{
-	$text	= $lang['ERROR_CHECK_VER'];
-	$error	= true;
-}
-else
-{
-	preg_match_all('/define\(\'KLEEJA_VERSION\',\s{1,4}\'([^\']+)\'\);/', $b_data, $matches, PREG_SET_ORDER, 0);
-
-	if (empty($matches[0][1])) 
+	if(empty($version_data))
 	{
 		$text = $lang['ERROR_CHECK_VER'];
-		$error = true;
+		$error = 1;
 	}
-}
-
-
-if(!$error)
-{
-	$version_data = trim(htmlspecialchars($matches[0][1]));
-
-	if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '<'))
+	else
 	{
-		$text	= sprintf($lang['UPDATE_NOW_S'] , KLEEJA_VERSION, strtolower($version_data)) . '<br /><br />' . $lang['UPDATE_KLJ_NOW'];
-		$error	= true;
-	}
-	else if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '='))
-	{
-		$text	= $lang['U_LAST_VER_KLJ'];
-	}
-	else if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '>'))
-	{
-		$text	= $lang['U_USE_PRE_RE'];
+		if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '<'))
+		{
+			$text	= sprintf($lang['UPDATE_NOW_S'] , KLEEJA_VERSION, strtolower($version_data)) . '<br /><br />' . $lang['UPDATE_KLJ_NOW'];
+			$error	= 1;
+		}
+		else if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '='))
+		{
+			$text	= $lang['U_LAST_VER_KLJ'];
+		}
+		else if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '>'))
+		{
+			$text	= $lang['U_USE_PRE_RE'];
+		}
 	}
 
-	//lets recore it
-	$v = @unserialize($config['new_version']);
+    $data	= array(
+    				'version_number'	=> $version_data,
+    				'last_check'		=> time()
+    			);
 
-	//To prevent expected error [ infinit loop ]
+    $data = serialize($data);
+
+    update_config('new_version', $SQL->real_escape($data), false);
+    delete_cache('data_config');
+
+	$adminAjaxContent = $error . ':::' . $text;
+
+elseif($current_smt == 'general'):
+
+// if(!$error)
+// {
+
+
+
+ 	//To prevent expected error [ infinit loop ]
 	if(ig('show_msg'))
 	{
 		$query_get	= array(
@@ -83,25 +94,11 @@ if(!$error)
 		}
 	}
 
-	$data	= array(
-					'version_number'	=> $version_data,
-					'last_check'		=> time(),
-					'msg_appeared'		=> ig('show_msg') ? true : false
-				);
 
-	$data = serialize($data);
+// }
 
-	update_config('new_version', $SQL->real_escape($data), false);
-	delete_cache('data_config');
-}
+$showMessage = ig('show_msg');
 
-//then go back  to start
-if(ig('show_msg'))
-{
-	redirect(basename(ADMIN_PATH) . '?update_done=1');
-	$SQL->close();
-	exit;
-}
 
 #end current_smt == general
 endif;

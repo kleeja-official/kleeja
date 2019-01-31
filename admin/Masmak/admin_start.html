@@ -412,7 +412,24 @@
 	<br>
 	<hr>
 	<div class="text-muted text-center">Kleeja proudly made in Buraydah City  <br> ❤ Trusted since 2007  <br><small>{kleeja_version}</small></div>
-
+<script type="text/javascript">
+	setTimeout(function() {
+		$.ajax({
+			url: "https://api.github.com/repos/awssat/kleeja/contributors",
+			dataType: 'json',
+			success: function (data) {
+				var template = $('#ghTemplate')[0].outerHTML;
+				$.each(data, function (i, item) {
+					$("#gtresults").append(template.replace('%id%', item['id']).replace('%login%', item['login']).replace(
+						'ghTemplate',
+						'gt' + item['id']).replace('%avatarUrl%', item['avatar_url']).replace('%contributions%', item[
+						'contributions']).replace('%htmlUrl%', item['html_url']));
+					$('#gt' + item['id']).removeAttr('style');
+				});
+			}
+		});
+	}, 400);
+</script>
 
 </IF>
 

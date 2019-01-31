@@ -7,7 +7,30 @@
 	<li class="breadcrumb-item active">{lang.R_CHECK_UPDATE}</li>
 </ol>
 
-<div class="alert <IF NAME="error">alert-warning<ELSE>alert-info</IF>">{text}</div>
+<div id="updateInfo" class="alert">
+	<img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" />
+</div>
+<script>
+	setTimeout(function(){
+		$.ajax({
+			url: './?cp=p_check_update&smt=check&_ajax_=1',
+			dataType: 'json',
+			success: function (data) {
+				if(data.content){
+					var info = data.content.split(":::");
+					$('#updateInfo').html(info[1]).addClass(info[0] == 1 ? 'alert-warning' : 'alert-info');
+				} else {
+					this.fail();
+				}
+				<IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
+			},
+			fail: function() {
+				$('#updateInfo').html('{lang.ERROR_CHECK_VER}').addClass('alert-warning');
+				<IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
+			}
+		});
+	}, 300);
+</script>
 
 
 <ELSEIF NAME="current_smt == howto">

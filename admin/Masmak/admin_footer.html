@@ -24,25 +24,8 @@
 <script type="text/javascript" src="{STYLE_PATH_ADMIN}js/jquery.waitforimages.js"></script>
 </IF>
 
-<IF NAME="go_to==start">
-    <script type="text/javascript">
-    $.ajax({url: "https://api.github.com/repos/awssat/kleeja/contributors",
-    dataType: 'json',
-    success: function (data) {
-        var template = $('#ghTemplate')[0].outerHTML;
-        $.each(data, function(i, item) {
-            $("#gtresults").append(template.replace('%id%', item['id']).replace('%login%', item['login']).replace('ghTemplate',
-'gt'+item['id']).replace('%avatarUrl%', item['avatar_url']).replace('%contributions%', item['contributions']).replace('%htmlUrl%', item['html_url']));
-            $('#gt'+item['id']).removeAttr('style');
-        });
-    }
-    });
-    </script>
-</IF>
-
 
 <script type="text/javascript">
-<!--//
 $(function () {
 
     //check for msg, reports every 5min
@@ -239,7 +222,6 @@ function confirm_form(r)
 function get_kleeja_link(link) {
     location.href = link;
 }
-//-->
 </script>
 </body>
 </html>
