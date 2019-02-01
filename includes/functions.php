@@ -266,69 +266,60 @@ function fetch_remote_file($url, $save_in = false, $timeout = 20, $head_only = f
 	{
 		@ini_set('default_socket_timeout', $timeout);
 	}
-	$allow_url_fopen = function_exists('ini_get') ? strtolower(@ini_get('allow_url_fopen')) : strtolower(@get_cfg_var('allow_url_fopen'));
+	$allow_url_fopen = function_exists('ini_get') 
+					? strtolower(@ini_get('allow_url_fopen')) 
+					: strtolower(@get_cfg_var('allow_url_fopen'));
 
-	if(function_exists('curl_init') && !$save_in)
+	if(function_exists('curl_init'))
 	{
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-//		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+		$ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		@curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		@curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_HEADER, $head_only);
 		curl_setopt($ch, CURLOPT_NOBODY, $head_only);
 		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Kleeja)');
+		curl_setopt($ch, CURLOPT_FAILONERROR, true);
 
-		// Grab the page
-		$data = @curl_exec($ch);
-        $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		curl_close($ch);
-
-		// Process 301/302 redirect
-        if ($data !== false && ($response_code == '301' || $response_code == '302') && $max_redirects > 0)
+		if($binary)
 		{
-			$headers = explode("\r\n", trim($data));
-			foreach ($headers as $header)
-			{
-				if (substr($header, 0, 10) == 'Location: ')
-				{
-                    $response = fetch_remote_file(substr($header, 10), $save_in, $timeout, $head_only, $max_redirects - 1);
-					if ($head_only)
-					{
-                        if ($response != false)
-						{
-                            $headers[] = $response;
-						}
-						return $headers;
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
+			curl_setopt($ch, CURLOPT_ENCODING, "");
 		}
 
-		// Ignore everything except a 200 response code
-        if ($data !== false && $response_code == '200')
+		//let's open new file to save it in.
+		if ($save_in)
 		{
-			if ($head_only)
+			$out = @fopen($save_in, 'w');
+			curl_setopt($ch, CURLOPT_FILE, $out);
+			@curl_exec($ch);
+			curl_close($ch);
+			fclose($out);
+		} 
+
+		if($head_only)
+		{
+			// Grab the page
+			$data = @curl_exec($ch);
+			$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close();
+			if ($data !== false && $response_code == '200')
 			{
 				return explode("\r\n", str_replace("\r\n\r\n", "\r\n", trim($data)));
 			}
-			else
-			{
-				preg_match('#HTTP/1.[01] 200 OK#', $data, $match, PREG_OFFSET_CAPTURE);
-				$last_content = substr($data, $match[0][1]);
-				$content_start = strpos($last_content, "\r\n\r\n");
-				if ($content_start !== false)
-				{
-					return substr($last_content, $content_start + 4);
-				}
-			}
 		}
+		else
+		{
+			if(! $save_in)
+			{
+				$data = @curl_exec($ch);
+				curl_close();
+			}
 
+			return $save_in ? true : $data;
+		}
 	}
 	// fsockopen() is the second best thing
 	else if(function_exists('fsockopen'))

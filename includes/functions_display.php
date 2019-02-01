@@ -765,28 +765,6 @@ function is_browser($b)
 
 
 /**
- * Converting array to JSON format, nested arrays not supported
- * @param array $array
- * @return string
- */
-function generate_json($array)
-{
-	$json = '';
-	$json_escape = array(
-		array("\\", "/", "\n", "\t", "\r", "\b", "\f", '"'),
-		array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"')
-	);
-
-	foreach($array as $key=>$value)
-	{
-		$json .= ($json != '' ? ', ' : '') . '"' . $key . '":' . 
-				(preg_match('^[0-9]+$', $value) ? $value : '"' . str_replace($json_escape[0], $json_escape[1], $value) . '"');
-	}
-
-	return '{' . $json . '}';
-}
-
-/**
  * Send an answer for ajax request
  * @param int $code_number
  * @param string $content
@@ -797,7 +775,7 @@ function echo_ajax($code_number, $content, $menu = '')
 	global $SQL;
 	$SQL->close();
 
-	exit(generate_json(array('code' => $code_number, 'content' => $content, 'menu' => $menu)));
+	exit(json_encode(array('code' => $code_number, 'content' => $content, 'menu' => $menu)));
 }
 
 
@@ -810,7 +788,6 @@ function echo_array_ajax($array)
 	global $SQL;
 	$SQL->close();
 
-    //generate_json has some bugs so I will use json_encode instead :[
 	exit(@json_encode($array));
 }
 
