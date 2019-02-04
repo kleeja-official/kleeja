@@ -130,8 +130,16 @@ if(
 
 
 	//prevent indexing this page by bots
-	header('HTTP/1.1 503 Service Temporarily Unavailable');
-	echo $tpl->display("admin_login");
+	header('HTTP/1.0 401 Unauthorized');
+	if (ig('_ajax_') || ig('check_msgs')) 
+	{
+		echo_ajax(401, 'Unauthorized');
+	}
+	else
+	{
+        echo $tpl->display('admin_login');
+	}
+
 	$SQL->close();
 	exit;
 }#end login
@@ -419,6 +427,8 @@ if(isset($go_menu))
 	}
 }
 
+//add extra html to header or footer
+$extra_admin_header_code = $extra_admin_footer_code = '';
 
 is_array($plugin_run_result = Plugins::getInstance()->run('end_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 

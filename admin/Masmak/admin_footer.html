@@ -125,9 +125,8 @@ $(function () {
 });
 
 function check_msg_and_reports(){
-    $.ajax({
-        url: './?check_msgs=1',
-        success: function (data) {
+    $.ajax({url: './?check_msgs=1', cache: false})
+    .done(function (data) {
             if (data.indexOf("::") !== -1) {
                 var nums = data.split("::");
                 if (nums[0] !== 0) {
@@ -138,8 +137,15 @@ function check_msg_and_reports(){
                     $('.bubble_reports').html(nums[1]).css('display', 'inline');
                 }
             }
-        }
-    });
+        })
+    .fail(function(hxr, status, error) {
+            if(confirm('{lang.SESSION_ENDED}')) {
+                location.reload();
+            } else {
+                location.href = '{config.siteurl}';
+            }
+        });
+
 
    setTimeout(check_msg_and_reports, 240000);
 }
@@ -223,5 +229,7 @@ function get_kleeja_link(link) {
     location.href = link;
 }
 </script>
+
+{extra_admin_footer_code}
 </body>
 </html>

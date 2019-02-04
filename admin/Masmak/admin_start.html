@@ -416,8 +416,8 @@
 	setTimeout(function() {
 		$.ajax({
 			url: "https://api.github.com/repos/awssat/kleeja/contributors",
-			dataType: 'json',
-			success: function (data) {
+			dataType: 'json'})
+			.done(function (data) {
 				var template = $('#ghTemplate')[0].outerHTML;
 				$.each(data, function (i, item) {
 					$("#gtresults").append(template.replace('%id%', item['id']).replace('%login%', item['login']).replace(
@@ -426,8 +426,7 @@
 						'contributions']).replace('%htmlUrl%', item['html_url']));
 					$('#gt' + item['id']).removeAttr('style');
 				});
-			}
-		});
+			});
 	}, 400);
 </script>
 
