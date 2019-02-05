@@ -144,7 +144,7 @@ class kleeja_style
             '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*>/iU' => '<?php echo $this->display("\\2"); ?>',
             '/<IS_BROWSER\s*=\s*"([a-z0-9,]+)"\s*>/iU' => '<?php if(is_browser("\\1")){ ?>',
             '/<IS_BROWSER\s*\!=\s*"([a-z0-9,]+)"\s*>/iU' => '<?php if(!is_browser("\\1")){ ?>',
-            '/(<ELSE>|<ELSE \/>)/i' => '<?php }else{ ?>',
+            '/(<ELSE>|<ELSE\s?\/>)/i' => '<?php }else{ ?>',
             '/<ODD\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/ODD\>/is' => "<?php if(intval(\$value['\\1'])%2){?> \\2 <?php } ?>",
             '/<EVEN\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/EVEN>/is' => "<?php if(intval(\$value['\\1'])% 2 == 0){?> \\2 <?php } ?>",
             '/<RAND\s*=\s*"(.*?)\"\s*,\s*"(.*?)"\s*>/is' => "<?php \$KLEEJA_tpl_rand_is=(!isset(\$KLEEJA_tpl_rand_is) || \$KLEEJA_tpl_rand_is==0)?1:0; print((\$KLEEJA_tpl_rand_is==1) ?'\\1':'\\2'); ?>",
@@ -227,7 +227,14 @@ class kleeja_style
      */
     protected function _vars_callback($matches)
     {
-        return '<?php echo ' . call_user_func(array('kleeja_style', '_var_callback'), $matches) . '?>';
+        $variable = call_user_func(array('kleeja_style', '_var_callback'), $matches);
+
+        if(strpos($matches[0], '{lang')  !== false || strpos($matches[0], '{olang') !== false)
+        {
+            return '<?=isset(' . $variable . ') ? ' . $variable . ' : \'' . $matches[0] . '\'?>';
+        }
+
+        return '<?=' . $variable . '?>';
     }
 
 

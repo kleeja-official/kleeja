@@ -435,7 +435,8 @@ class KleejaDatabase
 		{
 			$updating_related = true;
 		}
-		
+
+		header('HTTP/1.1 500 Internal Server Error');
 		$error_message = "<html><head><title>ERROR IM MYSQL</title>";
         $error_message .= "<style>BODY{font-family:'Tahoma',serif;font-size:12px;}.error {}</style></head><body>";
 		$error_message .= '<br />';
