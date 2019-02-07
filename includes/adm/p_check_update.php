@@ -55,6 +55,10 @@ if($current_smt == 'check'):
 		{
 			$text	= $lang['U_USE_PRE_RE'];
 		}
+		else
+		{
+			$text = $lang['ERROR_CHECK_VER'] . ' [code: ' . htmlspecialchars($version_data) .']';
+		}
 	}
 
     $data	= array(

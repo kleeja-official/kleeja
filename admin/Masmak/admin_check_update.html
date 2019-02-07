@@ -14,8 +14,8 @@
 	setTimeout(function(){
 		$.ajax({
 			url: './?cp=p_check_update&smt=check&_ajax_=1',
-			dataType: 'json',
-			success: function (data) {
+			dataType: 'json'})
+			.done(function (data) {
 				if(data.content){
 					var info = data.content.split(":::");
 					$('#updateInfo').html(info[1]).addClass(info[0] == 1 ? 'alert-warning' : 'alert-info');
@@ -23,11 +23,10 @@
 					this.fail();
 				}
 				<IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
-			},
-			fail: function() {
+			})
+			.fail(function() {
 				$('#updateInfo').html('{lang.ERROR_CHECK_VER}').addClass('alert-warning');
 				<IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
-			}
 		});
 	}, 300);
 </script>
