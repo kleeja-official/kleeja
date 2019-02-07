@@ -16,7 +16,7 @@ if (!defined('IN_COMMON'))
 //
 //Path of config file in vb
 //
-if(!defined('SCRIPT_CONFIG_PATH'))
+if(! defined('SCRIPT_CONFIG_PATH'))
 {
 	define('SCRIPT_CONFIG_PATH', '/includes/config.php');
 }
@@ -34,10 +34,24 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 			$script_path = substr($script_path, 0, strlen($script_path));
 		}
 
-		//get some useful data from vb config file
-		if(file_exists(PATH .  $script_path . SCRIPT_CONFIG_PATH))
+		$configExists = false;
+		
+		if(file_exists(PATH . $script_path . SCRIPT_CONFIG_PATH))
 		{
-			require_once (PATH .  $script_path . SCRIPT_CONFIG_PATH);
+			$configPath = PATH . $script_path . SCRIPT_CONFIG_PATH;
+			$configExists = true;
+		}
+		else if(file_exists(PATH . $script_path . '/core/includes/config.php'))
+		{
+			$configPath = PATH . $script_path . '/core/includes/config.php';
+			$configExists = true;
+			$isVB5 = true;
+		}
+
+		//get some useful data from vb config file
+		if($configExists)
+		{
+			require_once $configPath;
 
 			//
 			//get config from config file
@@ -103,15 +117,15 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
 	$pass = empty($script_cp1256) || !$script_cp1256 ? $pass : $usrcp->kleeja_utf8($pass, false);
 	$name = empty($script_cp1256) || !$script_cp1256 || $hashed ? $name : $usrcp->kleeja_utf8($name, false);
-	
+
 	$query_salt = array(
-						'SELECT'	=> $hashed ? '*' : 'salt', 
+						'SELECT'	=> $hashed ? '*' : ($isVB5 ? 'token' : 'salt'), 
 						'FROM'		=> "`{$forum_prefix}user`",
 					);
 
-	$query_salt['WHERE'] = $hashed ? "userid=" . intval($name) . " AND password='" . $SQLVB->real_escape($pass) . "' AND usergroupid != '8'" :  "username='" . $SQLVB->real_escape($name) . "' AND usergroupid != '8'";
+	$query_salt['WHERE'] = $hashed ? "userid=" . intval($name) . " AND ". ($isVB5 ? 'token' : 'password') ."='" . $SQLVB->real_escape($pass) . "' AND usergroupid != '8'" :  "username='" . $SQLVB->real_escape($name) . "' AND usergroupid != '8'";
 	
-	//if return only name let's ignore the obove
+	//if return only name let's ignore the above
 	if($return_name)
 	{
 		$query_salt['SELECT']	= "username";
@@ -132,12 +146,14 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
 			if(!$hashed)
 			{
-				$pass = md5(md5($pass) . $row1['salt']);  // without normal md5
+				$pass = ! $isVB5 
+						? md5(md5($pass) . $row1['salt'])  // without normal md5
+						: crypt(md5($pass), $row1['token']);
 
 				$query	= array(
 								'SELECT'	=> '*',
 								'FROM'	=> "`{$forum_prefix}user`",
-								'WHERE'	=> "username='" . $SQLVB->real_escape($name) . "' AND password='" . $SQLVB->real_escape($pass) . "' AND usergroupid != '8'"
+								'WHERE'	=> "username='" . $SQLVB->real_escape($name) . "' AND ".($isVB5 ? 'token' : 'password')."='" . $SQLVB->real_escape($pass) . "' AND usergroupid != '8'"
 						);
 		
 				$result = $SQLVB->build($query);
@@ -161,13 +177,13 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 						$userinfo['group_id'] =  ($row['usergroupid'] == 6 ? 1 : 3);
 						$user_y = kleeja_base64_encode(serialize(array('id'=>$row['userid'], 'name'=>USER_NAME, 'mail'=>$row['email'], 'last_visit'=>time())));
 						
-						$hash_key_expire = sha1(md5($config['h_key'] . $row['password']) .  $expire);
+						$hash_key_expire = sha1(md5($config['h_key'] . ($isVB5 ? $row['token'] : $row['password'])) .  $expire);
 
 						if(!$loginadm)
 						{
 							$usrcp->kleeja_set_cookie('ulogu', $usrcp->en_de_crypt(
 													$row['userid'] . '|' . 
-													$row['password'] . '|' . 
+													($isVB5 ? $row['token'] : $row['password']) . '|' . 
 													$expire . '|' . 
 													$hash_key_expire . '|' . 
 													($row['usergroupid'] == 6 ? 1 : 3) . '|' . 
