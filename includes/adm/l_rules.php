@@ -42,8 +42,7 @@ $result = $SQL->build($query);
 
 while($row=$SQL->fetch_array($result))
 {
-	$rulesw = p('rules_text', 'str', $row['rules']);
-	$rules = htmlspecialchars($rulesw);
+	$rules = p('rules_text', 'str', $row['rules']);
 			
 	//when submit
 	if (ip('submit'))
@@ -51,7 +50,7 @@ while($row=$SQL->fetch_array($result))
 		//update
 		$update_query	= array(
 								'UPDATE'	=> "{$dbprefix}stats",
-								'SET'		=> "rules = '" . $SQL->real_escape($rulesw) . "'"
+								'SET'		=> "rules = '" . $SQL->real_escape(htmlspecialchars_decode($rules)) . "'"
 							);
 
 		$SQL->build($update_query);
