@@ -578,7 +578,7 @@ class defaultUploader implements KleejaUploader
 
         # file name
         $fileInfo['originalFileName'] = isset($_FILES['file_' . $fieldNumber . '_']['name'])
-                            ? htmlspecialchars(str_replace(array(';',','), '', $_FILES['file_' . $fieldNumber . '_']['name']))
+                            ? urldecode(str_replace(array(';',','), '', $_FILES['file_' . $fieldNumber . '_']['name']))
                             : '';
 
         if(empty($fileInfo['originalFileName']))
