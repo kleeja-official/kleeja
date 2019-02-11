@@ -363,7 +363,7 @@ switch (g('go'))
 		$linkgoto		= $config['siteurl'] . (
                                     $config['mod_writer']
                                     ?  'fileuser-' . $user_id . ($currentPage > 1  && $currentPage <= $total_pages ? '-' . $currentPage : '')  . '.html'
-                                    : 'ucp.php?go=fileuser' . ($currentPage > 1 &&  $currentPage <= $total_pages ? '&amp;page=' . $currentPage : '')
+                                    : 'ucp.php?go=fileuser' . ( ig('id') ? ( g('id' , 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id') ) : null  )
                             );
 
 		$page_nums		= $Pager->print_nums(str_replace('.html', '', $linkgoto));
