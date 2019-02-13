@@ -7,20 +7,22 @@
 
 
 
-<div class="card-deck">
+<div class="row">
 
 	<LOOP NAME="ttgroups">
 
 		<IF LOOP="firstrow">
 
 		<UNLESS LOOP="most_firstrow">
+			</div>
 			</ul>
 			</div>
 		</UNLESS>
 
-			<div class="card mb-3">
-				<h5 class="card-header">{{group_name}}</h5>
-				<ul class="list-group list-group-flush">
+			<div class="p-0 col-md-4 col-sm-12">
+				<div class="card m-1">
+					<h5 class="card-header">{{group_name}}</h5>
+					<ul class="list-group list-group-flush">
 		</IF>
 
 		<li class="list-group-item">
@@ -31,6 +33,7 @@
 			<span>{{size}}</span>
 		</li>
 	</LOOP>
+	</div>
 	</ul>
 	</div>
 
