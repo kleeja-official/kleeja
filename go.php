@@ -19,6 +19,7 @@ require_once 'includes/common.php';
 
 $current_go_case = g('go');
 $show_style = true;
+$styleePath = null;
 
 is_array($plugin_run_result = Plugins::getInstance()->run('begin_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -675,6 +676,6 @@ $titlee  = empty($titlee) ? '' : $titlee;
 if($show_style)
 {
 	Saaheader($titlee);
-	echo $tpl->display($stylee);
+	echo $tpl->display($stylee , $styleePath);
 	Saafooter();
 }
