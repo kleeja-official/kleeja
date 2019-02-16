@@ -4,10 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.0.2
+- new styles, drag and drop and progressbar and bootstrap black.
+- cleaning the header and footer after removing the plugin.
+- new plugin: traidnt.
+
+## 3.0.1
+- postpone x-send file plugin release.
+
+## 3.0
+- new plugins: klj_ftp, rebrandly, advanced extras, x_sendfile, adfly support, pdf viewer, amp support.
+- add missing to language files.
+- users can delete there files in one click.
+- fixes for recaptcha.
+
 ## 2.4
 - fix bug where captcha doesn't work if website is closed.
 
- 
 ## 2.3
 - fix bug where 'empty files' error when url uplaoding is on.
 - fix bug where limiting download size is not working.
