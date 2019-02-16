@@ -16,6 +16,7 @@ RewriteRule ^image([0-9]*).html$ do.php?img=$1
 RewriteRule ^del([a-zA-Z0-9_-]*).html$ go.php?go=del&cd=$1
 RewriteRule ^(call|guide|rules|stats).html$ go.php?go=$1
 RewriteRule ^report[_-]([0-9]*).html$ go.php?go=report&id=$1
+RewriteRule ^report.html$ go.php?go=report
 RewriteRule ^(filecp|profile|fileuser|register|login|logout).html$ ucp.php?go=$1
 RewriteRule ^fileuser[_-]([0-9]+).html$ ucp.php?go=fileuser&id=$1
 RewriteRule ^fileuser[_-]([0-9]+)-([0-9]+).html$ ucp.php?go=fileuser&id=$1&page=$2
