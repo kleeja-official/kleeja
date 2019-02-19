@@ -128,12 +128,10 @@ if(
 
     is_array($plugin_run_result = Plugins::getInstance()->run('before_display_template_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-
-	//prevent indexing this page by bots
 	header('HTTP/1.0 401 Unauthorized');
 	if (ig('_ajax_') || ig('check_msgs')) 
 	{
-		echo_ajax(401, 'Unauthorized');
+		echo_ajax(401, $lang['HV_NOT_PRVLG_ACCESS']);
 	}
 	else
 	{

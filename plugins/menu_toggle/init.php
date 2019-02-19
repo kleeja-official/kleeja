@@ -125,13 +125,38 @@ $kleeja_plugin['menu_toggle']['uninstall'] = function ($plg_id) {
 # Plugin functions
 $kleeja_plugin['menu_toggle']['functions'] = array(
     //add to admin menu
+    'require_admin_page_end_a_configs' => function($args) {
+        global $olang;
+        $go_menu = $args['go_menu'];
+        $last_item = $go_menu['all'];
+        unset($go_menu['all']);
+        $go_menu['menus_toggle'] = array(
+            'name' => $olang['R_MENUS_TOGGLE'], 
+            'link' => './?cp=menus_toggle', 
+            'goto' => 'menus_toggle', 
+            'current' => g('cp') == 'menus_toggle'
+        );
+     
+        $go_menu['all'] = $last_item;
+
+        return compact('go_menu');
+    },
+
     'begin_admin_page' => function ($args) {
         $adm_extensions = $args['adm_extensions'];
-        $ext_icons = $args['ext_icons'];
-
+        $ext_expt = $args['ext_expt'];
         $adm_extensions[] = 'menus_toggle';
-        $ext_icons['menus_toggle'] = 'list';
-        return compact('adm_extensions', 'ext_icons');
+        $ext_expt[] = 'menus_toggle';
+        return compact('adm_extensions', 'ext_expt');
+    },
+
+    'endforeach_ext_admin_page' => function($args) {
+        if(g('cp') == 'menus_toggle') 
+        {
+            $adm_extensions_menu = $args['adm_extensions_menu'];
+            $adm_extensions_menu[1]['current'] = true;
+            return compact('adm_extensions_menu');
+        }
     },
 
     //add as admin page to reach when click on admin menu item we added.

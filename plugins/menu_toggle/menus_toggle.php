@@ -38,6 +38,10 @@ $top_menu_items = array(
 );
 
 
+$go_menu = array(
+    array('name' => $olang['R_MENUS_TOGGLE'], 'link' => './?cp=menus_toggle', 'goto' => 'menus_toggle', 'current' => g('cp') == 'menus_toggle')
+);
+
 if(ig('toggle'))
 {
     if (! kleeja_check_form_key_get('adm_menus_toggle', 3600)) 
