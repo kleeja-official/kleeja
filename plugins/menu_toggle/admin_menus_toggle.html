@@ -1,0 +1,83 @@
+<script>
+function toggleMenuItem(name, menu, hide, current) {
+		$.ajax({
+		url: '{action}&toggle=' + hide + '&_ajax_=1&menu=' + menu + '&name=' + name + '&{H_FORM_KEYS_GET}',
+        dataType: 'json',
+		cache: false})
+		.done(function (data) {
+			if(data.content){
+                $('#pageErrors>span').html(data.content);
+                $('#pageErrors').removeClass('d-none alert-danger').addClass('alert-info');
+
+			} else {
+				this.fail();
+			}
+		})
+		.fail(function(data) {
+            $('#pageErrors>span').html((data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}')));
+            $('#pageErrors').removeClass('d-none alert-info').addClass('alert-danger');
+                var itemRemoveClass = current == 1 ? 'cb-disable' : 'cb-enable';
+                var itemAddClass = current == 0 ? 'cb-disable' : 'cb-enable';
+                $('#' + menu + '_menu_'+name + ' .' + itemRemoveClass).addClass('selected');
+                $('#' + menu + '_menu_'+name + ' .' + itemAddClass).removeClass('selected');
+        });
+        
+        return false;
+}
+</script>
+
+<div class="alert alert-info alert-dismissible fixed-top m-3 p-0 text-center small  d-none" id="pageErrors">
+    <span>...</span>
+    <button type="button" class="close py-0" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true" class="small" style="cursor:pointer">&times;</span>
+    </button>
+</div>
+
+<!-- Breadcrumbs -->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item active">{olang.R_MENUS_TOGGLE}</li>
+</ol>
+
+<div class="alert alert-light">{olang.MENU_TOGGLE_EXP}</div>
+
+<div class="p-3">
+    
+<h4 class="mt-4">{olang.MENU_TOGGLE_TOP_MENU}</h4>
+
+<ul class="list-group">
+<LOOP NAME="top_menu_items">
+		<li class="list-group-item d-flex  justify-content-between">
+			<div class="col col-md-auto">
+				<h5>{{title}}</h5>
+			</div>
+			<div class="col col-md-auto">
+				<p class="field switch" id="top_menu_{{name}}">
+					<label onclick="toggleMenuItem('{{name}}', 'top', 0, {{hidden}})" class="cb-enable<IF LOOP="hidden == 0"> selected</IF>"><span>{olang.MENU_TOGGLE_SHOW}</span></label>
+					<label onclick="toggleMenuItem('{{name}}', 'top', 1, {{hidden}})" class="cb-disable<IF LOOP="hidden == 1"> selected</IF>"><span>{olang.MENU_TOGGLE_HIDE}</span></label>
+				</p>
+			</div>
+        </li>
+</LOOP>
+</ul>
+
+
+
+<h4 class="mt-5">{olang.MENU_TOGGLE_SIDE_MENU}</h4>
+
+<ul class="list-group">
+<LOOP NAME="side_menu_items">
+		<li class="list-group-item d-flex  justify-content-between">
+			<div class="col col-md-auto">
+				<h5>{{title}}</h5>
+			</div>
+			<div class="col col-md-auto">
+				<p class="field switch" id="top_menu_{{name}}">
+					<label onclick="toggleMenuItem('{{name}}', 'side', 0, {{hidden}})" class="cb-enable<IF LOOP="hidden == 0"> selected</IF>"><span>{olang.MENU_TOGGLE_SHOW}</span></label>
+					<label onclick="toggleMenuItem('{{name}}', 'side', 1, {{hidden}})" class="cb-disable<IF LOOP="hidden == 1"> selected</IF>"><span>{olang.MENU_TOGGLE_HIDE}</span></label>
+				</p>
+			</div>
+        </li>
+</LOOP>
+</ul>
+</div>
