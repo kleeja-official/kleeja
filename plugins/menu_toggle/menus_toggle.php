@@ -75,7 +75,7 @@ if(ig('toggle'))
         $menu = g('menu');
         $hide = g('toggle', 'int') == 1;
 
-        if($menu == 'top' && $is_founder_admin)
+        if($menu == 'admin' && ! $is_founder_admin)
         {
             header('HTTP/1.1 405 Method Not Allowed');
             $adminAjaxContent = $lang['HV_NOT_PRVLG_ACCESS'];
