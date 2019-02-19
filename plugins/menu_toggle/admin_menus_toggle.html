@@ -81,4 +81,26 @@ function toggleMenuItem(name, menu, hide, current) {
         </li>
 </LOOP>
 </ul>
+
+
+<h4 class="mt-5">{olang.MENU_TOGGLE_ADMIN_MENU}</h4>
+<UNLESS NAME="is_founder_admin">
+    <div class="alert alert-light">{olang.MENU_TOGGLE_ADMIN_MENU_EXP}</div>
+<ELSE>
+<ul class="list-group">
+<LOOP NAME="admin_menu_items">
+		<li class="list-group-item d-flex  justify-content-between">
+			<div class="col col-md-auto">
+				<h5>{{title}}</h5>
+			</div>
+			<div class="col col-md-auto">
+				<p class="field switch" id="top_menu_{{name}}">
+					<label onclick="toggleMenuItem('{{name}}', 'admin', 0, {{hidden}})" class="cb-enable<IF LOOP="hidden == 0"> selected</IF>"><span>{olang.MENU_TOGGLE_SHOW}</span></label>
+					<label onclick="toggleMenuItem('{{name}}', 'admin', 1, {{hidden}})" class="cb-disable<IF LOOP="hidden == 1"> selected</IF>"><span>{olang.MENU_TOGGLE_HIDE}</span></label>
+				</p>
+			</div>
+        </li>
+</LOOP>
+</ul>
+</UNLESS>
 </div>

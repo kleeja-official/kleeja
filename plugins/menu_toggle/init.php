@@ -69,6 +69,12 @@ $kleeja_plugin['menu_toggle']['install'] = function ($plg_id)
             'plg_id' => $plg_id,
             'type' => 'menu_toggle'
         ),
+        'menu_toggle_hidden_adminmenu_items' =>
+            array(
+            'value' => '',
+            'plg_id' => $plg_id,
+            'type' => 'menu_toggle'
+        ),
     ));
 
 
@@ -78,6 +84,8 @@ $kleeja_plugin['menu_toggle']['install'] = function ($plg_id)
                 'MENU_TOGGLE_EXP' => 'يمكنك التحكم بالعناصر التي تريد عرضها أو إخفائها من قوائم كليجا.',
                 'MENU_TOGGLE_TOP_MENU' => 'القائمة العلوية',
                 'MENU_TOGGLE_SIDE_MENU' => 'القائمة الجانبية',
+                'MENU_TOGGLE_ADMIN_MENU' => 'قائمة لوحة التحكم',
+                'MENU_TOGGLE_ADMIN_MENU_EXP' => 'يجب أن تكون عضو في مجموعة المسؤولين، وتملك صلاحية مؤسس لتستطيع التحكم بقائمة لوحة التحكم.',
                 'MENU_TOGGLE_HIDE' => 'إخفاء',
                 'MENU_TOGGLE_SHOW' => 'عرض',
 
@@ -90,6 +98,8 @@ $kleeja_plugin['menu_toggle']['install'] = function ($plg_id)
             'MENU_TOGGLE_EXP' => 'You can control which items you want to hide/show of Kleeja menus.',
             'MENU_TOGGLE_TOP_MENU' => 'Top Menu',
             'MENU_TOGGLE_SIDE_MENU' => 'Side Menu',
+            'MENU_TOGGLE_ADMIN_MENU' => 'Admin Panel Menu',
+            'MENU_TOGGLE_ADMIN_MENU_EXP' => 'You have to be a member in Administrators group and have the founder permissions to be able to control Admin panel menu items.',
             'MENU_TOGGLE_HIDE' => 'hide',
             'MENU_TOGGLE_SHOW' => 'show',
    ),
@@ -118,7 +128,11 @@ $kleeja_plugin['menu_toggle']['uninstall'] = function ($plg_id) {
     delete_olang(null, null, $plg_id);
 
     //delete options
-    delete_config(array('menu_toggle_hidden_topmenu_items', 'menu_toggle_hidden_sidemenu_items'));
+    delete_config(array(
+        'menu_toggle_hidden_topmenu_items', 
+        'menu_toggle_hidden_sidemenu_items',
+        'menu_toggle_hidden_adminmenu_items'
+        ));
 };
 
 
@@ -143,10 +157,15 @@ $kleeja_plugin['menu_toggle']['functions'] = array(
     },
 
     'begin_admin_page' => function ($args) {
+        global $config;
         $adm_extensions = $args['adm_extensions'];
-        $ext_expt = $args['ext_expt'];
         $adm_extensions[] = 'menus_toggle';
-        $ext_expt[] = 'menus_toggle';
+
+        $hidden_admin_menu_items = explode(':', $config['menu_toggle_hidden_adminmenu_items'] . ':menus_toggle');
+        $hidden_admin_menu_items = array_filter($hidden_admin_menu_items);
+
+        $ext_expt = array_merge($args['ext_expt'], $hidden_admin_menu_items);
+
         return compact('adm_extensions', 'ext_expt');
     },
 

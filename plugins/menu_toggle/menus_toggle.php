@@ -18,6 +18,8 @@ $action = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php');
 
 $hidden_side_menu_items = explode(':', $config['menu_toggle_hidden_sidemenu_items']);
 
+$is_founder_admin = intval($userinfo['founder']) === 1;
+
 $side_menu_items = array(
     array('name' => 'profile', 'title' => $lang['PROFILE'], 'hidden' => (int) in_array('profile', $hidden_side_menu_items)),
     array('name' => 'fileuser', 'title' => $lang['YOUR_FILEUSER'], 'hidden' => (int) in_array('fileuser', $hidden_side_menu_items)),
@@ -37,9 +39,27 @@ $top_menu_items = array(
     array('name' => 'call', 'title' => $lang['CALL'], 'hidden' => (int) in_array('call', $hidden_top_menu_items)),
 );
 
+$hidden_admin_menu_items = explode(':', $config['menu_toggle_hidden_adminmenu_items']);
+
+$admin_menu_items = array();
+foreach($adm_extensions as $item)
+{
+    $m = isset($item[1]) && $item[1] == '_' ? substr($item, 2) : $item;
+
+    if(in_array($m, array('start', 'lgoutcp', 'exts', 'configs')))
+    {
+        continue;
+    }
+
+    $admin_menu_items[] = array(
+        'name' => $item,
+        'title' => !empty($lang['R_' . strtoupper($m)]) ? $lang['R_' . strtoupper($m)] : (!empty($olang['R_' . strtoupper($m)]) ? $olang['R_' . strtoupper($m)] : strtoupper($m)),
+        'hidden' => (int) in_array($item, $hidden_admin_menu_items)
+    );
+}
 
 $go_menu = array(
-    array('name' => $olang['R_MENUS_TOGGLE'], 'link' => './?cp=menus_toggle', 'goto' => 'menus_toggle', 'current' => g('cp') == 'menus_toggle')
+   'menus_toggle' => array('name' => $olang['R_MENUS_TOGGLE'], 'link' => './?cp=menus_toggle', 'goto' => 'menus_toggle', 'current' => g('cp') == 'menus_toggle')
 );
 
 if(ig('toggle'))
@@ -55,9 +75,17 @@ if(ig('toggle'))
         $menu = g('menu');
         $hide = g('toggle', 'int') == 1;
 
-        toggleMenuItem($name, $menu, $hide);
+        if($menu == 'top' && $is_founder_admin)
+        {
+            header('HTTP/1.1 405 Method Not Allowed');
+            $adminAjaxContent = $lang['HV_NOT_PRVLG_ACCESS'];
+        }
+        else
+        {
+            toggleMenuItem($name, $menu, $hide);
 
-        $adminAjaxContent = $lang['CONFIGS_UPDATED'];
+            $adminAjaxContent = $lang['CONFIGS_UPDATED'];
+        }
     }
 }
 
