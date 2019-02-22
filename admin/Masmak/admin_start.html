@@ -1,45 +1,110 @@
 <!-- general -->
 <IF NAME="current_smt == general">
 
-	<!-- hello message -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item active">{usernamelang}</li>
-	</ol>
+<script>
+function toggleStartBox(name, hide, current) {
+	$.ajax({
+		url: './?cp=r_repair&case=toggle_start_box&toggle=' + hide + '&_ajax_=1&name=' + name + '&{GET_FORM_KEY}',
+        dataType: 'json',
+		cache: false})
+		.done(function (data) {
+			if(data.content){
+                $('#boxesErrors>span').html(data.content);
+                $('#boxesErrors').removeClass('d-none alert-danger').addClass('alert-info');
+				$('#'+name).css('display', hide ? 'none' : 'block');
+			} else {
+				this.fail();
+			}
+		})
+		.fail(function(data) {
+            $('#boxesErrors>span').html((data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}')));
+            $('#boxesErrors').removeClass('d-none alert-info').addClass('alert-danger');
+                var itemRemoveClass = current == 1 ? 'cb-disable' : 'cb-enable';
+                var itemAddClass = current == 0 ? 'cb-disable' : 'cb-enable';
+                $('#start_box_'+name + ' .' + itemRemoveClass).addClass('selected');
+                $('#start_box_'+name + ' .' + itemAddClass).removeClass('selected');
+        });
+        
+        return false;
+}
+</script>
 
-
-	<IF NAME="ADM_NOTIFICATIONS">
-	<!-- notifications -->
-		<div class="card mb-3">
-			<div class="card-header">
-				<i class="fa fa-bell-o"></i> {lang.NOTE}
-			</div>
-			<div class="list-group list-group-flush small">
-				<LOOP NAME="ADM_NOTIFICATIONS">
-				<div  class="list-group-item list-group-item-action">
-					<div class="media">
-						<IF LOOP="msg_type==error">
-							<span class="d-flex mr-3 rounded-circle fa fa fa-warning" style="font-size: 30px;"></span>
-						<ELSEIF LOOP="msg_type==info">
-							<span class="d-flex mr-3 rounded-circle fa fa-info-circle" style="font-size: 30px;"></span>
-						</IF>
-						<div class="media-body">
-							<strong>{{title}}</strong> <br>
-							{{msg}}
-							<!--<div class="text-muted smaller">Today at 5:43 PM - 5m ago</div>-->
+<!-- hello message -->
+<ol class="breadcrumb d-flex">
+	<li class="breadcrumb-item active">{usernamelang}</li>
+	<li class="ml-auto p-0">
+		<button type="button" class="btn btn-primary btn-sm px-1 py-0" data-toggle="modal" data-target="#customizationModal" title="{lang.CUSTOMIZATION}">
+			<i class="fa fa-fw fa-gears"></i>
+		</button>
+		<div class="modal" tabindex="-1" role="dialog" id="customizationModal">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">{lang.CUSTOMIZATION} - {lang.R_CPINDEX}</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-info alert-dismissible m-3 p-0 text-center small  d-none" id="boxesErrors">
+							<span>...</span>
+							<button type="button" class="close py-0" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true" class="small" style="cursor:pointer">&times;</span>
+							</button>
 						</div>
+						<LOOP NAME="startBoxes">
+						<div class="d-flex justify-content-between">
+							<div>{{title}}</div>
+							<div class="field switch" id="start_box_{%key%}">
+								<label onclick="toggleStartBox('{%key%}', 0, {{hidden}})" class="cb-enable<IF LOOP="hidden==0"> selected</IF>"><span>{lang.SHOW}</span></label>
+								<label onclick="toggleStartBox('{%key%}', 1, {{hidden}})" class="cb-disable<IF LOOP="hidden==1"> selected</IF>"><span>{lang.HIDE}</span></label>
+							</div>
+						</div>
+						</LOOP>
 					</div>
 				</div>
-				</LOOP>
 			</div>
 		</div>
-	<!-- end notifications -->
-	 </IF>
+	</li>
+</ol>
 
-	{extra_adm_start_html}
 
-	<!-- stats boxes -->
-	<!-- Icon Cards -->
-	<div class="row">
+<IF NAME="ADM_NOTIFICATIONS">
+<!-- notifications -->
+<div class="card mb-3" id="notifications" style="display:(startBoxes.notifications.hidden?none:)">
+		<div class="card-header">
+			<i class="fa fa-bell-o"></i> {lang.NOTIFICATIONS}
+		</div>
+		<div class="list-group list-group-flush small">
+			<LOOP NAME="ADM_NOTIFICATIONS">
+			<div  class="list-group-item list-group-item-action">
+				<div class="media">
+					<IF LOOP="msg_type==error">
+						<span class="d-flex mr-3 rounded-circle fa fa fa-warning" style="font-size: 30px;"></span>
+					<ELSEIF LOOP="msg_type==info">
+						<span class="d-flex mr-3 rounded-circle fa fa-info-circle" style="font-size: 30px;"></span>
+					</IF>
+					<div class="media-body">
+						<strong>{{title}}</strong> <br>
+						{{msg}}
+						<!--<div class="text-muted smaller">Today at 5:43 PM - 5m ago</div>-->
+					</div>
+				</div>
+			</div>
+			</LOOP>
+		</div>
+	</div>
+<!-- end notifications -->
+</IF>
+
+{extra_adm_start_html}
+
+<!-- stats boxes -->
+<div class="card mb-3" id="statsBoxes" style="display:(startBoxes.statsBoxes.hidden?none:)">
+	<div class="card-header">
+		<i class="fa fa-bar-chart"></i> {lang.STATS_BOXES}
+	</div>
+	<div class="row p-1">
 		<div class="col-xl-3 col-sm-6 mb-3">
 			<div class="card text-white bg-primary o-hidden h-100">
 				<div class="card-body">
@@ -81,7 +146,6 @@
 			</div>
 		</div>
 
-
 		<div class="col-xl-3 col-sm-6 mb-3">
 			<div class="card text-white bg-danger o-hidden h-100">
 				<div class="card-body">
@@ -104,8 +168,6 @@
                 </a>
 			</div>
 		</div>
-
-
 
 		<div class="col-xl-3 col-sm-6 mb-3">
 			<div class="card text-white bg-info o-hidden h-100">
@@ -132,20 +194,17 @@
 			</div>
 		</div>
 	</div>
-	<!-- end stats boxes -->
+</div>
+<!-- end stats boxes -->
 
 
-	<hr>
-
-
-	<!-- last visit actions -->
-	<IF NAME="last_visit">
-	<div class="card">
+<!-- last visit actions -->
+<IF NAME="last_visit">
+	<div class="card mb-3" id="lastVisitActions"  style="display:(startBoxes.lastVisitActions.hidden?none:)">
 		<div class="card-header">
 			{lang.LAST_VISIT} ({last_visit})
 		</div>
 		<div class="card-body">
-
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="card">
@@ -191,97 +250,89 @@
 
 		</div>
 	</div>
-	</IF>
-	<!-- end last visit actions -->
+</IF>
+<!-- end last visit actions -->
 
-	<hr>
-
-	<!-- stats_chart -->
-	<IF NAME="stats_chart">
-
-		<div class="card mb-3">
-			<div class="card-header">
-				<i class="fa fa-area-chart"></i> {lang.STATS}
-			</div>
-			<div class="card-body">
-				<div id="chart_stats"></div>
-			</div>
-		</div>
-
-		<script type="text/javascript">
-            {stats_chart}
-		</script>
-
-	</IF>
-	<!-- end stats_chart -->
-
-
-
-	<br>
-
-	<!-- hurry hurry actions -->
-	<div class="card">
-			<div class="card-header">
-				{lang.HURRY_HURRY}
-			</div>
-			<ul class="list-group list-group-flush">
-				<li class="list-group-item d-flex justify-content-between">
-					{lang.STYLE}
-					<div>
-						<select name="style_change" id="style_change" class="custom-select">
-							{hurry_styles_list}
-						</select>
-						<button class="btn btn-outline-primary" onclick="javascript:get_kleeja_link('{hurry_style_link}' + $('#style_change').val()); return false;"><span>{lang.CHANGE}</span></button>
-					</div>
-				</li>
-				<li class="list-group-item d-lg-flex justify-content-between">
-					{lang.LANGUAGE}
-					<div>
-						<select	name="lang_change" class="custom-select" id="lang_change">
-							{hurry_langs_list}
-						</select>
-						&nbsp; {lang.FOR} &nbsp;
-						<select	 name="groups_list" class="custom-select" id="groups_list">
-							{hurry_groups_list}
-						</select>
-						<button class="btn btn-outline-primary mt-2" onclick="javascript:get_kleeja_link('{hurry_lang_link}' + $('#lang_change').val() + '&qg=' + $('#groups_list').val()); return false;"><span>{lang.CHANGE}</span></button>
-					</div>
-
-				</li>
-				<li class="list-group-item d-lg-flex justify-content-between">
-					{lang.R_REPAIR}
-					<button class="btn btn-outline-primary" onclick="javascript:get_kleeja_link('{del_cache_link}'); return false;"><span>{lang.DEL_CACHE}</span></button>
-				</li>
-			</ul>
-
+<!-- stats_chart -->
+<IF NAME="stats_chart">
+<div class="card mb-3" id="statsChart" style="display:(startBoxes.statsChart.hidden?none:)">
+	<div class="card-header">
+		<i class="fa fa-area-chart"></i> {lang.STATS}
 	</div>
-	<!-- hurry hurry actions -->
-
-	<hr>
-
-	<!-- another stats -->
-	<div class="card">
-		<ul class="list-group list-group-flush">
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.LSTDELST}
-				<span>{last_del_fles}</span>
-			</li>
-			<li class="list-group-item">
-				{lang.AFILES_SIZE_SPACE}
-                <br>
-				<div class="progress" style="width: 100%">
-					<div class="progress-bar" role="progressbar" aria-valuenow="{per1}" aria-valuemin="0" aria-valuemax="100">{per1}%</div>
-				</div>
-			</li>
-
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.KLEEJA_VERSION}
-				<span>{kleeja_version}</span>
-			</li>
-
-		</ul>
+	<div class="card-body">
+		<div id="chart_stats"></div>
 	</div>
-	<!-- end another stats -->
+</div>
+
+<script type="text/javascript">
+	{stats_chart}
+</script>
+</IF>
+<!-- end stats_chart -->
+
+
+<!-- hurry hurry actions -->
+<div class="card mb-3" id="hurryActions" style="display:(startBoxes.hurryActions.hidden?none:)">
+	<div class="card-header">
+		{lang.HURRY_HURRY}
+	</div>
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item d-flex justify-content-between">
+			{lang.STYLE}
+			<div>
+				<select name="style_change" id="style_change" class="custom-select">
+					{hurry_styles_list}
+				</select>
+				<button class="btn btn-outline-primary" onclick="javascript:get_kleeja_link('{hurry_style_link}' + $('#style_change').val()); return false;"><span>{lang.CHANGE}</span></button>
+			</div>
+		</li>
+		<li class="list-group-item d-lg-flex justify-content-between">
+			{lang.LANGUAGE}
+			<div>
+				<select	name="lang_change" class="custom-select" id="lang_change">
+					{hurry_langs_list}
+				</select>
+				&nbsp; {lang.FOR} &nbsp;
+				<select	 name="groups_list" class="custom-select" id="groups_list">
+					{hurry_groups_list}
+				</select>
+				<button class="btn btn-outline-primary mt-2" onclick="javascript:get_kleeja_link('{hurry_lang_link}' + $('#lang_change').val() + '&qg=' + $('#groups_list').val()); return false;"><span>{lang.CHANGE}</span></button>
+			</div>
+
+		</li>
+		<li class="list-group-item d-lg-flex justify-content-between">
+			{lang.R_REPAIR}
+			<button class="btn btn-outline-primary" onclick="javascript:get_kleeja_link('{del_cache_link}'); return false;"><span>{lang.DEL_CACHE}</span></button>
+		</li>
+	</ul>
+</div>
+<!-- hurry hurry actions -->
+
+
+<!-- extra stats -->
+<div class="card" id="extraStats" style="display:(startBoxes.extraStats.hidden?none:)">
+	<div class="card-header">{lang.OTHER_INFO}</div>
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item d-flex justify-content-between">
+			{lang.LSTDELST}
+			<span>{last_del_fles}</span>
+		</li>
+		<li class="list-group-item">
+			{lang.AFILES_SIZE_SPACE}
+			<br>
+			<div class="progress" style="width: 100%">
+				<div class="progress-bar" role="progressbar" aria-valuenow="{per1}" aria-valuemin="0" aria-valuemax="100">{per1}%</div>
+			</div>
+		</li>
+
+		<li class="list-group-item d-flex justify-content-between">
+			{lang.KLEEJA_VERSION}
+			<span>{kleeja_version}</span>
+		</li>
+
+	</ul>
+</div>
+<!-- end extra stats -->
 
 
 

@@ -284,8 +284,6 @@ return array(
 	'EMAIL_CHANGE_REQ_PASS' => 'In order to change your email address, It\'s required to type your current password.',
     'DRAG_AND_DROP'     => 'Drop a file inside&hellip;',
     'OR_MANUAL_SELECT'  => 'Or click here to <em>Select</em> a file manually..',
-
-	//last line of this file ...					 
-	'S_TRANSLATED_BY' 			=> 'Translated By <a href="http://kleeja.com" target="_blank">Kleeja Team</a>',
-	
+	//3.0.3
+	'NOTIFICATIONS' => 'Notifications',
 );

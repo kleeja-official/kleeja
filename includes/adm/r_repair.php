@@ -185,6 +185,42 @@ $stylee = 'admin_info';
 
 break;
 
+//toggle admin start boxes
+case 'toggle_start_box':
+
+	if(! kleeja_check_form_key_get('adm_start_actions', 3600))
+	{
+		header('HTTP/1.1 405 Method Not Allowed');
+		$adminAjaxContent = $lang['INVALID_FORM_KEY'];
+	}
+	else
+	{
+		$items = explode(':', $config['hidden_start_boxes']);
+		$items = array_filter($items);
+
+		$name = g('name');
+		$hide = g('toggle', 'int') == 1;
+	
+		if(in_array($name, $items) && ! $hide)
+		{
+			$new_items = array_diff($items, [$name]);
+		}
+		else if($hide)
+		{
+			$new_items = $items;
+			$new_items[] = $name;
+		}
+
+		if($new_items != $items)
+		{
+			update_config('hidden_start_boxes', implode(':', $new_items));
+		}
+	
+		$adminAjaxContent = $lang['CONFIGS_UPDATED'];
+	}
+	
+break;
+
 endswitch;
 
 

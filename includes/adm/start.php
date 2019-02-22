@@ -39,9 +39,16 @@ $s_google_num		= $stat_google_num;
 $s_last_bing		= $stat_last_bing == 0 ? '[ ? ]' : kleeja_date($stat_last_bing);
 $s_bing_num			= $stat_bing_num;
 $usernamelang		= sprintf($lang['KLEEJA_CP_W'], $username);
-$current_year       = date('Y');
-$progress_session_cleanup 	= function_exists('ini_get') ?  @ini_get('session.upload_progress.cleanup') : @get_cfg_var('session.upload_progress.cleanup');
-$progress_session_enabled 	= function_exists('ini_get') ?  @ini_get('session.upload_progress.enabled') : @get_cfg_var('session.upload_progress.enabled');
+$current_year		= date('Y');
+
+$startBoxes = array(
+	'notifications' => array('title' => $lang['NOTIFICATIONS'], 'hidden' => (int) adm_is_hidden_start_boxe('notifications')),
+	'statsBoxes' => array('title' => $lang['STATS_BOXES'], 'hidden' => (int) adm_is_hidden_start_boxe('statsBoxes')),
+	'lastVisitActions' => array('title' => $lang['LAST_VISIT'], 'hidden' => (int) adm_is_hidden_start_boxe('lastVisitActions')),
+	'statsChart' => array('title' => $lang['STATS'], 'hidden' => (int) adm_is_hidden_start_boxe('statsChart')),
+	'hurryActions' => array('title' => $lang['HURRY_HURRY'], 'hidden' => (int) adm_is_hidden_start_boxe('hurryActions')),
+	'extraStats' => array('title' => $lang['OTHER_INFO'], 'hidden' => (int) adm_is_hidden_start_boxe('extraStats')),
+);
 
 $extra_adm_start_html = '';
 
@@ -57,7 +64,7 @@ $kleeja_version	 = '<a href="' . basename(ADMIN_PATH) . '?cp=p_check_update" onc
 $ADM_NOTIFICATIONS = array();
 
 //useing IE6 ! and he is admin ?  omg !
-$u_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) strtolower($_SERVER['HTTP_USER_AGENT'])) : (function_exists('getenv') ? getenv('HTTP_USER_AGENT') : '');
+$u_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? htmlspecialchars((string) strtolower($_SERVER['HTTP_USER_AGENT'])) : (function_exists('getenv') ? getenv('HTTP_USER_AGENT') : '');
 if(is_browser('ie6, ie8, ie7'))
 {
 	$ADM_NOTIFICATIONS['IE6']  = array('id' => 'IE6', 'msg_type'=> 'error', 'title'=> $lang['NOTE'], 'msg'=> $lang['ADMIN_USING_IE6']);
@@ -85,19 +92,8 @@ if(version_compare(strtolower(KLEEJA_VERSION), strtolower($v['version_number']),
 									'msg'=> sprintf($lang['UPDATE_NOW_S'] , KLEEJA_VERSION, $v['version_number']) . '<br />' . '<a href="http://www.kleeja.com/">www.kleeja.com</a>'
 							);
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('admin_update_now', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+	is_array($plugin_run_result = Plugins::getInstance()->run('admin_update_now', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 }
-
-
-//for progress bar
-//if(!$progress_session_enabled)
-//{
-//    $ADM_NOTIFICATIONS[]  = array(
-//        'id' => 'progress_session_enabled',
-//        'msg_type'=> 'info', 'title'=> ('advice for php.ini'),
-//        'msg'=> sprintf(('Kleeja developers advise you to change the option "%1$s" to "%2$s" in PHP.INI on your server.') , 'session.upload_progress.enabled', 'On')
-//    );
-//}
 
 
 is_array($plugin_run_result = Plugins::getInstance()->run('default_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -196,11 +192,11 @@ if(function_exists('fileperms') && !defined('KLEEJA_NO_CONFIG_CHECK') && strtoup
 //no htaccess
 if(!file_exists(PATH . $config['foldername'] . '/.htaccess'))
 {
-	$ADM_NOTIFICATIONS['htaccess_u']  = array('id' => 'htaccess_u', 'msg_type'=> 'error', 'title'=> $lang['WARN'], 'msg'=> sprintf($lang['NO_HTACCESS_DIR_UP'], $config['foldername']));
+	$ADM_NOTIFICATIONS['htaccess_u'] = array('id' => 'htaccess_u', 'msg_type'=> 'error', 'title'=> $lang['WARN'], 'msg'=> sprintf($lang['NO_HTACCESS_DIR_UP'], $config['foldername']));
 }
 if(!file_exists(PATH . $config['foldername'] . '/thumbs/.htaccess'))
 {
-	$ADM_NOTIFICATIONS['htaccess_t']  = array('id' => 'htaccess_t', 'msg_type'=> 'error', 'title'=> $lang['WARN'], 'msg'=> sprintf($lang['NO_HTACCESS_DIR_UP_THUMB'], $config['foldername'] . '/thumbs'));
+	$ADM_NOTIFICATIONS['htaccess_t'] = array('id' => 'htaccess_t', 'msg_type'=> 'error', 'title'=> $lang['WARN'], 'msg'=> sprintf($lang['NO_HTACCESS_DIR_UP_THUMB'], $config['foldername'] . '/thumbs'));
 }
 
 
@@ -229,7 +225,6 @@ $go_menu = array(
 				'other' => array('name'=>$lang['OTHER_INFO'], 'link'=> basename(ADMIN_PATH) . '?cp=start&amp;smt=other', 'goto'=>'other', 'current'=> $current_smt == 'other'),
 				'team' => array('name'=>$lang['KLEEJA_TEAM'], 'link'=> basename(ADMIN_PATH) . '?cp=start&amp;smt=team', 'goto'=>'team', 'current'=> $current_smt == 'team'),
 	);
-
 
 
 # is there a last visit of images and files ?
@@ -322,17 +317,21 @@ if($cf_num > 3)
 		$t_files = $prv_files - $s_files;
 		$t_imgs = $prev_imgs - $s_imgs;
 
-		if(date('d-n-Y') == $prev_date) {
+		if(date('d-n-Y') == $prev_date) 
+		{
 			$day = $lang['TODAY'] . ' ~ ' . $lang['NOW'];
-			
-			if($todayIsGone) {
+
+			if($todayIsGone) 
+			{
 				continue;
 			}
 
 			$todayIsGone = true;
-		 } else {
-            $day = $prev_date;
-         }
+		 }
+		 else
+		 {
+			$day = $prev_date;
+		}
 
 		$stats_chart .= ($comma ? ',': '') . "[[$t_files,$t_imgs],'" . ($cf_num > 6 ? str_replace(date('-Y'), '', $day) : $day) . "']";
 

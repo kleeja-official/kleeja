@@ -260,5 +260,10 @@ return array(
     'NO_ZIP_ARCHIVE'            => 'ZipArchive is not installed on your server, it\'s required.',
     'EXTRACT_ZIP_FAILED'        => 'We encounter a problem while extracting this archive file, make sure it\'s a valid zip file, and that "%s" folder is writable',
     'NO_PROBLEM_AFTER_ZIP'      => 'The file has been extracted successfully and it\'s ready to be enabled',
-    'SESSION_ENDED'      		=> 'Session has ended, do you want to login again?',
-    );
+	'SESSION_ENDED'      		=> 'Session has ended, do you want to login again?',
+	//3.0.3
+	'CUSTOMIZATION' => 'Customization',
+	'SHOW' => 'Show',
+	'HIDE' => 'Hide',
+	'STATS_BOXES' => 'Stats Boxes',
+);

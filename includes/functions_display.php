@@ -564,11 +564,11 @@ function kleeja_get_link ($pid, $extra = array())
 function get_up_tpl_box($box_name, $extra = array())
 {
 	global $THIS_STYLE_PATH_ABS, $config;
-	static $boxes = false;
+	static $boxes;
 
 	//prevent loads
 	//also this must be cached in future
-	if($boxes !== true)
+	if(empty($boxes))
 	{
 		$tpl_path = $THIS_STYLE_PATH_ABS . 'up_boxes.html';
 
@@ -590,7 +590,7 @@ function get_up_tpl_box($box_name, $extra = array())
 		$tpl_code = file_get_contents($tpl_path);
 		$tpl_code = preg_replace("/\n[\n\r\s\t]*/", '', $tpl_code);//remove extra spaces
 		$matches = preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (?:.*?) -->#', $tpl_code, $match);
-		
+
 		$boxes = array();
 		for ($i = 0; $i < $matches; $i++)
 		{

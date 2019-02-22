@@ -135,7 +135,8 @@ function update_filter($id_or_uid, $value, $filter_type = 'general', $filter_sta
     is_array($plugin_run_result = Plugins::getInstance()->run('update_filter_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $SQL->build($update_query);
-    if ($SQL->affected()) {
+	if ($SQL->affected()) 
+	{
         return true;
     }
 
@@ -159,7 +160,8 @@ function get_filter($item, $filter_type = false, $just_value = false, $get_by = 
 
     $valid_filter_columns = array('filter_id', 'filter_uid', 'filter_user', 'filter_status');
 
-    if (!in_array($get_by, $valid_filter_columns)) {
+	if (!in_array($get_by, $valid_filter_columns)) 
+	{
         $get_by = 'filter_uid';
     }
 
@@ -178,7 +180,8 @@ function get_filter($item, $filter_type = false, $just_value = false, $get_by = 
     $v = $SQL->fetch($result);
 
     $SQL->free($result);
-    if ($just_value) {
+	if ($just_value) 
+	{
         return $v['filter_value'];
     }
 
@@ -328,7 +331,7 @@ function sync_total_files($files = true, $start = false)
 /**
  * get the *right* now number of the given stat fro stats table
  * @param string $name Stat name
- * @return
+ * @return int
  */
 function get_actual_stats($name)
 {
@@ -347,4 +350,34 @@ function get_actual_stats($name)
 	$SQL->freeresult($result);
 
 	return $v[$name];
+}
+
+/**
+ * check wether a start box is hidden or not  
+ * @param string $name box name
+ * @return bool
+ */
+function adm_is_hidden_start_boxe($name)
+{
+	global $config;
+
+	if(! isset($config['hidden_start_boxes']))
+	{
+		add_config('hidden_start_boxes', '');
+
+		return false;
+	}
+
+	static $boxes;
+	
+	if(empty($boxes))
+	{
+		$boxes = explode(':', $config['hidden_start_boxes']);
+		$boxes = array_filter($boxes);
+	}
+
+
+	is_array($plugin_run_result = Plugins::getInstance()->run('adm_start_boxes_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+	return in_array($name, $boxes);
 }
