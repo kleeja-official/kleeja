@@ -357,7 +357,7 @@ function get_actual_stats($name)
  * @param string $name box name
  * @return bool
  */
-function adm_is_hidden_start_boxe($name)
+function adm_is_start_box_hidden($name)
 {
 	global $config;
 

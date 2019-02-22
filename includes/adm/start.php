@@ -42,12 +42,12 @@ $usernamelang		= sprintf($lang['KLEEJA_CP_W'], $username);
 $current_year		= date('Y');
 
 $startBoxes = array(
-	'notifications' => array('title' => $lang['NOTIFICATIONS'], 'hidden' => (int) adm_is_hidden_start_boxe('notifications')),
-	'statsBoxes' => array('title' => $lang['STATS_BOXES'], 'hidden' => (int) adm_is_hidden_start_boxe('statsBoxes')),
-	'lastVisitActions' => array('title' => $lang['LAST_VISIT'], 'hidden' => (int) adm_is_hidden_start_boxe('lastVisitActions')),
-	'statsChart' => array('title' => $lang['STATS'], 'hidden' => (int) adm_is_hidden_start_boxe('statsChart')),
-	'hurryActions' => array('title' => $lang['HURRY_HURRY'], 'hidden' => (int) adm_is_hidden_start_boxe('hurryActions')),
-	'extraStats' => array('title' => $lang['OTHER_INFO'], 'hidden' => (int) adm_is_hidden_start_boxe('extraStats')),
+	'notifications' => array('title' => $lang['NOTIFICATIONS'], 'hidden' => (int) adm_is_start_box_hidden('notifications')),
+	'statsBoxes' => array('title' => $lang['STATS_BOXES'], 'hidden' => (int) adm_is_start_box_hidden('statsBoxes')),
+	'lastVisitActions' => array('title' => $lang['LAST_VISIT'], 'hidden' => (int) adm_is_start_box_hidden('lastVisitActions')),
+	'statsChart' => array('title' => $lang['STATS'], 'hidden' => (int) adm_is_start_box_hidden('statsChart')),
+	'hurryActions' => array('title' => $lang['HURRY_HURRY'], 'hidden' => (int) adm_is_start_box_hidden('hurryActions')),
+	'extraStats' => array('title' => $lang['OTHER_INFO'], 'hidden' => (int) adm_is_start_box_hidden('extraStats')),
 );
 
 $extra_adm_start_html = '';
