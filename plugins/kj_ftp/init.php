@@ -232,9 +232,8 @@ $kleeja_plugin['kj_ftp']['functions'] = array(
                 $folder = explode(':', $afterFTP[1], 2);
                 $uniqueName = $folder[0];
                 $realFolder = $folder[1];
-
-            }
-
+                
+                
             if(empty($uniqueName)){
                 $return_link = getKleejaFtpInstance()->getLink('') . $realFolder;
             }else {
@@ -242,6 +241,10 @@ $kleeja_plugin['kj_ftp']['functions'] = array(
             }
 
             return compact('return_link');
+
+            }
+
+            
         }
     },
 
