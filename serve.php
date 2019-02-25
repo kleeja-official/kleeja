@@ -77,3 +77,7 @@ foreach($rules as $rule_regex => $rule_result)
         exit;
     }
 }
+
+#fallback
+define('SERVE_FALLBACK', true);
+include 'go.php';

@@ -1,25 +1,10 @@
 #start Kleeja rules
 <IfModule mod_rewrite.c>
-RewriteEngine on
-#RewriteBase /
-RewriteRule ^index.html$ index.php
-RewriteRule ^download([0-9]*).html$ do.php?id=$1
-RewriteRule ^downloadf-(.*)-([a-zA-Z0-9_-]*).html$ do.php?filename=$1&x=$2
-RewriteRule ^down-([0-9]*).html$ do.php?down=$1
-RewriteRule ^downf-(.*)-([a-zA-Z0-9_-]*).html$ do.php?downf=$1&x=$2
-RewriteRule ^downex-([0-9]*).html$ do.php?down=$1
-RewriteRule ^downexf-(.*)-([a-zA-Z0-9_-]*).html$ do.php?downexf=$1&x=$2
-RewriteRule ^thumb([0-9]*).html$ do.php?thmb=$1
-RewriteRule ^imagef-(.*)-([a-zA-Z0-9_-]*).html$ do.php?imgf=$1&x=$2
-RewriteRule ^thumbf-(.*)-([a-zA-Z0-9_-]*).html$ do.php?thmbf=$1&x=$2
-RewriteRule ^image([0-9]*).html$ do.php?img=$1
-RewriteRule ^del([a-zA-Z0-9_-]*).html$ go.php?go=del&cd=$1
-RewriteRule ^(call|guide|rules|stats|report).html$ go.php?go=$1
-RewriteRule ^report[_-]([0-9]*).html$ go.php?go=report&id=$1
-RewriteRule ^(filecp|profile|fileuser|register|login|logout).html$ ucp.php?go=$1
-RewriteRule ^fileuser[_-]([0-9]+).html$ ucp.php?go=fileuser&id=$1
-RewriteRule ^fileuser[_-]([0-9]+)-([0-9]+).html$ ucp.php?go=fileuser&id=$1&page=$2
-#for future plugins
-RewriteRule ^go-(.*).html$ go.php?go=$1
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /serve.php [L]
 </IfModule>
-#end Kleeja rules
+#end Kleeja rules 
