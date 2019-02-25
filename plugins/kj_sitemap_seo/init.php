@@ -109,8 +109,8 @@ $kleeja_plugin['kj_sitemap_seo']['install'] = function ($plg_id) {
 
 
 
-    if(function_exists('add_to_htaccess')){
-        add_to_htaccess('RewriteRule ^sitemap\.xml$ /go.php?go=sitemap [L]', 'kj_sitemap_seo');
+    if(function_exists('add_to_serve_rules')){
+        add_to_serve_rules("'^sitemap\.xml$' => ['file' => 'go.php', 'args' => 'go=sitemap'],", 'kj_sitemap_seo');
     }
 
 };
@@ -131,7 +131,7 @@ $kleeja_plugin['kj_sitemap_seo']['update'] = function ($old_version, $new_versio
 
 
 # Plugin Uninstall, function to be called at uninstalling
-$kleeja_plugin['kj_sitemap_seo']['uninstall'] = function () {
+$kleeja_plugin['kj_sitemap_seo']['uninstall'] = function ($plg_id) {
     //delete options
     delete_config(array(
         'kj_sitemap_seo_sitemap_ping_enable',
@@ -140,15 +140,12 @@ $kleeja_plugin['kj_sitemap_seo']['uninstall'] = function () {
 
 
     //delete language variables
-    $olangs = array('KJ_SITEMAP_SEO_SITEMAP_PING_ENABLE');
-    foreach (array('ar', 'en') as $language) {
-        delete_olang($olangs, $language);
-    }
+    delete_olang(null, null, $plg_id);
 
 
     //remove rules
-    if(function_exists('remove_from_htaccess')) {
-        remove_from_htaccess('kj_sitemap_seo');
+    if(function_exists('remove_from_serve_rules')) {
+        remove_from_serve_rules('kj_sitemap_seo');
     }
 };
 

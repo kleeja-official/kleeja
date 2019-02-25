@@ -1599,33 +1599,14 @@ function p($name, $type = 'str', $default = '')
 }
 
 /**
- * add htaccess rule to the .htaccess file
+ * add rewrite rules to the serve.php file
  * @param array|string $rules
  * @param string $unique_id useful for the deletion later
  * @return bool
  */
-function add_to_htaccess($rules, $unique_id = '')
+function add_to_serve_rules($rules, $unique_id = '')
 {
-    if(!file_exists(PATH . '.htaccess') && file_exists(PATH . 'htaccess.txt') && function_exists('rename'))
-    {
-        rename(PATH . 'htaccess.txt', PATH . '.htaccess');
-    }
-
-    #still not exists ?
-    if(!file_exists(PATH . '.htaccess'))
-    {
-        $original_htaccess_content = '<IfModule mod_rewrite.c>' . PHP_EOL . 'RewriteEngine on' . PHP_EOL . '</IfModule>';
-        file_put_contents(PATH . '.htaccess', $original_htaccess_content);
-    }
-
-    if(!file_exists(PATH . '.htaccess'))
-    {
-        return false;
-    }
-
-
-    $current_htaccess_content = file_get_contents(PATH . '.htaccess');
-
+    $current_serve_content = file_get_contents(PATH . 'serve.php');
 
     $rules = is_array($rules) ? implode(PHP_EOL, $rules) : $rules;
 
@@ -1634,60 +1615,52 @@ function add_to_htaccess($rules, $unique_id = '')
         $rules = '#start_' . $unique_id  . PHP_EOL . $rules . PHP_EOL . '#end_' .$unique_id;
     }
 
-
-    if(strpos($current_htaccess_content, '</IfModule>') !== false)
+    if(strpos($current_serve_content, '#end_kleeja_rewrites_rules#') !== false)
     {
-        $current_htaccess_content = str_replace('</IfModule>', $rules . PHP_EOL .'</IfModule>', $current_htaccess_content);
+        $current_serve_content = str_replace(
+								'#end_kleeja_rewrites_rules#', 
+								'#end_kleeja_rewrites_rules#' . PHP_EOL . $rules, 
+								$current_serve_content
+						);
     }
     else
-    {
-        $current_htaccess_content .= PHP_EOL . $rules;
-    }
+	{
+		$current_serve_content = preg_replace(
+							'/\$rules\s{0,4}=\s{0,4}array\(/', 
+							'$rules = array(' . PHP_EOL . $rules, 
+							$current_serve_content
+						);
+	}
 
-
-    file_put_contents(PATH . '.htaccess', $current_htaccess_content);
+    file_put_contents(PATH . 'serve.php', $current_serve_content);
 
     return true;
 }
 
 
 /**
- * remove htaccess rules using previously used unique id
+ * remove rewrite rules by previously set unique id
  * @param string $unique_id
  * @return bool
  */
-function remove_from_htaccess($unique_id)
+function remove_from_serve_rules($unique_id)
 {
+	$file = PATH . 'serve.php';
 
-	$file = PATH . '.htaccess';
+    $current_serve_content = file_get_contents($file);
 
-    if(!file_exists($file))
-    {
-		$file = PATH . 'htaccess.txt';
-
-		if(!file_exists($file))
-		{
-			return true;
-		}
-    }
-
-
-    $current_htaccess_content = file_get_contents($file);
-
-    $new_htaccess_content = preg_replace(
+    $new_serve_content = preg_replace(
         '/^#start_' . preg_quote($unique_id) . '.*' . '#end_' . preg_quote($unique_id) . '$/sm',
         '',
-        $current_htaccess_content
+        $current_serve_content
         );
 
-
-    if($new_htaccess_content === $current_htaccess_content)
+    if($new_serve_content === $current_serve_content)
     {
         return false;
     }
 
-    file_put_contents($file, $new_htaccess_content);
+    file_put_contents($file, $new_serve_content);
 
     return true;
-
 }
