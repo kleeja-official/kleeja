@@ -79,7 +79,7 @@ $config_values[] = array('enable_captcha', '1', '<label>{lang.YES}<input type=\"
 
 // System settings [ invisible configs ]
 $config_values[] = array('thmb_dims', '100*100', '', 0, 0, 0);
-$config_values[] = array('style', 'default', '', 0, '0', 0, 0);
+$config_values[] = array('style', 'bootstrap', '', 0, '0', 0, 0);
 $config_values[] = array('new_version', '', '', 0, 0, 0);
 $config_values[] = array('db_version', LAST_DB_VERSION, '', 0, 0, 0);
 $config_values[] = array('last_online_time_update', time(), '', 0, 0, 1);
