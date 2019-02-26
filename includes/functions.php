@@ -1401,24 +1401,29 @@ function get_ip()
 {
 
 	$ip = '';
-    if (!empty($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+	if (!empty($_SERVER["HTTP_CF_CONNECTING_IP"])) 
+	{
         $ip = $_SERVER["HTTP_CF_CONNECTING_IP"];
-    } else if (!empty($_SERVER['REMOTE_ADDR']))
+	}
+	else if (!empty($_SERVER['REMOTE_ADDR']))
 	{
 		$ip = $_SERVER['REMOTE_ADDR'];
 	}
 
     #if IP chain
-    if (strpos($ip, ',') !== false) {
+	if (strpos($ip, ',') !== false) 
+	{
         $ip = explode(',', $ip);
         $ip = trim($ip[0]);
     }
 
     #is it IPv6?
     $ip_v6 = preg_match("/^[0-9a-f]{1,4}:([0-9a-f]{0,4}:){1,6}[0-9a-f]{1,4}$/", $ip);
-    if ($ip_v6) {
+	if ($ip_v6) 
+	{
         #does it IPv4 hide in a IPv6 style
-        if (stripos($ip, '::ffff:') === 0) {
+		if (stripos($ip, '::ffff:') === 0)
+		{
             $ip = substr($ip, 7);
         }
     }
@@ -1663,4 +1668,47 @@ function remove_from_serve_rules($unique_id)
     file_put_contents($file, $new_serve_content);
 
     return true;
+}
+
+/**
+ * parse rewrite rule. currently added separately for plugins
+ * @param string $regex
+ * @param array $args
+ * @param bool $is_unicode
+ * @return bool
+ */
+function parse_serve_rule($regex, $args, $is_unicode = false)
+{
+	$request_uri = urldecode(
+		trim(strtok($_SERVER['REQUEST_URI'], '?'), '/')
+	);
+
+
+	if (preg_match("/{$regex}/" . ($is_unicode ? 'u' : ''), $request_uri, $matches)) 
+	{
+		if(! empty($args)) 
+		{
+			parse_str($args, $parsed_args);
+			foreach($parsed_args as $arg_key => $arg_value) 
+			{
+				if( preg_match('/^\$/', $arg_value)) 
+				{
+					$match_number = ltrim($arg_value, '$');
+
+					if( isset($matches[$match_number])) 
+					{
+						$_GET[$arg_key] = $matches[$match_number];
+					}
+				}
+				else 
+				{
+					$_GET[$arg_key] = $arg_value;
+				}
+			}
+		}
+
+		return true;
+	}
+	
+	return false;
 }

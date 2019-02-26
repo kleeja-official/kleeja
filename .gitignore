@@ -23,3 +23,5 @@ workspace.xml
 Project_Default.xml
 .buildpath
 .project
+.vscode/launch.json
+.htaccess

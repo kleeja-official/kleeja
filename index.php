@@ -146,7 +146,7 @@ if ($show_online)
 
 	//make names as array to print them in template
     $show_names = array();
-    $show_names_sizeof = sizeof($show_names);
+    $show_names_sizeof = sizeof($online_names);
 
 	foreach ($online_names as $k)
 	{
