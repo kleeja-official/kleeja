@@ -34,21 +34,21 @@ function Saaheader($title = '', $extra = '')
     $charset = 'utf-8';
 
     $side_menu = array(
-        1 => array('name' => 'profile', 'title' => $lang['PROFILE'], 'url' => $config['mod_writer'] ? 'profile.html' : 'ucp.php?go=profile', 'show' => $user_is),
-        2 => array('name' => 'fileuser', 'title' => $lang['YOUR_FILEUSER'], 'url' => $config['mod_writer'] ? 'fileuser.html' : 'ucp.php?go=fileuser', 'show' => $config['enable_userfile'] && user_can('access_fileuser')),
+        1 => array('name' => 'profile', 'title' => $lang['PROFILE'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'profile.html' : 'ucp.php?go=profile'), 'show' => $user_is),
+        2 => array('name' => 'fileuser', 'title' => $lang['YOUR_FILEUSER'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'fileuser.html' : 'ucp.php?go=fileuser'), 'show' => $config['enable_userfile'] && user_can('access_fileuser')),
         3 => $user_is
-            ? array('name' => 'logout', 'title' => $lang['LOGOUT'], 'url' => $config['mod_writer'] ? 'logout.html' : 'ucp.php?go=logout', 'show' => true)
-            : array('name' => 'login', 'title' => $lang['LOGIN'], 'url' => $config['mod_writer'] ? 'login.html' : 'ucp.php?go=login', 'show' => true),
-        4 => array('name' => 'register', 'title' => $lang['REGISTER'], 'url' => $config['mod_writer'] ? 'register.html' : 'ucp.php?go=register', 'show' => !$user_is && $config['register']),
+            ? array('name' => 'logout', 'title' => $lang['LOGOUT'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'logout.html' : 'ucp.php?go=logout'), 'show' => true)
+            : array('name' => 'login', 'title' => $lang['LOGIN'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'login.html' : 'ucp.php?go=login'), 'show' => true),
+        4 => array('name' => 'register', 'title' => $lang['REGISTER'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'register.html' : 'ucp.php?go=register'), 'show' => !$user_is && $config['register']),
     );
 
     $top_menu = array(
         1 => array('name' => 'index', 'title' => $lang['INDEX'], 'url' => $config['siteurl'], 'show' => true),
-        2 => array('name' => 'rules', 'title' => $lang['RULES'], 'url' => $config['mod_writer'] ? 'rules.html' : 'go.php?go=rules', 'show' => true),
-        3 => array('name' => 'guide', 'title' => $lang['GUIDE'], 'url' => $config['mod_writer'] ? 'guide.html' : 'go.php?go=guide', 'show' => true),
-        4 => array('name' => 'stats', 'title' => $lang['STATS'], 'url' => $config['mod_writer'] ? 'stats.html' : 'go.php?go=stats', 'show' => $config['allow_stat_pg'] && user_can('access_stats')),
-        5 => array('name' => 'report', 'title' => $lang['REPORT'], 'url' => $config['mod_writer'] ? 'report.html' : 'go.php?go=report', 'show' => user_can('access_report')),
-        6 => array('name' => 'call', 'title' => $lang['CALL'], 'url' => $config['mod_writer'] ? 'call.html' : 'go.php?go=call', 'show' => user_can('access_call')),
+        2 => array('name' => 'rules', 'title' => $lang['RULES'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'rules.html' : 'go.php?go=rules'), 'show' => true),
+        3 => array('name' => 'guide', 'title' => $lang['GUIDE'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'guide.html' : 'go.php?go=guide'), 'show' => true),
+        4 => array('name' => 'stats', 'title' => $lang['STATS'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'stats.html' : 'go.php?go=stats'), 'show' => $config['allow_stat_pg'] && user_can('access_stats')),
+        5 => array('name' => 'report', 'title' => $lang['REPORT'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'report.html' : 'go.php?go=report'), 'show' => user_can('access_report')),
+        6 => array('name' => 'call', 'title' => $lang['CALL'], 'url' => $config['siteurl'] . ($config['mod_writer'] ? 'call.html' : 'go.php?go=call'), 'show' => user_can('access_call')),
     );
 
     //check for extra header
@@ -65,7 +65,7 @@ function Saaheader($title = '', $extra = '')
     $tpl->assign("go_current", g('go', 'str', 'index'));
     $tpl->assign("go_back_browser", $lang['GO_BACK_BROWSER']);
     $tpl->assign("H_FORM_KEYS_LOGIN", kleeja_add_form_key('login'));
-    $tpl->assign("action_login", 'ucp.php?go=login' . (ig('return') ? '&amp;return=' . g('return') : ''));
+    $tpl->assign("action_login", $config['siteurl'] . 'ucp.php?go=login' . (ig('return') ? '&amp;return=' . g('return') : ''));
     $tpl->assign("EXTRA_CODE_META", $extra);
     $default_avatar = $STYLE_PATH . 'images/user_avater.png';
     if ($user_is)
