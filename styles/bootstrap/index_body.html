@@ -50,12 +50,12 @@
 					</IF>
 				</ul>
 			</div>
-			<div class="card-block tab-content">
+			<div class="card-body tab-content">
 
 				<IF NAME="config.safe_code">
 					<!-- verification code -->
 					<div class="safe_code card">
-						<div class="card-block">
+						<div class="card-body">
 							<h4 class="card-title">{lang.VERTY_CODE}</h4>
 							<h6 class="card-subtitle mb-2 text-muted">{lang.NOTE_CODE}</h6>
 							<p class="card-text">
@@ -72,10 +72,10 @@
 
 					<LOOP NAME=FILES_NUM_LOOP>
 
-					<div class="input-group" style="{{show}}" id="file-block-{{i}}">
-						<span class="input-group-addon" onclick="document.getElementById('file{{i}}').click();">
-							<div class="btn btn-primary file-button-browse ">
-								<img src="{STYLE_PATH}images/folder.png" width="30" height="30">
+					<div class="input-group mb-2" style="{{show}}" id="file-block-{{i}}" onclick="document.getElementById('file{{i}}').click();">
+						<span class="input-group-prepend">
+							<div class="btn btn-primary file-button-browse">
+								<img src="{STYLE_PATH}images/folder.png" width="20" height="20">
 								<span class="image-preview-input-title">{lang.OPEN}</span>
 							</div>
 						</span>
@@ -98,7 +98,7 @@
 				<div class="tab-pane" id="linkUpload" role="tabpanel">
 
 					<LOOP NAME=FILES_NUM_LOOP>
-						<input class="url form-control" type="text" name="file_{{i}}_" style="{{show}}" size="70" placeholder="{lang.PAST_URL_HERE}">
+						<input class="url form-control mb-2" type="text" name="file_{{i}}_" style="{{show}}" size="70" placeholder="{lang.PAST_URL_HERE}">
 					</LOOP>
 
 					<div>
@@ -118,7 +118,7 @@
 
 	<!-- box loading -->
 	<div id="loadbox" class="card">
-		<div class="card-block">
+		<div class="card-body">
 			{lang.WAIT_LOADING}
 			<br>
 			<img src="{STYLE_PATH}images/loading.gif" alt="{lang.LOADING}" />
@@ -137,7 +137,7 @@
 			</div>
 
 			<IF NAME="show_names">
-				<div class="card-block">
+				<div class="card-body">
 				<LOOP NAME="show_names">
 					<span class="badge badge-pill badge-default">{{name}}</span>
 				</LOOP>
