@@ -9,32 +9,31 @@
 	<div class="col-md-6 mt-2">
 		<!-- Information File -->
 		<!-- <p class="text-center"><strong>{lang.FILE_INFO}</strong></p> -->
-		<div class="card">
 
-			<ul class="list-group list-group-flush">
-				<li class="list-group-item justify-content-between">
-					<span class="list-group-item-heading">{lang.FILENAME}</span>
+			<ul class="list-group">
+				<li class="list-group-item d-flex justify-content-between">
+					<span class="text-secondary">{lang.FILENAME}</span>
 					<div class="list-group-item-text">{name}</div>
 				</li>
-				<li class="list-group-item justify-content-between">
-					<span class="list-group-item-heading">{lang.FILETYPE}</span>
+				<li class="list-group-item d-flex justify-content-between">
+					<span class="text-secondary">{lang.FILETYPE}</span>
 					<div class="list-group-item-text">{type}</div>
 				</li>
-				<li class="list-group-item justify-content-between">
-					<span class="list-group-item-heading">{lang.FILESIZE}</span>
+				<li class="list-group-item d-flex justify-content-between">
+					<span class="text-secondary">{lang.FILESIZE}</span>
 					<div class="list-group-item-text">{size}</div>
 				</li>
-				<li class="list-group-item justify-content-between">
-					<span class="list-group-item-heading">{lang.FILEDATE}</span>
+				<li class="list-group-item d-flex justify-content-between">
+					<span class="text-secondary">{lang.FILEDATE}</span>
 					<div class="list-group-item-text">{time}</div>
 				</li>
-				<li class="list-group-item justify-content-between">
-					<span class="list-group-item-heading">{lang.FILEUPS}</span>
+				<li class="list-group-item d-flex justify-content-between">
+					<span class="text-secondary">{lang.FILEUPS}</span>
 					<div class="list-group-item-text">{uploads}</div>
 				</li>
 				<IF NAME="fusername">
-				<li class="list-group-item justify-content-between">
-					<span class="list-group-item-heading">{lang.USERNAME}</span>
+				<li class="list-group-item d-flex justify-content-between">
+					<span class="list-group-item-heading text-secondary">{lang.USERNAME}</span>
 					<div class="list-group-item-text"><a href="{userfolder}">{fusername}</a></div>
 				</li>
 				</IF>
@@ -42,7 +41,6 @@
 					<small><a href="{REPORT}" rel="nofollow"> {lang.FILEREPORT}</a></small>
 				</li>
 			</ul>
-		</div>
 
 	</div>
 	<!-- @end-Information-File -->
@@ -54,7 +52,7 @@
 			<div class="jumbotron text-center">
 				<b>{lang.FILE_FOUNDED}</b>
 				<br>
-				<img src="{STYLE_PATH}images/spin_lg.gif" id="loadingImage" class="mb-5" alt="" />
+				<img src="{STYLE_PATH}images/spin_lg.gif" id="loadingImage" class="mb-5" alt="{lang.WAIT}" />
 
 				<h2 id="url" class="text">
 					<div class="alert alert-danger">{lang.JS_MUST_ON}</div>
