@@ -43,7 +43,7 @@ class kleeja_style
 
         if (!($template_path = $this->template_exists($template_name, $style_path)))
         {
-            big_error('No Template !', 'Requested "' . $template_path . '" template doesnt exists or an empty !! ');
+            big_error('No Template !', 'Requested <b>"' . $template_name . '"</b> template doesnt exist!');
         }
 
         $html = file_get_contents($template_path);
