@@ -26,7 +26,7 @@ $kleeja_plugin['kj_sitemap_seo']['information'] = array(
     # Min version of Kleeja that's requiered to run this plugin
     'plugin_kleeja_version_min' => '2.0',
     # Max version of Kleeja that support this plugin, use 0 for unlimited
-    'plugin_kleeja_version_max' => '3.0.2',
+    'plugin_kleeja_version_max' => '4.0',
     # Should this plugin run before others?, 0 is normal, and higher number has high priority
     'plugin_priority' => 0
 );
