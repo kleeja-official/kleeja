@@ -42,7 +42,7 @@ return array(
 	'EMAIL' 				=> 'Email address',
 	'VERTY_CODE' 			=> 'Security code',
 	'WRONG_EMAIL' 			=> 'Incorrect email address!',
-	'WRONG_NAME' 			=> 'The username must be 4 to 25 characters!',
+	'WRONG_NAME' 			=> 'The username must be 4 to 25 characters, and without spaces or special chars (only _- are allowed)!',
 	'EXIST_NAME' 			=> 'Someone has already registered with this username!',
 	'EXIST_EMAIL' 			=> 'Someone with this email address has already registered!',
 	'WRONG_VERTY_CODE' 		=> 'Incorrect security code!',

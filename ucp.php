@@ -205,7 +205,7 @@ switch (g('go'))
 			{
 				$ERRORS['lmail'] = $lang['WRONG_EMAIL'];
 			}
-			if (strlen(trim(p('lname'))) < 3 || strlen(trim(p('lname'))) > 50)
+			if (strlen(trim(p('lname'))) < 3 || strlen(trim(p('lname'))) > 50 || preg_match('/[^\p{L}_-]/u', p('lname')))
 			{
 				$ERRORS['lname'] = $lang['WRONG_NAME'];
 			}
