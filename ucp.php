@@ -909,10 +909,14 @@ switch (g('go'))
 		//add your own code here
 		//
 		default:
+		
+		$no_request = true;
 
             is_array($plugin_run_result = Plugins::getInstance()->run('default_usrcp_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
+		if($no_request):
 		kleeja_err($lang['ERROR_NAVIGATATION']);
+		endif;
 
 		break;
 }#end switch
