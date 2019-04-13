@@ -1,6 +1,8 @@
 cache/*.php
 cache/*.log
 plugins/*.php
+plugins/*
+!plugins/index.html
 config.php
 uploads/*
 !uploads/index.html
