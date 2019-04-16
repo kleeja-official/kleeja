@@ -96,7 +96,60 @@
 
 </IF>
 
+<br>
+<div class="alert alert-info" role="alert">
+<h1>Store Plugins</h1>
+</div>
+<br>
+    <ul class="list-unstyled list-group">
+        <LOOP NAME="store_plugins">
+        <li class="media d-flex justify-content-between list-group-item">
+            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{title}}" style="width: 75px">
+            <div class="media-body">
+                <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{title}}</h5>
 
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#Modal_{{name}}">
+  VIEW
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="exampleModalLabel">{{title}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+ <h5> Plugin Name : {{title}} </h5><br>
+ <h5> Plugin Developer : {{developer}} </h5> <br>
+ <h5> Plugin Version : {{version}} </h5><br>
+ <IF LOOP="website"> <h6> Plugin Website : <a href="{{website}}">{{website}}</a> </h6><br> </IF>
+ <p> requested version of kleeja : ( min = {{kj_min_version}} ) , ( max = {{kj_max_version}} ) </p><br>
+<IF LOOP="NotCompatible">
+<div class="alert alert-danger" role="alert">
+  This plugin is not compatible with your version 
+</div>
+</IF>
+ 
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a class="btn btn-primary" href="{plugin_download_link}{{name}}" title="Install">Install <i class="fa fa-download" title="Download"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+                
+            </div>
+        </li>
+        </LOOP>
+    </ul>
 
 <!-- new plugin modal -->
 <div id="plugin_add_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewPlugin" aria-hidden="true">
