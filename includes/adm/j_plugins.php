@@ -119,7 +119,8 @@ switch ($case):
         $available_plugins = array();
         while (false !== ($folder_name = readdir($dh)))
         {
-            if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name)) {
+            if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name)) 
+            {
                 if (empty($installed_plugins[$folder_name]))
                 {
                     array_push($available_plugins,
@@ -169,8 +170,8 @@ switch ($case):
                     'kj_min_version'  => $plugin_info['kleeja_version']['min'] ,
                     'kj_max_version'  => $plugin_info['kleeja_version']['max'] ,
                     'icon'            => $plugin_info['icon'] ,
-                    'NotCompatible'   => (  version_compare(strtolower($plugin_info['kleeja_version']['min']), KLEEJA_VERSION , '<=')
-                                      && version_compare(strtolower($plugin_info['kleeja_version']['max']), KLEEJA_VERSION , '>=')  )
+                    'NotCompatible'   => version_compare(strtolower($plugin_info['kleeja_version']['min']), KLEEJA_VERSION , '<=')
+                                      && version_compare(strtolower($plugin_info['kleeja_version']['max']), KLEEJA_VERSION , '>=')
                                       ? false : true,
                 );
             }
@@ -191,7 +192,6 @@ switch ($case):
         {
             $ERRORS[] = $lang['HV_NOT_PRVLG_ACCESS'];
         }
-
 
         #is uploaded?
         if(empty($_FILES['plugin_file']['tmp_name']))
@@ -235,7 +235,7 @@ switch ($case):
         }
         else
         {
-            kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+            kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
         }
 
         break;
@@ -279,7 +279,7 @@ switch ($case):
             #if already installed, show a message
             if (!empty(Plugins::getInstance()->installed_plugin_info($plg_name)))
             {
-                kleeja_admin_info($lang['PLUGIN_EXISTS_BEFORE'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+                kleeja_admin_info($lang['PLUGIN_EXISTS_BEFORE'], true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
                 exit;
             }
 
@@ -300,7 +300,6 @@ switch ($case):
                 $plugin_first_run = $kleeja_plugin[$plg_name]['first_run']['en'];
             }
 
-
             #check if compatible with kleeja
             #'plugin_kleeja_version_min' => '1.8',
             # Max version of Kleeja that's required to run this plugin
@@ -308,7 +307,10 @@ switch ($case):
 
             if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
             {
-                kleeja_admin_info($lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+                kleeja_admin_info(
+                    $lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'], 
+                    true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php')
+                );
                 exit;
             }
 
@@ -316,7 +318,10 @@ switch ($case):
             {
                 if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_max'], '>'))
                 {
-                    kleeja_admin_info($lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|>|p.max:' . $plugin_info['plugin_kleeja_version_max'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+                    kleeja_admin_info(
+                        $lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|>|p.max:' . $plugin_info['plugin_kleeja_version_max'], 
+                        true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php')
+                    );
                     exit;
                 }
             }
@@ -361,8 +366,6 @@ switch ($case):
 
         break;
 
-
-
     //
     //uninstall a plugin
     //
@@ -382,6 +385,7 @@ switch ($case):
             {
                 exit('empty($plg_name)');
             }
+
             //no plugin selected? back
             redirect(ADMIN_PATH . "?cp=" . basename(__file__, '.php'));
         }
@@ -558,40 +562,41 @@ switch ($case):
 
                                     // download or update msg
                                     kleeja_admin_info(
-                                        ig('update')  ? "Plugin {$downPlugin} is updated successfuly"  : "Plugin {$downPlugin} is downloaded successfuly", 
-                                        ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+                                        sprintf($lang[ig('update')  ? 'PLUGIN_UPDATED' : 'PLUGIN_DOWNLOADED'], $download_plugin), 
+                                        ADMIN_PATH . '?cp=' . basename(__file__, '.php')
+                                    );
                     
                                     exit;
                                 }
                                 else 
                                 {
-                                    kleeja_admin_err('error during extracting zip file...');
+                                    kleeja_admin_err($lang['EXTRACT_ZIP_FAILED']);
                                 }
                             }
                         }
                         else
                         {
-                            kleeja_admin_err('the plugin zip file is not founded');
+                            kleeja_admin_err($lang['PLUGIN_FILE_NOT_FOUND']);
                         }
                     }
-                    else // not connected to kleeja store or return empty content
+                    else 
                     {
-                        kleeja_admin_err("error in the url of {$download_plugin} plugin");
+                        kleeja_admin_err($lang['PLUGINS_SERVER_ERROR']);
                     }
                 }
-                else // not compatible with kleeja version
+                else
                 {
-                    kleeja_admin_err("the version of { $download_plugin} is not compatible with your kleeja version");
+                    kleeja_admin_err($lang['PLUGIN_N_CMPT_KLJ']);
                 }
             }
             else 
             {
-                kleeja_admin_err("plugin {$download_plugin} is not hosted in kleeja store");
+                kleeja_admin_err(sprintf($lang['PLUGIN_REMOTE_FILE_MISSING'], $download_plugin));
             }
         }
         else
         {
-            kleeja_admin_err('Connection error to kleeja remote plugin catalog.');
+            kleeja_admin_err($lang['PLUGINS_SERVER_ERROR']);
         }
 
         break;
@@ -611,20 +616,3 @@ switch ($case):
         break;
 
 endswitch;
-
-
-
-function get_root_plugin_info($plugin_name)
-{
-    $init = PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plugin_name . '/init.php';
-
-    $return = false;
-
-    if (file_exists($init)) 
-    {
-        require_once $init;
-        $return = $kleeja_plugin[$plugin_name]['information'];
-    }
-
-    return $return;
-}

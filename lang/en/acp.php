@@ -262,8 +262,13 @@ return array(
     'NO_PROBLEM_AFTER_ZIP'      => 'The file has been extracted successfully and it\'s ready to be enabled',
 	'SESSION_ENDED'      		=> 'Session has ended, do you want to login again?',
 	//3.0.3
-	'CUSTOMIZATION' => 'Customization',
-	'SHOW' => 'Show',
-	'HIDE' => 'Hide',
-	'STATS_BOXES' => 'Stats Boxes',
+	'CUSTOMIZATION' 			=> 'Customization',
+	'SHOW' 						=> 'Show',
+	'HIDE' 						=> 'Hide',
+	'STATS_BOXES' 				=> 'Stats Boxes',
+	'PLUGIN_UPDATED' 			=> 'Plugin "%s" has been updated successfully ..',
+	'PLUGIN_DOWNLOADED' 		=> 'Plugin "%s" has been downloaded successfully ..',
+	'PLUGIN_FILE_NOT_FOUND' 	=> 'The plugin file is missing!',
+	'PLUGIN_REMOTE_FILE_MISSING'=> 'The plugin "%s" is not on Kleeja remote server!',
+	'PLUGINS_SERVER_ERROR' 		=> 'We encountered an error while connecting to the plugins remote server ...',
 );
