@@ -20,7 +20,7 @@ if (!defined('IN_ADMIN'))
 
 
 #get current case
-$case = g('case', 'str');
+$case = g('case', 'str', 'installed');
 
 #set _get form key
 $GET_FORM_KEY = kleeja_add_form_key_get('PLUGINS_FORM_KEY');
@@ -61,6 +61,8 @@ if(ip('newplugin'))
 switch ($case):
 
     default:
+    case 'local':
+    case 'store':
 
         # Get installed plugins
         $query = array(
@@ -137,7 +139,15 @@ switch ($case):
         }
         @closedir($dh);
 
-        $no_plugins = sizeof($available_plugins) == 0 && sizeof($installed_plugins) == 0;
+        $no_plugins = TRUE;
+
+        $stylee = "admin_plugins";
+
+        //do not proceed if not store case
+        if($case != 'store')
+        {
+            break;
+        }
 
         // plugins avilable in kleeja remote catalog 
         if (!($catalog_plugins = $cache->get('catalog_plugins'))) 
@@ -169,18 +179,16 @@ switch ($case):
                     'website'         => $plugin_info['website'] ,
                     'kj_min_version'  => $plugin_info['kleeja_version']['min'] ,
                     'kj_max_version'  => $plugin_info['kleeja_version']['max'] ,
+                    'kj_version_cmtp'  => sprintf($lang[ 'KLJ_VER_NO_PLUGIN'], $plugin_info['kleeja_version']['min'], $plugin_info['kleeja_version']['max']),
                     'icon'            => $plugin_info['icon'] ,
                     'NotCompatible'   => version_compare(strtolower($plugin_info['kleeja_version']['min']), KLEEJA_VERSION , '<=')
                                       && version_compare(strtolower($plugin_info['kleeja_version']['max']), KLEEJA_VERSION , '>=')
                                       ? false : true,
                 );
             }
-        }
-
-        $stylee = "admin_plugins";
+        } 
 
         break;
-
 
     //
     //upload a plugin

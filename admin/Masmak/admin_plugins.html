@@ -6,25 +6,33 @@
 </ol>
 
 
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link (case == installed?active:)" href="{action}">{lang.INSTALLED_PLUGINS}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link (case == local?active:)" href="{action}&amp;case=local">{lang.LOCAL_PLUGINS}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link (case == store?active:)" href="{action}&amp;case=store">{lang.KLEEJA_STORE}</a>
+    </li>
+</ul>
 
-<IF NAME="no_plugins">
 
-    <div class="alert alert-info">
-        {lang.NO_PLUGINS}
-        <br>
-        <br>
-        <a class="btn btn-primary btn-lg text-center" href="#"  data-toggle="modal" data-target="#plugin_add_new">
-            <i class="fa fa-upload"></i> {lang.UPLOAD_LOCAL_PC}
-        </a>
-    </div>
+<!--  installed plugins  -->
+<IF NAME="case == installed">
 
-<ELSE>
+    <IF NAME="no_plugins">
+
+        <div class="alert alert-info my-1">
+            {lang.NO_PLUGINS}
+        </div>
+
+    </IF>
 
     <IF NAME="installed_plugins">
     <div class="row">
-
         <LOOP NAME="installed_plugins">
-
         <div class="col-sm-12 col-md-3 mt-2">
         <div class="card">
             <img class="card-img-top" src="{{icon}}" alt="{{plg_name}}">
@@ -60,24 +68,20 @@
         </div>
         </div>
         </LOOP>
-
     </div>
-
-        <br>
-        <hr>
 
     </IF>
 
-<!-- available plugins -->
-
-    <nav class="breadcrumb">
+<!-- ..... -->
+<!-- local plugins -->
+<!-- ..... -->
+<ELSEIF NAME="case == local">
+    <nav class="breadcrumb my-1">
         <div class="breadcrumb-item align-middle">{lang.ADD_NEW_PLUGIN}</div>
         <a class="btn btn-primary btn-sm float-right" href="#"  data-toggle="modal" data-target="#plugin_add_new">
             <i class="fa fa-upload"></i> {lang.UPLOAD_LOCAL_PC}
         </a>
     </nav>
-
-
     <br>
 
     <ul class="list-unstyled list-group">
@@ -88,64 +92,6 @@
                 <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{name}}</h5>
 
                 <a class="btn btn-primary pull-(lang.DIR==ltr?right:left)" href="{plugin_install_link}{{name}}" title="{lang.ENABLE}" onclick="javascript:return confirm_form('{lang.PLUGIN_CONFIRM_ADD}');"><i class="fa fa-download" title="{lang.ENABLE}"></i></a>
-            </div>
-        </li>
-        </LOOP>
-    </ul>
-
-
-</IF>
-
-<br>
-<div class="alert alert-info" role="alert">
-<h1>Store Plugins</h1>
-</div>
-<br>
-    <ul class="list-unstyled list-group">
-        <LOOP NAME="store_plugins">
-        <li class="media d-flex justify-content-between list-group-item">
-            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{title}}" style="width: 75px">
-            <div class="media-body">
-                <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{title}}</h5>
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#Modal_{{name}}">
-  VIEW
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title" id="exampleModalLabel">{{title}}</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
- <h5> Plugin Name : {{title}} </h5><br>
- <h5> Plugin Developer : {{developer}} </h5> <br>
- <h5> Plugin Version : {{version}} </h5><br>
- <IF LOOP="website"> <h6> Plugin Website : <a href="{{website}}">{{website}}</a> </h6><br> </IF>
- <p> requested version of kleeja : ( min = {{kj_min_version}} ) , ( max = {{kj_max_version}} ) </p><br>
-<IF LOOP="NotCompatible">
-<div class="alert alert-danger" role="alert">
-  This plugin is not compatible with your version 
-</div>
-</IF>
- 
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <a class="btn btn-primary" href="{plugin_download_link}{{name}}" title="Install">Install <i class="fa fa-download" title="Download"></i></a>
-      </div>
-    </div>
-  </div>
-</div>
-
-                
             </div>
         </li>
         </LOOP>
@@ -180,3 +126,58 @@
     </form>
 </div>
 <!-- end new plugin modal -->
+
+<!-- ...... -->
+<!-- store -->
+<!-- ..... -->
+<ELSEIF NAME="case == store">
+    <ul class="list-unstyled list-group mt-2">
+        <LOOP NAME="store_plugins">
+        <li class="media d-flex justify-content-between list-group-item">
+            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{title}}" style="width: 75px">
+            <div class="media-body">
+                <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{title}}</h5>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#Modal_{{name}}">
+                    {lang.VIEW}
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="exampleModalLabel">{{title}}</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                {lang.DEVELOPER}: {{developer}}
+                                <IF LOOP="website"> <i class="fa fa-download" title="{lang.ENABLE}"></i><a href="{{website}}" target="_tab"><i class="fa fa-external-link" title="{lang.ENABLE}"></i></a></IF>
+                            </li>
+                             <li class="list-group-item">{lang.VERSION}: {{version}}</li>
+                             <li class="list-group-item">{{kj_version_cmtp}}</li>
+                            <IF LOOP="NotCompatible">
+                             <li class="list-group-item list-group-item-danger">
+                                {lang.PLUGIN_N_CMPT_KLJ}
+                             </li>
+                            </IF>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{lang.CLOSE}</button>
+                            <a class="btn btn-primary" href="{plugin_download_link}{{name}}" title="Install">{lang.INSTALL} <i class="fa fa-download" title="Download"></i></a>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- end modal -->
+                </div>
+        </li>
+        </LOOP>
+    </ul>
+
+</IF>
