@@ -139,7 +139,7 @@ switch ($case):
         }
         @closedir($dh);
 
-        $no_plugins = TRUE;
+        $no_plugins = sizeof($available_plugins) == 0 && sizeof($installed_plugins) == 0;
 
         $stylee = "admin_plugins";
 
