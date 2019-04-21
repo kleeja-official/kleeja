@@ -184,6 +184,7 @@ return array(
 	'KILOBYTE'					=>	'Kilobyte',
 	'NOTE'						=>	'Note',
 	'WARN'						=>	'Warning',
+	'NOT_SAFE_FILE'				=> 'Kleeja found that the File "%s" is not SAFE ',
 	'ARE_YOU_SURE_DO_THIS'		=> 'Are you sure you want to do this?',
 	'SITE_FOR_MEMBER_ONLY'		=> 'This center is only for members, register or login to upload your files.',
 	'AUTH_INTEGRATION_N_UTF8_T'	=> '%s is not utf8',
