@@ -22,6 +22,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('begin_usrcp_page', ge
 
 $extra = '';
 $show_style = true;
+$styleePath = null;
 
 switch (g('go'))
 {
@@ -933,6 +934,6 @@ $stylee = empty($stylee) ? 'info' : $stylee;
 if($show_style)
 {
 	Saaheader($titlee, $extra);
-	echo $tpl->display($stylee);
+	echo $tpl->display($stylee , $styleePath);
 	Saafooter();
 }
