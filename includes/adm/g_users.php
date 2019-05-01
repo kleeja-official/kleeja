@@ -699,7 +699,7 @@ case 'group_acl':
 		}
 
 		$acls[] = array(
-							'acl_title'	=> 'acl_title'	=> !empty( $lang['ACLS_' .  strtoupper($row['acl_name'])] ) ? $lang['ACLS_' .  strtoupper($row['acl_name'])] : $olang['ACLS_' .  strtoupper($row['acl_name'])],
+							'acl_title'	=> !empty( $lang['ACLS_' .  strtoupper($row['acl_name'])] ) ? $lang['ACLS_' .  strtoupper($row['acl_name'])] : $olang['ACLS_' .  strtoupper($row['acl_name'])],
 							'acl_name'	=> $row['acl_name'],
 							'acl_can'	=> (int) $row['acl_can']
 				);
