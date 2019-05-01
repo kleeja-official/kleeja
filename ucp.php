@@ -92,16 +92,16 @@ switch (g('go'))
                 }
                 else
                 {
-                    if (ig('return'))
+                    $errorpage = true;
+                    is_array($plugin_run_result = Plugins::getInstance()->run('login_data_no_error', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+		    if (ig('return'))
                     {
                         redirect(urldecode(g('return')));
                         $SQL->close();
                         exit;
                     }
-
-                    $errorpage = true;
-                    is_array($plugin_run_result = Plugins::getInstance()->run('login_data_no_error', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
+			
                     $text = $lang['LOGIN_SUCCESFUL'] . ' <br /> <a href="' . $config['siteurl'] . '">' . $lang['HOME'] . '</a>';
                     kleeja_info($text, '', true, $config['siteurl'], 1);
                 }
