@@ -180,8 +180,8 @@ switch ($case):
             // is there a new version of this in the store
             elseif ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) && 
                 version_compare(
-                    strtolower($installed_plugins[$row['plg_name']]['extra_info']['plugin_version']),
-                    $plugin_info['file']['version'],
+                    strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']),
+                    strtolower($plugin_info['file']['version']),
                 '>=') ||  empty($installed_plugins[$plugin_info['name']]))
             ) { 
                 continue;
@@ -193,6 +193,7 @@ switch ($case):
                 'version'         => $plugin_info['file']['version'],
                 'title'           => ! empty($plugin_info['title'][$config['language']]) ? $plugin_info['title'][$config['language']] : $plugin_info['title']['en'],
                 'website'         => $plugin_info['website'],
+                'current_version' => ! empty($installed_plugins[$plugin_info['name']]) ? strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']) : '',
                 'kj_min_version'  => $plugin_info['kleeja_version']['min'],
                 'kj_max_version'  => $plugin_info['kleeja_version']['max'],
                 'kj_version_cmtp'  => sprintf($lang[ 'KLJ_VER_NO_PLUGIN'], $plugin_info['kleeja_version']['min'], $plugin_info['kleeja_version']['max']),

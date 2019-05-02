@@ -131,12 +131,12 @@
 <!-- end new plugin modal -->
 
 <!-- ...... -->
-<!-- store -->
+<!-- store/check -->
 <!-- ..... -->
 <ELSEIF NAME="case == store" OR="case == check">
 
     <IF NAME="no_store_plugins">
-        <div class="alert alert-info my-1">
+        <div class="alert alert-info my-3">
             <IF NAME="case == check">{lang.ALL_PLUGINS_UPDATED}<ELSE>{lang.NO_PLUGINS}</IF>
         </div>
     </IF>
@@ -146,11 +146,14 @@
         <li class="media d-flex justify-content-between list-group-item">
             <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{title}}" style="width: 75px">
             <div class="media-body">
-                <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{title}}</h5>
+                <h5 class="mt-0 mb-2">{{title}}</h5>
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#Modal_{{name}}">
-                        <IF NAME="case == check">{lang.UPDATE}<ELSE>{lang.VIEW}</IF>
-                    </button>
+                    <div class="justify-content-between">
+                        <span>{{version}} <IF NAME="case == check"> → {{current_version}}</IF></span>
+                        <button type="button" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#Modal_{{name}}">
+                            <IF NAME="case == check">{lang.UPDATE}<ELSE>{lang.VIEW}</IF>
+                        </button>
+                    </div>
 
                     <!-- Modal -->
                     <div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
