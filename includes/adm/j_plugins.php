@@ -178,7 +178,7 @@ switch ($case):
             }
 
             // is there a new version of this in the store
-            if ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) && 
+            elseif ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) && 
                 version_compare(
                     strtolower($installed_plugins[$row['plg_name']]['extra_info']['plugin_version']),
                     $plugin_info['file']['version'],
@@ -528,6 +528,15 @@ switch ($case):
             exit;
         }
 
+        $download_plugin = g('plg');
+
+        // update it , rename function doesn't move the folder , if the folder is exists on the new dir
+        if( file_exists( PATH . KLEEJA_PLUGINS_FOLDER. '/' . $download_plugin . '/init.php' ) )
+        {
+            redirect( $plugin_update_link . $download_plugin );
+            exit;
+        }
+
         // plugins avilable in kleeja store 
         $store_link = 'https://raw.githubusercontent.com/kleeja-official/plugin-catalog/master/plugins.json';
 
@@ -550,8 +559,6 @@ switch ($case):
                     'kj_max_version' => $plugin_info['kleeja_version']['max'] ,
                 );
             }
-
-            $download_plugin = g('plg');
 
             // // => this plugin is hosted in our store
             if (isset($store_plugins[$download_plugin]))
