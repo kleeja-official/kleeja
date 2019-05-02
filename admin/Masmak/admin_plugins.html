@@ -148,8 +148,8 @@
             <div class="media-body">
                 <h5 class="mt-0 mb-2">{{title}}</h5>
                     <!-- Button trigger modal -->
-                    <div class="justify-content-between">
-                        <span><IF NAME="case == check">{{current_version}} → </IF>{{version}}</span>
+                    <div class="d-flex justify-content-between">
+                        <div style="direction: ltr;"><IF NAME="case == check">{{current_version}} → </IF>{{version}}</div>
                         <button type="button" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#Modal_{{name}}">
                             <IF NAME="case == check">{lang.UPDATE}<ELSE>{lang.VIEW}</IF>
                         </button>
