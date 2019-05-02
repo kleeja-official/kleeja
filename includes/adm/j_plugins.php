@@ -63,6 +63,7 @@ switch ($case):
     default:
     case 'local':
     case 'store':
+    case 'check':
 
         # Get installed plugins
         $query = array(
@@ -144,7 +145,7 @@ switch ($case):
         $stylee = "admin_plugins";
 
         //do not proceed if not store case
-        if($case != 'store')
+        if(! in_array($case, ['store', 'check']))
         {
             break;
         }
@@ -169,24 +170,40 @@ switch ($case):
         $available_plugins_names = array_column($available_plugins, 'name');
         foreach ($catalog_plugins as $plugin_info) 
         {
-            if (! in_array($plugin_info['name'] , $available_plugins_names) && empty($installed_plugins[$plugin_info['name']]) ) 
+            if ($case == 'store' && in_array($plugin_info['name'] , $available_plugins_names) &&
+                 ! empty($installed_plugins[$plugin_info['name']])
+                 )
             {
-                $store_plugins[$plugin_info['name']] = array(
-                    'name'            => $plugin_info['name'] ,
-                    'developer'       => $plugin_info['developer'] ,
-                    'version'         => $plugin_info['file']['version'] ,
-                    'title'           => ! empty($plugin_info['title'][$config['language']]) ? $plugin_info['title'][$config['language']] : $plugin_info['title']['en'] ,
-                    'website'         => $plugin_info['website'] ,
-                    'kj_min_version'  => $plugin_info['kleeja_version']['min'] ,
-                    'kj_max_version'  => $plugin_info['kleeja_version']['max'] ,
-                    'kj_version_cmtp'  => sprintf($lang[ 'KLJ_VER_NO_PLUGIN'], $plugin_info['kleeja_version']['min'], $plugin_info['kleeja_version']['max']),
-                    'icon'            => $plugin_info['icon'] ,
-                    'NotCompatible'   => version_compare(strtolower($plugin_info['kleeja_version']['min']), KLEEJA_VERSION , '<=')
-                                      && version_compare(strtolower($plugin_info['kleeja_version']['max']), KLEEJA_VERSION , '>=')
-                                      ? false : true,
-                );
+                continue;
             }
-        } 
+
+            // is there a new version of this in the store
+            if ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) && 
+                version_compare(
+                    strtolower($installed_plugins[$row['plg_name']]['extra_info']['plugin_version']),
+                    $plugin_info['file']['version'],
+                '>=') ||  empty($installed_plugins[$plugin_info['name']]))
+            ) { 
+                continue;
+            }
+
+            $store_plugins[$plugin_info['name']] = array(
+                'name'            => $plugin_info['name'],
+                'developer'       => $plugin_info['developer'],
+                'version'         => $plugin_info['file']['version'],
+                'title'           => ! empty($plugin_info['title'][$config['language']]) ? $plugin_info['title'][$config['language']] : $plugin_info['title']['en'],
+                'website'         => $plugin_info['website'],
+                'kj_min_version'  => $plugin_info['kleeja_version']['min'],
+                'kj_max_version'  => $plugin_info['kleeja_version']['max'],
+                'kj_version_cmtp'  => sprintf($lang[ 'KLJ_VER_NO_PLUGIN'], $plugin_info['kleeja_version']['min'], $plugin_info['kleeja_version']['max']),
+                'icon'            => $plugin_info['icon'] ,
+                'NotCompatible'   => version_compare(strtolower($plugin_info['kleeja_version']['min']), KLEEJA_VERSION , '<=')
+                                    && version_compare(strtolower($plugin_info['kleeja_version']['max']), KLEEJA_VERSION , '>=')
+                                    ? false : true,
+            );
+        }
+
+        $no_store_plugins = sizeof($store_plugins) == 0;
 
         break;
 

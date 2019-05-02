@@ -280,4 +280,5 @@ return array(
 	'KLJ_VER_NO_PLUGIN'			=> 'This plugin can works on Kleeja version %1$s up to version %2$s.',
 	'VERSION'					=> 'Version',
 	'DEVELOPER'					=> 'Developer',
+	'ALL_PLUGINS_UPDATED'		=> 'There are no plugins that require an update currently...',
 );
