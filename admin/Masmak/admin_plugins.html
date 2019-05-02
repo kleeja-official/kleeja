@@ -79,10 +79,13 @@
 <!-- local plugins -->
 <!-- ..... -->
 <ELSEIF NAME="case == local">
-    <nav class="breadcrumb my-1">
+    <nav class="breadcrumb my-2">
         <div class="breadcrumb-item align-middle">{lang.ADD_NEW_PLUGIN}</div>
-        <a class="btn btn-primary btn-sm float-right" href="#"  data-toggle="modal" data-target="#plugin_add_new">
+        <a class="btn btn-primary btn-sm float-right mx-1" href="#"  data-toggle="modal" data-target="#plugin_add_new">
             <i class="fa fa-upload"></i> {lang.UPLOAD_LOCAL_PC}
+        </a>
+        <a class="btn btn-primary btn-sm float-right mx-1" href="{action}&amp;case=store">
+            <i class="fa fa-puzzle-piece"></i> {lang.KLEEJA_STORE}
         </a>
     </nav>
     <br>
