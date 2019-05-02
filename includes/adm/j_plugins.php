@@ -170,8 +170,8 @@ switch ($case):
         $available_plugins_names = array_column($available_plugins, 'name');
         foreach ($catalog_plugins as $plugin_info) 
         {
-            if ($case == 'store' && in_array($plugin_info['name'] , $available_plugins_names) &&
-                 ! empty($installed_plugins[$plugin_info['name']])
+            if ($case == 'store' && (in_array($plugin_info['name'] , $available_plugins_names) ||
+                 ! empty($installed_plugins[$plugin_info['name']]) )
                  )
             {
                 continue;
