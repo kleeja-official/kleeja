@@ -297,4 +297,5 @@ return array(
 	'OR_MANUAL_SELECT'  => 'أو قم بالضغط هنا <em>لإختيار</em> ملف يدوياً..',
 	//3.0.3
 	'NOTIFICATIONS' => 'تنبيهات',
+	'KJ_TWEETS'         => 'تغريدات كليجا' ,
 );
