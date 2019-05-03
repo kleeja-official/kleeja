@@ -31,10 +31,17 @@ include_once $_path . 'includes/mysqli.php';
 
 include_once 'includes/functions_install.php';
 
-//an alias class for plugins class
+
+/**
+ * @ignore an alias class for plugins class
+ */
 class Plugins
 {
     private static $instance;
+
+    /**
+     * @return Plugins
+     */
     public static function getInstance()
     {
         if (is_null(self::$instance))
@@ -44,9 +51,12 @@ class Plugins
         return self::$instance;
     }
 
+    /**
+     * @return array
+     */
     public function run($name)
     {
-        return null;
+        return [];
     }
 }
 

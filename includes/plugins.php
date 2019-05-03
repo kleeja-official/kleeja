@@ -79,6 +79,7 @@ class Plugins
 
     /**
      * Load the plugins from root/plugins folder
+     * @return void
      */
     private function load_enabled_plugins()
     {
@@ -171,7 +172,7 @@ class Plugins
     /**
      * get an installed plugin information
      * @param  string     $plugin_name
-     * @return mixed|null
+     * @return array
      */
     public function installed_plugin_info($plugin_name)
     {
@@ -180,7 +181,7 @@ class Plugins
             return $this->installed_plugins_info[$plugin_name];
         }
 
-        return null;
+        return [];
     }
 
 
@@ -189,7 +190,7 @@ class Plugins
      * This function scattered all over kleeja files
      * @param  string     $hook_name
      * @param  array      $args
-     * @return array|null
+     * @return array
      */
     public function run($hook_name, $args = [])
     {
@@ -197,7 +198,7 @@ class Plugins
 
         if (! empty($this->all_plugins_hooks[$hook_name]))
         {
-            foreach ($this->all_plugins_hooks[$hook_name] as $order => $functions)
+            foreach ($this->all_plugins_hooks[$hook_name] as $_ => $functions)
             {
                 foreach ($functions as $function)
                 {
@@ -217,10 +218,14 @@ class Plugins
 
 
 
-        return sizeof($to_be_returned) ? $to_be_returned : null;
+        return sizeof($to_be_returned) ? $to_be_returned : [];
     }
 
-
+    /**
+     * return current instance Plugins class
+     *
+     * @return Plugins
+     */
     public static function getInstance()
     {
         if (is_null(self::$instance))
