@@ -8,10 +8,10 @@
 */
 
 
-#no direct access
-if (!defined('IN_COMMON'))
+//no direct access
+if (! defined('IN_COMMON'))
 {
-	exit();
+    exit();
 }
 
 
@@ -21,73 +21,73 @@ interface KleejaUploader
 
     /**
      * set the allowed extensions of uploaded files
-     * @param array $allowed_file_extensions an array of allowed extensions, and sizes ['gif'=>122, 'png'=>2421 ..]
+     * @param  array $allowed_file_extensions an array of allowed extensions, and sizes ['gif'=>122, 'png'=>2421 ..]
      * @return void
      */
-    function setAllowedFileExtensions($allowed_file_extensions);
+    public function setAllowedFileExtensions($allowed_file_extensions);
 
 
     /**
      * get the allowed extensions of uploaded files
      * @return array
      */
-    function getAllowedFileExtensions();
+    public function getAllowedFileExtensions();
 
 
     /**
      * set the allowed limit of the uploaded files
-     * @param int $limit
+     * @param  int  $limit
      * @return void
      */
-    function setUploadFieldsLimit($limit);
+    public function setUploadFieldsLimit($limit);
 
     /**
      *  get the allowed limit of the uploaded files
      * @return int
      */
-    function getUploadFieldsLimit();
+    public function getUploadFieldsLimit();
 
 
     /**
      * add an information message to output it to the user
-     * @param string $message
+     * @param  string $message
      * @return void
      */
-    function addInfoMessage($message);
+    public function addInfoMessage($message);
 
     /**
      * add an error message to output it to the user
-     * @param string $message
+     * @param  string $message
      * @return void
      */
-    function addErrorMessage($message);
+    public function addErrorMessage($message);
 
     /**
      * get all the messages
      * @return array
      */
-    function getMessages();
+    public function getMessages();
 
     /**
      * save the file information to the database
-     * @param array $fileInfo
+     * @param  array $fileInfo
      * @return void
      */
-    function saveToDatabase($fileInfo);
+    public function saveToDatabase($fileInfo);
 
 
     /**
      * generate a box of the result and add it to addInfoMessage
-     * @param array $fileInfo
+     * @param  array $fileInfo
      * @return void
      */
-    function generateOutputBox($fileInfo);
+    public function generateOutputBox($fileInfo);
 
 
     /**
      * here happens the magic, call this on upload submit
-     * @param int $uploadType upload from files input or links
+     * @param  int  $uploadType upload from files input or links
      * @return void
      */
-    function upload($uploadType);
+    public function upload($uploadType);
 }

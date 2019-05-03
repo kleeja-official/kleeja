@@ -27,3 +27,4 @@ Project_Default.xml
 .project
 .vscode/launch.json
 .htaccess
+.php_cs.cache

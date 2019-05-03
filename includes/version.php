@@ -9,9 +9,9 @@
 
 
 //no for directly open
-if (!defined('IN_COMMON'))
+if (! defined('IN_COMMON'))
 {
-	exit();
+    exit();
 }
 
 
@@ -19,6 +19,3 @@ if (!defined('IN_COMMON'))
 define('KLEEJA_VERSION', '3.0.2');
 
 define('KLEEJA_DB_VERSION', '9');
-
-
-
