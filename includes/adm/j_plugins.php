@@ -153,7 +153,7 @@ switch ($case):
         // plugins avilable in kleeja remote catalog 
         if (!($catalog_plugins = $cache->get('catalog_plugins'))) 
         {
-            $store_link = 'https://raw.githubusercontent.com/kleeja-official/plugin-catalog/master/plugins.json';
+            $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
 
             $catalog_plugins = fetch_remote_file($store_link);
             $catalog_plugins = json_decode($catalog_plugins , true);
@@ -539,7 +539,7 @@ switch ($case):
         }
 
         // plugins avilable in kleeja store 
-        $store_link = 'https://raw.githubusercontent.com/kleeja-official/plugin-catalog/master/plugins.json';
+        $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
 
         $catalog_plugins = fetch_remote_file($store_link);
 
