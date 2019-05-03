@@ -381,3 +381,30 @@ function adm_is_start_box_hidden($name)
 
 	return in_array($name, $boxes);
 }
+
+/**
+ * delete plugin folder
+ * @param string $dir plugin folder path 
+ * @return void
+ */
+function delete_plugin_folder($dir)
+{
+	$it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
+	$files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+	foreach ($files as $file) 
+	{
+		if ($file->isLink()) 
+		{
+			unlink($file->getPathname());
+		} 
+		else if ($file->isDir()) 
+		{
+			rmdir($file->getPathname());
+		}
+		else 
+		{
+			unlink($file->getPathname());
+		}
+	}
+	rmdir($dir);
+}

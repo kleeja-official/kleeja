@@ -20,7 +20,7 @@ if (!defined('IN_ADMIN'))
 
 
 #get current case
-$case = g('case', 'str');
+$case = g('case', 'str', 'installed');
 
 #set _get form key
 $GET_FORM_KEY = kleeja_add_form_key_get('PLUGINS_FORM_KEY');
@@ -32,14 +32,17 @@ $plugin_install_link = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;
 $plugin_uninstall_link = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=uninstall&amp;' . $GET_FORM_KEY . '&amp;plg=';
 $plugin_enable_link = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=enable&amp;' . $GET_FORM_KEY . '&amp;plg=';
 $plugin_disable_link = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=disable&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_download_link = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=download&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_update_link = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=update&amp;' . $GET_FORM_KEY . '&amp;plg=';
 
 
 //check _GET Csrf token
-if ($case && in_array($case, array('install', 'uninstall', 'enable', 'disable')))
+if (!empty($case) && in_array($case, array('install', 'uninstall', 'enable', 'disable' , 'download' , 'update')))
 {
     if (!kleeja_check_form_key_get('PLUGINS_FORM_KEY'))
     {
         kleeja_admin_err($lang['INVALID_GET_KEY'], $action);
+        exit;
     }
 }
 
@@ -49,6 +52,7 @@ if(ip('newplugin'))
     if(!kleeja_check_form_key('adm_plugins'))
     {
         kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action);
+        exit;
     }
 
     $case = 'upload';
@@ -57,6 +61,9 @@ if(ip('newplugin'))
 switch ($case):
 
     default:
+    case 'local':
+    case 'store':
+    case 'check':
 
         # Get installed plugins
         $query = array(
@@ -115,7 +122,8 @@ switch ($case):
         $available_plugins = array();
         while (false !== ($folder_name = readdir($dh)))
         {
-            if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name)) {
+            if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name)) 
+            {
                 if (empty($installed_plugins[$folder_name]))
                 {
                     array_push($available_plugins,
@@ -136,31 +144,86 @@ switch ($case):
 
         $stylee = "admin_plugins";
 
-        break;
+        //do not proceed if not store case
+        if(! in_array($case, ['store', 'check']))
+        {
+            break;
+        }
 
+        // plugins avilable in kleeja remote catalog 
+        if (!($catalog_plugins = $cache->get('catalog_plugins'))) 
+        {
+            $store_link = 'https://raw.githubusercontent.com/kleeja-official/plugin-catalog/master/plugins.json';
+
+            $catalog_plugins = fetch_remote_file($store_link);
+            $catalog_plugins = json_decode($catalog_plugins , true);
+
+            if(json_last_error() == JSON_ERROR_NONE)
+            {
+                $cache->save('catalog_plugins', $catalog_plugins);
+            }
+        }
+
+        // make an array for all plugins in kleeja remote catalog
+        // that are not exsisted locally.
+        $store_plugins = array();
+        $available_plugins_names = array_column($available_plugins, 'name');
+        foreach ($catalog_plugins as $plugin_info) 
+        {
+            if ($case == 'store' && (in_array($plugin_info['name'] , $available_plugins_names) ||
+                 ! empty($installed_plugins[$plugin_info['name']]) )
+                 )
+            {
+                continue;
+            }
+
+            // is there a new version of this in the store
+            elseif ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) && 
+                version_compare(
+                    strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']),
+                    strtolower($plugin_info['file']['version']),
+                '>=') ||  empty($installed_plugins[$plugin_info['name']]))
+            ) { 
+                continue;
+            }
+
+            $store_plugins[$plugin_info['name']] = array(
+                'name'            => $plugin_info['name'],
+                'developer'       => $plugin_info['developer'],
+                'version'         => $plugin_info['file']['version'],
+                'title'           => ! empty($plugin_info['title'][$config['language']]) ? $plugin_info['title'][$config['language']] : $plugin_info['title']['en'],
+                'website'         => $plugin_info['website'],
+                'current_version' => ! empty($installed_plugins[$plugin_info['name']]) ? strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']) : '',
+                'kj_min_version'  => $plugin_info['kleeja_version']['min'],
+                'kj_max_version'  => $plugin_info['kleeja_version']['max'],
+                'kj_version_cmtp'  => sprintf($lang[ 'KLJ_VER_NO_PLUGIN'], $plugin_info['kleeja_version']['min'], $plugin_info['kleeja_version']['max']),
+                'icon'            => $plugin_info['icon'] ,
+                'NotCompatible'   => version_compare(strtolower($plugin_info['kleeja_version']['min']), KLEEJA_VERSION , '<=')
+                                    && version_compare(strtolower($plugin_info['kleeja_version']['max']), KLEEJA_VERSION , '>=')
+                                    ? false : true,
+            );
+        }
+
+        $no_store_plugins = sizeof($store_plugins) == 0;
+
+        break;
 
     //
     //upload a plugin
     //
     case 'upload':
-
-
         $ERRORS = array();
-
 
         if(intval($userinfo['founder']) !== 1)
         {
             $ERRORS[] = $lang['HV_NOT_PRVLG_ACCESS'];
         }
 
-
         #is uploaded?
         if(empty($_FILES['plugin_file']['tmp_name']))
         {
             $ERRORS[] = $lang['CHOSE_F'];
         }
-
-
 
         #extract it to plugins folder
         if(!sizeof($ERRORS))
@@ -192,14 +255,13 @@ switch ($case):
             @unlink($_FILES['plugin_file']['tmp_name']);
         }
 
-
         if(!sizeof($ERRORS))
         {
             kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], true, '', true, $action);
         }
         else
         {
-            kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+            kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
         }
 
         break;
@@ -210,16 +272,13 @@ switch ($case):
     //
     case 'install':
 
-
         if(intval($userinfo['founder']) !== 1)
         {
             kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
             exit;
         }
 
-
         $plg_name = g('plg', 'str');
-
 
         if (empty($plg_name))
         {
@@ -246,7 +305,7 @@ switch ($case):
             #if already installed, show a message
             if (!empty(Plugins::getInstance()->installed_plugin_info($plg_name)))
             {
-                kleeja_admin_info($lang['PLUGIN_EXISTS_BEFORE'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+                kleeja_admin_info($lang['PLUGIN_EXISTS_BEFORE'], true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
                 exit;
             }
 
@@ -267,7 +326,6 @@ switch ($case):
                 $plugin_first_run = $kleeja_plugin[$plg_name]['first_run']['en'];
             }
 
-
             #check if compatible with kleeja
             #'plugin_kleeja_version_min' => '1.8',
             # Max version of Kleeja that's required to run this plugin
@@ -275,7 +333,10 @@ switch ($case):
 
             if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
             {
-                kleeja_admin_info($lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+                kleeja_admin_info(
+                    $lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'], 
+                    true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php')
+                );
                 exit;
             }
 
@@ -283,19 +344,20 @@ switch ($case):
             {
                 if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_max'], '>'))
                 {
-                    kleeja_admin_info($lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|>|p.max:' . $plugin_info['plugin_kleeja_version_max'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+                    kleeja_admin_info(
+                        $lang['PLUGIN_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|>|p.max:' . $plugin_info['plugin_kleeja_version_max'], 
+                        true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php')
+                    );
                     exit;
                 }
             }
 
             delete_cache('', true);
 
-
             if (is_array($plugin_info['plugin_description']))
             {
                 $plugin_info['plugin_description'] = !empty($plugin_info['plugin_description']['en']) ? $plugin_info['plugin_description']['en'] : $plugin_info['plugin_description'][0];
             }
-
 
             #add to database
             $insert_query = array(
@@ -306,13 +368,11 @@ switch ($case):
 
             $SQL->build($insert_query);
 
-
             #may God protect you brother.
             if(is_callable($install_callback))
             {
                 $install_callback($SQL->insert_id());
             }
-
 
             #show done, msg
             $text = '<h3>' . $lang['NEW_PLUGIN_ADDED'] . '</h3>';
@@ -332,8 +392,6 @@ switch ($case):
 
         break;
 
-
-
     //
     //uninstall a plugin
     //
@@ -345,9 +403,7 @@ switch ($case):
             exit;
         }
 
-
         $plg_name = g('plg', 'str');
-
 
         if (empty($plg_name))
         {
@@ -355,6 +411,7 @@ switch ($case):
             {
                 exit('empty($plg_name)');
             }
+
             //no plugin selected? back
             redirect(ADMIN_PATH . "?cp=" . basename(__file__, '.php'));
         }
@@ -390,15 +447,12 @@ switch ($case):
                 'WHERE' => "plg_name='" . $SQL->escape($plg_name) . "'"
             );
 
-
             $result = $SQL->build($query);
 
             $pluginDatabaseInfo = $SQL->fetch($result);
 
-
             #sad to see you go, brother
             $uninstall_callback(!empty($pluginDatabaseInfo) ? $pluginDatabaseInfo['plg_id'] : 0);
-
 
             delete_cache('', true);
 
@@ -414,7 +468,6 @@ switch ($case):
             $text = '<h3>' . $lang['PLUGIN_DELETED'] . '</h3>';
             $text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '\');", 2000);</script>' . "\n";
 
-
             $stylee = 'admin_info';
         }
 
@@ -422,7 +475,7 @@ switch ($case):
 
 
     //
-    //disable a plugin
+    // disable a plugin
     //
     case 'disable':
     case 'enable':
@@ -433,9 +486,7 @@ switch ($case):
             exit;
         }
 
-
         $plg_name = g('plg', 'str');
-
 
         if (empty($plg_name))
         {
@@ -458,7 +509,6 @@ switch ($case):
 
             $SQL->build($update_query);
 
-
             delete_cache('', true);
 
             #show done, msg
@@ -471,5 +521,131 @@ switch ($case):
 
         break;
 
+    case 'download':
+
+        if(intval($userinfo['founder']) !== 1)
+        {
+            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+            exit;
+        }
+
+        $download_plugin = g('plg');
+
+        // update it , rename function doesn't move the folder , if the folder is exists on the new dir
+        if( file_exists( PATH . KLEEJA_PLUGINS_FOLDER. '/' . $download_plugin . '/init.php' ) )
+        {
+            redirect( $plugin_update_link . $download_plugin );
+            exit;
+        }
+
+        // plugins avilable in kleeja store 
+        $store_link = 'https://raw.githubusercontent.com/kleeja-official/plugin-catalog/master/plugins.json';
+
+        $catalog_plugins = fetch_remote_file($store_link);
+
+        if ($catalog_plugins) 
+        {
+            $catalog_plugins = json_decode($catalog_plugins , true);
+
+            $store_plugins = array();
+            
+            // make an arry for all plugins in kleeja store that not included in our server
+            foreach ($catalog_plugins as $plugin_info) 
+            {
+                $store_plugins[$plugin_info['name']] = array(
+                    'name'  => $plugin_info['name'] ,
+                    'plg_version'  => $plugin_info['file']['version'] ,
+                    'url'  => $plugin_info['file']['url'] ,
+                    'kj_min_version' => $plugin_info['kleeja_version']['min'] ,
+                    'kj_max_version' => $plugin_info['kleeja_version']['max'] ,
+                );
+            }
+
+            // // => this plugin is hosted in our store
+            if (isset($store_plugins[$download_plugin]))
+            {
+                // check if the version of the plugin is compatible with our kleeja version or not
+                if (
+                    version_compare(strtolower($store_plugins[$download_plugin]['kj_min_version']), KLEEJA_VERSION , '<=')
+                    && version_compare(strtolower($store_plugins[$download_plugin]['kj_max_version']), KLEEJA_VERSION , '>=') 
+                    )
+                {
+                    $download_plugin_link = $store_plugins[$download_plugin]['url'];
+
+                    $downloaded_plugin_zip = fetch_remote_file($download_plugin_link, PATH . 'cache/' . $download_plugin . '.zip', 60, false, 10, true);
+
+                    if ($downloaded_plugin_zip) 
+                    {
+                        if (file_exists(PATH . 'cache/' . $download_plugin . '.zip' ) ) 
+                        {
+                            $zip = new ZipArchive();
+                            if ($zip->open(PATH . 'cache/' . $download_plugin . '.zip' ) === true)
+                            {
+                                if( $zip->extractTo(PATH . KLEEJA_PLUGINS_FOLDER))
+                                {
+                                    $zip->close();
+                                    // we dont need the zip file anymore
+                                    unlink(PATH . 'cache/' . $download_plugin . '.zip');
+
+                                    // for example :: When we extract zip file , the name will be ( advanced-extras-1.0 )
+                                    // so we need to remove the version from folder name and replace ( - ) with ( _ )
+                                    // and done
+                                    $plugin_folder_name = PATH . KLEEJA_PLUGINS_FOLDER. '/' . str_replace('_' , '-' , $download_plugin) . '-' . $store_plugins[$download_plugin]['plg_version'];
+                                    rename($plugin_folder_name , PATH . KLEEJA_PLUGINS_FOLDER. '/' . $download_plugin);
+
+                                    // download or update msg
+                                    kleeja_admin_info(
+                                        sprintf($lang[ig('update')  ? 'PLUGIN_UPDATED' : 'PLUGIN_DOWNLOADED'], $download_plugin), 
+                                        ADMIN_PATH . '?cp=' . basename(__file__, '.php')
+                                    );
+                    
+                                    exit;
+                                }
+                                else 
+                                {
+                                    kleeja_admin_err($lang['EXTRACT_ZIP_FAILED']);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            kleeja_admin_err($lang['PLUGIN_FILE_NOT_FOUND']);
+                        }
+                    }
+                    else 
+                    {
+                        kleeja_admin_err($lang['PLUGINS_SERVER_ERROR']);
+                    }
+                }
+                else
+                {
+                    kleeja_admin_err($lang['PLUGIN_N_CMPT_KLJ']);
+                }
+            }
+            else 
+            {
+                kleeja_admin_err(sprintf($lang['PLUGIN_REMOTE_FILE_MISSING'], $download_plugin));
+            }
+        }
+        else
+        {
+            kleeja_admin_err($lang['PLUGINS_SERVER_ERROR']);
+        }
+
+        break;
+
+    case 'update':
+
+        $update_plugin = g('plg');
+
+        $plugin_folder_name = PATH . KLEEJA_PLUGINS_FOLDER . '/' . $update_plugin;
+
+        if (is_dir($plugin_folder_name)) 
+        {
+            delete_plugin_folder($plugin_folder_name);
+        }
+
+        redirect($plugin_download_link . $update_plugin . '&amp;update' );
+        break;
 
 endswitch;

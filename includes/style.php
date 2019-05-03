@@ -174,38 +174,19 @@ class kleeja_style
      */
     protected function _if_callback($matches)
     {
-        $char = array(' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>');
-        $reps = array('==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>');
         $atts = call_user_func(array('kleeja_style', '_get_attributes'), $matches[0]);
-        $con = trim(!empty($atts['NAME']) ? $atts['NAME'] : (empty($atts['LOOP']) ? '' : $atts['LOOP']));
-
-        $con = str_replace('$this->vars', '[----this-vars----]', $con);
-
-        if (preg_match('/(.*)(' . implode('|', $char) . ')(.*)/i', $con, $arr))
+        $condition = '';
+        foreach(['NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || '] as $attribute=>$separator)
         {
-            $arr[1] = trim($arr[1]);
-            $var1 = $arr[1][0] != '$' ? call_user_func(array('kleeja_style', '_var_callback'), (!empty($atts['NAME']) ? '{' . $arr[1] . '}' : '{{' . $arr[1] . '}}')) : $arr[1];
-            $opr = str_replace($char, $reps, $arr[2]);
-            $var2 = trim($arr[3]);
-
-            #check for type
-            if ($var2[0] != '$' && !preg_match('/[0-9]/', $var2))
+            if(! empty($atts[$attribute]))
             {
-                $var2 = '"' . str_replace('"', '\"', $var2) . '"';
+                $condition .= $separator . $this->parse_condition($atts[$attribute], !empty($atts['LOOP']));
             }
-
-            $con = "$var1$opr$var2";
         }
-        elseif ($con[0] !== '$' && strpos($con, '(') === false)
-        {
-            $con = call_user_func(array('kleeja_style', '_var_callback'), (!empty($atts['NAME']) ? '{' . $con . '}' : '{{' . $con . '}}'));
-        }
-
-        $con = str_replace( '[----this-vars----]', '$this->vars', $con);
 
         return strtoupper($matches[1]) == 'IF'
-              ? '<?php if(' . $con . '){ ?>'
-              : (strtoupper($matches[1]) == 'UNLESS' ? '<?php if(!(' . $con . ')){ ?>' : '<?php }elseif(' . $con . '){ ?>');
+              ? '<?php if(' . $condition . '){ ?>'
+              : (strtoupper($matches[1]) == 'UNLESS' ? '<?php if(!(' . $condition . ')){ ?>' : '<?php }elseif(' . $condition . '){ ?>');
     }
 
 
@@ -217,6 +198,32 @@ class kleeja_style
     protected function _iif_callback($matches)
     {
         return '<IF NAME="' . $matches[1] . '">' . $matches[2] . '<ELSE>' . $matches[3] . '</IF>';
+    }
+
+    protected function parse_condition($condition, $is_loop)
+    {
+        $char = array(' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>');
+        $reps = array('==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>');
+
+        $con = str_replace('$this->vars', '[----this-vars----]', $condition);
+
+        if (preg_match('/(.*)(' . implode('|', $char) . ')(.*)/i', $con, $arr)) {
+            $arr[1] = trim($arr[1]);
+            $var1 = $arr[1][0] != '$' ? call_user_func(array('kleeja_style', '_var_callback'), (! $is_loop ? '{' . $arr[1] . '}' : '{{' . $arr[1] . '}}')) : $arr[1];
+            $opr = str_replace($char, $reps, $arr[2]);
+            $var2 = trim($arr[3]);
+
+            #check for type
+            if ($var2[0] != '$' && !preg_match('/[0-9]/', $var2)) {
+                $var2 = '"' . str_replace('"', '\"', $var2) . '"';
+            }
+
+            $con = "$var1 $opr $var2";
+        } elseif ($con[0] !== '$' && strpos($con, '(') === false) {
+            $con = call_user_func(array('kleeja_style', '_var_callback'), (!$is_loop ? '{' . $con . '}' : '{{' . $con . '}}'));
+        }
+
+        return str_replace('[----this-vars----]', '$this->vars', $con);
     }
 
 
