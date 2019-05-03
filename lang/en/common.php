@@ -287,4 +287,5 @@ return array(
     'OR_MANUAL_SELECT'  => 'Or click here to <em>Select</em> a file manually..',
 	//3.0.3
 	'NOTIFICATIONS' => 'Notifications',
+	'KJ_TWEETS'         => 'Kleeja Tweets' ,
 );
