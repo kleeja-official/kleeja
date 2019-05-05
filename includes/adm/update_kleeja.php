@@ -112,6 +112,18 @@ if ($down_new_pack)
                 continue;
             }
 
+            if(! is_writable($file_path))
+            {
+                chmod($file_path, 0644);
+
+                if( ! is_writable($file_path))
+                {
+                    //if a host uses restrictive file permissions (e.g. 400) for all user files,
+                    //this could solve the problem.
+                    chmod($file_path, 0644 & ~ umask());
+                }
+            }
+
             //backup for rollback
             if (! file_put_contents(
                 'cache/rollback/' . ltrim($file_path, '/'),
