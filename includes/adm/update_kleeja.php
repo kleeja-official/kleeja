@@ -100,6 +100,9 @@ if ($down_new_pack)
     mkdir(PATH . 'cache/rollback');
     $update_failed    = false;
 
+    //maintenance mode on
+    update_config('siteclose', 1);
+
     foreach ($files as $file)
     {
         if ($file->isFile())
@@ -184,4 +187,7 @@ if ($down_new_pack)
          * AND DELETE AFTER WE FINISH ;
          */
     }
+
+    //maintenance mode off
+    update_config('siteclose', 0);
 }
