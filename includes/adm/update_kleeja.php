@@ -28,13 +28,13 @@ if (! ig('install_again'))
 
         exit;
     }
-} // $_GET['install_again'] is set => reinstall kleeja => check if he is a developer
+}
 else
 {
-    //  please no .
+    // kleeja is up to date, unless your are a developer trying to make a point...
     if (! defined('DEV_STAGE'))
     {
-        kleeja_admin_err(':( NOOO!!');
+        kleeja_admin_info('Kleeja is up to date!');
 
         exit;
     }
@@ -54,8 +54,17 @@ $kj_new_pack_link = 'https://github.com/kleeja-official/kleeja/archive/';
 $old_version = KLEEJA_VERSION;
 $new_version = unserialize($config['new_version'])['version_number'];
 
- // downloaded the last version to cache folder
-$down_new_pack = fetch_remote_file($kj_new_pack_link . $new_version . '.zip', PATH . 'cache/kleeja.zip', 60, false, 10, true);
+
+if (! class_exists('ZipArchive'))
+{
+    //$error = $lang['NO_ZIP_ARCHIVE'];
+    $down_new_pack = false;
+}
+else
+{
+    // downloaded the last version to cache folder
+    $down_new_pack = fetch_remote_file($kj_new_pack_link . $new_version . '.zip', PATH . 'cache/kleeja.zip', 60, false, 10, true);
+}
 
 if ($down_new_pack)
 {
@@ -115,11 +124,11 @@ if ($down_new_pack)
                 continue;
             }
 
-            if(! is_writable($file_path))
+            if (! is_writable($file_path))
             {
                 chmod($file_path, 0644);
 
-                if( ! is_writable($file_path))
+                if (! is_writable($file_path))
                 {
                     //if a host uses restrictive file permissions (e.g. 400) for all user files,
                     //this could solve the problem.
