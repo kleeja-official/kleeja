@@ -151,7 +151,7 @@ switch ($case):
             break;
         }
 
-        // plugins avilable in kleeja remote catalog 
+        // plugins avilable in kleeja remote catalog
         if (! ($catalog_plugins = $cache->get('catalog_plugins')))
         {
             $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
@@ -179,7 +179,7 @@ switch ($case):
             }
 
             // is there a new version of this in the store
-            elseif ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) && 
+            elseif ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) &&
                 version_compare(
                     strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']),
                     strtolower($plugin_info['file']['version']),
@@ -552,7 +552,7 @@ switch ($case):
             exit;
         }
 
-        // plugins avilable in kleeja store 
+        // plugins avilable in kleeja store
         $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
 
         $catalog_plugins = fetch_remote_file($store_link);
@@ -581,7 +581,7 @@ switch ($case):
                 // check if the version of the plugin is compatible with our kleeja version or not
                 if (
                     version_compare(strtolower($store_plugins[$download_plugin]['kj_min_version']), KLEEJA_VERSION, '<=')
-                    && version_compare(strtolower($store_plugins[$download_plugin]['kj_max_version']), KLEEJA_VERSION, '>=') 
+                    && version_compare(strtolower($store_plugins[$download_plugin]['kj_max_version']), KLEEJA_VERSION, '>=')
                     ) {
                     $download_plugin_link = $store_plugins[$download_plugin]['url'];
 
@@ -656,7 +656,7 @@ switch ($case):
 
         if (is_dir($plugin_folder_name))
         {
-            delete_plugin_folder($plugin_folder_name);
+            kleeja_unlink($plugin_folder_name);
         }
 
         redirect($plugin_download_link . $update_plugin . '&amp;update' );

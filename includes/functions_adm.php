@@ -18,6 +18,13 @@ if (! defined('IN_COMMON'))
 * Print cp error function handler
 *
 * For admin
+* @param mixed $msg
+* @param mixed $navigation
+* @param mixed $title
+* @param mixed $exit
+* @param mixed $redirect
+* @param mixed $rs
+* @param mixed $style
 */
 function kleeja_admin_err($msg, $navigation = true, $title='', $exit = true, $redirect = false, $rs = 3, $style = 'admin_err')
 {
@@ -237,7 +244,7 @@ function build_search_query($search)
 
     global $SQL;
 
-    $search['filename'] = ! isset($search['filename']) ? '' : $search['filename']; 
+    $search['filename'] = ! isset($search['filename']) ? '' : $search['filename'];
     $search['username'] = ! isset($search['username']) ? '' : $search['username'];
     $search['than']		   = ! isset($search['than']) ? '' : $search['than'];
     $search['size']		   = ! isset($search['size']) ? '' : $search['size'];
@@ -249,8 +256,8 @@ function build_search_query($search)
     $search['ext']		    = ! isset($search['ext']) ? '' : $search['ext'];
     $search['user_ip']	 = ! isset($search['user_ip']) ? '' : $search['user_ip'];
 
-    $file_namee	= $search['filename'] != '' ? 'AND (f.real_filename LIKE \'%' . $SQL->escape($search['filename']) . '%\' OR f.name LIKE \'%' . $SQL->escape($search['filename']) . '%\')' : ''; 
-    $usernamee	 = $search['username'] != '' ? 'AND u.name LIKE \'%' . $SQL->escape($search['username']) . '%\'' : ''; 
+    $file_namee	= $search['filename'] != '' ? 'AND (f.real_filename LIKE \'%' . $SQL->escape($search['filename']) . '%\' OR f.name LIKE \'%' . $SQL->escape($search['filename']) . '%\')' : '';
+    $usernamee	 = $search['username'] != '' ? 'AND u.name LIKE \'%' . $SQL->escape($search['username']) . '%\'' : '';
     $size_than	 = ' f.size ' . ($search['than']!=1 ? '<=' : '>=') . (intval($search['size']) * 1024) . ' ';
     $ups_than	  = $search['ups']      != '' ? 'AND f.uploads ' . ($search['uthan']!=1 ? '<' : '>') . intval($search['ups']) . ' ' : '';
     $rep_than	  = $search['rep']      != '' ? 'AND f.report ' . ($search['rthan']!=1 ? '<' : '>') . intval($search['rep']) . ' ' : '';
@@ -296,7 +303,7 @@ function sync_total_files($files = true, $start = false)
     $start	     = ! $start ? $min_id : $start;
     $end	       = $start + $batch_size;
 
-    //now lets get this step's files number 
+    //now lets get this step's files number
     unset($v, $result);
 
     $query['SELECT'] = 'COUNT(f.id) as num_files';
@@ -322,7 +329,7 @@ function sync_total_files($files = true, $start = false)
     //make it zero, firstly
     if ($first_loop)
     {
-        $update_query['SET'] = ($files ? 'files' : 'imgs') . '= 0'; 
+        $update_query['SET'] = ($files ? 'files' : 'imgs') . '= 0';
         $SQL->build($update_query);
     }
 
@@ -358,7 +365,7 @@ function get_actual_stats($name)
 }
 
 /**
- * check wether a start box is hidden or not  
+ * check wether a start box is hidden or not
  * @param  string $name box name
  * @return bool
  */
@@ -385,32 +392,4 @@ function adm_is_start_box_hidden($name)
     is_array($plugin_run_result = Plugins::getInstance()->run('adm_start_boxes_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     return in_array($name, $boxes);
-}
-
-/**
- * delete plugin folder
- * @param  string $dir plugin folder path 
- * @return void
- */
-function delete_plugin_folder($dir)
-{
-    $it    = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
-    $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
-
-    foreach ($files as $file)
-    {
-        if ($file->isLink())
-        {
-            unlink($file->getPathname());
-        }
-        elseif ($file->isDir())
-        {
-            rmdir($file->getPathname());
-        }
-        else
-        {
-            unlink($file->getPathname());
-        }
-    }
-    rmdir($dir);
 }

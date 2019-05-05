@@ -97,7 +97,7 @@ function get_ban()
                 // if the request is an image
                 //
                 if (
-                    ( defined('IN_DOWNLOAD') && (ig('img') || ig('thmb') || ig('thmbf') || ig('imgf')) )
+                    (defined('IN_DOWNLOAD') && (ig('img') || ig('thmb') || ig('thmbf') || ig('imgf')))
                     || g('go', 'str', '') == 'queue'
                 ) {
                     @$SQL->close();
@@ -271,8 +271,8 @@ function fetch_remote_file($url, $save_in = false, $timeout = 20, $head_only = f
     {
         @ini_set('default_socket_timeout', $timeout);
     }
-    $allow_url_fopen = function_exists('ini_get') 
-                    ? strtolower(@ini_get('allow_url_fopen')) 
+    $allow_url_fopen = function_exists('ini_get')
+                    ? strtolower(@ini_get('allow_url_fopen'))
                     : strtolower(@get_cfg_var('allow_url_fopen'));
 
     if (function_exists('curl_init'))
@@ -302,7 +302,7 @@ function fetch_remote_file($url, $save_in = false, $timeout = 20, $head_only = f
             @curl_exec($ch);
             curl_close($ch);
             fclose($out);
-        } 
+        }
 
         if ($head_only)
         {
@@ -548,7 +548,7 @@ function delete_cache($name, $all=false)
 
         if (file_exists($path_to_cache . '/' . $name))
         {
-            $del = kleeja_unlink ($path_to_cache . '/' . $name, true);
+            $del = kleeja_unlink($path_to_cache . '/' . $name, true);
         }
     }
 
@@ -577,7 +577,32 @@ function kleeja_unlink($filePath, $cache_file = false)
     //99.9% who use this
     if (function_exists('unlink'))
     {
-        return unlink($filePath);
+        if (is_dir($filePath))
+        {
+            $it    = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
+            $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+
+            foreach ($files as $file)
+            {
+                if ($file->isLink())
+                {
+                    unlink($file->getPathname());
+                }
+                elseif ($file->isDir())
+                {
+                    rmdir($file->getPathname());
+                }
+                else
+                {
+                    unlink($file->getPathname());
+                }
+            }
+            return rmdir($dir);
+        }
+        else
+        {
+            return unlink($filePath);
+        }
     }
     //5% only who use this
     //else if (function_exists('exec'))
@@ -1301,12 +1326,12 @@ function klj_clean_old_files($from = 0)
                 //delete from folder ..
                 if (file_exists($row['folder'] . '/' . $row['name']))
                 {
-                    @kleeja_unlink ($row['folder'] . '/' . $row['name']);
+                    @kleeja_unlink($row['folder'] . '/' . $row['name']);
                 }
                 //delete thumb
-                if (file_exists($row['folder'] . '/thumbs/' . $row['name'] ))
+                if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                 {
-                    @kleeja_unlink ($row['folder'] . '/thumbs/' . $row['name'] );
+                    @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
                 }
 
                 $ids[] = $row['id'];
@@ -1717,11 +1742,11 @@ function parse_serve_rule($regex, $args, $is_unicode = false)
 
             foreach ($parsed_args as $arg_key => $arg_value)
             {
-                if ( preg_match('/^\$/', $arg_value))
+                if (preg_match('/^\$/', $arg_value))
                 {
                     $match_number = ltrim($arg_value, '$');
 
-                    if ( isset($matches[$match_number]))
+                    if (isset($matches[$match_number]))
                     {
                         $_GET[$arg_key] = $matches[$match_number];
                     }
