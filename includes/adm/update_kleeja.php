@@ -14,7 +14,10 @@ if (! defined('IN_ADMIN'))
 }
 
 $old_version = KLEEJA_VERSION;
-$new_version = unserialize($config['new_version'])['version_number'];
+$new_version = unserialize($config['new_version']);
+$new_version = empty($new_version['version_number'])
+                    ? KLEEJA_VERSION
+                    : $new_version['version_number'];
 
 
 // he can reinstall kleeja if he want by $_GET['install_again'] => for developers only
@@ -24,7 +27,7 @@ if (! ig('install_again'))
     if (! version_compare(strtolower($old_version), strtolower($new_version), '<'))
     {
         // kleeja doesn't need to update
-        kleeja_admin_info('there is no update for your version', ADMIN_PATH);
+        kleeja_admin_info('there is no update for your version!', ADMIN_PATH);
 
         exit;
     }
@@ -102,47 +105,36 @@ if ($down_new_pack)
     /**
      * we will build rollback as zip file , and import the local version in it
      */
-    
-     $localVersion = PATH . 'cache/old_kj.zip';
 
-     if (file_exists($localVersion)) 
-     {
-         kleeja_unlink($localVersion);
-     }
+    $localVersion = PATH . 'cache/old_kj.zip';
 
-     $oldKjZip = new ZipArchive;
-     $oldKjZip->open($localVersion, ZipArchive::CREATE);
+    if (file_exists($localVersion))
+    {
+        kleeja_unlink($localVersion);
+    }
 
-    $it    = new RecursiveDirectoryIterator(PATH , RecursiveDirectoryIterator::SKIP_DOTS);
+    $oldKjZip = new ZipArchive;
+    $oldKjZip->open($localVersion, ZipArchive::CREATE);
+
+    $it        = new RecursiveDirectoryIterator(PATH, RecursiveDirectoryIterator::SKIP_DOTS);
     $pathFiles = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
 
     // we will not import all files , only what we want to update
-    foreach ($pathFiles as $pathFile) 
+    foreach ($pathFiles as $pathFile)
     {
         // only files , i like the zip file becuse i don't need to create multi folders inside
-        if ($pathFile->isFile()) 
+        if ($pathFile->isFile())
         {
-            if (strpos($pathFile->getPathname() , '../cache') !== false) 
+            if (preg_match('/^\.\.\/(plugins|styles|cache|uploads)/', $pathFile->getPathname()))
             {
                 continue;
             }
-            elseif (strpos($pathFile->getPathname() , '../plugins') !== false) 
-            {
-                continue;
-            }
-            elseif (strpos($pathFile->getPathname() , '../styles') !== false) 
-            {
-                continue;
-            }
-            elseif (strpos($pathFile->getPathname() , '../uploads') !== false) 
-            {
-                continue;
-            }else 
-            {
-                // it's make a folder with name (..) , we don't want it
-                $oldKjZip->addFromString(str_replace('../' , '' , $pathFile->getPathname() )
-                , file_get_contents($pathFile->getPathname()));
-            }
+
+            // it's make a folder with name (..) , we don't want it
+            $oldKjZip->addFromString(
+                preg_replace('/^\.\.\//', '', $pathFile->getPathname()),
+                file_get_contents($pathFile->getPathname())
+            );
         }
     }
     $oldKjZip->close();
@@ -210,7 +202,7 @@ if ($down_new_pack)
 
     if ($update_failed)
     {
-        kleeja_admin_err('update filed ');
+        kleeja_admin_err('updating process has failed...');
         $zip = new ZipArchive;
         $zip->open($localVersion);
         $zip->extractTo(PATH);

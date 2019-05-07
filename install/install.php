@@ -23,6 +23,7 @@ if (file_exists($_path . 'config.php'))
 {
     include_once $_path . 'config.php';
 }
+include_once 'includes/plugins.php';
 include_once $_path . 'includes/functions_display.php';
 include_once $_path . 'includes/functions_alternative.php';
 include_once $_path . 'includes/functions.php';
@@ -30,36 +31,6 @@ include_once $_path . 'includes/functions.php';
 include_once $_path . 'includes/mysqli.php';
 
 include_once 'includes/functions_install.php';
-
-
-/**
- * @ignore an alias class for plugins class
- */
-class Plugins
-{
-    private static $instance;
-
-    /**
-     * @return Plugins
-     */
-    public static function getInstance()
-    {
-        if (is_null(self::$instance))
-        {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    /**
-     * @return array
-     */
-    public function run($name)
-    {
-        return [];
-    }
-}
-
 
 
 
@@ -71,7 +42,6 @@ if (! ig('step'))
     exit;
 }
 
-
 //
 // Kleeja must be safe ..
 //
@@ -81,7 +51,7 @@ if (! empty($dbuser) && ! empty($dbname) && ! (ig('step') && in_array(g('step'),
 
     if (! empty($d))
     {
-        header('Location: index.php');
+        header('Location: ./index.php');
 
         exit;
     }
@@ -243,8 +213,8 @@ case 'data' :
         //connect .. for check
         $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
 
-        include_once '../includes/usr.php';
-        include_once '../includes/functions_alternative.php';
+        include_once $_path . 'includes/usr.php';
+        include_once $_path . 'includes/functions_alternative.php';
         $usrcp = new usrcp;
 
         $user_salt			     = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);

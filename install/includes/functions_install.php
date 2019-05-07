@@ -26,13 +26,13 @@ if (ig('change_lang'))
 }
 
 // Including current language
-$lang = require $_path . 'lang/' . getlang() . '/common.php';
-$lang = array_merge($lang, require $_path . 'lang/' . getlang() . '/install.php');
+$lang = require PATH . 'lang/' . getlang() . '/common.php';
+$lang = array_merge($lang, require PATH . 'lang/' . getlang() . '/install.php');
 
 
 $IN_DEV = false;
 // Exceptions for development
-if (file_exists($_path . '.svn/entries') || file_exists('dev.txt'))
+if (file_exists(PATH . '.svn/entries') || file_exists('dev.txt'))
 {
     define('DEV_STAGE', true);
     $IN_DEV = true;
@@ -46,13 +46,11 @@ if (file_exists($_path . '.svn/entries') || file_exists('dev.txt'))
  */
 function getlang ($link = false)
 {
-    global $_path;
-
     if (ig('lang'))
     {
         $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
 
-        $ln	= file_exists($_path . 'lang/' . $lang . '/install.php') ? $lang : 'en';
+        $ln	= file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
     }
     else
     {
@@ -64,11 +62,9 @@ function getlang ($link = false)
 
 function getjquerylink()
 {
-    global $_path;
-
-    if (file_exists($_path . 'admin/Masmak/js/jquery.min.js'))
+    if (file_exists(PATH . 'admin/Masmak/js/jquery.min.js'))
     {
-        return $_path . 'admin/Masmak/js/jquery.min.js';
+        return PATH . 'admin/Masmak/js/jquery.min.js';
     }
     else
     {
@@ -81,7 +77,7 @@ function getjquerylink()
 */
 function gettpl($tplname)
 {
-    global $lang, $_path;
+    global $lang;
 
     $tpl = preg_replace('/{{([^}]+)}}/', '<?php \\1 ?>', file_get_contents('style/' . $tplname));
     ob_start();
@@ -95,34 +91,21 @@ function gettpl($tplname)
 /**
 * Export config
 */
-function do_config_export($srv, $usr, $pass, $nm, $prf, $fpath = '')
+function do_config_export($srv, $usr, $pass, $nm, $prf)
 {
-    global $_path;
-
-    if (! in_array($type, ['mysql', 'mysqli']))
-    {
-        $type = 'mysql';
-    }
-
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
-    //$data	.= '$db_type		= \'' . $type . "'; //mysqli or mysql \n";
     $data	.= '$dbserver		= \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
     $data	.= '$dbuser			= \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
     $data	.= '$dbpass			= \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
     $data	.= '$dbname			= \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
     $data .= '$dbprefix		= \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
-    //$data	.= '$adminpath		= \'admin.php\';// if you renamed your acp file , please fill the new name here \n';
-    //$data	.= "\n\n\n";
-    //$data	.= "//for integration with script  must change user systen from admin cp  \n";
-    //$data	.= '$script_path	= \'' . str_replace("'", "\'", $fpath) . "'; // path of script (./forums)  \n";
-    //$data	.= "\n\n";
-    //$data	.= '?'.'>';
+
 
     $written = false;
 
-    if (is_writable($_path))
+    if (is_writable(PATH))
     {
-        $fh = @fopen($_path . 'config.php', 'wb');
+        $fh = @fopen(PATH . 'config.php', 'wb');
 
         if ($fh)
         {
