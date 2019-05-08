@@ -617,7 +617,7 @@ switch ($case):
                                 }
                                 else
                                 {
-                                    kleeja_admin_err($lang['EXTRACT_ZIP_FAILED']);
+                                    kleeja_admin_err(sprintf($lang['EXTRACT_ZIP_FAILED'], KLEEJA_PLUGINS_FOLDER));
                                 }
                             }
                         }
