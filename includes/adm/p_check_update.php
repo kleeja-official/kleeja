@@ -23,13 +23,18 @@ if ($current_smt == 'check'):
     //get data from kleeja github repo
     if (! ($version_data = $cache->get('kleeja_repo_version')))
     {
-        $github_data = fetch_remote_file('https://raw.githubusercontent.com/awssat/kleeja/master/includes/version.php', false, 6);
+        $github_data = fetch_remote_file('https://api.github.com/repos/kleeja-official/kleeja/releases/latest', false, 60);
 
         if (! empty($github_data))
         {
-            preg_match_all('/define\(\'KLEEJA_VERSION\',\s{1,4}\'([^\']+)\'\);/', $github_data, $matches, PREG_SET_ORDER, 0);
-            $version_data = trim(htmlspecialchars($matches[0][1]));
-            $cache->save('kleeja_repo_version', $version_data, 3600 * 2);
+            $latest_release = json_decode($github_data, true);
+            $version_data   = '';
+
+            if (json_last_error() === JSON_ERROR_NONE)
+            {
+                $version_data = trim(htmlspecialchars($latest_release['tag_name']));
+                $cache->save('kleeja_repo_version', $version_data, 3600 * 2);
+            }
         }
     }
 
