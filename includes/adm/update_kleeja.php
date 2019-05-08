@@ -19,6 +19,10 @@ $new_version = empty($new_version['version_number'])
                     ? KLEEJA_VERSION
                     : $new_version['version_number'];
 
+// solutions for hosts running under suexec, add define('HAS_SUEXEC', true) to config.php.
+define('K_FILE_CHMOD', defined('HAS_SUEXEC') ? (0644 & ~ umask()) : 0644);
+define('K_DIR_CHMOD', defined('HAS_SUEXEC') ? (0755 & ~ umask()) : 0755);
+
 
 // he can reinstall kleeja if he want by $_GET['install_again'] => for developers only
 if (! ig('install_again'))
@@ -159,6 +163,7 @@ if ($down_new_pack)
         if ($file->isFile())
         {
             $file_path = str_replace("cache/kleeja-{$new_version}/", '', $file->getPathname());
+            $file_dir = str_replace("cache/kleeja-{$new_version}/", '', $file->getPath());
 
             // same, no need to replace
             if (file_exists($file_path)  && md5_file($file_path) == md5_file($file->getPathname()))
@@ -166,23 +171,22 @@ if ($down_new_pack)
                 continue;
             }
 
+            //no folder?
+            if(! file_exists($file_dir))
+            {
+                mkdir($file_dir, K_DIR_CHMOD, true);
+            }
+
             if (! is_writable($file_path))
             {
-                chmod($file_path, 0644);
-
-                if (! is_writable($file_path))
-                {
-                    //if a host uses restrictive file permissions (e.g. 400) for all user files,
-                    //this could solve the problem.
-                    chmod($file_path, 0644 & ~ umask());
-                }
+                chmod($file_path, K_FILE_CHMOD);
             }
 
             //copy file
-            if (! file_put_contents(
+            if (file_put_contents(
                 $file_path,
                 file_get_contents($file->getPathname())
-            ))
+            ) === false)
             {
                 $update_failed = true;
                 array_push($failed_files, $file_path);
@@ -193,7 +197,7 @@ if ($down_new_pack)
         elseif ($file->isDir())
         {
             // here is folder , when we finish update , we will delete all folders and files
-            //TODO if folder is new, then mkdir it.
+            mkdir($file_path, K_DIR_CHMOD, true);
             continue;
         }
         else
@@ -204,6 +208,9 @@ if ($down_new_pack)
 
     if ($update_failed)
     {
+        //maintenance mode off
+        update_config('siteclose', 0);
+
         kleeja_admin_err(
             'updating process has failed...' .
             (defined('DEV_STAGE') ? '[' . implode(', ', $failed_files) . ']' : '')
