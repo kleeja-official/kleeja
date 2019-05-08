@@ -13,6 +13,17 @@ if (! defined('IN_ADMIN'))
     exit();
 }
 
+/**
+ * TODO:
+ * - ajax
+ * - first get new kleeja version. (one request)
+ * - show [update] button.
+ * - update (one request).
+ * - after-update (one request)
+ */
+
+set_time_limit(0);
+
 $old_version = KLEEJA_VERSION;
 $new_version = unserialize($config['new_version']);
 $new_version = empty($new_version['version_number'])
@@ -106,46 +117,16 @@ if ($down_new_pack)
         kleeja_unlink(PATH . "cache/kleeja-{$new_version}/{$folderName}");
     }
 
-    /**
-     * we will build rollback as zip file , and import the local version in it
-     */
+    # backup as zip file and import the local files in it to rollback later on failure
+    $backup_version = PATH . 'cache/backup.zip';
 
-    $localVersion = PATH . 'cache/old_kj.zip';
-
-    if (file_exists($localVersion))
+    if (file_exists($backup_version))
     {
-        kleeja_unlink($localVersion);
+        kleeja_unlink($backup_version);
     }
 
-    $oldKjZip = new ZipArchive;
-    $oldKjZip->open($localVersion, ZipArchive::CREATE);
-
-    $it        = new RecursiveDirectoryIterator(PATH, RecursiveDirectoryIterator::SKIP_DOTS);
-    $pathFiles = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
-
-    // we will not import all files , only what we want to update
-    foreach ($pathFiles as $pathFile)
-    {
-        // only files , i like the zip file becuse i don't need to create multi folders inside
-        if ($pathFile->isFile())
-        {
-            if (preg_match('/^\.\.\/(plugins|styles|cache|uploads)/', $pathFile->getPathname()))
-            {
-                continue;
-            }
-
-            // it's make a folder with name (..) , we don't want it
-            $oldKjZip->addFromString(
-                preg_replace('/^\.\.\//', '', $pathFile->getPathname()),
-                file_get_contents($pathFile->getPathname())
-            );
-        }
-    }
-    $oldKjZip->close();
-
-    /**
-     * Now , we have a copy from old version , let's try to update it
-     */
+    $backup = new ZipArchive;
+    $backup->open($backup_version, ZipArchive::CREATE);
 
 
     // delete plugin folder function with some changes :)
@@ -154,6 +135,7 @@ if ($down_new_pack)
 
     $update_failed    = false;
     $failed_files     = [];
+    $new_folders      = [];
 
     //maintenance mode on
     update_config('siteclose', 1);
@@ -175,12 +157,19 @@ if ($down_new_pack)
             if(! file_exists($file_dir))
             {
                 mkdir($file_dir, K_DIR_CHMOD, true);
+                array_push($new_folders, $file_dir);
             }
 
             if (! is_writable($file_path))
             {
                 chmod($file_path, K_FILE_CHMOD);
             }
+
+            //back up current file
+            $backup->addFromString(
+                $file_path,
+                file_get_contents($file_path)
+            );
 
             //copy file
             if (file_put_contents(
@@ -197,7 +186,12 @@ if ($down_new_pack)
         elseif ($file->isDir())
         {
             // here is folder , when we finish update , we will delete all folders and files
-            mkdir($file_path, K_DIR_CHMOD, true);
+            if (! file_exists($file_path))
+            {
+                mkdir($file_path, K_DIR_CHMOD, true);
+                array_push($new_folders, $file_path);
+            }
+
             continue;
         }
         else
@@ -206,20 +200,28 @@ if ($down_new_pack)
         }
     }
 
+    $backup->close();
+
     if ($update_failed)
     {
+        //rollback to backup
+        $zip = new ZipArchive;
+        $zip->open($backup_version);
+        $zip->extractTo(PATH);
+        $zip->close();
+
+        foreach($new_folders as $folder)
+        {
+            kleeja_unlink($folder);
+        }
+
         //maintenance mode off
         update_config('siteclose', 0);
 
         kleeja_admin_err(
             'updating process has failed...' .
-            (defined('DEV_STAGE') ? '[' . implode(', ', $failed_files) . ']' : '')
+            (defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '')
         );
-
-        $zip = new ZipArchive;
-        $zip->open($localVersion);
-        $zip->extractTo(PATH);
-        $zip->close();
     }
     else
     {
@@ -229,21 +231,18 @@ if ($down_new_pack)
             require_once $updateFiles;
         }
 
-        // after we made success update , let's delete files and folders incache
+        //maintenance mode off
+        update_config('siteclose', 0);
 
-        // kleeja new version files
+        // after a success update, delete files and folders in cache
         kleeja_unlink(PATH . "cache/kleeja-{$new_version}");
-
-        // delete old cache files
         delete_cache('', true);
 
-        /**
-         * DDISPLAY SUCCESS MSG HERE , AND ALSO WE CAN INCLUDE SUCCESS MSG ON UPDATE FILE
-         * OR WE CAN INCLUDE UPDATE FILES IN GITHUB , AND DOWNLOAD IT IN CACHE FOLDER WHEN IT REQUEST
-         * AND DELETE AFTER WE FINISH ;
-         */
+       kleeja_info(
+           "Kleeja has been updated to {$new_version} successfully...",
+           '',
+           true,
+           '?cp=p_check_update'
+        );
     }
-
-    //maintenance mode off
-    update_config('siteclose', 0);
 }

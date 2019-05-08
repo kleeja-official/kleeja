@@ -593,7 +593,7 @@ function kleeja_unlink($filePath, $cache_file = false)
                     unlink($file->getPathname());
                 }
             }
-            return rmdir($dir);
+            return rmdir($filePath);
         }
         else
         {
