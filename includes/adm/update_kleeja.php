@@ -149,6 +149,7 @@ if ($down_new_pack)
     $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
 
     $update_failed    = false;
+    $failed_files     = [];
 
     //maintenance mode on
     update_config('siteclose', 1);
@@ -184,6 +185,7 @@ if ($down_new_pack)
             ))
             {
                 $update_failed = true;
+                array_push($failed_files, $file_path);
 
                 break;
             }
@@ -202,7 +204,11 @@ if ($down_new_pack)
 
     if ($update_failed)
     {
-        kleeja_admin_err('updating process has failed...');
+        kleeja_admin_err(
+            'updating process has failed...' .
+            (defined('DEV_STAGE') ? '[' . implode(', ', $failed_files) . ']' : '')
+        );
+
         $zip = new ZipArchive;
         $zip->open($localVersion);
         $zip->extractTo(PATH);

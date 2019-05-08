@@ -579,16 +579,12 @@ function kleeja_unlink($filePath, $cache_file = false)
     {
         if (is_dir($filePath))
         {
-            $it    = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
+            $it    = new RecursiveDirectoryIterator($filePath, RecursiveDirectoryIterator::SKIP_DOTS);
             $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
 
             foreach ($files as $file)
             {
-                if ($file->isLink())
-                {
-                    unlink($file->getPathname());
-                }
-                elseif ($file->isDir())
+                if ($file->isDir())
                 {
                     rmdir($file->getPathname());
                 }
@@ -604,21 +600,6 @@ function kleeja_unlink($filePath, $cache_file = false)
             return unlink($filePath);
         }
     }
-    //5% only who use this
-    //else if (function_exists('exec'))
-    //{
-    //	$out = array();
-    //	$return = null;
-    //	exec('del ' . escapeshellarg(realpath($filepath)) . ' /q', $out, $return);
-    //	return $return;
-    //}
-    //5% only who use this
-    //else if (function_exists('system'))
-    //{
-    //	$return = null;
-    //	system ('del ' . escapeshellarg(realpath($filepath)) . ' /q', $return);
-    //	return $return;
-    //}
     //just rename cache file if there is new thing
     elseif (function_exists('rename') && $cache_file)
     {
