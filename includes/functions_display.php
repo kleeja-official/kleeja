@@ -840,7 +840,7 @@ function kleeja_date($time, $human_time = true, $format = false)
         define('TIME_FORMAT', 'd-m-Y h:i a'); // to be moved to configs later
     }
 
-    if (! empty($config['time_zone']) && strpos($config['time_zone'], '/'))
+    if (! empty($config['time_zone']) && strpos($config['time_zone'], '/') !== false)
     {
         $timezone_offset = timezone_offset_get(new DateTimeZone($config['time_zone']), new DateTime);
     }
