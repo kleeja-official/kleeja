@@ -132,7 +132,8 @@ while ($row=$SQL->fetch_array($result))
 
         foreach ($zones as $z=>$t)
         {
-            $time_zones .= '<option ' . ($con['time_zone'] == $t ? 'selected="selected"' : '') . ' value="' . $t . '">' . $z . '</option>' . "\n";
+            $gmt_diff = $t < 0 ? $t : '+' . $t;
+            $time_zones .= '<option ' . ($con['time_zone'] == $z ? 'selected="selected"' : '') . ' value="' . $z . '">' . $z . " (GMT{$gmt_diff})" . '</option>' . "\n";
         }
     }
     elseif ($row['name'] == 'language')

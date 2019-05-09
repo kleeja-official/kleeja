@@ -87,7 +87,7 @@ function Saaheader($title = '', $extra = '')
 
     if ($config['siteclose'] == '1' && user_can('enter_acp') && ! defined('IN_ADMIN'))
     {
-        //add notification bar 
+        //add notification bar
         $header = preg_replace('/<body([^\>]*)>/i', "<body\\1>\n<!-- site is closed -->\n<p style=\"z-index:999;width: 100%; text-align:center; background:#FFFFA6; color:black; border:thin;top:0;left:0; position:absolute; clear:both;\">" . $lang['NOTICECLOSED'] . "</p>\n<!-- #site is closed -->", $header);
     }
 
@@ -137,7 +137,7 @@ function Saafooter()
     $tpl->assign('run_queue', '<img src="' . $config['siteurl'] . 'go.php?go=queue" width="1" height="1" alt="queue" />');
 
 
-    // if google analytics, new version 
+    // if google analytics, new version
     //http://www.google.com/support/googleanalytics/bin/answer.py?answer=55488&topic=11126
     $googleanalytics = '';
 
@@ -158,7 +158,7 @@ function Saafooter()
         $googleanalytics .= '</script>' . "\n";
     }
 
-    $tpl->assign('googleanalytics', $googleanalytics);	
+    $tpl->assign('googleanalytics', $googleanalytics);
 
     $extras['footer'] = empty($extras['footer']) ? false : $extras['footer'];
 
@@ -172,7 +172,7 @@ function Saafooter()
 
     echo $footer;
 
-    //page analysis 
+    //page analysis
     if (ig('debug') && user_can('enter_acp'))
     {
         kleeja_debug();
@@ -334,7 +334,7 @@ function kleeja_debug()
  */
 function big_error($error_title, $msg_text, $error = true)
 {
-    global $SQL; 
+    global $SQL;
     echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">' . "\n";
     echo '<head>' . "\n";
     echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' . "\n";
@@ -477,7 +477,7 @@ function kleeja_check_form_key($form_name, $require_time = 300)
         $time_was  = p('k_form_time', 'int');
         $different = time() - $time_was;
 
-        //check time that user spent in the form 
+        //check time that user spent in the form
         if ($different && (! $require_time || $require_time >= $different))
         {
             if (sha1($config['h_key'] . $form_name . $time_was) === $key_was)
@@ -613,7 +613,7 @@ function get_up_tpl_box($box_name, $extra = [])
         }
     }
 
-    //extra value 
+    //extra value
     $extra += [
         'siteurl'  => $config['siteurl'],
         'sitename' => $config['sitename'],
@@ -775,7 +775,7 @@ function is_browser($b)
          **/
         case 'mobile':
             $mobile_agents = ['iPhone;', 'iPod;', 'blackberry', 'Android', 'HTC' , 'IEMobile', 'LG/', 'LG-',
-                'LGE-', 'MOT-', 'Nokia', 'SymbianOS', 'nokia_', 'PalmSource', 'webOS', 'SAMSUNG-', 
+                'LGE-', 'MOT-', 'Nokia', 'SymbianOS', 'nokia_', 'PalmSource', 'webOS', 'SAMSUNG-',
                 'SEC-SGHU', 'SonyEricsson', 'BOLT/', 'Mobile Safari', 'Fennec/', 'Opera Mini'];
             $return = false;
 
@@ -840,10 +840,19 @@ function kleeja_date($time, $human_time = true, $format = false)
         define('TIME_FORMAT', 'd-m-Y h:i a'); // to be moved to configs later
     }
 
+    if (! empty($config['time_zone']) && strpos($config['time_zone'], '/'))
+    {
+        $timezone_offset = timezone_offset_get(new DateTimeZone($config['time_zone']), new DateTime);
+    }
+    else
+    {
+        $timezone_offset = intval($config['time_zone']) * 60 * 60;
+    }
+
     if ((time() - $time > (86400 * 9)) || $format || ! $human_time)
     {
         $format = ! $format ? TIME_FORMAT : $format;
-        $time	  = $time + ((int) $config['time_zone']*60*60);
+        $time	  = $time + $timezone_offset;
         return str_replace(['am', 'pm'], [$lang['TIME_AM'], $lang['TIME_PM']], gmdate($format, $time));
     }
 
@@ -893,43 +902,33 @@ function kleeja_date($time, $human_time = true, $format = false)
  */
 function time_zones()
 {
-    return [
-        'Kwajalein'                      => -12.00,
-        'Pacific/Midway'                 => -11.00,
-        'Pacific/Honolulu'               => -10.00,
-        'America/Anchorage'              => -9.00,
-        'America/Los_Angeles'            => -8.00,
-        'America/Denver'                 => -7.00,
-        'America/Tegucigalpa'            => -6.00,
-        'America/New_York'               => -5.00,
-        'America/Caracas'                => -4.30,
-        'America/Halifax'                => -4.00,
-        'America/St_Johns'               => -3.30,
-        'America/Argentina/Buenos_Aires' => -3.00,
-        'America/Sao_Paulo'              => -3.00,
-        'Atlantic/South_Georgia'         => -2.00,
-        'Atlantic/Azores'                => -1.00,
-        'Europe/Dublin'                  => 0,
-        'Europe/Belgrade'                => 1.00,
-        'Europe/Minsk'                   => 2.00,
-        'Asia/Riyadh'                    => 3.00,
-        'Asia/Buraydah'                  => 3.01,
-        'Asia/Tehran'                    => 3.30,
-        'Asia/Muscat'                    => 4.00,
-        'Asia/Yekaterinburg'             => 5.00,
-        'Asia/Kolkata'                   => 5.30,
-        'Asia/Katmandu'                  => 5.45,
-        'Asia/Dhaka'                     => 6.00,
-        'Asia/Rangoon'                   => 6.30,
-        'Asia/Krasnoyarsk'               => 7.00,
-        'Asia/Brunei'                    => 8.00,
-        'Asia/Seoul'                     => 9.00,
-        'Australia/Darwin'               => 9.30,
-        'Australia/Canberra'             => 10.00,
-        'Asia/Magadan'                   => 11.00,
-        'Pacific/Fiji'                   => 12.00,
-        'Pacific/Tongatapu'              => 13.00
+    static $regions = [
+        DateTimeZone::AFRICA,
+        DateTimeZone::AMERICA,
+        DateTimeZone::ASIA,
+        DateTimeZone::ATLANTIC,
+        DateTimeZone::AUSTRALIA,
+        DateTimeZone::EUROPE,
+        DateTimeZone::INDIAN,
+        DateTimeZone::PACIFIC,
     ];
+
+    $timezones = [];
+
+    foreach ($regions as $region)
+    {
+        foreach (timezone_identifiers_list($region) as $tz)
+        {
+            $timezones[$tz] = timezone_offset_get(new DateTimeZone($tz), new DateTime) / 3600;
+        }
+    }
+
+    // for compatibility with earlier versions.
+    $timezones['Asia/Buraydah'] = 3.01;
+
+    asort($timezones);
+
+    return $timezones;
 }
 
 
@@ -981,8 +980,8 @@ function shorten_text($text, $until = 30)
 
     if ($chars_len >= $until)
     {
-        $return = function_exists('mb_substr') 
-            ? (mb_substr($text, 0, $until-4, 'UTF-8') . ' ... ' . mb_substr($text, -4, null, 'UTF-8')) 
+        $return = function_exists('mb_substr')
+            ? (mb_substr($text, 0, $until-4, 'UTF-8') . ' ... ' . mb_substr($text, -4, null, 'UTF-8'))
             : substr($text, 0, $until-4) . ' ... ' . substr($text, -4);
     }
     else

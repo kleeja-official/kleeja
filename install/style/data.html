@@ -15,11 +15,11 @@
 			<tr>
 				<td class="tdd">{{echo $lang['SITEMAIL']}}</td>
 				<td><input name="sitemail" id="sitemail" type="text" onchange="return w_email(this.name);" style="direction:ltr;width:40%" /></td>
-			</tr>       
+			</tr>
 		</table>
 
 		<div class="hr"></div>
-	
+
 		<h2><img src="style/images/s-user.png" alt="" class="img" />{{echo $lang['INST_ADMIN_INFO']}}</h2>
 		<table class="DataTable" dir="{{echo $lang['DIR']}}">
 			<tr>
@@ -41,9 +41,9 @@
 				<td><input name="email" id="email" type="text" style="direction:ltr;width:40%" onchange="return w_email(this.name);" /></td>
 			</tr>
 		</table>
-		
+
 		<div class="hr"></div>
-		
+
 		<h2><img src="style/images/klj_info.png" alt="" class="img" />{{echo $lang['INST_OTHER_INFO']}}</h2>
 		<table class="DataTable" dir="{{echo $lang['DIR']}}">
 			<tr>
@@ -51,7 +51,7 @@
 				<td>
 						<select name="time_zone" id="time_zone" style="text-align:left;direction:ltr">
 							{{foreach(time_zones() as $z=>$t):}}
-								<option value="{{echo $t}}" {{if($t=='3.01'):}}selected="selected"{{endif;}}>{{echo $z}}</option>
+								<option value="{{echo $z}}" {{if($z=='Asia/Buraydah'):}}selected="selected"{{endif;}}>{{echo $z}} (GMT{{echo $t < 0 ? $t : '+' . $t}}</option>
 							{{endforeach}}
 						</select>
 				</td>
@@ -77,11 +77,11 @@
 				<td style="direction:ltr;text-align:left" id="like_this">{{echo $GLOBALS['urlsite']}}do.php?id=123</td>
 			</tr>
 		</table>
-		
+
 		<div class="hr"></div>
 		<button onclick="window.location.href='./install.php?step=check&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
 		<button name="datasubmit" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
 	</form>
 
-<div class="clr"></div>			
+<div class="clr"></div>
 </div></div><div class="BoxBottomImg"></div></div>
