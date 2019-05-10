@@ -34,10 +34,11 @@ $plugin_enable_link    = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&am
 $plugin_disable_link   = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=disable&amp;' . $GET_FORM_KEY . '&amp;plg=';
 $plugin_download_link  = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=download&amp;' . $GET_FORM_KEY . '&amp;plg=';
 $plugin_update_link    = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=update&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_delete_folder_link    = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=delete_folder&amp;' . $GET_FORM_KEY . '&amp;plg=';
 
 
 //check _GET Csrf token
-if (! empty($case) && in_array($case, ['install', 'uninstall', 'enable', 'disable' , 'download' , 'update']))
+if (! empty($case) && in_array($case, ['install', 'uninstall', 'enable', 'disable' , 'download' , 'update' , 'delete_folder']))
 {
     if (! kleeja_check_form_key_get('PLUGINS_FORM_KEY'))
     {
@@ -610,7 +611,7 @@ switch ($case):
                                     // download or update msg
                                     kleeja_admin_info(
                                         sprintf($lang[ig('update')  ? 'PLUGIN_UPDATED' : 'PLUGIN_DOWNLOADED'], $download_plugin),
-                                        ADMIN_PATH . '?cp=' . basename(__file__, '.php')
+                                        ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=local'
                                     );
 
                                     exit;
@@ -656,10 +657,28 @@ switch ($case):
 
         if (is_dir($plugin_folder_name))
         {
-            kleeja_unlink($plugin_folder_name);
+            delete_plugin_folder($plugin_folder_name);
         }
 
         redirect($plugin_download_link . $update_plugin . '&amp;update' );
+
+        break;
+
+    case 'delete_folder':
+
+        $plugin_folder = g('plg');
+
+        $plugin_folder_name = PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plugin_folder;
+
+        if (is_dir($plugin_folder_name))
+        {
+            delete_plugin_folder($plugin_folder_name);
+        }
+
+        kleeja_admin_info(
+            sprintf($lang['PLG_SUCSS_DEL'] , $plugin_folder),
+            ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=local'
+        );
 
         break;
 
