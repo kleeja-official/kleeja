@@ -1,52 +1,126 @@
 
-<IF NAME="current_smt == general">
-
 <!-- Breadcrumbs -->
 <ol class="breadcrumb">
 	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
 	<li class="breadcrumb-item active">{lang.R_CHECK_UPDATE}</li>
 </ol>
 
-<div id="updateInfo" class="alert">
-	<img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" />
+<div class="alert d-flex justify-content-between align-middle" id="updateInfo">
+    <div>
+        <img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" /> {lang.LOADING}
+    </div>
+    <button id="updateButton" type="button" class="btn btn-outline-dark btn-sm d-none" onclick="updateNow(1)">{lang.UPDATE_KLJ_NOW}</button>
 </div>
+
+<ul class="list-group mt-5 d-none" id="updateProcess">
+    <li class="list-group-item disabled" id="update1">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h4 class="d-inline px-2">1</h4> Downloading latest Kleeja package...
+            </div>
+            <span class="update-status badge badge-primary badge-light p-2"></span>
+        </div>
+        <div class="update-message d-none alert alert-danger mt-3 mb-0"></div>
+    </li>
+    <li class="list-group-item disabled" id="update2">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h4 class="d-inline px-2">2</h4> Create a backup container and extract the new package ...
+            </div>
+            <span class="update-status badge badge-primary badge-light p-2"></span>
+        </div>
+        <div class="update-message d-none alert alert-danger mt-3 mb-0"></div>
+    </li>
+    <li class="list-group-item disabled" id="update3">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h4 class="d-inline px-2">3</h4> Updating to new version (files & database upgrade) ...
+            </div>
+            <span class="update-status badge badge-primary badge-light p-2"></span>
+        </div>
+        <div class="update-message d-none alert alert-danger mt-3 mb-0"></div>
+    </li>
+
+</ul>
+
+
+
 <script>
-	setTimeout(function(){
-		$.ajax({
-			url: './?cp=p_check_update&smt=check&_ajax_=1',
-			dataType: 'json'})
-			.done(function (data) {
-				if(data.content){
-					var info = data.content.split(":::");
-					$('#updateInfo').html(info[1]).addClass(info[0] == 1 ? 'alert-warning' : 'alert-info');
-				} else {
-					this.fail();
-				}
-				<IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
-			})
-			.fail(function() {
-				$('#updateInfo').html('{lang.ERROR_CHECK_VER}').addClass('alert-warning');
-				<IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
-		});
-	}, 300);
+function loadWhenJQueryIsReady() {
+    setTimeout(function() {
+        if (typeof jQuery == 'undefined' && typeof window.jQuery == 'undefined') {
+            loadWhenJQueryIsReady();
+        } else {
+            checkVersion();
+        }
+    }, 500);
+}
+
+loadWhenJQueryIsReady();
+
+function checkVersion() {
+    $.ajax({
+        url: './?cp=p_check_update&smt=check&_ajax_=1',
+        dataType: 'json'})
+        .done(function (data) {
+            if(data.content) {
+                var info = data.content.split(":::");
+                $('#updateInfo').addClass(info[0] !=  0 ? 'alert-warning' : 'alert-info');
+                $('#updateInfo div').html(info[1]);
+                <UNLESS NAME="showMessage">
+                if(info[0] == 2) {
+                    $('#updateButton').removeClass('d-none');
+                }
+                </UNLESS>
+            } else {
+                this.fail();
+            }
+            <IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
+        })
+        .fail(function() {
+            $('#updateInfo').html('{lang.ERROR_CHECK_VER}').addClass('alert-warning');
+            <IF NAME="showMessage"> location.href = './?update_done=1'; </IF>
+    });
+}
+
+function updateNow(step) {
+
+    if(step == 1) {
+        $('#updateButton').addClass('d-none');
+        $('#updateProcess').removeClass('d-none');
+    }
+
+    $('#update'+step+' .update-status').html('<img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif">');
+    $('#update'+step+'').removeClass('disabled');
+
+    $.ajax({
+        url: './?cp=p_check_update&smt=update'+step+'&_ajax_=1',
+        dataType: 'json'})
+        .done(function (data) {
+            if(data.content) {
+                var info = data.content.split(":::");
+                if(info[1].length > 0) {
+                    $('#update'+step+' .update-message').removeClass('d-none').addClass('d-block').text(info[1]);
+                    if(info[0] == 1) {
+                        $('#update'+step+' .update-message').removeClass('alter-danger').addClass('alert-success');
+                    }
+                }
+
+                $('#update'+step+' .update-status').html(info[0] == 1 ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-warning text-danger"></i>');
+                if(info[0] == 1 && step < 3) {
+                    setTimeout(function() {
+                        updateNow(step+1);
+                    }, 500);
+                }
+            } else {
+                this.fail();
+            }
+        })
+        .fail(function(data) {
+            $('#update'+step+' .update-status').text('error!');
+            $('#update'+step+' .update-message').removeClass('d-none').addClass('d-block').html(
+                (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
+            );
+    });
+}
 </script>
-
-
-<ELSEIF NAME="current_smt == howto">
-
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item active">{lang.HOW_UPDATE_KLEEJA}</li>
-	</ol>
-
-	<ul class="update_list">
-		<li>{lang.HOW_UPDATE_KLEEJA_STEP1}</li>
-		<li>{lang.HOW_UPDATE_KLEEJA_STEP2}</li>
-		<li>{lang.HOW_UPDATE_KLEEJA_STEP3}
-			<input class="form-control" type="text" value="{update_link}" readonly>
-		</li>
-	</ul>
-
-
-</IF>

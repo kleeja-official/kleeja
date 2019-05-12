@@ -57,11 +57,15 @@ require_once PATH . KLEEJA_CONFIG_FILE;
 define('ADM_FILES_PATH', PATH . 'includes/adm');
 
 //Report all errors, except notices
-error_reporting( defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
+error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 
 
 /**
 * functions for start
+* @param mixed $error_number
+* @param mixed $error_string
+* @param mixed $error_file
+* @param mixed $error_line
 */
 function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
 {
@@ -129,9 +133,9 @@ if (empty($dbname) || empty($dbuser))
     exit;
 }
 
-//include files .. & classes ..
-$root_path = PATH;
-// $db_type = isset($db_type) ? $db_type : 'mysqli';
+// solutions for hosts running under suexec, add define('HAS_SUEXEC', true) to config.php.
+define('K_FILE_CHMOD', defined('HAS_SUEXEC') ? (0644 & ~umask()) : 0644);
+define('K_DIR_CHMOD', defined('HAS_SUEXEC') ? (0755 & ~umask()) : 0755);
 
 include PATH . 'includes/functions_alternative.php';
 include PATH . 'includes/version.php';
@@ -163,7 +167,7 @@ unset($dbpass);
 
 
 
-$tpl	  = new kleeja_style;
+$tpl	= new kleeja_style;
 $usrcp	= new usrcp;
 
 //then get caches
@@ -310,10 +314,10 @@ if (
     file_exists(PATH . 'install')  &&
     ! defined('IN_ADMIN') &&
     ! defined('IN_LOGIN') &&
-    ! defined('DEV_STAGE') && 
+    ! defined('DEV_STAGE') &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login']))
-    ) {
+) {
     //Different message for admins! delete install folder
     kleeja_info((user_can('enter_acp') ? $lang['DELETE_INSTALL_FOLDER'] : $lang['WE_UPDATING_KLEEJA_NOW']), $lang['SITE_CLOSED']);
 }
@@ -323,16 +327,16 @@ if (
 $login_page = '';
 
 if (
-    $config['siteclose'] == '1' && 
-    ! user_can('enter_acp') && 
-    ! defined('IN_LOGIN') && 
-    ! defined('IN_ADMIN') && 
+    $config['siteclose'] == '1' &&
+    ! user_can('enter_acp') &&
+    ! defined('IN_LOGIN') &&
+    ! defined('IN_ADMIN') &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login', 'register', 'logout']))
     ) {
     //if download, images ?
     if (
-        ( defined('IN_DOWNLOAD') && (ig('img') || ig('thmb') || ig('thmbf') || ig('imgf')) )
+        (defined('IN_DOWNLOAD') && (ig('img') || ig('thmb') || ig('thmbf') || ig('imgf')))
         || g('go', 'str', '') == 'queue'
         ) {
         @$SQL->close();
@@ -352,7 +356,8 @@ if (
 
 //exceed total size
 if (($stat_sizes >= ($config['total_size'] *(1048576))) && ! defined('IN_LOGIN') && ! defined('IN_ADMIN'))
-{// convert megabytes to bytes
+{
+    // convert megabytes to bytes
     // Send a 503 HTTP response code to prevent search bots from indexing the maintenace message
     header('HTTP/1.1 503 Service Temporarily Unavailable');
     kleeja_info($lang['SIZES_EXCCEDED'], $lang['STOP_FOR_SIZE']);

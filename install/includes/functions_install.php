@@ -11,7 +11,7 @@
 define('MIN_PHP_VERSION', '7.0');
 define('MIN_MYSQL_VERSION', '4.2.2');
 //version of latest changes at db
-define ('LAST_DB_VERSION', '9');
+define('LAST_DB_VERSION', '9');
 //set no errors
 define('MYSQL_NO_ERRORS', true);
 
@@ -74,6 +74,7 @@ function getjquerylink()
 
 /**
 * Parsing installing templates
+* @param mixed $tplname
 */
 function gettpl($tplname)
 {
@@ -90,6 +91,11 @@ function gettpl($tplname)
 
 /**
 * Export config
+* @param mixed $srv
+* @param mixed $usr
+* @param mixed $pass
+* @param mixed $nm
+* @param mixed $prf
 */
 function do_config_export($srv, $usr, $pass, $nm, $prf)
 {
@@ -100,32 +106,22 @@ function do_config_export($srv, $usr, $pass, $nm, $prf)
     $data	.= '$dbname			= \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
     $data .= '$dbprefix		= \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
 
-
-    $written = false;
-
-    if (is_writable(PATH))
+    if (file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
     {
-        $fh = @fopen(PATH . 'config.php', 'wb');
-
-        if ($fh)
-        {
-            fwrite($fh, $data);
-            fclose($fh);
-
-            $written = true;
-        }
+        return true;
     }
 
-    if (! $written)
+    if (defined('CLI') && CLI)
     {
-        header('Content-Type: text/x-delimtext; name="config.php"');
-        header('Content-disposition: attachment; filename=config.php');
-        echo $data;
-
-        exit;
+        return true;
     }
 
-    return true;
+    //
+    header('Content-Type: text/x-delimtext; name="config.php"');
+    header('Content-disposition: attachment; filename=config.php');
+    echo $data;
+
+    exit;
 }
 
 
@@ -140,6 +136,7 @@ function get_microtime()
 
 /**
 * Get config value from database directly, if not return false.
+* @param mixed $name
 */
 function inst_get_config($name)
 {

@@ -13,17 +13,36 @@ if (! defined('IN_ADMIN'))
     exit();
 }
 
+set_time_limit(0);
+
+$current_version = '3.0';
+$new_version     = unserialize($config['new_version']);
+$new_version     = empty($new_version['version_number'])
+                ? KLEEJA_VERSION
+                : $new_version['version_number'];
+$backup_archive_path = PATH . 'cache/backup.zip';
+
+define('KLEEJA_VERSION_CHECK_LINK', 'https://api.github.com/repos/kleeja-official/kleeja/releases/latest');
+define('KLEEJA_LATEST_PACKAGE_LINK', 'https://github.com/kleeja-official/kleeja/archive/');
+
 $stylee	     = 'admin_check_update';
-$current_smt	= preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
 $update_link = $config['siteurl'] . 'install/update.php?lang=' . $config['language'];
 
-//to prevent getting the url data for all cats
-if ($current_smt == 'check'):
+//only founders can do the upgrade process ...
+if(in_array($current_smt, ['update1', 'update2', 'update3']) && intval($userinfo['founder']) !== 1)
+{
+    header('HTTP/1.0 401 Unauthorized');
+    kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
+}
 
+//check latest version
+if ($current_smt == 'check')
+{
     //get data from kleeja github repo
     if (! ($version_data = $cache->get('kleeja_repo_version')))
     {
-        $github_data = fetch_remote_file('https://api.github.com/repos/kleeja-official/kleeja/releases/latest', false, 60);
+        $github_data = fetch_remote_file(KLEEJA_VERSION_CHECK_LINK, false, 100);
 
         if (! empty($github_data))
         {
@@ -47,16 +66,16 @@ if ($current_smt == 'check'):
     }
     else
     {
-        if (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '<'))
+        if (version_compare(strtolower($current_version), strtolower($version_data), '<'))
         {
-            $text	 = sprintf($lang['UPDATE_NOW_S'], KLEEJA_VERSION, strtolower($version_data)) . '<br /><br />' . $lang['UPDATE_KLJ_NOW'];
-            $error	= 1;
+            $text	 = sprintf($lang['UPDATE_NOW_S'], $current_version, strtolower($version_data));
+            $error	= 2;
         }
-        elseif (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '='))
+        elseif (version_compare(strtolower($current_version), strtolower($version_data), '='))
         {
             $text	= $lang['U_LAST_VER_KLJ'];
         }
-        elseif (version_compare(strtolower(KLEEJA_VERSION), strtolower($version_data), '>'))
+        elseif (version_compare(strtolower($current_version), strtolower($version_data), '>'))
         {
             $text	= $lang['U_USE_PRE_RE'];
         }
@@ -77,14 +96,10 @@ if ($current_smt == 'check'):
     delete_cache('data_config');
 
     $adminAjaxContent = $error . ':::' . $text;
-
-elseif ($current_smt == 'general'):
-
-// if(!$error)
-// {
-
-
-
+}
+// home of update page
+elseif ($current_smt == 'general')
+{
     //To prevent expected error [ infinit loop ]
     if (ig('show_msg'))
     {
@@ -103,18 +118,199 @@ elseif ($current_smt == 'general'):
         }
     }
 
+    $showMessage = ig('show_msg');
+}
+//1. download latest kleeja version
+elseif ($current_smt == 'update1')
+{
+    if (! class_exists('ZipArchive'))
+    {
+        $adminAjaxContent = '930:::' . $lang['NO_ZIP_ARCHIVE'];
+    }
+    elseif (! version_compare(strtolower($current_version), strtolower($new_version), '<'))
+    {
+        $adminAjaxContent = '940:::there is no update for your version!';
+    }
+    else
+    {
+        // downloaded the last package to cache folder
+        fetch_remote_file(KLEEJA_LATEST_PACKAGE_LINK . $new_version . '.zip', PATH . "cache/kleeja-{$new_version}.zip", 60, false, 10, true);
+        if(file_exists(PATH . "cache/kleeja-{$new_version}.zip"))
+        {
+            $adminAjaxContent = '1:::';
+            file_put_contents(PATH . 'cache/step1.done', time());
+        }
+        else
+        {
+            $adminAjaxContent = '2:::We have encountered a problem while downloading the package ... ';
+        }
+    }
+}
+//2. extract new kleeja package, create backup zip file
+elseif ($current_smt == 'update2')
+{
+    if(! file_exists(PATH . 'cache/step1.done'))
+    {
+        header('HTTP/1.0 401 Unauthorized');
+        kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
+    }
 
-// }
+    kleeja_unlink(PATH . 'cache/step1.done');
 
-$showMessage = ig('show_msg');
+    // let's extract the zip to cache
+    $zip = new ZipArchive;
 
+    if ($zip->open(PATH . "cache/kleeja-{$new_version}.zip") == true)
+    {
+        $zip->extractTo(PATH . 'cache/');
+        $zip->close();
+    }
 
-//end current_smt == general
-endif;
+    // let's check if there any update files in install folder
+    $update_file = PATH . "cache/kleeja-{$new_version}/install/includes/update_files/{$old_version}_to_{$new_version}.php";
 
-//secondary menu
-$go_menu = [
-    'general' => ['name'=>$lang['R_CHECK_UPDATE'], 'link'=> basename(ADMIN_PATH) . '?cp=p_check_update&amp;smt=general', 'goto'=>'general', 'current'=> $current_smt == 'general'],
-    'howto'   => ['name'=>$lang['HOW_UPDATE_KLEEJA'], 'link'=> basename(ADMIN_PATH) . '?cp=p_check_update&amp;smt=howto', 'goto'=>'howto', 'current'=> $current_smt == 'howto'],
-    'site'    => ['name'=>'Kleeja.com', 'link'=> 'http://www.kleeja.com', 'goto'=>'site', 'current'=> $current_smt == 'site'],
-];
+    if (file_exists($update_file))
+    {
+        // move the update file from install folder to cache folder to include it later and delete install folder
+        // becuse if install folder is exists , it can make some problems if dev mode is not active
+        rename($update_file, PATH . "cache/update_{$old_version}_to_{$new_version}.php");
+    }
+
+    // skip some folders
+    foreach (['cache', 'plugins', 'uploads', 'styles', 'install'] as $folder_name)
+    {
+        kleeja_unlink(PATH . "cache/kleeja-{$new_version}/{$folder_name}");
+    }
+
+    if (file_exists($backup_archive_path))
+    {
+        kleeja_unlink($backup_archive_path);
+    }
+
+    file_put_contents(PATH . 'cache/step2.done', time());
+
+    $adminAjaxContent = '1:::';
+}
+//3. update, or rollback on failure
+elseif ($current_smt == 'update3')
+{
+    if(! file_exists(PATH . 'cache/step2.done'))
+    {
+        header('HTTP/1.0 401 Unauthorized');
+        kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
+    }
+
+    kleeja_unlink(PATH . 'cache/step2.done');
+
+    $backup = new ZipArchive;
+    if($backup->open($backup_archive_path, ZipArchive::CREATE) !== true)
+    {
+
+    }
+
+    // delete plugin folder function with some changes :)
+    $it    = new RecursiveDirectoryIterator(PATH . "cache/kleeja-{$new_version}/", RecursiveDirectoryIterator::SKIP_DOTS);
+    $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+
+    $update_failed    = false;
+    $failed_files     = $new_folders = [];
+
+    //maintenance mode on
+    update_config('siteclose', 1);
+
+    foreach ($files as $file)
+    {
+        if ($file->isFile())
+        {
+            $file_path = str_replace("cache/kleeja-{$new_version}/", '', $file->getPathname());
+            $file_dir  = str_replace("cache/kleeja-{$new_version}/", '', $file->getPath());
+
+            // same, no need to replace
+            if (file_exists($file_path)  && md5_file($file_path) == md5_file($file->getPathname()))
+            {
+                continue;
+            }
+
+            //no folder?
+            if (! file_exists($file_dir))
+            {
+                mkdir($file_dir, K_DIR_CHMOD, true);
+                array_push($new_folders, $file_dir);
+            }
+
+            if (! is_writable($file_path))
+            {
+                chmod($file_path, K_FILE_CHMOD);
+            }
+
+            //back up current file
+            $backup->addFromString(
+                $file_path,
+                file_get_contents($file_path)
+            );
+
+            //copy file
+            if (file_put_contents(
+                $file_path,
+                file_get_contents($file->getPathname())
+            ) === false)
+            {
+                $update_failed = true;
+                array_push($failed_files, $file_path);
+
+                break;
+            }
+        }
+        elseif ($file->isDir())
+        {
+            // here is folder , when we finish update , we will delete all folders and files
+            if (! file_exists($file_path))
+            {
+                mkdir($file_path, K_DIR_CHMOD, true);
+                array_push($new_folders, $file_path);
+            }
+
+            continue;
+        }
+    }
+
+    $backup->close();
+
+    if ($update_failed)
+    {
+        //rollback to backup
+        $zip = new ZipArchive;
+        $zip->open($backup_archive_path);
+        $zip->extractTo(PATH);
+        $zip->close();
+
+        foreach ($new_folders as $folder)
+        {
+            kleeja_unlink($folder);
+        }
+
+        //maintenance mode off
+        update_config('siteclose', 0);
+
+        $adminAjaxContent = '1002:::updating process has failed...' .
+            (defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '');
+    }
+    else
+    {
+        // we will include what we want to do in this file , and kleeja will done
+        if (file_exists($db_update_file = PATH . "cache/update_{$old_version}_to_{$new_version}.php"))
+        {
+            require_once $db_update_file;
+        }
+
+        //maintenance mode off
+        update_config('siteclose', 0);
+
+        // after a success update, delete files and folders in cache
+        kleeja_unlink(PATH . "cache/kleeja-{$new_version}");
+        delete_cache('', true);
+
+        $adminAjaxContent = "1:::Kleeja has been updated to {$new_version} successfully...";
+    }
+}
+//endif

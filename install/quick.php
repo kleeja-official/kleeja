@@ -30,6 +30,15 @@ include_once PATH . 'includes/mysqli.php';
 
 include_once 'includes/functions_install.php';
 
+//cli options
+$cli_options   = [];
+
+if (CLI)
+{
+    $cli_options = getopt('', ['password::', 'link::']);
+}
+
+
 if (file_exists(PATH . 'config.php'))
 {
     include_once PATH . 'config.php';
@@ -80,15 +89,17 @@ include_once PATH . 'includes/usr.php';
 include_once PATH . 'includes/functions_alternative.php';
 
 $usrcp                     = new usrcp;
-$password                  = mt_rand();
+$password                  = ! empty($cli_options['password']) ? $cli_options['password'] : mt_rand();
 $user_salt                 = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
 $user_pass                 = $usrcp->kleeja_hash_password($password . $user_salt);
 $user_name                 = $clean_name = 'admin';
 $user_mail                 = $config_sitemail = 'admin@example.com';
 $config_urls_type          = 'id';
 $config_sitename           = 'Yet Another Kleeja';
-$config_siteurl            =  'http://' . $_SERVER['HTTP_HOST'] . str_replace('install', '', dirname($_SERVER['PHP_SELF']));
-$config_time_zone          = '3';
+$config_siteurl            = ! empty($cli_options['link'])
+                                ? $cli_options['link']
+                                : 'http://' . $_SERVER['HTTP_HOST'] . str_replace('install', '', dirname($_SERVER['PHP_SELF']));
+$config_time_zone          = 'Asia/Buraydah';
 
 // Queries
 include 'includes/install_sqls.php';

@@ -22,7 +22,7 @@ if (! defined('IN_COMMON'))
 */
 function kleeja_detecting_bots()
 {
-    global $SQL, $usrcp, $dbprefix, $config, $klj_session;
+    global $SQL, $dbprefix, $config;
 
     // get information ..
     $agent	= $SQL->escape($_SERVER['HTTP_USER_AGENT']);
@@ -1502,11 +1502,11 @@ function kleeja_log($text)
         return;
     }
 
-    $log_file = PATH . 'cache/kleeja_log.log';
-    $l_c      = @file_get_contents($log_file);
-    $fp       = @fopen($log_file, 'w');
-    @fwrite($fp, $text . ' [time : ' . date('H:i a, d-m-Y') . "] \r\n" . $l_c);
-    @fclose($fp);
+    file_put_contents(
+        PATH . 'cache/kleeja_log.log',
+        date_format(date_create(), 'Y-m-d h:i:s.ua') . ' | INFO | ' . $text . PHP_EOL,
+        FILE_APPEND | LOCK_EX
+    );
 }
 
 

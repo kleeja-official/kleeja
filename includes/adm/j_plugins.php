@@ -657,7 +657,7 @@ switch ($case):
 
         if (is_dir($plugin_folder_name))
         {
-            delete_plugin_folder($plugin_folder_name);
+            kleeja_unlink($plugin_folder_name);
         }
 
         redirect($plugin_download_link . $update_plugin . '&amp;update' );
@@ -672,7 +672,7 @@ switch ($case):
 
         if (is_dir($plugin_folder_name))
         {
-            delete_plugin_folder($plugin_folder_name);
+            kleeja_unlink($plugin_folder_name);
         }
 
         kleeja_admin_info(
