@@ -280,4 +280,7 @@ return [
     'UPDATE_BACKUP_CREATE_FAILED'     => 'We couldn\'t create a backup archive in cache folder!',
     'UPDATE_PROCESS_FAILED'           => 'The update process has failed!',
     'UPDATE_PROCESS_DONE'             => 'Kleeja has been updated to version `%s` successfully...',
+    'UPDATE_PROCESS_STEP1'            => 'Fetching the package of latest version of Kleeja ...',
+    'UPDATE_PROCESS_STEP2'            => 'Create a backup container and extract the new package ...',
+    'UPDATE_PROCESS_STEP3'            => 'Updating to new version (files & database upgrade) ...',
 ];
