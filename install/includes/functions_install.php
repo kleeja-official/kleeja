@@ -7,36 +7,31 @@
 *
 */
 
-// Requirements of Kleeja
-define('MIN_PHP_VERSION', '7.0');
-define('MIN_MYSQL_VERSION', '4.2.2');
 
-//set no errors
+// get version info and min requirement values
+require PATH . 'includes/version.php';
+
+//set mysql to show no errors
 define('MYSQL_NO_ERRORS', true);
+define('EVAL_IS_ON', is_eval_is_on());
 
 
 // Detect choosing another lang while installing
-if (ig('change_lang'))
+if (ig('change_lang') && ip('lang'))
 {
-    if (ip('lang'))
-    {
-        header('Location: ' . $_SERVER['PHP_SELF'] . '?step=' . p('step_is') . '&lang=' . p('lang'));
-    }
+    header('Location: ' . $_SERVER['PHP_SELF'] . '?step=' . p('step_is') . '&lang=' . p('lang'));
 }
 
-require PATH . 'includes/version.php';
 
 // Including current language
 $lang = require PATH . 'lang/' . getlang() . '/common.php';
 $lang = array_merge($lang, require PATH . 'lang/' . getlang() . '/install.php');
 
 
-$IN_DEV = false;
 // Exceptions for development
-if (file_exists(PATH . '.svn/entries') || file_exists('dev.txt'))
+if (file_exists(PATH . '.git'))
 {
     define('DEV_STAGE', true);
-    $IN_DEV = true;
 }
 
 
@@ -47,15 +42,12 @@ if (file_exists(PATH . '.svn/entries') || file_exists('dev.txt'))
  */
 function getlang ($link = false)
 {
+    $ln    = 'en';
+
     if (ig('lang'))
     {
         $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
-
-        $ln	= file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
-    }
-    else
-    {
-        $ln	= 'en';
+        $ln	  = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
     }
 
     return $link ? 'lang=' . $ln : $ln;
@@ -67,10 +59,8 @@ function getjquerylink()
     {
         return PATH . 'admin/Masmak/js/jquery.min.js';
     }
-    else
-    {
-        return 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js';
-    }
+
+    return 'http://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js';
 }
 
 /**
@@ -82,13 +72,39 @@ function gettpl($tplname)
     global $lang;
 
     $tpl = preg_replace('/{{([^}]+)}}/', '<?php \\1 ?>', file_get_contents('style/' . $tplname));
+
     ob_start();
-    eval('?> ' . $tpl . '<?php ');
+
+    if (EVAL_IS_ON)
+    {
+        eval('?> ' . $tpl . '<?php ');
+    }
+    else
+    {
+        include_once kleeja_eval($tpl);
+    }
+
     $stpl = ob_get_contents();
     ob_end_clean();
 
     return $stpl;
 }
+
+function is_eval_is_on()
+{
+    $eval_on = false;
+    eval('$eval_on = true;');
+
+    return $eval_on;
+}
+
+function kleeja_eval($code)
+{
+    $path  = PATH . 'cache/' . md5($code) . '.php';
+    file_put_contents($path, $code);
+    return $path;
+}
+
 
 /**
 * Export config
@@ -117,7 +133,7 @@ function do_config_export($srv, $usr, $pass, $nm, $prf)
         return true;
     }
 
-    //
+
     header('Content-Type: text/x-delimtext; name="config.php"');
     header('Content-disposition: attachment; filename=config.php');
     echo $data;
@@ -143,7 +159,7 @@ function inst_get_config($name)
 {
     global $SQL, $dbprefix;
 
-    if (! $SQL)
+    if (empty($SQL))
     {
         global $dbserver, $dbuser, $dbpass, $dbname;
 
@@ -155,7 +171,7 @@ function inst_get_config($name)
         $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
     }
 
-    if (! $SQL)
+    if (empty($SQL))
     {
         return false;
     }

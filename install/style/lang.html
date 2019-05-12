@@ -3,7 +3,7 @@
 
 <div class="language_choose">
 	<ul id="LangChoose">
-		{{if($dh = @opendir($_path . 'lang')): while (($file = readdir($dh)) !== false): if(strpos($file, '.') === false && $file != '..' && $file != '.'):}}
+		{{if($dh = @opendir(PATH . 'lang')): while (($file = readdir($dh)) !== false): if(strpos($file, '.') === false && $file != '..' && $file != '.'):}}
 		<li>
 			<a href="{{echo './?step=language&amp;ln=' . $file}}">
 			{{if(file_exists('style/images/'.$file.'.png')):}}

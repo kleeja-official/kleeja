@@ -5,17 +5,6 @@
 <form method="post" action="{{echo './install.php?step=c&amp;' . getlang(1)}}"  onsubmit="javascript:return formCheck(this, Array('db_server','db_user' ,'db_name'));">
 	<h2><img src="style/images/klj_info.png" class="img" alt="!" />{{echo $lang['DB_INFO']}}</h2>
 	<table class="TableConf" dir="{{echo $lang['DIR']}}">
-		<!--tr>
-			<td class="TdConf">{{echo $lang['DB_TYPE']}}</td>
-			<td class="TdInput">
-				<select name="db_type" >
-					{{if (function_exists('mysqli_connect')):}}
-					<option value="mysqli">{{echo $lang['DB_TYPE_MYSQLI']}}</option>
-					{{endif;}}
-					<option value="mysql">{{echo $lang['DB_TYPE_MYSQL']}}</option>
-				</select>
-			</td>
-		</tr-->
 		<tr>
 			<td class="TdConf">{{echo $lang['DB_SERVER']}}</td>
 			<td class="TdInput"><input name="db_server" type="text" value="localhost" class="InputConf" /></td>

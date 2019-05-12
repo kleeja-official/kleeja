@@ -16,16 +16,15 @@
  * include important files
  */
 define('IN_COMMON', true);
-$_path = '../';
+define('STOP_PLUGINS', true);
 define('PATH', __DIR__ . '/../');
 define('CLI', PHP_SAPI === 'cli');
 
 
-include_once 'includes/plugins.php';
+include_once PATH . 'includes/plugins.php';
 include_once PATH . 'includes/functions_display.php';
 include_once PATH . 'includes/functions_alternative.php';
 include_once PATH . 'includes/functions.php';
-
 include_once PATH . 'includes/mysqli.php';
 
 include_once 'includes/functions_install.php';
@@ -45,15 +44,9 @@ if (file_exists(PATH . 'config.php'))
 }
 else
 {
-    do_config_export(
-        'localhost',
-        'root',
-        '',
-        'kleeja',
-        'klj_'
-    );
+    do_config_export('localhost', 'root', '', 'kleeja', 'klj_');
 
-    exit('`config.php` was missing! so we created one for you, now go fill it with database information.');
+    exit('`config.php` was missing! so we created one for you, kindly edit the file with database information.');
 }
 
 $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);

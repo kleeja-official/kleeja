@@ -604,7 +604,7 @@ li.NoCheck  {
 
 
 .ins_klj {
-{{if($GLOBALS['IN_DEV']): echo "
+{{if(defined('DEV_STAGE')): echo "
     width: 50px;
     height: 350px;
     position: fixed;

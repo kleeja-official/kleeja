@@ -37,7 +37,7 @@ return [
     'INST_FINISH_SQL'		      => 'تم تثبيت كليجا بنجاح',
     'INST_NOTES'		           => 'ملاحظات التثبيت',
     'INST_END'		             => 'معالج التثبيت انتهى، يجب الآن حذف مجلد INSTALL <span style="color:red">(الموقع لن يعمل في حال وجود المجلد)</span>',
-    'INST_NOTE_D'		          => 'أي ملاحظات أو مشاكل تتعلق بأداء كليجا، نرجوا التواصل مع مطوري كليجا!',
+    'INST_NOTE_D'		          => 'أي ملاحظات أو مشاكل تتعلق بأداء كليجا، نرجو التبليغ عبر <a href="https://github.com/kleeja-official/kleeja/issues">مركز الأخطاء</a>',
     'INST_FINISH_ERRSQL'		   => 'هناك مشكلة تعيق التثبيت، تأكد من حساب مستخدم القاعدة وحاول مجدداً او استفسر من مطوري كليجا',
     'INST_KLEEJADEVELOPERS'		=> 'شكراً لإستخدامك كليجا ... مع أحلى و أطيب التمنيات .. من فريق عمل كليجا',
     'SITENAME'		             => 'اسم الموقع',
@@ -85,16 +85,10 @@ return [
     'FUNCTION_DISC_MUF'		     => 'دالة move_uploaded_file تستخدم لتحميل الملفات  وهي اهم دالة في السكربت.',
 
     'ADVICES_CHECK'		           => 'فحص متقدم (يمكن تثبيت كليجا بدون تحقق هذا الفحص , لكنه مجرد معلومات لك)',
-    'ADVICES_REGISTER_GLOBALS'		=> '<span style="color:red;padding:0 6px">خاصية register_globals مفعلة !</span><br /> هذه الخاصية غير محبب تفعيلها ويفضل تعطيلها , ومع هذا فكليجا تحاول تعطيل أثارها برمجياً .',
-    'ADVICES_MAGIC_QUOTES'		    => '<span style="color:red;padding:0 6px">خاصية magic_quotes مفعله !</span><br /> هذه الخاصية غير محبب تفعيلها ويفضل تعطيلها , ومع هذا فكليجا تحاول تعطيل أثارها برمجياً ..',
+    'ZIPARCHIVE_LIB'		=> '<span style="color:red;padding:0 6px">مكتبة ZipArchive  غير متوفرة في خادمك !</span><br /> هذه المكتبة مهمة لفك الإضافات والترقية لنسخ جديدة من كليجا!',
 
     //UPDATOR
-    'INST_CHOOSE_UPDATE_FILE'		         => 'قم بإختيار التحديث المناسب لك ومن ثم تابع التحديث ..',
-    'INST_ERR_NO_SELECTED_UPFILE_GOOD'		=> 'ملف التحديث غير مناسب أو أنه غير موجود من الأساس ! ..',
-    'INST_UPDATE_CUR_VER_IS_UP'		       => 'نسختك الحالية محدثة لهذا التحديث المحدد.',
-
-    'INST_NOTES_UPDATE'		=> 'ملاحظات التحديث',
-
+    'INST_UPDATE_CUR_VER_IS_UP'		       => 'نسختك الحالية محدثة لآخر نسخة ... رائع!',
 
 
     'INST_UPDATE_IS_FINISH'		=> 'معالج التحديث انتهى .. يجب الآن حذف مجلد INSTALL و متابعة عملك في كليجا .',

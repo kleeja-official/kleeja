@@ -15,7 +15,7 @@ if (! defined('IN_ADMIN'))
 
 set_time_limit(0);
 
-$current_version = '3.0';
+$current_version = KLEEJA_VERSION;
 $new_version     = unserialize($config['new_version']);
 $new_version     = empty($new_version['version_number'])
                 ? KLEEJA_VERSION
@@ -167,13 +167,13 @@ elseif ($current_smt == 'update2')
     }
 
     // let's check if there any update files in install folder
-    $update_file = PATH . "cache/kleeja-{$new_version}/install/includes/update_files/{$old_version}_to_{$new_version}.php";
+    $update_file = PATH . "cache/kleeja-{$new_version}/install/includes/update_schema.php";
 
     if (file_exists($update_file))
     {
         // move the update file from install folder to cache folder to include it later and delete install folder
         // becuse if install folder is exists , it can make some problems if dev mode is not active
-        rename($update_file, PATH . "cache/update_{$old_version}_to_{$new_version}.php");
+        rename($update_file, PATH . "cache/update_schema.php");
     }
 
     // skip some folders
@@ -299,36 +299,51 @@ elseif ($current_smt == 'update3')
     else
     {
         // we will include what we want to do in this file , and kleeja will done
-        if (file_exists($db_update_file = PATH . "cache/update_{$old_version}_to_{$new_version}.php"))
+        if (file_exists($db_update_file = PATH . "cache/update_schema.php"))
         {
             require_once $db_update_file;
 
-            if($config['db_version'] < UPDATE_DB_VERSION)
+            $all_db_updates = array_keys($update_schema);
+
+            $available_db_updates = array_filter($all_db_updates, function ($v) use ($config) {
+                return $v > $config['db_version'];
+            });
+
+            sort($available_db_updates);
+
+            if(sizeof($available_db_updates))
             {
-                $SQL->show_errors = false;
 
-                if (isset($update_sqls) && sizeof($update_sqls) > 0)
+                foreach ($available_db_updates as $db_update_version)
                 {
-                    foreach ($update_sqls as $name=>$sql_content)
-                    {
-                        $SQL->query($sql_content);
-                    }
-                }
+                    $SQL->show_errors = false;
 
-                if (isset($update_functions) && sizeof($update_functions) > 0)
-                {
-                    foreach ($update_functions as $n)
+                    if (isset($update_schema[$db_update_version]['sql'])
+                        && sizeof($update_schema[$db_update_version]['sql']) > 0)
                     {
-                        if (is_callable($n))
+                        foreach ($update_schema[$db_update_version]['sql'] as $name=>$sql_content)
                         {
-                            $n();
+                            $SQL->query($sql_content);
                         }
                     }
-                }
 
-                $SQL->query(
-                    "UPDATE `{$dbprefix}config` SET `value` = '" . UPDATE_DB_VERSION . "' WHERE `name` = 'db_version'"
-                );
+                    if (isset($update_schema[$db_update_version]['functions'])
+                            && sizeof($update_schema[$db_update_version]['functions']) > 0)
+                    {
+                        foreach ($update_schema[$db_update_version]['functions'] as $n)
+                        {
+                            if (is_callable($n))
+                            {
+                                $n();
+                            }
+                        }
+                    }
+
+
+                    $SQL->query(
+                        "UPDATE `{$dbprefix}config` SET `value` = '" . $db_update_version . "' WHERE `name` = 'db_version'"
+                    );
+                }
             }
         }
 

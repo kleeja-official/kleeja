@@ -23,7 +23,7 @@ var PATH_SPACER = 'style/images/spacer.gif';
 			{{if(((ig('step') && g('step') != 'language') && (strpos('index.php', $_SERVER['PHP_SELF'])=== false && ig('step'))) OR (ig('step') && g('step') == 'license' || g('step') == 'action_file') ):}}
 				<form action="?step={{echo g('step')}}&amp;change_lang=1" method="post">
 					<select name="lang" id="lang" class="Lang" onchange="submit()">
-					{{if($dh = opendir($_path . 'lang')):}}
+					{{if($dh = opendir(PATH . 'lang')):}}
 						{{while (($file = readdir($dh)) !== false): if(strpos($file, '.') === false && $file != '..' && $file != '.'):}}
 						{{$current_icon=file_exists('style/images/'.$file.'_16.png') ? 'style/images/'.$file.'_16.png' : (file_exists('../lang/'.$file.'/icon_16.png') ? '../lang/'.$file.'/icon_16.png' : 'style/images/zz_flag.png');}}
 						<option value="{{echo $file}}" title="{{echo $current_icon}}" {{echo ig('lang') && $file==g('lang') || (!ig('lang') && $file=='en') ?'selected="selected"':''}}>{{echo $file}}</option>

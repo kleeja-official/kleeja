@@ -16,31 +16,28 @@
 * include important files
 */
 define('IN_COMMON', true);
-$_path = '../';
-define('PATH', $_path);
+define('STOP_PLUGINS', true);
+define('PATH', '../');
 
-if (file_exists($_path . 'config.php'))
+if (file_exists(PATH . 'config.php'))
 {
-    include_once $_path . 'config.php';
+    include_once PATH . 'config.php';
 }
 
-include_once $_path . 'includes/functions.php';
-include_once $_path . 'includes/functions_alternative.php';
+include_once PATH . 'includes/plugins.php';
+include_once PATH . 'includes/functions.php';
+include_once PATH . 'includes/functions_alternative.php';
 
-include_once $_path . 'includes/mysqli.php';
+include_once PATH . 'includes/mysqli.php';
 
 include_once 'includes/functions_install.php';
+include_once 'includes/update_schema.php';
 
-
-$order_update_files = [
-    '1.7_to_2.0'	=> 9,
-    // filename => db_version
-];
 
 $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
 
 //
-// Is current db is up-to-date ?
+// fix missing db_version
 //
 $config['db_version'] = inst_get_config('db_version');
 
@@ -62,121 +59,69 @@ if (! ip('action_file_do'))
 }
 
 
-
 /**
 * Navigation ..
 */
 switch (g('step', 'str', 'action_file'))
 {
 default:
-case 'action_file':
-
-    if (ip('action_file_do'))
-    {
-        if (p('action_file_do', 'str', '') !== '')
-        {
-            echo '<meta http-equiv="refresh" content="0;url=' . $_SERVER['PHP_SELF'] . '?step=update_now&action_file_do=' . p('action_file_do') . '&amp;' . getlang(1) . '">';
-        }
-    }
-    else
-    {
-        //get fles
-        $s_path  = 'includes/update_files';
-        $dh      = opendir($s_path);
-        $upfiles = [];
-
-        while (($file = readdir($dh)) !== false)
-        {
-            if (substr($file, -3) == 'php')
-            {
-                $file   = str_replace('.php', '', $file);
-                $db_ver = $order_update_files[$file];
-
-                // var_dump($db_ver);
-
-                if ((empty($config['db_version']) || $db_ver > $config['db_version']))
-                {
-                    $upfiles[$db_ver] = $file;
-                }
-            }
-        }
-        @closedir($dh);
-
-        ksort($upfiles);
-
-        echo gettpl('update_list.html');
-    }
-
-break;
-
 case 'update_now':
 
-        if (! ig('action_file_do'))
+    $complete_update    = true;
+    $update_msgs_arr    = [];
+    $current_db_version = $config['db_version'];
+
+    $all_db_updates = array_keys($update_schema);
+
+    $available_db_updates = array_filter($all_db_updates, function ($v) use ($current_db_version) {
+        return $v > $current_db_version;
+    });
+
+    sort($available_db_updates);
+
+    if (! sizeof($available_db_updates))
+    {
+        $update_msgs_arr[] = '<span style="color:green;">' . $lang['INST_UPDATE_CUR_VER_IS_UP'] . '</span>';
+        $complete_update   = false;
+    }
+
+    //
+    //is there any sqls
+    //
+    if ($complete_update)
+    {
+        //loop through available updates
+        foreach ($available_db_updates as $db_update_version)
         {
-            echo '<meta http-equiv="refresh" content="0;url=' . $_SERVER['PHP_SELF'] . '?step=action_file&' . getlang(1) . '">';
+            $SQL->show_errors = false;
 
-            exit();
-        }
-
-        if (ig('complet_up_func'))
-        {
-            define('C_U_F', true);
-        }
-
-        $file_for_up = 'includes/update_files/' . preg_replace('/[^a-z0-9_\-\.]/i', '', g('action_file_do')) . '.php';
-
-        if (! file_exists($file_for_up))
-        {
-            echo '<span style="color:red;">' . $lang['INST_ERR_NO_SELECTED_UPFILE_GOOD'] . ' [ ' . $file_for_up . ' ]</span><br />';
-        }
-        else
-        {
-            //get it
-            require $file_for_up;
-            $complete_update = true;
-            $update_msgs_arr = [];
-
-
-            if ($config['db_version'] >= UPDATE_DB_VERSION && ! defined('DEV_STAGE'))
+            //sqls
+            if (isset($update_schema[$db_update_version]['sql'])
+                    && sizeof($update_schema[$db_update_version]['sql']) > 0)
             {
-                $update_msgs_arr[] = '<span style="color:green;">' . $lang['INST_UPDATE_CUR_VER_IS_UP'] . '</span>';
-                $complete_update   = false;
-            }
+                $err = '';
 
-            //
-            //is there any sqls
-            //
-            if (($complete_update || (defined('DEV_STAGE')) && ! defined('C_U_F')))
-            {
-                $SQL->show_errors = false;
+                $complete_update = true;
 
-                if (isset($update_sqls) && sizeof($update_sqls) > 0)
+                foreach ($update_schema[$db_update_version]['sql'] as $name=>$sql_content)
                 {
                     $err = '';
+                    $SQL->query($sql_content);
+                    $err = $SQL->get_error();
 
-                    foreach ($update_sqls as $name=>$sql_content)
+                    if (strpos($err[1], 'Duplicate') !== false || $err[0] == '1062' || $err[0] == '1060')
                     {
-                        $err = '';
-                        $SQL->query($sql_content);
-                        $err = $SQL->get_error();
-
-                        if (strpos($err[1], 'Duplicate') !== false || $err[0] == '1062' || $err[0] == '1060')
-                        {
-                            $update_msgs_arr[] = '<span style="color:green;">' . $lang['INST_UPDATE_CUR_VER_IS_UP'] . '</span>';
-                            $complete_update   = false;
-                        }
+                        $complete_update   = false;
                     }
                 }
             }
 
-            //
-            //is there any functions
-            //
-            if ($complete_update || defined('DEV_STAGE') || defined('C_U_F'))
+            //functions
+            if ($complete_update)
             {
-                if (isset($update_functions) && sizeof($update_functions) > 0)
+                if (isset($update_schema[$db_update_version]['functions']) && sizeof($update_schema[$db_update_version]['functions']) > 0)
                 {
-                    foreach ($update_functions as $n)
+                    foreach ($update_schema[$db_update_version]['functions'] as $n)
                     {
                         if (is_callable($n))
                         {
@@ -186,31 +131,13 @@ case 'update_now':
                 }
             }
 
-            //
-            //is there any notes
-            //
-            $NOTES_CUP = false;
-
-            if ($complete_update || defined('DEV_STAGE'))
-            {
-                if (isset($update_notes) && sizeof($update_notes) > 0)
-                {
-                    $i         =1;
-                    $NOTES_CUP = [];
-
-                    foreach ($update_notes as $n)
-                    {
-                        $NOTES_CUP[$i] = $n;
-                        ++$i;
-                    }
-                }
-
-                $sql = "UPDATE `{$dbprefix}config` SET `value` = '" . UPDATE_DB_VERSION . "' WHERE `name` = 'db_version'";
-                $SQL->query($sql);
-            }
-
-            echo gettpl('update_end.html');
+            $sql = "UPDATE `{$dbprefix}config` SET `value` = '" . UPDATE_DB_VERSION . "' WHERE `name` = 'db_version'";
+            $SQL->query($sql);
         }
+    }
+
+
+    echo gettpl('update_end.html');
 
 break;
 }

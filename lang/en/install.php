@@ -85,15 +85,10 @@ return [
     'FUNCTION_DISC_MUF'		     => 'The function move_uploaded_file is used to upload files and it\'s the most important function in the script.',
 
     'ADVICES_CHECK'		           => 'Advanced check (Optional)',
-    'ADVICES_REGISTER_GLOBALS'		=> '<span style="color:red;padding:0 6px;">register_globals function is enabled ..!</span><br /> its recommended that you disable it.',
-    'ADVICES_MAGIC_QUOTES'		    => '<span style="color:red;padding:0 6px;">magic_quotes function is enabled ..!</span><br /> it is recommended that you disable it.',
+    'ZIPARCHIVE_LIB'                => '<span style="color:red;padding:0 6px">ZipArchive Lib is not available..!</span><br /> It is required to install plugins, styles and to upgrade to newer Kleeja versions!',
 
     //UPDATE
-    'INST_CHOOSE_UPDATE_FILE'		         => 'Choose the appropriate update file',
-    'INST_ERR_NO_SELECTED_UPFILE_GOOD'		=> 'Inappropriate update file, or it is missing!',
-    'INST_UPDATE_CUR_VER_IS_UP'		       => 'Your current version is newer than this update.',
-
-    'INST_NOTES_UPDATE'		=> 'Update Notes',
+    'INST_UPDATE_CUR_VER_IS_UP'		       => 'Your current version database is up-to-date ... hooray!',
 
 
     'INST_UPDATE_IS_FINISH'		=> 'Installation completed! you can now delete the INSTALL directory...',
@@ -112,6 +107,6 @@ return [
     'NO'		                     => 'No',
 
     'KLEEJA_TEAM_MSG_NAME'		=> 'Kleeja Development Team',
-    'KLEEJA_TEAM_MSG_TEXT'		=> "Thank you for choosing Kleeja to empower your website,\n We really hope you enjoy the unique experience that Kleeja offers to you.\nDon't forget to visit http://kleeja.com for future updates.",
+    'KLEEJA_TEAM_MSG_TEXT'		=> "Thank you for choosing Kleeja to empower your website,\n We really hope you enjoy the unique experience that Kleeja offers to you.\nDon't forget to visit http://kleeja.com for future updates, to report bugs/issues kindly visit our <a href=\"https://github.com/kleeja-official/kleeja/issues\">Issues page</a>",
 
 ];
