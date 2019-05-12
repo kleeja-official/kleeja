@@ -102,7 +102,7 @@ case 'action_file':
         }
         @closedir($dh);
 
-        ksort($upfiles); 
+        ksort($upfiles);
 
         echo gettpl('update_list.html');
     }
@@ -137,14 +137,14 @@ case 'update_now':
             $update_msgs_arr = [];
 
 
-            if ($config['db_version'] >= LAST_DB_VERSION && ! defined('DEV_STAGE'))
+            if ($config['db_version'] >= UPDATE_DB_VERSION && ! defined('DEV_STAGE'))
             {
                 $update_msgs_arr[] = '<span style="color:green;">' . $lang['INST_UPDATE_CUR_VER_IS_UP'] . '</span>';
                 $complete_update   = false;
             }
 
             //
-            //is there any sqls 
+            //is there any sqls
             //
             if (($complete_update || (defined('DEV_STAGE')) && ! defined('C_U_F')))
             {
@@ -170,7 +170,7 @@ case 'update_now':
             }
 
             //
-            //is there any functions 
+            //is there any functions
             //
             if ($complete_update || defined('DEV_STAGE') || defined('C_U_F'))
             {
@@ -187,7 +187,7 @@ case 'update_now':
             }
 
             //
-            //is there any notes 
+            //is there any notes
             //
             $NOTES_CUP = false;
 
@@ -205,7 +205,7 @@ case 'update_now':
                     }
                 }
 
-                $sql = "UPDATE `{$dbprefix}config` SET `value` = '" . LAST_DB_VERSION . "' WHERE `name` = 'db_version'";
+                $sql = "UPDATE `{$dbprefix}config` SET `value` = '" . UPDATE_DB_VERSION . "' WHERE `name` = 'db_version'";
                 $SQL->query($sql);
             }
 

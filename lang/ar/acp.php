@@ -273,4 +273,8 @@ return [
     'VERSION'					               => 'الإصدار',
     'DEVELOPER'					             => 'المطور',
     'ALL_PLUGINS_UPDATED'		      => 'لا يوجد إضافات تحتاج تحديث حالياً ... ',
+    'UPDATE_ERR_FETCH_PACKAGE'        => 'واجهتنا مشكلة أثناء تحميل النسخة من الخادم!',
+    'UPDATE_BACKUP_CREATE_FAILED'     => 'لم نستطع إنشاء ملف النسخة الإحتياطية في مجلد الكاش!',
+    'UPDATE_PROCESS_FAILED'           => 'عملية التحديث فشلت!',
+    'UPDATE_PROCESS_DONE'             => 'تم تحديث كليجا إلى النسخة `%s` بنجاح...',
 ];

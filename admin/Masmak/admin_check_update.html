@@ -102,7 +102,7 @@ function updateNow(step) {
                 if(info[1].length > 0) {
                     $('#update'+step+' .update-message').removeClass('d-none').addClass('d-block').text(info[1]);
                     if(info[0] == 1) {
-                        $('#update'+step+' .update-message').removeClass('alter-danger').addClass('alert-success');
+                        $('#update'+step+' .update-message').removeClass('alert-danger').addClass('alert-success');
                     }
                 }
 
@@ -117,7 +117,7 @@ function updateNow(step) {
             }
         })
         .fail(function(data) {
-            $('#update'+step+' .update-status').text('error!');
+            $('#update'+step+' .update-status').html('<i class="fa fa-warning text-danger"></i>');
             $('#update'+step+' .update-message').removeClass('d-none').addClass('d-block').html(
                 (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
             );

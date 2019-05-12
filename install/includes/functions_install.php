@@ -10,8 +10,7 @@
 // Requirements of Kleeja
 define('MIN_PHP_VERSION', '7.0');
 define('MIN_MYSQL_VERSION', '4.2.2');
-//version of latest changes at db
-define('LAST_DB_VERSION', '9');
+
 //set no errors
 define('MYSQL_NO_ERRORS', true);
 
@@ -24,6 +23,8 @@ if (ig('change_lang'))
         header('Location: ' . $_SERVER['PHP_SELF'] . '?step=' . p('step_is') . '&lang=' . p('lang'));
     }
 }
+
+require PATH . 'includes/version.php';
 
 // Including current language
 $lang = require PATH . 'lang/' . getlang() . '/common.php';

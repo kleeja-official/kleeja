@@ -3,9 +3,9 @@
 // Kleeja database version : 9
 //
 
+define('UPDATE_DB_VERSION', '9');
 
-
-$update_sqls = 
+$update_sqls =
 [
     'files_size_big'   => "ALTER TABLE `{$dbprefix}files` CHANGE `size` `size` BIGINT(20)  NOT NULL  DEFAULT '0';",
     'group_size_big'   => "ALTER TABLE `{$dbprefix}groups_exts` CHANGE `size` `size` BIGINT(20)  NOT NULL  DEFAULT '0';",

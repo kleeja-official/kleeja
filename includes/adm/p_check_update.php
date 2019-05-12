@@ -127,9 +127,9 @@ elseif ($current_smt == 'update1')
     {
         $adminAjaxContent = '930:::' . $lang['NO_ZIP_ARCHIVE'];
     }
-    elseif (! version_compare(strtolower($current_version), strtolower($new_version), '<'))
+    elseif (! version_compare(strtolower($current_version), strtolower($new_version), '<='))
     {
-        $adminAjaxContent = '940:::there is no update for your version!';
+        $adminAjaxContent = '940:::' . $lang['U_LAST_VER_KLJ'];
     }
     else
     {
@@ -142,7 +142,7 @@ elseif ($current_smt == 'update1')
         }
         else
         {
-            $adminAjaxContent = '2:::We have encountered a problem while downloading the package ... ';
+            $adminAjaxContent = '2:::' . $lang['UPDATE_ERR_FETCH_PACKAGE'];
         }
     }
 }
@@ -205,7 +205,8 @@ elseif ($current_smt == 'update3')
     $backup = new ZipArchive;
     if($backup->open($backup_archive_path, ZipArchive::CREATE) !== true)
     {
-
+        header('HTTP/1.0 401 Unauthorized');
+        kleeja_admin_err($lang['UPDATE_BACKUP_CREATE_FAILED']);
     }
 
     // delete plugin folder function with some changes :)
@@ -292,7 +293,7 @@ elseif ($current_smt == 'update3')
         //maintenance mode off
         update_config('siteclose', 0);
 
-        $adminAjaxContent = '1002:::updating process has failed...' .
+        $adminAjaxContent = '1002:::' . $lang['UPDATE_PROCESS_FAILED']
             (defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '');
     }
     else
@@ -301,6 +302,34 @@ elseif ($current_smt == 'update3')
         if (file_exists($db_update_file = PATH . "cache/update_{$old_version}_to_{$new_version}.php"))
         {
             require_once $db_update_file;
+
+            if($config['db_version'] < UPDATE_DB_VERSION)
+            {
+                $SQL->show_errors = false;
+
+                if (isset($update_sqls) && sizeof($update_sqls) > 0)
+                {
+                    foreach ($update_sqls as $name=>$sql_content)
+                    {
+                        $SQL->query($sql_content);
+                    }
+                }
+
+                if (isset($update_functions) && sizeof($update_functions) > 0)
+                {
+                    foreach ($update_functions as $n)
+                    {
+                        if (is_callable($n))
+                        {
+                            $n();
+                        }
+                    }
+                }
+
+                $SQL->query(
+                    "UPDATE `{$dbprefix}config` SET `value` = '" . UPDATE_DB_VERSION . "' WHERE `name` = 'db_version'"
+                );
+            }
         }
 
         //maintenance mode off
@@ -308,9 +337,9 @@ elseif ($current_smt == 'update3')
 
         // after a success update, delete files and folders in cache
         kleeja_unlink(PATH . "cache/kleeja-{$new_version}");
+        kleeja_unlink(PATH . "cache/kleeja-{$new_version}.zip");
         delete_cache('', true);
 
-        $adminAjaxContent = "1:::Kleeja has been updated to {$new_version} successfully...";
+        $adminAjaxContent = '1:::' . sprintf($lang['UPDATE_PROCESS_DONE'], $new_version);
     }
 }
-//endif
