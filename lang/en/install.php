@@ -102,7 +102,7 @@ return [
     'INST_WHAT_IS_KLEEJA'		=> 'Keeja is a free, features rich, files and images upload system. Kleeja is developed to help webmasters to provide a decent files hosting service on their sites . Kleeja comes with a simple source code and powerful User system , also with easy template system so you can easily customize your styles ',
 
     'INST_SPECIAL_KLEEJA'		    => 'Some Kleeja features .. !',
-    'INST_WHAT_IS_KLEEJA_ONE'		=> 'Kleeja has a simple and powerful user system which can be easily integrated with many boards . Kleeja provide simple admin control panel that enables you to control over everything in your site . Also you can customize Kleeja\'s style and install a lot of add-ons  ....  <a target="_blank" href="http://www.kleeja.com/features/">more details in Kleeja site </a>',
+    'INST_WHAT_IS_KLEEJA_ONE'		=> 'Kleeja has a simple and powerful user system which can be easily integrated with many boards . Kleeja provide simple admin control panel that enables you to control over everything in your site . Also you can customize Kleeja\'s style and install a lot of add-ons  ....  <a target="_blank" href="https://www.kleeja.com">more details in Kleeja site </a>',
     'YES'		                    => 'Yes',
     'NO'		                     => 'No',
 
