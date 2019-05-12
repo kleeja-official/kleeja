@@ -5,11 +5,15 @@
 	<li class="breadcrumb-item active">{lang.R_CHECK_UPDATE}</li>
 </ol>
 
-<div class="alert d-flex justify-content-between align-middle" id="updateInfo">
-    <div>
-        <img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" /> {lang.LOADING}
+<div class="alert" id="updateInfo">
+    <div class="d-flex justify-content-between align-middle">
+        <p id="updateInfoStatus">
+            <img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" /> {lang.LOADING}
+        </p>
+        <button id="updateButton" type="button" class="btn btn-outline-dark btn-sm d-none" onclick="updateNow(1)">{lang.UPDATE_KLJ_NOW}</button>
     </div>
-    <button id="updateButton" type="button" class="btn btn-outline-dark btn-sm d-none" onclick="updateNow(1)">{lang.UPDATE_KLJ_NOW}</button>
+  <hr id="updateInfoHr" class="d-none">
+  <p id="updateInfoMessage" class="mb-0 d-none"></p>
 </div>
 
 <ul class="list-group mt-5 d-none" id="updateProcess">
@@ -66,9 +70,14 @@ function checkVersion() {
             if(data.content) {
                 var info = data.content.split(":::");
                 $('#updateInfo').addClass(info[0] !=  0 ? 'alert-warning' : 'alert-info');
-                $('#updateInfo div').html(info[1]);
+                $('#updateInfoStatus').html(info[1]);
                 <UNLESS NAME="showMessage">
                 if(info[0] == 2) {
+                    var message = info[1].split("::--x--::");
+                    $('#updateInfoStatus').html(message[0]);
+                    $('#updateInfoHr').removeClass('d-none');
+                    $('#updateInfoMessage').removeClass('d-none').html('<span style="font-weight:bold">{lang.RELEASE_NOTE}:</span><br>'
+                        + message[1].replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '<br>') + '<br>' + message[2].replace('T', ' '));
                     $('#updateButton').removeClass('d-none');
                 }
                 </UNLESS>
@@ -88,13 +97,15 @@ function updateNow(step) {
     if(step == 1) {
         $('#updateButton').addClass('d-none');
         $('#updateProcess').removeClass('d-none');
+        $('#updateInfoHr').addClass('d-none');
+        $('#updateInfoMessage').addClass('d-none')
     }
 
     $('#update'+step+' .update-status').html('<img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif">');
     $('#update'+step+'').removeClass('disabled');
 
     $.ajax({
-        url: './?cp=p_check_update&smt=update'+step+'&_ajax_=1',
+        url: './?cp=p_check_update&smt=update'+step+'&{GET_FORM_KEY}&_ajax_=1',
         dataType: 'json'})
         .done(function (data) {
             if(data.content) {

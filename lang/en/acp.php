@@ -153,7 +153,6 @@ return [
     'COOKIE_NAME' 				         => 'Cookie prefix',
     'COOKIE_PATH' 				         => 'Cookie path',
     'COOKIE_SECURE'				        => 'Cookie secure',
-    //'ADMINISTRATORS'			=> 'Administrators',
     'DELETEALLRES'				          => 'Delete all results',
     'ADMIN_DELETE_FILES_OK'     => 'File %s successfully deleted',
     'ADMIN_DELETE_FILES_NOF'	   => 'No files to delete',
@@ -283,4 +282,5 @@ return [
     'UPDATE_PROCESS_STEP1'            => 'Fetching the package of latest version of Kleeja ...',
     'UPDATE_PROCESS_STEP2'            => 'Create a backup container and extract the new package ...',
     'UPDATE_PROCESS_STEP3'            => 'Updating to new version (files & database upgrade) ...',
+    'RELEASE_NOTE'                    => 'Release Notes',
 ];

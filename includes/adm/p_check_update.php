@@ -21,19 +21,31 @@ $new_version     = empty($new_version['version_number'])
                 ? KLEEJA_VERSION
                 : $new_version['version_number'];
 $backup_archive_path = PATH . 'cache/backup.zip';
+$GET_FORM_KEY = kleeja_add_form_key_get('UPDATER_FORM_KEY');
 
 define('KLEEJA_VERSION_CHECK_LINK', 'https://api.github.com/repos/kleeja-official/kleeja/releases/latest');
-define('KLEEJA_LATEST_PACKAGE_LINK', 'https://github.com/kleeja-official/kleeja/archive/');
+define('KLEEJA_LATEST_PACKAGE_LINK', 'https://api.github.com/repos/kleeja-official/kleeja/zipball/');
 
 $stylee	     = 'admin_check_update';
 $current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
 $update_link = $config['siteurl'] . 'install/update.php?lang=' . $config['language'];
 
-//only founders can do the upgrade process ...
-if(in_array($current_smt, ['update1', 'update2', 'update3']) && intval($userinfo['founder']) !== 1)
+
+if (in_array($current_smt, ['update1', 'update2', 'update3']))
 {
-    header('HTTP/1.0 401 Unauthorized');
-    kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
+    //only founders can do the upgrade process ...
+    if (intval($userinfo['founder']) !== 1)
+    {
+        header('HTTP/1.0 401 Unauthorized');
+        kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
+    }
+
+    if (! kleeja_check_form_key_get('UPDATER_FORM_KEY'))
+    {
+        header('HTTP/1.0 401 Unauthorized');
+
+        kleeja_admin_err($lang['INVALID_GET_KEY']);
+    }
 }
 
 //check latest version
@@ -47,11 +59,15 @@ if ($current_smt == 'check')
         if (! empty($github_data))
         {
             $latest_release = json_decode($github_data, true);
-            $version_data   = '';
+            $version_data   = null;
 
             if (json_last_error() === JSON_ERROR_NONE)
             {
-                $version_data = trim(htmlspecialchars($latest_release['tag_name']));
+                $version_data = [
+                    'version' => trim(htmlspecialchars($latest_release['tag_name'])),
+                    'info'    => trim(htmlspecialchars($latest_release['body'])),
+                    'date'    => trim(htmlspecialchars($latest_release['created_at'])),
+                ];
                 $cache->save('kleeja_repo_version', $version_data, 3600 * 2);
             }
         }
@@ -59,34 +75,35 @@ if ($current_smt == 'check')
 
     $error = 0;
 
-    if (empty($version_data))
+    if (empty($version_data['version']))
     {
         $text  = $lang['ERROR_CHECK_VER'];
         $error = 1;
     }
     else
     {
-        if (version_compare(strtolower($current_version), strtolower($version_data), '<'))
+        if (version_compare(strtolower($current_version), strtolower($version_data['version']), '<'))
         {
-            $text	 = sprintf($lang['UPDATE_NOW_S'], $current_version, strtolower($version_data));
+            $text	 = sprintf($lang['UPDATE_NOW_S'], $current_version, strtolower($version_data['version'])) .
+                        '::--x--::' . $version_data['info'] . '::--x--::' . $version_data['date'];
             $error	= 2;
         }
-        elseif (version_compare(strtolower($current_version), strtolower($version_data), '='))
+        elseif (version_compare(strtolower($current_version), strtolower($version_data['version']), '='))
         {
             $text	= $lang['U_LAST_VER_KLJ'];
         }
-        elseif (version_compare(strtolower($current_version), strtolower($version_data), '>'))
+        elseif (version_compare(strtolower($current_version), strtolower($version_data['version']), '>'))
         {
             $text	= $lang['U_USE_PRE_RE'];
         }
         else
         {
-            $text = $lang['ERROR_CHECK_VER'] . ' [code: ' . htmlspecialchars($version_data) . ']';
+            $text = $lang['ERROR_CHECK_VER'] . ' [code: ' . htmlspecialchars($version_data['version']) . ']';
         }
     }
 
     $data	= [
-        'version_number'	=> $version_data,
+        'version_number'	=> $version_data['version'],
         'last_check'		   => time()
     ];
 
@@ -135,7 +152,8 @@ elseif ($current_smt == 'update1')
     {
         // downloaded the last package to cache folder
         fetch_remote_file(KLEEJA_LATEST_PACKAGE_LINK . $new_version . '.zip', PATH . "cache/kleeja-{$new_version}.zip", 60, false, 10, true);
-        if(file_exists(PATH . "cache/kleeja-{$new_version}.zip"))
+
+        if (file_exists(PATH . "cache/kleeja-{$new_version}.zip"))
         {
             $adminAjaxContent = '1:::';
             file_put_contents(PATH . 'cache/step1.done', time());
@@ -149,7 +167,7 @@ elseif ($current_smt == 'update1')
 //2. extract new kleeja package, create backup zip file
 elseif ($current_smt == 'update2')
 {
-    if(! file_exists(PATH . 'cache/step1.done'))
+    if (! file_exists(PATH . 'cache/step1.done'))
     {
         header('HTTP/1.0 401 Unauthorized');
         kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
@@ -173,7 +191,7 @@ elseif ($current_smt == 'update2')
     {
         // move the update file from install folder to cache folder to include it later and delete install folder
         // becuse if install folder is exists , it can make some problems if dev mode is not active
-        rename($update_file, PATH . "cache/update_schema.php");
+        rename($update_file, PATH . 'cache/update_schema.php');
     }
 
     // skip some folders
@@ -194,7 +212,7 @@ elseif ($current_smt == 'update2')
 //3. update, or rollback on failure
 elseif ($current_smt == 'update3')
 {
-    if(! file_exists(PATH . 'cache/step2.done'))
+    if (! file_exists(PATH . 'cache/step2.done'))
     {
         header('HTTP/1.0 401 Unauthorized');
         kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
@@ -203,7 +221,8 @@ elseif ($current_smt == 'update3')
     kleeja_unlink(PATH . 'cache/step2.done');
 
     $backup = new ZipArchive;
-    if($backup->open($backup_archive_path, ZipArchive::CREATE) !== true)
+
+    if ($backup->open($backup_archive_path, ZipArchive::CREATE) !== true)
     {
         header('HTTP/1.0 401 Unauthorized');
         kleeja_admin_err($lang['UPDATE_BACKUP_CREATE_FAILED']);
@@ -293,13 +312,12 @@ elseif ($current_smt == 'update3')
         //maintenance mode off
         update_config('siteclose', 0);
 
-        $adminAjaxContent = '1002:::' . $lang['UPDATE_PROCESS_FAILED']
-            (defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '');
+        $adminAjaxContent = '1002:::' . $lang['UPDATE_PROCESS_FAILED'](defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '');
     }
     else
     {
         // we will include what we want to do in this file , and kleeja will done
-        if (file_exists($db_update_file = PATH . "cache/update_schema.php"))
+        if (file_exists($db_update_file = PATH . 'cache/update_schema.php'))
         {
             require_once $db_update_file;
 
@@ -311,9 +329,8 @@ elseif ($current_smt == 'update3')
 
             sort($available_db_updates);
 
-            if(sizeof($available_db_updates))
+            if (sizeof($available_db_updates))
             {
-
                 foreach ($available_db_updates as $db_update_version)
                 {
                     $SQL->show_errors = false;
