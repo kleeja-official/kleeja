@@ -1,6 +1,6 @@
-cache/*.php
-cache/*.log
-plugins/*.php
+cache/*
+!cache/index.html
+!cache/.htaccess
 plugins/*
 !plugins/index.html
 config.php
