@@ -312,7 +312,7 @@ elseif ($current_smt == 'update3')
         //maintenance mode off
         update_config('siteclose', 0);
 
-        $adminAjaxContent = '1002:::' . $lang['UPDATE_PROCESS_FAILED'](defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '');
+        $adminAjaxContent = '1002:::' . $lang['UPDATE_PROCESS_FAILED'] . (defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '');
     }
     else
     {
