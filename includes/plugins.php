@@ -36,7 +36,7 @@ class Plugins
     private $installed_plugins_info = [];
 
 
-    private $plugin_path = '';
+    private $plugin_path = PATH . 'plugins';
 
 
     private static $instance;
@@ -55,7 +55,11 @@ class Plugins
         }
 
 
-        $this->plugin_path = PATH . KLEEJA_PLUGINS_FOLDER;
+
+        if (defined('KLEEJA_PLUGINS_FOLDER'))
+        {
+            $this->plugin_path = PATH . KLEEJA_PLUGINS_FOLDER;
+        }
 
         // Get installed plugins
         $query = [
@@ -85,7 +89,7 @@ class Plugins
     {
         $dh = opendir($this->plugin_path);
 
-        while (false !== ($folder_name = readdir($dh)))
+        while ($dh !== false and false !== ($folder_name = readdir($dh)))
         {
             if (is_dir($this->plugin_path . '/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
             {

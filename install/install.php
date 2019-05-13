@@ -16,50 +16,23 @@
 * include important files
 */
 define('IN_COMMON', true);
-$_path = '../';
-define('PATH', $_path);
+define('STOP_PLUGINS', true);
+define('PATH', '../');
 
-if (file_exists($_path . 'config.php'))
+if (file_exists(PATH . 'config.php'))
 {
-    include_once $_path . 'config.php';
+    include_once PATH . 'config.php';
 }
-include_once $_path . 'includes/functions_display.php';
-include_once $_path . 'includes/functions_alternative.php';
-include_once $_path . 'includes/functions.php';
 
-include_once $_path . 'includes/mysqli.php';
+include_once PATH . 'includes/plugins.php';
+include_once PATH . 'includes/functions_display.php';
+include_once PATH . 'includes/functions_alternative.php';
+include_once PATH . 'includes/functions.php';
+
+
+include_once PATH . 'includes/mysqli.php';
 
 include_once 'includes/functions_install.php';
-
-
-/**
- * @ignore an alias class for plugins class
- */
-class Plugins
-{
-    private static $instance;
-
-    /**
-     * @return Plugins
-     */
-    public static function getInstance()
-    {
-        if (is_null(self::$instance))
-        {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    /**
-     * @return array
-     */
-    public function run($name)
-    {
-        return [];
-    }
-}
-
 
 
 
@@ -71,7 +44,6 @@ if (! ig('step'))
     exit;
 }
 
-
 //
 // Kleeja must be safe ..
 //
@@ -81,7 +53,7 @@ if (! empty($dbuser) && ! empty($dbname) && ! (ig('step') && in_array(g('step'),
 
     if (! empty($d))
     {
-        header('Location: index.php');
+        header('Location: ./index.php');
 
         exit;
     }
@@ -90,7 +62,7 @@ if (! empty($dbuser) && ! empty($dbname) && ! (ig('step') && in_array(g('step'),
 /**
 * Print header
 */
-if (ip('dbsubmit') && ! is_writable($_path))
+if (ip('dbsubmit') && ! is_writable(PATH))
 {
     // soon
 }
@@ -127,20 +99,14 @@ break;
 case 'f':
 
     $check_ok = true;
-    $advices  = $register_globals  = $get_magic_quotes_gpc  = false;
+    $advices  = $ziparchive_lib  = false;
 
-    if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+    if(! class_exists( 'ZipArchive'))
     {
-        $register_globals = true;
+        $ziparchive_lib = true;
     }
 
-    if ( (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) ||
-    (@ini_get('magic_quotes_sybase') && (strtolower(@ini_get('magic_quotes_sybase')) != 'off')) )
-    {
-        $get_magic_quotes_gpc = true;
-    }
-
-    if ($register_globals || $get_magic_quotes_gpc)
+    if ($ziparchive_lib)
     {
         $advices = true;
     }
@@ -154,18 +120,13 @@ case 'c':
     // after submit, generate config file
     if (ip('dbsubmit'))
     {
-        //lets do it
-        do_config_export(
-                        p('db_server'),
-                        p('db_user'),
-                        p('db_pass'),
-                        p('db_name'),
-                        p('db_prefix')
-                        );
+        //create config file, or export it to browser on failure
+        do_config_export(p('db_server'), p('db_user'), p('db_pass'), p('db_name'), p('db_prefix'));
     }
 
-    $no_config		    = ! file_exists($_path . 'config.php') ? false : true;
-    $writeable_path	= is_writable($_path) ? true : false;
+
+    $no_config      = ! file_exists(PATH . 'config.php') || ig('force') ? false : true;
+    $writeable_path	= is_writable(PATH) ? true : false;
 
     echo gettpl('configs.html');
 
@@ -198,9 +159,9 @@ case 'check':
     //try to chmod them
     if (function_exists('chmod'))
     {
-        @chmod($_path . 'cache', 0755);
-        @chmod($_path . 'uploads', 0755);
-        @chmod($_path . 'uploads/thumbs', 0755);
+        @chmod(PATH . 'cache', 0755);
+        @chmod(PATH . 'uploads', 0755);
+        @chmod(PATH . 'uploads/thumbs', 0755);
     }
 
     echo gettpl('check_all.html');
@@ -243,8 +204,8 @@ case 'data' :
         //connect .. for check
         $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
 
-        include_once '../includes/usr.php';
-        include_once '../includes/functions_alternative.php';
+        include_once PATH . 'includes/usr.php';
+        include_once PATH . 'includes/functions_alternative.php';
         $usrcp = new usrcp;
 
         $user_salt			     = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);

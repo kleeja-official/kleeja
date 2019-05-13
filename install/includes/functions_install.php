@@ -7,35 +7,31 @@
 *
 */
 
-// Requirements of Kleeja
-define('MIN_PHP_VERSION', '7.0');
-define('MIN_MYSQL_VERSION', '4.2.2');
-//version of latest changes at db
-define ('LAST_DB_VERSION', '9');
-//set no errors
+
+// get version info and min requirement values
+require PATH . 'includes/version.php';
+
+//set mysql to show no errors
 define('MYSQL_NO_ERRORS', true);
+define('EVAL_IS_ON', is_eval_is_on());
 
 
 // Detect choosing another lang while installing
-if (ig('change_lang'))
+if (ig('change_lang') && ip('lang'))
 {
-    if (ip('lang'))
-    {
-        header('Location: ' . $_SERVER['PHP_SELF'] . '?step=' . p('step_is') . '&lang=' . p('lang'));
-    }
+    header('Location: ' . $_SERVER['PHP_SELF'] . '?step=' . p('step_is') . '&lang=' . p('lang'));
 }
 
+
 // Including current language
-$lang = require $_path . 'lang/' . getlang() . '/common.php';
-$lang = array_merge($lang, require $_path . 'lang/' . getlang() . '/install.php');
+$lang = require PATH . 'lang/' . getlang() . '/common.php';
+$lang = array_merge($lang, require PATH . 'lang/' . getlang() . '/install.php');
 
 
-$IN_DEV = false;
 // Exceptions for development
-if (file_exists($_path . '.svn/entries') || file_exists('dev.txt'))
+if (file_exists(PATH . '.git'))
 {
     define('DEV_STAGE', true);
-    $IN_DEV = true;
 }
 
 
@@ -46,17 +42,12 @@ if (file_exists($_path . '.svn/entries') || file_exists('dev.txt'))
  */
 function getlang ($link = false)
 {
-    global $_path;
+    $ln    = 'en';
 
     if (ig('lang'))
     {
         $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
-
-        $ln	= file_exists($_path . 'lang/' . $lang . '/install.php') ? $lang : 'en';
-    }
-    else
-    {
-        $ln	= 'en';
+        $ln	  = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
     }
 
     return $link ? 'lang=' . $ln : $ln;
@@ -64,85 +55,90 @@ function getlang ($link = false)
 
 function getjquerylink()
 {
-    global $_path;
+    if (file_exists(PATH . 'admin/Masmak/js/jquery.min.js'))
+    {
+        return PATH . 'admin/Masmak/js/jquery.min.js';
+    }
 
-    if (file_exists($_path . 'admin/Masmak/js/jquery.min.js'))
-    {
-        return $_path . 'admin/Masmak/js/jquery.min.js';
-    }
-    else
-    {
-        return 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js';
-    }
+    return 'http://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js';
 }
 
 /**
 * Parsing installing templates
+* @param mixed $tplname
 */
 function gettpl($tplname)
 {
-    global $lang, $_path;
+    global $lang;
 
     $tpl = preg_replace('/{{([^}]+)}}/', '<?php \\1 ?>', file_get_contents('style/' . $tplname));
+
     ob_start();
-    eval('?> ' . $tpl . '<?php ');
+
+    if (EVAL_IS_ON)
+    {
+        eval('?> ' . $tpl . '<?php ');
+    }
+    else
+    {
+        include_once kleeja_eval($tpl);
+    }
+
     $stpl = ob_get_contents();
     ob_end_clean();
 
     return $stpl;
 }
 
+function is_eval_is_on()
+{
+    $eval_on = false;
+    eval('$eval_on = true;');
+
+    return $eval_on;
+}
+
+function kleeja_eval($code)
+{
+    $path  = PATH . 'cache/' . md5($code) . '.php';
+    file_put_contents($path, $code);
+    return $path;
+}
+
+
 /**
 * Export config
+* @param mixed $srv
+* @param mixed $usr
+* @param mixed $pass
+* @param mixed $nm
+* @param mixed $prf
 */
-function do_config_export($srv, $usr, $pass, $nm, $prf, $fpath = '')
+function do_config_export($srv, $usr, $pass, $nm, $prf)
 {
-    global $_path;
-
-    if (! in_array($type, ['mysql', 'mysqli']))
-    {
-        $type = 'mysql';
-    }
-
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
-    //$data	.= '$db_type		= \'' . $type . "'; //mysqli or mysql \n";
     $data	.= '$dbserver		= \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
     $data	.= '$dbuser			= \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
     $data	.= '$dbpass			= \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
     $data	.= '$dbname			= \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
     $data .= '$dbprefix		= \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
-    //$data	.= '$adminpath		= \'admin.php\';// if you renamed your acp file , please fill the new name here \n';
-    //$data	.= "\n\n\n";
-    //$data	.= "//for integration with script  must change user systen from admin cp  \n";
-    //$data	.= '$script_path	= \'' . str_replace("'", "\'", $fpath) . "'; // path of script (./forums)  \n";
-    //$data	.= "\n\n";
-    //$data	.= '?'.'>';
 
-    $written = false;
-
-    if (is_writable($_path))
+    if (file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
     {
-        $fh = @fopen($_path . 'config.php', 'wb');
-
-        if ($fh)
-        {
-            fwrite($fh, $data);
-            fclose($fh);
-
-            $written = true;
-        }
+        return true;
     }
 
-    if (! $written)
+    if (defined('CLI') && CLI)
     {
-        header('Content-Type: text/x-delimtext; name="config.php"');
-        header('Content-disposition: attachment; filename=config.php');
-        echo $data;
-
-        exit;
+        return true;
     }
 
-    return true;
+
+    header('Content-Type: text/x-delimtext; name="config.php"');
+    header('Content-disposition: attachment; filename=config.php');
+    echo $data;
+
+    exit;
 }
 
 
@@ -157,12 +153,13 @@ function get_microtime()
 
 /**
 * Get config value from database directly, if not return false.
+* @param mixed $name
 */
 function inst_get_config($name)
 {
     global $SQL, $dbprefix;
 
-    if (! $SQL)
+    if (empty($SQL))
     {
         global $dbserver, $dbuser, $dbpass, $dbname;
 
@@ -174,7 +171,7 @@ function inst_get_config($name)
         $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
     }
 
-    if (! $SQL)
+    if (empty($SQL))
     {
         return false;
     }

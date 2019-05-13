@@ -1,12 +1,24 @@
 <?php
-//
-// Kleeja database version : 9
-//
+/**
+*
+* @package install
+* @copyright (c) 2007 Kleeja.com
+* @license ./docs/license.txt
+*
+*/
+
+// not for directly open
+if (! defined('IN_COMMON'))
+{
+    exit();
+}
 
 
+// drop older versions update support after 2 year of release or as appropriate in order to
+// make this file smaller in size.
+$update_schema   = [];
 
-$update_sqls = 
-[
+$update_schema[9]['sql'] = [
     'files_size_big'   => "ALTER TABLE `{$dbprefix}files` CHANGE `size` `size` BIGINT(20)  NOT NULL  DEFAULT '0';",
     'group_size_big'   => "ALTER TABLE `{$dbprefix}groups_exts` CHANGE `size` `size` BIGINT(20)  NOT NULL  DEFAULT '0';",
     'files_index_type' => "ALTER TABLE `{$dbprefix}files` ADD INDEX `type` (`type`);",
@@ -14,19 +26,9 @@ $update_sqls =
 ];
 
 
-//$update_functions = array
-//(
-//    function () {
-//
-//    },
-//    function () {
-//
-//    },
-//);
-
-
-//$update_notes = array
-//(
-//  'note .......',
-//  'note 2 .......',
-//);
+// $update_schema[9]['functions'] = [
+//     function () {
+//     },
+//     function () {
+//     },
+// ];

@@ -37,7 +37,11 @@ return PhpCsFixer\Config::create()
       'visibility_required' => true,
       'native_function_casing' => true,
       'no_empty_comment' => true,
-      'single_line_comment_style' => true
+      'single_line_comment_style' => true,
+      'phpdoc_add_missing_param_annotation' => true,
+      'no_spaces_after_function_name' => true,
+      'no_spaces_around_offset' => true,
+      'no_spaces_inside_parenthesis' => true,
     ])
     ->setFinder($finder)
     ->setIndent("    ")

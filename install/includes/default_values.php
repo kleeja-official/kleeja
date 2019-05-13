@@ -20,7 +20,7 @@ if (! defined('IN_COMMON'))
 
 $config_values = [];
 
-// do it like this : 
+// do it like this :
 //$config_values = array('name', 'value', 'option', 'display_order', 'type', 'plg_id', 'dynamic');
 
 // General settings
@@ -45,7 +45,7 @@ $config_values[] = ['cookie_path', $cookie_data['cookie_path'], '<input type=\"t
 $config_values[] = ['cookie_domain', $cookie_data['cookie_domain'], '<input type=\"text\" id=\"cookie_domain\" name=\"cookie_domain\" value=\"{con.cookie_domain}\" size=\"20\" style=\"direction:ltr\" />', '15', 'advanced', 0, 0];
 $config_values[] = ['cookie_secure', ($cookie_data['cookie_secure'] ? '1' : '0'), '<label>{lang.YES}<input type=\"radio\" id=\"cookie_secure\" name=\"cookie_secure\" value=\"1\"  <IF NAME=\"con.cookie_secure==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"cookie_secure\" name=\"cookie_secure\" value=\"0\"  <IF NAME=\"con.cookie_secure==0\"> checked=\"checked\"</IF> /></label>', '16', 'advanced', 0, 0];
 
-// Upload settings 
+// Upload settings
 $config_values[] = ['total_size', '10000000000', '<input type=\"text\" id=\"total_size\" name=\"total_size\" value=\"{con.total_size}\" size=\"20\" style=\"direction:ltr\" />', 17, 'upload', 0, 0];
 $config_values[] = ['foldername', 'uploads', '<input type=\"text\" id=\"foldername\" name=\"foldername\" value=\"{con.foldername}\" size=\"20\" style=\"direction:ltr\" />', 18, 'upload', 0, 0];
 $config_values[] = ['prefixname', '', '<input type=\"text\" id=\"prefixname\" name=\"prefixname\" value=\"{con.prefixname}\" size=\"20\" style=\"direction:ltr\" />', 19, 'upload', 0, 0];
@@ -68,7 +68,7 @@ $config_values[] = ['filesnum_show', '1', '<label>{lang.YES}<input type=\"radio\
 //$config_values[] = array('imagefolderexts', '', '<input type=\"text\" id=\"imagefolderexts\" name=\"imagefolderexts\" value=\"{con.imagefolderexts}\" size=\"80\">', '20', 'KLIVE', '0', '0');
 //$config_values[] = array('imagefoldere', '1', '<label>{lang.YES}<input type=\"radio\" id=\"imagefoldere\" name=\"imagefoldere\" value=\"1\"  <IF NAME=\"con.imagefoldere\"> checked=\"checked\"</IF>></label><label>{lang.NO}<input type=\"radio\" id=\"imagefoldere\" name=\"imagefoldere\" value=\"0\"  <IF NAME=\"con.imagefoldere\"> <ELSE> checked=\"checked\"</IF>></label>', '30', 'KLIVE', '0', '0');
 
-// Interface settings 
+// Interface settings
 $config_values[] = ['welcome_msg', $lang['INST_MSGINS'], '<input type=\"text\" id=\"welcome_msg\" name=\"welcome_msg\" value=\"{con.welcome_msg}\" size=\"68\" />', 30, 'interface', 0, 0];
 $config_values[] = ['allow_stat_pg', '1', '<label>{lang.YES}<input type=\"radio\" id=\"allow_stat_pg\" name=\"allow_stat_pg\" value=\"1\"  <IF NAME=\"con.allow_stat_pg==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"allow_stat_pg\" name=\"allow_stat_pg\" value=\"0\"  <IF NAME=\"con.allow_stat_pg==0\"> checked=\"checked\"</IF> /></label>', 31, 'interface', 0, 0];
 $config_values[] = ['allow_online', '0', '<label>{lang.YES}<input type=\"radio\" id=\"allow_online\" name=\"allow_online\" value=\"1\"  <IF NAME=\"con.allow_online==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"allow_online\" name=\"allow_online\" value=\"0\"  <IF NAME=\"con.allow_online==0\"> checked=\"checked\"</IF> /></label>', 32, 'interface', 0, 0];
@@ -81,7 +81,7 @@ $config_values[] = ['enable_captcha', '1', '<label>{lang.YES}<input type=\"radio
 $config_values[] = ['thmb_dims', '100*100', '', 0, 0, 0];
 $config_values[] = ['style', 'bootstrap', '', 0, '0', 0, 0];
 $config_values[] = ['new_version', '', '', 0, 0, 0];
-$config_values[] = ['db_version', LAST_DB_VERSION, '', 0, 0, 0];
+$config_values[] = ['db_version', KLEEJA_DB_VERSION, '', 0, 0, 0];
 $config_values[] = ['last_online_time_update', time(), '', 0, 0, 1];
 $config_values[] = ['klj_clean_files_from', '0', '', 0, 0, 1];
 $config_values[] = ['style_depend_on', '', '', 0, 0, 0];
@@ -96,7 +96,7 @@ $config_values[] = ['default_group', '3', '', 0, 0, 1];
 // Extensions
 //
 
-// do it like this : 
+// do it like this :
 //$ext_values[group_id] = array('ext'=>sizeInKB);
 $ext_values = [];
 

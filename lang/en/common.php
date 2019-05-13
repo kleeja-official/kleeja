@@ -288,4 +288,6 @@ return [
     //3.0.3
     'NOTIFICATIONS'     => 'Notifications',
     'KJ_TWEETS'         => 'Kleeja Tweets' ,
+    'PLG_SUCSS_DEL' => 'the Folder of plugin "%s" is deleted successfuly !!' ,
+    'PLG_DEL_CONFIRM' => 'You will delete the plugin folder' ,
 ];

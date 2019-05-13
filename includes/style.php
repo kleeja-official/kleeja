@@ -140,7 +140,7 @@ class kleeja_style
         $html = preg_replace_callback('/<LOOP\s+NAME\s*=\s*(\"|)+([a-z0-9_\.]{1,})+(\"|)\s*>/i', ['kleeja_style', '_loop_callback'], $html);
         $html = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_vars_callback'], $html);
 
-        $rep = 
+        $rep =
         [
             '/<\/(LOOP|IF|END|IS_BROWSER|UNLESS)>/i'                     => '<?php } ?>',
             '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*>/iU'                   => '<?php echo $this->display("\\2"); ?>',
@@ -364,8 +364,24 @@ class kleeja_style
     {
         $this->vars = &$GLOBALS;
 
+        $eval_on = false;
+        eval('$eval_on = true;');
+
+        $parsed_html = trim($this->_parse($html));
+
         ob_start();
-        eval(' ?' . '>' . trim($this->_parse($html)) . '<' . '?php ');
+
+        if($eval_on)
+        {
+            eval(' ?' . '>' . $parsed_html . '<' . '?php ');
+        }
+        else
+        {
+            $path  = PATH . 'cache/tpl_' . md5($parsed_html) . '.php';
+            file_put_contents($path, $parsed_html);
+            include_once $path;
+        }
+
         $page = ob_get_contents();
         ob_end_clean();
 

@@ -98,6 +98,7 @@
                 <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{name}}</h5>
 
                 <a class="btn btn-primary pull-(lang.DIR==ltr?right:left)" href="{plugin_install_link}{{name}}" title="{lang.ENABLE}" onclick="javascript:return confirm_form('{lang.PLUGIN_CONFIRM_ADD}');"><i class="fa fa-download" title="{lang.ENABLE}"></i></a>
+                <a class="btn btn-danger pull-(lang.DIR==ltr?right:left)" href="{plugin_delete_folder_link}{{name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form('{lang.PLG_DEL_CONFIRM}');"><i class="fa fa-trash" title="{lang.DELETE}"></i></a>
             </div>
         </li>
         </LOOP>

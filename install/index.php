@@ -17,8 +17,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 define('IN_COMMON', true);
 
 //path to this file from Kleeja root folder
-$_path = '../';
-define('PATH', $_path);
+define('PATH', '../');
 
 
 //before anything check PHP version compatibility
@@ -42,14 +41,14 @@ if (! function_exists('mysqli_connect'))
 
 
 
-if (file_exists($_path . 'config.php'))
+if (file_exists(PATH . 'config.php'))
 {
-    include_once $_path . 'config.php';
+    include_once PATH . 'config.php';
 }
 
-include_once $_path . 'includes/functions.php';
+include_once PATH . 'includes/functions.php';
 
-include_once $_path . 'includes/mysqli.php';
+include_once PATH . 'includes/mysqli.php';
 
 include_once 'includes/functions_install.php';
 
@@ -72,10 +71,9 @@ switch (g('step', 'str'))
 default:
 case 'language':
 
-    if (ig('ln') && g('ln', 'str', '') !== '')
+    if (ig('ln'))
     {
-        //	    header('Location: ./?step=official&lang=' . g('ln'));
-        echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' . g('ln') . '">';
+        echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' . g('ln', 'str', 'en') . '">';
 
         exit;
     }
@@ -100,16 +98,16 @@ case 'choose' :
 
     $install_or_no	= $php_ver = true;
 
-    //check version of PHP 
+    //check version of PHP
     if (! function_exists('version_compare')
         || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
     {
         $php_ver = false;
     }
 
-    if (file_exists($_path . 'config.php'))
+    if (file_exists(PATH . 'config.php'))
     {
-        include_once $_path . 'config.php';
+        include_once PATH . 'config.php';
 
         if (! empty($dbuser) && ! empty($dbname))
         {
