@@ -185,10 +185,18 @@ elseif ($current_smt == 'update2')
         $ex_folder = trim($zip->getNameIndex(0), '/');
         $zip->extractTo(PATH . 'cache/');
         $zip->close();
-        rename(
-            PATH . "cache/{$ex_folder}" , // the name of the folder after extract it
+        if(rename(
+            PATH . "cache/{$ex_folder}",
             PATH . "cache/kleeja-{$new_version}"
-        );
+        ) === false)
+        {
+            copy(
+                PATH . "cache/{$ex_folder}",
+                PATH . "cache/kleeja-{$new_version}"
+            );
+
+            kleeja_unlink(PATH . "cache/{$ex_folder}");
+        }
     }
 
     // let's check if there any update files in install folder
@@ -198,7 +206,10 @@ elseif ($current_smt == 'update2')
     {
         // move the update file from install folder to cache folder to include it later and delete install folder
         // becuse if install folder is exists , it can make some problems if dev mode is not active
-        rename($update_file, PATH . 'cache/update_schema.php');
+        if(rename($update_file, PATH . 'cache/update_schema.php') === false)
+        {
+            copy($update_file, PATH . 'cache/update_schema.php');
+        }
     }
 
     // skip some folders
@@ -282,10 +293,14 @@ elseif ($current_smt == 'update3')
                 file_get_contents($file->getPathname())
             ) === false)
             {
-                $update_failed = true;
-                array_push($failed_files, $file_path);
 
-                break;
+                if (copy($file->getPathname(), $file_path) === false)
+                {
+                    $update_failed = true;
+                    array_push($failed_files, $file_path);
+
+                    break;
+                }
             }
         }
         elseif ($file->isDir())
