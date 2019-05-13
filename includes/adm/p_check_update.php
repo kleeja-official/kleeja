@@ -151,7 +151,7 @@ elseif ($current_smt == 'update1')
     else
     {
         // downloaded the last package to cache folder
-        fetch_remote_file(KLEEJA_LATEST_PACKAGE_LINK . $new_version . '.zip', PATH . "cache/kleeja-{$new_version}.zip", 60, false, 10, true);
+        fetch_remote_file(KLEEJA_LATEST_PACKAGE_LINK . $new_version , PATH . "cache/kleeja-{$new_version}.zip", 60, false, 10, true);
 
         if (file_exists(PATH . "cache/kleeja-{$new_version}.zip"))
         {
@@ -180,8 +180,15 @@ elseif ($current_smt == 'update2')
 
     if ($zip->open(PATH . "cache/kleeja-{$new_version}.zip") == true)
     {
+        // the name of folder after extracting it
+        // and we are sure that there is only one folder in the zip file
+        $ex_folder = trim($zip->getNameIndex(0), '/');
         $zip->extractTo(PATH . 'cache/');
         $zip->close();
+        rename(
+            PATH . "cache/{$ex_folder}" , // the name of the folder after extract it
+            PATH . "cache/kleeja-{$new_version}"
+        );
     }
 
     // let's check if there any update files in install folder
