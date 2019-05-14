@@ -23,28 +23,26 @@ if (! defined('IN_ADMIN'))
 $case = g('case', 'str', 'installed');
 
 //set _get form key
-$GET_FORM_KEY = kleeja_add_form_key_get('PLUGINS_FORM_KEY');
-$H_FORM_KEYS	 = kleeja_add_form_key('adm_plugins');
+$GET_FORM_KEY   = kleeja_add_form_key_get('PLUGINS_FORM_KEY');
+$H_FORM_KEYS    = kleeja_add_form_key('adm_plugins');
 
 $action = ADMIN_PATH . '?cp=' . basename(__file__, '.php');
 
-$plugin_install_link   = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=install&amp;' . $GET_FORM_KEY . '&amp;plg=';
-$plugin_uninstall_link = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=uninstall&amp;' . $GET_FORM_KEY . '&amp;plg=';
-$plugin_enable_link    = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=enable&amp;' . $GET_FORM_KEY . '&amp;plg=';
-$plugin_disable_link   = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=disable&amp;' . $GET_FORM_KEY . '&amp;plg=';
-$plugin_download_link  = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=download&amp;' . $GET_FORM_KEY . '&amp;plg=';
-$plugin_update_link    = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=update&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_install_link          = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=install&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_uninstall_link        = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=uninstall&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_enable_link           = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=enable&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_disable_link          = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=disable&amp;' . $GET_FORM_KEY . '&amp;plg=';
+$plugin_download_link         = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=download&amp;' . $GET_FORM_KEY . '&amp;plg=';
 $plugin_delete_folder_link    = ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=delete_folder&amp;' . $GET_FORM_KEY . '&amp;plg=';
 
 
 //check _GET Csrf token
-if (! empty($case) && in_array($case, ['install', 'uninstall', 'enable', 'disable' , 'download' , 'update' , 'delete_folder']))
+if (! empty($case) && in_array($case, ['install', 'uninstall', 'enable', 'disable' , 'download' , 'delete_folder']))
 {
     if (! kleeja_check_form_key_get('PLUGINS_FORM_KEY'))
     {
-        kleeja_admin_err($lang['INVALID_GET_KEY'], $action);
-
-        exit;
+        header('HTTP/1.0 401 Unauthorized');
+        kleeja_admin_err($lang['INVALID_GET_KEY']);
     }
 }
 
@@ -53,9 +51,8 @@ if (ip('newplugin'))
 {
     if (! kleeja_check_form_key('adm_plugins'))
     {
+        header('HTTP/1.0 401 Unauthorized');
         kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action);
-
-        exit;
     }
 
     $case = 'upload';
@@ -142,7 +139,8 @@ switch ($case):
         }
         @closedir($dh);
 
-        $no_plugins = sizeof($available_plugins) == 0 && sizeof($installed_plugins) == 0;
+        $no_plugins           = sizeof($available_plugins) == 0 && sizeof($installed_plugins) == 0;
+        $no_installed_plugins = sizeof($installed_plugins) == 0;
 
         $stylee = 'admin_plugins';
 
@@ -174,7 +172,7 @@ switch ($case):
         foreach ($catalog_plugins as $plugin_info)
         {
             if ($case == 'store' && (in_array($plugin_info['name'], $available_plugins_names) ||
-                 ! empty($installed_plugins[$plugin_info['name']]) )
+                 ! empty($installed_plugins[$plugin_info['name']]))
                  ) {
                 continue;
             }
@@ -198,7 +196,7 @@ switch ($case):
                 'current_version'  => ! empty($installed_plugins[$plugin_info['name']]) ? strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']) : '',
                 'kj_min_version'   => $plugin_info['kleeja_version']['min'],
                 'kj_max_version'   => $plugin_info['kleeja_version']['max'],
-                'kj_version_cmtp'  => sprintf($lang[ 'KLJ_VER_NO_PLUGIN'], $plugin_info['kleeja_version']['min'], $plugin_info['kleeja_version']['max']),
+                'kj_version_cmtp'  => sprintf($lang['KLJ_VER_NO_PLUGIN'], $plugin_info['kleeja_version']['min'], $plugin_info['kleeja_version']['max']),
                 'icon'             => $plugin_info['icon'] ,
                 'NotCompatible'    => version_compare(strtolower($plugin_info['kleeja_version']['min']), KLEEJA_VERSION, '<=')
                 && version_compare(strtolower($plugin_info['kleeja_version']['max']), KLEEJA_VERSION, '>=')
@@ -260,11 +258,11 @@ switch ($case):
 
         if (! sizeof($ERRORS))
         {
-            kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], true, '', true, $action);
+            kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], $action);
         }
         else
         {
-            kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), true, '', true, ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
+            kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), $action);
         }
 
         break;
@@ -277,9 +275,8 @@ switch ($case):
 
         if (intval($userinfo['founder']) !== 1)
         {
-            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
-
-            exit;
+            header('HTTP/1.0 401 Unauthorized');
+            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], $action);
         }
 
         $plg_name = g('plg', 'str');
@@ -408,9 +405,8 @@ switch ($case):
 
         if (intval($userinfo['founder']) !== 1)
         {
-            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
-
-            exit;
+            header('HTTP/1.0 401 Unauthorized');
+            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], $action);
         }
 
         $plg_name = g('plg', 'str');
@@ -494,9 +490,8 @@ switch ($case):
 
         if (intval($userinfo['founder']) !== 1)
         {
-            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
-
-            exit;
+            header('HTTP/1.0 401 Unauthorized');
+            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], $action);
         }
 
         $plg_name = g('plg', 'str');
@@ -538,19 +533,29 @@ switch ($case):
 
         if (intval($userinfo['founder']) !== 1)
         {
-            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS'], ADMIN_PATH . '?cp=' . basename(__file__, '.php'));
-
-            exit;
+            header('HTTP/1.0 401 Unauthorized');
+            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
         }
 
         $download_plugin = g('plg');
 
-        // update it , rename function doesn't move the folder , if the folder is exists on the new dir
-        if ( file_exists( PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin . '/init.php' ) )
-        {
-            redirect( $plugin_update_link . $download_plugin );
+        $is_update = false;
 
-            exit;
+        //if plugin exists before, then trigger update action. rename folder to rollback in case of failure
+        if (file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin . '/init.php'))
+        {
+            $is_update = true;
+
+            if (! rename(
+                PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin,
+                PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin . '_backup'
+            ))
+            {
+                if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin))
+                {
+                    kleeja_unlink(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin);
+                }
+            }
         }
 
         // plugins avilable in kleeja store
@@ -590,79 +595,80 @@ switch ($case):
 
                     if ($downloaded_plugin_zip)
                     {
-                        if (file_exists(PATH . 'cache/' . $download_plugin . '.zip' ) )
+                        if (file_exists(PATH . 'cache/' . $download_plugin . '.zip'))
                         {
                             $zip = new ZipArchive();
 
-                            if ($zip->open(PATH . 'cache/' . $download_plugin . '.zip' ) === true)
+                            if ($zip->open(PATH . 'cache/' . $download_plugin . '.zip') === true)
                             {
-                                if ( $zip->extractTo(PATH . KLEEJA_PLUGINS_FOLDER))
+                                if ($zip->extractTo(PATH . KLEEJA_PLUGINS_FOLDER))
                                 {
-                                    $zip->close();
                                     // we dont need the zip file anymore
-                                    unlink(PATH . 'cache/' . $download_plugin . '.zip');
+                                    kleeja_unlink(PATH . 'cache/' . $download_plugin . '.zip');
 
-                                    // for example :: When we extract zip file , the name will be ( advanced-extras-1.0 )
-                                    // so we need to remove the version from folder name and replace ( - ) with ( _ )
-                                    // and done
-                                    $plugin_folder_name = PATH . KLEEJA_PLUGINS_FOLDER . '/' . str_replace('_', '-', $download_plugin) . '-' . $store_plugins[$download_plugin]['plg_version'];
-                                    rename($plugin_folder_name, PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin);
-
-                                    // download or update msg
-                                    kleeja_admin_info(
-                                        sprintf($lang[ig('update')  ? 'PLUGIN_UPDATED' : 'PLUGIN_DOWNLOADED'], $download_plugin),
-                                        ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=local'
+                                    // uploaded plugin's archive has different name, so we change it
+                                    rename(
+                                        PATH . KLEEJA_PLUGINS_FOLDER . '/' . trim($zip->getNameIndex(0), '/'),
+                                        PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin
                                     );
 
-                                    exit;
+                                    $zip->close();
+
+                                    // download or update msg
+                                    $adminAjaxContent = '1:::' . sprintf($lang[$is_update  ? 'PLUGIN_UPDATED' : 'PLUGIN_DOWNLOADED'], $download_plugin);
+
+                                    //in case of update, delete back up version
+                                    if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin . '_backup'))
+                                    {
+                                        kleeja_unlink(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin . '_backup');
+                                    }
                                 }
                                 else
                                 {
-                                    kleeja_admin_err(sprintf($lang['EXTRACT_ZIP_FAILED'], KLEEJA_PLUGINS_FOLDER));
+                                    $adminAjaxContent = '1003:::' . sprintf($lang['EXTRACT_ZIP_FAILED'], KLEEJA_PLUGINS_FOLDER);
                                 }
                             }
                         }
                         else
                         {
-                            kleeja_admin_err($lang['PLUGIN_FILE_NOT_FOUND']);
+                            $adminAjaxContent = '1004:::' . $lang['PLUGIN_FILE_NOT_FOUND'];
                         }
                     }
                     else
                     {
-                        kleeja_admin_err($lang['PLUGINS_SERVER_ERROR']);
+                        $adminAjaxContent = '1005:::' . $lang['PLUGINS_SERVER_ERROR'];
                     }
                 }
                 else
                 {
-                    kleeja_admin_err($lang['PLUGIN_N_CMPT_KLJ']);
+                    $adminAjaxContent = '1006:::' . $lang['PLUGIN_N_CMPT_KLJ'];
                 }
             }
             else
             {
-                kleeja_admin_err(sprintf($lang['PLUGIN_REMOTE_FILE_MISSING'], $download_plugin));
+                $adminAjaxContent = '1007:::' . sprintf($lang['PLUGIN_REMOTE_FILE_MISSING'], $download_plugin);
             }
         }
         else
         {
-            kleeja_admin_err($lang['PLUGINS_SERVER_ERROR']);
+            $adminAjaxContent = '1008:::' . $lang['PLUGINS_SERVER_ERROR'];
         }
 
-        break;
 
-    case 'update':
-
-        $update_plugin = g('plg');
-
-        $plugin_folder_name = PATH . KLEEJA_PLUGINS_FOLDER . '/' . $update_plugin;
-
-        if (is_dir($plugin_folder_name))
+        //in case of update failure, rollback to current plugin version
+        if (strpos($adminAjaxContent, '1:::') === false)
         {
-            kleeja_unlink($plugin_folder_name);
+            if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin . '_backup'))
+            {
+                rename(
+                    PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin . '_backup',
+                    PATH . KLEEJA_PLUGINS_FOLDER . '/' . $download_plugin
+                );
+            }
         }
 
-        redirect($plugin_download_link . $update_plugin . '&amp;update' );
-
         break;
+
 
     case 'delete_folder':
 
@@ -676,7 +682,7 @@ switch ($case):
         }
 
         kleeja_admin_info(
-            sprintf($lang['PLG_SUCSS_DEL'] , $plugin_folder),
+            sprintf($lang['PLG_SUCSS_DEL'], $plugin_folder),
             ADMIN_PATH . '?cp=' . basename(__file__, '.php') . '&amp;case=local'
         );
 

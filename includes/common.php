@@ -201,7 +201,7 @@ define('ADMIN_PATH', rtrim($config['siteurl'], '/') . '/admin/index.php');
 
 
 //no tpl caching in dev stage
-if (defined('DEV_STAGE'))
+if (defined('DEV_STAGE') || defined('STOP_TPL_CACHE'))
 {
     $tpl->caching = false;
 }
