@@ -59,7 +59,7 @@
             <span class="p-3 font-weight-bold">{lang.ALL_STYLES_UPDATED}</span>
             <ELSE>
             <i class="fa fa-exclamation fa-3x text-info p-2"></i>
-            <span class="p-3 font-weight-bold">{lang.STORE_SERVER_ERROR}</span>
+            <span class="p-3 font-weight-bold">{lang.NO_PLUGINS}</span>
             </IF>
         </div>
     </UNLESS>
@@ -155,7 +155,7 @@ function downloadStyle(name, nextStyles) {
 
             setTimeout(function() {
                 var currentStyle = nextStyles.shift();
-                downloadPlugin(currentStyle, nextStyles);
+                downloadStyle(currentStyle, nextStyles);
             }, 500);
         })
         .fail(function(data) {

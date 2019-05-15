@@ -160,6 +160,8 @@ case 'check':
     if (function_exists('chmod'))
     {
         @chmod(PATH . 'cache', 0755);
+        @chmod(PATH . 'plugins', 0755);
+        @chmod(PATH . 'styles', 0755);
         @chmod(PATH . 'uploads', 0755);
         @chmod(PATH . 'uploads/thumbs', 0755);
     }

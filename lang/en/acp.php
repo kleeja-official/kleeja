@@ -120,7 +120,8 @@ return [
 
     'ITEM_DELETED' 			        => '%s has been deleted successfully...',
     'PLGUIN_DISABLED_ENABLED' 	 => 'Plugin Enabled / Disabled',
-    'NO_PLUGINS' 				           => 'No plugins found! You could start browsing plugins and installing them by clicking the tab "Kleeja Store" or upload a plugin file from the tab "Local Plugins".',
+    'NO_PLUGINS' 				 => 'No available plugins found...',
+    'NO_STYLES' 				 => 'No available styles found...',
     'NEW_PLUGIN_ADDED'          => 'Plugin added ... ',
     'PLUGIN_EXISTS_BEFORE' 		   => 'This plugin exists before with same version or above, so no need to update it!.',
     'R_CHECK_UPDATE' 			        => 'Check for updates',

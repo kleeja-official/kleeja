@@ -329,7 +329,7 @@ case 'upload':
         {
             if (! is_writable($style_folder_path))
             {
-                chmod($style_folder_path, K_DIR_CHMOD);
+                @chmod($style_folder_path, K_DIR_CHMOD);
             }
 
             kleeja_unlink($style_folder_path);
@@ -361,7 +361,7 @@ case 'download':
 
     if (! is_writable(PATH . 'styles'))
     {
-        chmod(PATH . 'styles', K_DIR_CHMOD);
+        @chmod(PATH . 'styles', K_DIR_CHMOD);
     }
 
     //if style exists before, then trigger update action. rename folder to rollback in case of failure
