@@ -187,7 +187,7 @@ if (empty($v['last_check']) || ((time() - $v['last_check']) > 3600 * 24 * 10 && 
 
 
 //if config not safe
-if (function_exists('fileperms') && ! defined('KLEEJA_NO_CONFIG_CHECK') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN' && ! @ini_get('safe_mode'))
+if (function_exists('fileperms') && ! defined('KLEEJA_NO_CONFIG_CHECK') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN')
 {
     if ((bool) (@fileperms(PATH . KLEEJA_CONFIG_FILE) & 0x0002))
     {
