@@ -147,12 +147,12 @@ case 'store':
 
             // is there a new version of this in the store
             elseif (
-                $case == 'check' && (! empty($available_styles[$style_info['name']]['version']) &&
+                $case == 'check' && (! empty($available_styles[$style_info['name']]['info']['version']) &&
                     version_compare(
-                        strtolower($available_styles[$style_info['name']]['version']),
+                        strtolower($available_styles[$style_info['name']]['info']['version']),
                         strtolower($style_info['file']['version']),
                         '>='
-                    ) ||  empty($available_styles[$style_info['name']]))
+                    ) ||  empty($available_styles[$style_info['name']]['info']['version']))
             ) {
                 continue;
             }
@@ -163,7 +163,7 @@ case 'store':
                 'version'          => $style_info['file']['version'],
                 'title'            => ! empty($style_info['title'][$config['language']]) ? $style_info['title'][$config['language']] : $style_info['title']['en'],
                 'website'          => $style_info['website'],
-                'current_version'  => ! empty($available_styles[$style_info['name']]) ? strtolower($available_styles[$style_info['name']]['version']) : '',
+                'current_version'  => ! empty($available_styles[$style_info['name']]) ? strtolower($available_styles[$style_info['name']]['info']['version']) : '',
                 'kj_min_version'   => $style_info['kleeja_version']['min'],
                 'kj_max_version'   => $style_info['kleeja_version']['max'],
                 'kj_version_cmtp'  => sprintf($lang['KLJ_VER_NO_PLUGIN'], $style_info['kleeja_version']['min'], $style_info['kleeja_version']['max']),
