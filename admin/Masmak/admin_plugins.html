@@ -92,7 +92,7 @@
     <ul class="list-unstyled list-group">
         <LOOP NAME="available_plugins">
         <li class="media d-flex justify-content-between list-group-item">
-            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{name}}" style="width: 75px">
+            <img class="mr-3" src="{{icon}}" alt="{{name}}" style="width: 75px">
             <div class="media-body d-flex justify-content-between">
                 <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{name}}</h5>
 
@@ -137,7 +137,7 @@
 <!-- ..... -->
 <ELSEIF NAME="case == store" OR="case == check">
 
-    <IF NAME="no_store_plugins">
+    <UNLESS NAME="store_plugins_count">
         <div class="alert alert-info my-3 px-4 py-2 d-flex justify-content-start align-items-center">
             <IF NAME="case == check">
             <i class="fa fa-check fa-3x text-info p-2"></i>
@@ -147,12 +147,20 @@
             <span class="p-3 font-weight-bold">{lang.NO_PLUGINS}</span>
             </IF>
         </div>
+    </UNLESS>
+
+    <IF NAME="store_plugins_count gt 1">
+    <div class="d-flex justify-content-end my-3">
+        <button id="updateAllBtn" type="button" onclick="updateAll()" class="btn btn-primary px-5">
+            <i class="fa fa-flash"></i> {lang.UPDATE_ALL}
+        </button>
+    </div>
     </IF>
 
     <ul class="list-unstyled list-group mt-2">
         <LOOP NAME="store_plugins">
         <li class="media d-flex justify-content-between list-group-item">
-            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{title}}" style="width: 75px">
+            <img class="mr-3" src="{{icon}}" alt="{{title}}" style="width: 75px">
             <div class="media-body d-flex justify-content-between">
                 <div>
                     <h5 class="mt-0 mb-2">{{title}}</h5>
@@ -189,9 +197,7 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item">
                                         {lang.DEVELOPER}: {{developer}}
-                                        <IF LOOP="website"> <i class="fa fa-download" title="{lang.ENABLE}"></i><a
-                                                href="{{website}}" target="_tab"><i class="fa fa-external-link"
-                                                    title="{lang.ENABLE}"></i></a></IF>
+                                        <IF LOOP="website"><a href="{{website}}" target="_tab"><i class="fa fa-external-link"></i></a></IF>
                                     </li>
                                     <li class="list-group-item">{lang.VERSION}: {{version}}</li>
                                     <li class="list-group-item">{{kj_version_cmtp}}</li>
@@ -214,7 +220,7 @@
         </LOOP>
     </ul>
 <script>
-function downloadPlugin(name) {
+function downloadPlugin(name, nextPlugins) {
     $('#downloadBtn-' + name).prop('disabled', true);
     $('#installLoading-' + name)
             .removeClass('d-none badge-warning badge-success badge-danger').addClass('badge-light')
@@ -231,6 +237,11 @@ function downloadPlugin(name) {
             } else {
                 this.fail();
             }
+
+            setTimeout(function() {
+                var currentPlugin = nextPlugins.shift();
+                downloadPlugin(currentPlugin, nextPlugins);
+            }, 500);
         })
         .fail(function(data) {
             $('#downloadBtn-' + name).prop('disabled', false);
@@ -238,6 +249,19 @@ function downloadPlugin(name) {
                 (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
             );
     });
+}
+
+function updateAll() {
+    $('#updateAllBtn').prop('disabled', true);
+
+    var plugins = [<LOOP NAME="store_plugins">'{{name}}',</LOOP>];
+
+    $.each(plugins, function( index, name ) {
+        $('#downloadBtn-' + name).prop('disabled', true);
+    });
+
+    var currentPlugin = plugins.shift();
+    downloadPlugin(currentPlugin, plugins);
 }
 </script>
 

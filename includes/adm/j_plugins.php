@@ -204,7 +204,7 @@ switch ($case):
             ];
         }
 
-        $no_store_plugins = sizeof($store_plugins) == 0;
+        $store_plugins_count = sizeof($store_plugins);
 
         break;
 

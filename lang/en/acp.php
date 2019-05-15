@@ -283,4 +283,5 @@ return [
     'UPDATE_PROCESS_STEP2'            => 'Create a backup container and extract the new package ...',
     'UPDATE_PROCESS_STEP3'            => 'Updating to new version (files & database upgrade) ...',
     'RELEASE_NOTE'                    => 'Release Notes',
+    'UPDATE_ALL'                    => 'Update All',
 ];
