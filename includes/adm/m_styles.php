@@ -61,7 +61,7 @@ case 'store':
     {
         while (false !== ($folder_name = readdir($dh)))
         {
-            if (is_dir(PATH . 'styles/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
+            if (file_exists(PATH . 'styles/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
             {
 
                 //info
@@ -325,7 +325,7 @@ case 'upload':
 
         $style_folder_path = PATH . 'styles/' . $style_name;
 
-        if (is_dir($style_folder_path))
+        if (file_exists($style_folder_path))
         {
             if (! is_writable($style_folder_path))
             {
@@ -336,7 +336,7 @@ case 'upload':
         }
 
 
-        if (! is_dir($style_folder_path))
+        if (! file_exists($style_folder_path))
         {
             kleeja_admin_info(sprintf($lang['ITEM_DELETED'], $style_name), $action);
         }
@@ -365,7 +365,7 @@ case 'download':
     }
 
     //if style exists before, then trigger update action. rename folder to rollback in case of failure
-    if (file_exists(PATH . 'styles/' . $style_name . '/init.php'))
+    if (file_exists(PATH . 'styles/' . $style_name))
     {
         $is_update = true;
 
@@ -374,7 +374,7 @@ case 'download':
             PATH . 'styles/' . $style_name . '_backup'
         ))
         {
-            if (is_dir(PATH . 'styles/' . $style_name))
+            if (file_exists(PATH . 'styles/' . $style_name))
             {
                 kleeja_unlink(PATH . 'styles/' . $style_name);
             }
@@ -446,7 +446,7 @@ case 'download':
                                 $adminAjaxContent = '1:::' . sprintf($lang[$is_update  ? 'ITEM_UPDATED' : 'ITEM_DOWNLOADED'], $style_name);
 
                                 //in case of update, delete back up version
-                                if (is_dir(PATH . 'styles/' . $style_name . '_backup'))
+                                if (file_exists(PATH . 'styles/' . $style_name . '_backup'))
                                 {
                                     kleeja_unlink(PATH . 'styles/' . $style_name . '_backup');
                                 }
@@ -486,7 +486,7 @@ case 'download':
     //in case of update failure, rollback to current plugin version
     if (strpos($adminAjaxContent, '1:::') === false)
     {
-        if (is_dir(PATH . 'styles/' . $style_name . '_backup'))
+        if (file_exists(PATH . 'styles/' . $style_name . '_backup'))
         {
             rename(
                 PATH . 'styles/' . $style_name . '_backup',
