@@ -61,9 +61,8 @@ case 'store':
     {
         while (false !== ($folder_name = readdir($dh)))
         {
-            if (file_exists(PATH . 'styles/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
+            if (is_dir(PATH . 'styles/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
             {
-
                 //info
                 $style_info_arr = [
                     'name'      => $folder_name,
@@ -71,7 +70,6 @@ case 'store':
                     'copyright' => '',
                     'version'   => ''
                 ];
-
 
                 if (($style_info = kleeja_style_info($folder_name)) != false)
                 {
@@ -194,7 +192,7 @@ case 'select':
     //
     if (($style_info = kleeja_style_info($style_name)) != false)
     {
-        if (isset($style_info['depend_on']) && ! file_exists(PATH . 'styles/' . $style_info['depend_on']))
+        if (isset($style_info['depend_on']) && ! is_dir(PATH . 'styles/' . $style_info['depend_on']))
         {
             kleeja_admin_err(sprintf($lang['DEPEND_ON_NO_STYLE_ERR'], $style_info['depend_on']));
         }

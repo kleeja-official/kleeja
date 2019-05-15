@@ -113,7 +113,7 @@ switch ($case):
         $available_plugins = [];
         while (false !== ($folder_name = readdir($dh)))
         {
-            if (file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
+            if (is_dir(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
             {
                 if (empty($installed_plugins[$folder_name]))
                 {
