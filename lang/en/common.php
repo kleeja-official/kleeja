@@ -179,7 +179,7 @@ return [
     'SUBMIT' 				               => 'Submit',
     'EDIT' 					                => 'Edit',
     'DISABLE' 					             => 'Disable',
-    'ENABLE' 					              => 'Enable',	
+    'ENABLE' 					              => 'Enable',
     'OPEN'						                => 'Open',
     'KILOBYTE'					             => 'Kilobyte',
     'NOTE'						                => 'Note',
@@ -221,7 +221,7 @@ return [
     'ALL_FILES' 			          => 'Number of all files',
     'ALL_IMAGES' 			         => 'Number of all images',
     'NO_FILE_USER'				       => 'No files were found in the account!',
-    'SHOWFILESBYIP'				      => 'Show files by IP', 
+    'SHOWFILESBYIP'				      => 'Show files by IP',
     'WAIT_LOADING'				       => 'Please wait, the files are being uploaded to the server...',
     'NOTICECLOSED'				       => 'Note: website is closed',
     'UNKNOWN'					           => 'Unknown',
@@ -285,9 +285,4 @@ return [
     'EMAIL_CHANGE_REQ_PASS' => 'In order to change your email address, It\'s required to type your current password.',
     'DRAG_AND_DROP'         => 'Drop a file inside&hellip;',
     'OR_MANUAL_SELECT'      => 'Or click here to <em>Select</em> a file manually..',
-    //3.0.3
-    'NOTIFICATIONS'     => 'Notifications',
-    'KJ_TWEETS'         => 'Kleeja Tweets' ,
-    'PLG_SUCSS_DEL' => 'the Folder of plugin "%s" is deleted successfuly !!' ,
-    'PLG_DEL_CONFIRM' => 'You will delete the plugin folder' ,
 ];

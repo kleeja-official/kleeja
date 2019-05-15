@@ -98,7 +98,7 @@
 
                 <div class="btn-group btn-group-toggle">
                     <a class="btn btn-primary btn-sm" href="{plugin_install_link}{{name}}" title="{lang.ENABLE}" onclick="javascript:return confirm_form('{lang.PLUGIN_CONFIRM_ADD}');"><i class="fa fa-plus" title="{lang.ENABLE}"></i></a>
-                    <a class="btn btn-danger btn-sm" href="{plugin_delete_folder_link}{{name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form('{lang.PLG_DEL_CONFIRM}');"><i class="fa fa-trash" title="{lang.DELETE}"></i></a>
+                    <a class="btn btn-danger btn-sm" href="{plugin_delete_folder_link}{{name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form();"><i class="fa fa-trash" title="{lang.DELETE}"></i></a>
                 </div>
             </div>
         </li>
@@ -144,12 +144,12 @@
             <span class="p-3 font-weight-bold">{lang.ALL_PLUGINS_UPDATED}</span>
             <ELSE>
             <i class="fa fa-exclamation fa-3x text-info p-2"></i>
-            <span class="p-3 font-weight-bold">{lang.NO_PLUGINS}</span>
+            <span class="p-3 font-weight-bold">{lang.STORE_SERVER_ERROR}</span>
             </IF>
         </div>
     </UNLESS>
 
-    <IF NAME="store_plugins_count gt 1">
+    <IF NAME="store_plugins_count gt 1" AND="case == check">
     <div class="d-flex justify-content-end my-3">
         <button id="updateAllBtn" type="button" onclick="updateAll()" class="btn btn-primary px-5">
             <i class="fa fa-flash"></i> {lang.UPDATE_ALL}
@@ -184,11 +184,11 @@
 
                 <!-- Modal -->
                 <div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    aria-labelledby="Plugin_View_{{name}}" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="exampleModalLabel">{{title}}</h4>
+                                <h4 class="modal-title" id="Plugin_View_{{name}}">{{title}}</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -203,7 +203,7 @@
                                     <li class="list-group-item">{{kj_version_cmtp}}</li>
                                     <IF LOOP="NotCompatible">
                                         <li class="list-group-item list-group-item-danger">
-                                            {lang.PLUGIN_N_CMPT_KLJ}
+                                            {lang.PACKAGE_N_CMPT_KLJ}
                                         </li>
                                     </IF>
                                 </ul>
