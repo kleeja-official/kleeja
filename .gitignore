@@ -13,6 +13,10 @@ uploads/thumbs/*
 !uploads/thumbs/index.html
 !uploads/thumbs/php.ini
 !uploads/thumbs/.htaccess
+styles/*
+!styles/bootstrap/*
+!styles/default/*
+!styles/index.html
 .DS_Store
 */.DS_Store
 */*/.DS_Store
