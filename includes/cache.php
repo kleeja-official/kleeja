@@ -22,7 +22,7 @@ $SQL->set_utf8();
 
 
 //
-//In the future here will be a real cache class 
+//In the future here will be a real cache class
 //this codes, it's just a sample and usefull for
 //some time ..
 //
@@ -61,7 +61,7 @@ class cache
     public function save($name, $data, $time = 86400)
     {
         //
-        //We have problems if APC is enabled, so we disable our cache 
+        //We have problems if APC is enabled, so we disable our cache
         //system if it's lodoed to prevent those problems, but we will
         //try to fix it in the near future .. I hope that.
         //
@@ -75,8 +75,8 @@ class cache
         $data_for_save .= '//Cache file, generated for Kleeja at ' . gmdate('d-m-Y h:i A') . "\n\n";
         $data_for_save .= '//No direct opening' . "\n";
         $data_for_save .= '(!defined("IN_COMMON") ? exit("hacking attemp!") : null);' . "\n\n";
-        $data_for_save .= '//return false after x time' . "\n";	
-        $data_for_save .= 'if(time() > ' . (time() + $time) . ') return false;' . "\n\n";	
+        $data_for_save .= '//return false after x time' . "\n";
+        $data_for_save .= 'if(time() > ' . (time() + $time) . ') return false;' . "\n\n";
         $data_for_save .= '$data = ' . var_export($data, true) . ";\n\n//end of cache";
 
         if ($fd = @fopen(PATH . 'cache/' . $name . '.php', 'w'))
@@ -167,7 +167,7 @@ if (! ($olang = $cache->get('data_lang' . $config['language'])))
 if (! ($stats = $cache->get('data_stats')))
 {
     $query = [
-        'SELECT'	=> 's.files, s.imgs, s.sizes, s.users, s.last_file, s.last_f_del, s.last_google' . 
+        'SELECT'	=> 's.files, s.imgs, s.sizes, s.users, s.last_file, s.last_f_del, s.last_google' .
                         ', s.last_bing, s.google_num, s.bing_num, s.lastuser',
         'FROM'		=> "{$dbprefix}stats s"
     ];
@@ -207,7 +207,7 @@ if (! ($stats = $cache->get('data_stats')))
         'WHERE'		=> "f.filter_type='stats_for_acp' AND f.filter_uid = '" . date('d-n-Y') . "'"
     ];
 
-    $result	= $SQL->build($query);		
+    $result	= $SQL->build($query);
 
     //if already there is stats for this day, just update it, if not insert a new one
     if ($SQL->num_rows($result))
@@ -256,7 +256,7 @@ if (! ($banss = $cache->get('data_ban')))
 
     if (! empty($ban1) || $ban1 != ' '|| $ban1 != '  ')
     {
-        //seperate ips .. 
+        //seperate ips ..
         $ban2 = explode('|', $ban1);
 
         for ($i=0; $i<sizeof($ban2); $i++)
@@ -272,7 +272,7 @@ if (! ($banss = $cache->get('data_ban')))
     $cache->save('data_ban', $banss);
 }
 
-//	
+//
 //get rules data from stats table  ...
 //
 if (! ($ruless = $cache->get('data_rules')))
@@ -290,11 +290,11 @@ if (! ($ruless = $cache->get('data_rules')))
     $SQL->freeresult($result);
 
     $cache->save('data_rules', $ruless);
-}	
+}
 
 
-//	
-//get ex-header-footer data from stats table  … 
+//
+//get ex-header-footer data from stats table  …
 //
 if (! ($extras = $cache->get('data_extra')))
 {
@@ -319,7 +319,7 @@ if (! ($extras = $cache->get('data_extra')))
 }
 
 
-//	
+//
 //Get groups data
 //
 if (! ($d_groups = $cache->get('data_groups')))
@@ -340,7 +340,7 @@ if (! ($d_groups = $cache->get('data_groups')))
     while ($row=$SQL->fetch_array($result))
     {
         $d_groups[$row['group_id']]['data']    = $row;
-        $d_groups[$row['group_id']]['configs'] = []; 
+        $d_groups[$row['group_id']]['configs'] = [];
         $d_groups[$row['group_id']]['acls']    = [];
         $d_groups[$row['group_id']]['exts']    = [];
     }

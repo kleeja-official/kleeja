@@ -12,11 +12,23 @@
 	</li>
 </ol>
 
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link (case == local?active:)" href="{action}&amp;case=local">{lang.R_STYLES}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link (case == store?active:)" href="{action}&amp;case=store">{lang.KLEEJA_STORE}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link (case == check?active:)" href="{action}&amp;case=check">{lang.R_CHECK_UPDATE}</a>
+    </li>
+</ul>
 
+<IF NAME="case == local">
 <ul class="list-unstyled list-group">
-	<LOOP NAME="arr">
+	<LOOP NAME="available_styles">
 		<li class="media justify-content-between d-lg-flex list-group-item">
-			<img class="mr-3" src="{{icon}}" alt="{{style_name}}" style="width: 250px">
+			<img class="mr-3" src="{{icon}}" alt="{{name}}" style="width: 250px">
 			<div class="media-body col-xs-12" style="padding: 10px">
 				<h5 class="mt-0 mb-1">{{info.name}} <small class="text-muted">{{info.version}}</small> </h5>
 
@@ -26,7 +38,8 @@
 					<IF LOOP="is_default">
 						<span class="badge badge-pill badge-dark"><i class="fa fa-certificate text-warning" title="{lang.STYLE_IS_DEFAULT}"></i> {lang.STYLE_IS_DEFAULT}</span>
 						<ELSE>
-							<a href="{{link_mk_default}}" class="btn btn-primary" title="{lang.MAKE_AS_DEFAULT}"><i class="fa fa-check-square-o" title="{lang.MAKE_AS_DEFAULT}"></i> {lang.MAKE_AS_DEFAULT}</a>
+						<a href="{style_select_link}{{name}}" class="btn btn-primary" title="{lang.MAKE_AS_DEFAULT}"><i class="fa fa-check-square-o" title="{lang.MAKE_AS_DEFAULT}"></i> {lang.MAKE_AS_DEFAULT}</a>
+						<a href="{style_delete_link}{{name}}" onclick="javascript:return confirm_form();" class="btn btn-danger" title="{lang.DELETE}"><i class="fa fa-trash" title="{lang.DELETE}"></i> {lang.DELETE}</a>
 					</IF>
 				</div>
 			</div>
@@ -34,35 +47,170 @@
 	</LOOP>
 </ul>
 
+<!-- ...... -->
+<!-- store/check -->
+<!-- ..... -->
+<ELSEIF NAME="case == store" OR="case == check">
+
+    <UNLESS NAME="store_styles_count">
+        <div class="alert alert-info my-3 px-4 py-2 d-flex justify-content-start align-items-center">
+            <IF NAME="case == check">
+            <i class="fa fa-check fa-3x text-info p-2"></i>
+            <span class="p-3 font-weight-bold">{lang.ALL_STYLES_UPDATED}</span>
+            <ELSE>
+            <i class="fa fa-exclamation fa-3x text-info p-2"></i>
+            <span class="p-3 font-weight-bold">{lang.NO_PLUGINS}</span>
+            </IF>
+        </div>
+    </UNLESS>
+
+    <IF NAME="store_styles_count gt 1" AND="case == check">
+    <div class="d-flex justify-content-end my-3">
+        <button id="updateAllBtn" type="button" onclick="updateAll()" class="btn btn-primary px-5">
+            <i class="fa fa-flash"></i> {lang.UPDATE_ALL}
+        </button>
+    </div>
+    </IF>
+
+    <ul class="list-unstyled list-group mt-2">
+        <LOOP NAME="store_styles">
+        <li class="media d-flex justify-content-between list-group-item">
+            <img class="mr-3" src="{{icon}}" alt="{{title}}" style="width: 75px">
+            <div class="media-body d-flex justify-content-between">
+                <div>
+                    <h5 class="mt-0 mb-2">{{title}}</h5>
+
+                    <div style="direction: ltr;">
+                        <IF NAME="case == check">{{current_version}} → </IF>{{version}}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between flex-column align-items-end">
+                    <div class="btn-group" rol="group">
+                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Modal_{{name}}">
+                            <i class="fa fa-eye"></i> {lang.VIEW}
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="downloadStyle('{{name}}')" id="downloadBtn-{{name}}">
+                            <i class="fa fa-download"></i> <IF NAME="case == check">{lang.UPDATE}<ELSE>{lang.INSTALL}</IF>
+                        </button>
+                    </div>
+                    <div id="installLoading-{{name}}" class="badge badge-light border mt-1 d-none"></div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog"
+                    aria-labelledby="Style_View_{{name}}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="Style_View_{{name}}">{{title}}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        {lang.DEVELOPER}: {{developer}}
+                                        <IF LOOP="website"><a href="{{website}}" target="_tab"><i class="fa fa-external-link"></i></a></IF>
+                                    </li>
+                                    <li class="list-group-item">{lang.VERSION}: {{version}}</li>
+                                    <li class="list-group-item">{{kj_version_cmtp}}</li>
+                                    <IF LOOP="NotCompatible">
+                                        <li class="list-group-item list-group-item-danger">
+                                            {lang.PACKAGE_N_CMPT_KLJ}
+                                        </li>
+                                    </IF>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">{lang.CLOSE}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end modal -->
+        </li>
+        </LOOP>
+    </ul>
+<script>
+function downloadStyle(name, nextStyles) {
+    $('#downloadBtn-' + name).prop('disabled', true);
+    $('#installLoading-' + name)
+            .removeClass('d-none badge-warning badge-success badge-danger').addClass('badge-light')
+            .html('<img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" /> {lang.LOADING}...');
+
+    $.ajax({
+        url: '{style_download_link}'.replace(/&amp;/g, '&') + name + '&_ajax_=1',
+        dataType: 'json'})
+        .done(function (data) {
+            if(data.content) {
+                var info = data.content.split(":::");
+                $('#installLoading-'+name).removeClass('badge-light').addClass(info[0] != 1 ? 'badge-warning' : 'badge-success');
+                $('#installLoading-'+name).html(info[1]);
+            } else {
+                this.fail();
+            }
+
+            setTimeout(function() {
+                var currentStyle = nextStyles.shift();
+                downloadStyle(currentStyle, nextStyles);
+            }, 500);
+        })
+        .fail(function(data) {
+            $('#downloadBtn-' + name).prop('disabled', false);
+            $('#installLoading-'+name).removeClass('badge-light').addClass('badge-danger').html(
+                (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
+            );
+    });
+}
+
+function updateAll() {
+    $('#updateAllBtn').prop('disabled', true);
+
+    var styles = [<LOOP NAME="store_styles">'{{name}}',</LOOP>];
+
+    $.each(styles, function( index, name ) {
+        $('#downloadBtn-' + name).prop('disabled', true);
+    });
+
+    var currentStyle = styles.shift();
+    downloadStyle(currentStyle, styles);
+}
+</script>
+
+</IF>
+
+
 
 
 <!-- new style modal -->
 <div id="style_add_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewStyle" aria-hidden="true">
 
-	<form method="post" action="{action}" id="add_style_form" enctype="multipart/form-data">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="addNewStyle">{lang.UPLOAD_LOCAL_PC}</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
+    <form method="post" action="{action}" id="add_style_form" enctype="multipart/form-data">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNewStyle">{lang.UPLOAD_LOCAL_PC}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
-					<label class="form-control">
-						<input type="file" id="file" name="style_file">
-					</label>
+                    <label class="form-control">
+                        <input type="file" id="file" name="style_file">
+                    </label>
 
-					{H_FORM_KEYS}
+                    {H_FORM_KEYS}
 
-				</div>
-				<div class="modal-footer">
-					<input type="submit" name="newstyle" class="btn btn-primary" value="{lang.SUBMIT}">
-				</div>
-			</div>
-		</div>
-	</form>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" name="newstyle" class="btn btn-primary" value="{lang.SUBMIT}">
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 <!-- end new style modal -->
-

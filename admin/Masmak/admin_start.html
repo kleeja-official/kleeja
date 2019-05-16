@@ -24,7 +24,7 @@ function toggleStartBox(name, hide, current) {
                 $('#start_box_'+name + ' .' + itemRemoveClass).addClass('selected');
                 $('#start_box_'+name + ' .' + itemAddClass).removeClass('selected');
         });
-        
+
         return false;
 }
 </script>
@@ -277,15 +277,6 @@ function toggleStartBox(name, hide, current) {
 		{lang.HURRY_HURRY}
 	</div>
 	<ul class="list-group list-group-flush">
-		<li class="list-group-item d-flex justify-content-between">
-			{lang.STYLE}
-			<div>
-				<select name="style_change" id="style_change" class="custom-select">
-					{hurry_styles_list}
-				</select>
-				<button class="btn btn-outline-primary" onclick="javascript:get_kleeja_link('{hurry_style_link}' + $('#style_change').val()); return false;"><span>{lang.CHANGE}</span></button>
-			</div>
-		</li>
 		<li class="list-group-item d-lg-flex justify-content-between">
 			{lang.LANGUAGE}
 			<div>
@@ -440,7 +431,7 @@ function toggleStartBox(name, hide, current) {
 
 	<ul class="list-group" id="gtresults">
 		<li class="list-group-item list-group-item-action d-flex justify-content-between" style="display: none !important" id="ghTemplate">
-			<div class="d-flex w-40 justify-content-between"> 
+			<div class="d-flex w-40 justify-content-between">
 				<img src="%avatarUrl%" alt="" class="img-thumbnail mx-2 rounded" style="width: 48px; height: 48px"> <a href="%htmlUrl%" target="_tab"><h5 class="mb-1">%login%</h5></a>
 			</div>
 			<small><a href="https://github.com/awssat/kleeja/graphs/contributors" target="_blank">%contributions% <i class="fa fa-fw fa-code"></i></a></small>

@@ -25,12 +25,11 @@
 <!--  installed plugins  -->
 <IF NAME="case == installed">
 
-    <IF NAME="no_plugins">
-
-        <div class="alert alert-info my-1">
-            {lang.NO_PLUGINS}
+    <IF NAME="no_installed_plugins">
+        <div class="alert alert-info my-3 px-4 py-2 d-flex justify-content-start align-items-center">
+            <i class="fa fa-exclamation fa-3x text-info p-2"></i>
+            <span class="p-3">{lang.NO_PLUGINS}</span>
         </div>
-
     </IF>
 
     <IF NAME="installed_plugins">
@@ -52,7 +51,7 @@
                     <IF LOOP="plg_disabled">
                         {{plg_dsc}}
                         <ELSE>
-                            {{extra_info.plugin_description}}
+                        {{extra_info.plugin_description}}
                     </IF>
                     <br>
                     <small>{{extra_info.plugin_developer}}</small>
@@ -93,12 +92,14 @@
     <ul class="list-unstyled list-group">
         <LOOP NAME="available_plugins">
         <li class="media d-flex justify-content-between list-group-item">
-            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{name}}" style="width: 75px">
-            <div class="media-body">
+            <img class="mr-3" src="{{icon}}" alt="{{name}}" style="width: 75px">
+            <div class="media-body d-flex justify-content-between">
                 <h5 class="mt-0 mb-1 pull-(lang.DIR==ltr?left:right)">{{name}}</h5>
 
-                <a class="btn btn-primary pull-(lang.DIR==ltr?right:left)" href="{plugin_install_link}{{name}}" title="{lang.ENABLE}" onclick="javascript:return confirm_form('{lang.PLUGIN_CONFIRM_ADD}');"><i class="fa fa-download" title="{lang.ENABLE}"></i></a>
-                <a class="btn btn-danger pull-(lang.DIR==ltr?right:left)" href="{plugin_delete_folder_link}{{name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form('{lang.PLG_DEL_CONFIRM}');"><i class="fa fa-trash" title="{lang.DELETE}"></i></a>
+                <div class="btn-group btn-group-toggle">
+                    <a class="btn btn-primary btn-sm" href="{plugin_install_link}{{name}}" title="{lang.ENABLE}" onclick="javascript:return confirm_form('{lang.PLUGIN_CONFIRM_ADD}');"><i class="fa fa-plus" title="{lang.ENABLE}"></i></a>
+                    <a class="btn btn-danger btn-sm" href="{plugin_delete_folder_link}{{name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form();"><i class="fa fa-trash" title="{lang.DELETE}"></i></a>
+                </div>
             </div>
         </li>
         </LOOP>
@@ -117,13 +118,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
-
                     <label class="form-control">
                         <input type="file" id="file" name="plugin_file">
                     </label>
-
                     {H_FORM_KEYS}
-
                 </div>
                 <div class="modal-footer">
                     <input type="submit" name="newplugin" class="btn btn-primary" value="{lang.SUBMIT}">
@@ -139,62 +137,132 @@
 <!-- ..... -->
 <ELSEIF NAME="case == store" OR="case == check">
 
-    <IF NAME="no_store_plugins">
-        <div class="alert alert-info my-3">
-            <IF NAME="case == check">{lang.ALL_PLUGINS_UPDATED}<ELSE>{lang.NO_PLUGINS}</IF>
+    <UNLESS NAME="store_plugins_count">
+        <div class="alert alert-info my-3 px-4 py-2 d-flex justify-content-start align-items-center">
+            <IF NAME="case == check">
+            <i class="fa fa-check fa-3x text-info p-2"></i>
+            <span class="p-3 font-weight-bold">{lang.ALL_PLUGINS_UPDATED}</span>
+            <ELSE>
+            <i class="fa fa-exclamation fa-3x text-info p-2"></i>
+            <span class="p-3 font-weight-bold">{lang.NO_PLUGINS}</span>
+            </IF>
         </div>
+    </UNLESS>
+
+    <IF NAME="store_plugins_count gt 1" AND="case == check">
+    <div class="d-flex justify-content-end my-3">
+        <button id="updateAllBtn" type="button" onclick="updateAll()" class="btn btn-primary px-5">
+            <i class="fa fa-flash"></i> {lang.UPDATE_ALL}
+        </button>
+    </div>
     </IF>
 
     <ul class="list-unstyled list-group mt-2">
         <LOOP NAME="store_plugins">
         <li class="media d-flex justify-content-between list-group-item">
-            <img class="mr-3 rounded-circle" src="{{icon}}" alt="{{title}}" style="width: 75px">
-            <div class="media-body">
-                <h5 class="mt-0 mb-2">{{title}}</h5>
-                    <!-- Button trigger modal -->
-                    <div class="d-flex justify-content-between">
-                        <div style="direction: ltr;"><IF NAME="case == check">{{current_version}} → </IF>{{version}}</div>
-                        <button type="button" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#Modal_{{name}}">
-                            <IF NAME="case == check">{lang.UPDATE}<ELSE>{lang.VIEW}</IF>
+            <img class="mr-3" src="{{icon}}" alt="{{title}}" style="width: 75px">
+            <div class="media-body d-flex justify-content-between">
+                <div>
+                    <h5 class="mt-0 mb-2">{{title}}</h5>
+
+                    <div style="direction: ltr;">
+                        <IF NAME="case == check">{{current_version}} → </IF>{{version}}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between flex-column align-items-end">
+                    <div class="btn-group" rol="group">
+                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Modal_{{name}}">
+                            <i class="fa fa-eye"></i> {lang.VIEW}
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="downloadPlugin('{{name}}')" id="downloadBtn-{{name}}">
+                            <i class="fa fa-download"></i> <IF NAME="case == check">{lang.UPDATE}<ELSE>{lang.INSTALL}</IF>
                         </button>
                     </div>
+                    <div id="installLoading-{{name}}" class="badge badge-light border mt-1 d-none"></div>
+                </div>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <!-- Modal -->
+                <div class="modal fade" id="Modal_{{name}}" tabindex="-1" role="dialog"
+                    aria-labelledby="Plugin_View_{{name}}" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="exampleModalLabel">{{title}}</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                {lang.DEVELOPER}: {{developer}}
-                                <IF LOOP="website"> <i class="fa fa-download" title="{lang.ENABLE}"></i><a href="{{website}}" target="_tab"><i class="fa fa-external-link" title="{lang.ENABLE}"></i></a></IF>
-                            </li>
-                             <li class="list-group-item">{lang.VERSION}: {{version}}</li>
-                             <li class="list-group-item">{{kj_version_cmtp}}</li>
-                            <IF LOOP="NotCompatible">
-                             <li class="list-group-item list-group-item-danger">
-                                {lang.PLUGIN_N_CMPT_KLJ}
-                             </li>
-                            </IF>
-                            </ul>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{lang.CLOSE}</button>
-                            <a class="btn btn-primary" href="{plugin_download_link}{{name}}" title="Install">{lang.INSTALL} <i class="fa fa-download" title="Download"></i></a>
-                        </div>
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="Plugin_View_{{name}}">{{title}}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        {lang.DEVELOPER}: {{developer}}
+                                        <IF LOOP="website"><a href="{{website}}" target="_tab"><i class="fa fa-external-link"></i></a></IF>
+                                    </li>
+                                    <li class="list-group-item">{lang.VERSION}: {{version}}</li>
+                                    <li class="list-group-item">{{kj_version_cmtp}}</li>
+                                    <IF LOOP="NotCompatible">
+                                        <li class="list-group-item list-group-item-danger">
+                                            {lang.PACKAGE_N_CMPT_KLJ}
+                                        </li>
+                                    </IF>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">{lang.CLOSE}</button>
+                            </div>
                         </div>
                     </div>
-                    </div>
-                    <!-- end modal -->
                 </div>
+                <!-- end modal -->
         </li>
         </LOOP>
     </ul>
+<script>
+function downloadPlugin(name, nextPlugins) {
+    $('#downloadBtn-' + name).prop('disabled', true);
+    $('#installLoading-' + name)
+            .removeClass('d-none badge-warning badge-success badge-danger').addClass('badge-light')
+            .html('<img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" /> {lang.LOADING}...');
+
+    $.ajax({
+        url: '{plugin_download_link}'.replace(/&amp;/g, '&') + name + '&_ajax_=1',
+        dataType: 'json'})
+        .done(function (data) {
+            if(data.content) {
+                var info = data.content.split(":::");
+                $('#installLoading-'+name).removeClass('badge-light').addClass(info[0] != 1 ? 'badge-warning' : 'badge-success');
+                $('#installLoading-'+name).html(info[1]);
+            } else {
+                this.fail();
+            }
+
+            setTimeout(function() {
+                var currentPlugin = nextPlugins.shift();
+                downloadPlugin(currentPlugin, nextPlugins);
+            }, 500);
+        })
+        .fail(function(data) {
+            $('#downloadBtn-' + name).prop('disabled', false);
+            $('#installLoading-'+name).removeClass('badge-light').addClass('badge-danger').html(
+                (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
+            );
+    });
+}
+
+function updateAll() {
+    $('#updateAllBtn').prop('disabled', true);
+
+    var plugins = [<LOOP NAME="store_plugins">'{{name}}',</LOOP>];
+
+    $.each(plugins, function( index, name ) {
+        $('#downloadBtn-' + name).prop('disabled', true);
+    });
+
+    var currentPlugin = plugins.shift();
+    downloadPlugin(currentPlugin, plugins);
+}
+</script>
 
 </IF>

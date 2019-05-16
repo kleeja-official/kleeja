@@ -1668,6 +1668,11 @@ function add_to_serve_rules($rules, $unique_id = '')
                         );
     }
 
+    if (! is_writable(PATH . 'serve.php'))
+    {
+        chmod(PATH . 'serve.php', K_FILE_CHMOD);
+    }
+
     file_put_contents(PATH . 'serve.php', $current_serve_content);
 
     return true;
@@ -1694,6 +1699,11 @@ function remove_from_serve_rules($unique_id)
     if ($new_serve_content === $current_serve_content)
     {
         return false;
+    }
+
+    if (! is_writable(PATH . 'serve.php'))
+    {
+        chmod(PATH . 'serve.php', K_FILE_CHMOD);
     }
 
     file_put_contents($file, $new_serve_content);

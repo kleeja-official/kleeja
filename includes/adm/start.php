@@ -71,7 +71,7 @@ if (is_browser('ie6, ie8, ie7'))
     $ADM_NOTIFICATIONS['IE6']  = ['id' => 'IE6', 'msg_type'=> 'error', 'title'=> $lang['NOTE'], 'msg'=> $lang['ADMIN_USING_IE6']];
 }
 
-//if upgrading from 1rc6 to 1.0, some files must be deleted ! 
+//if upgrading from 1rc6 to 1.0, some files must be deleted !
 if (file_exists(PATH . 'includes/adm/files.php') || file_exists(PATH . 'admin.php'))
 {
     $ADM_NOTIFICATIONS['old_files']  = ['id' => 'old_files', 'msg_type'=> 'info', 'title'=> $lang['NOTE'], 'msg'=> $lang['ADM_UNWANTED_FILES']];
@@ -89,8 +89,8 @@ $v = @unserialize($config['new_version']);
 if (version_compare(strtolower(KLEEJA_VERSION), strtolower($v['version_number']), '<'))
 {
     $ADM_NOTIFICATIONS['up_ver_klj']  = [
-        'id'      => 'up_ver_klj',//this not so important row 
-        'msg_type'=> 'error', 'title'=> $lang['R_CHECK_UPDATE'], 
+        'id'      => 'up_ver_klj',//this not so important row
+        'msg_type'=> 'error', 'title'=> $lang['R_CHECK_UPDATE'],
         'msg'     => sprintf($lang['UPDATE_NOW_S'], KLEEJA_VERSION, $v['version_number']) . '<br />' . '<a href="http://www.kleeja.com/">www.kleeja.com</a>'
     ];
 
@@ -141,7 +141,7 @@ if (! empty($d_groups) && is_array($d_groups))
     {
         $ADM_NOTIFICATIONS['file_size_ini_low']  = [
             'id'      => 'file_size_ini_low',
-            'msg_type'=> 'info', 'title'=> $lang['NOTE'], 
+            'msg_type'=> 'info', 'title'=> $lang['NOTE'],
             'msg'     => sprintf($lang['PHPINI_FILESIZE_SMALL'], readable_size($biggest_size), readable_size($upload_max_filesize_s))
         ];
     }
@@ -166,7 +166,7 @@ if (! empty($d_groups) && is_array($d_groups))
     {
         $ADM_NOTIFICATIONS['post_m_size_ini_low']  = [
             'id'      => 'post_m_size_ini_low',
-            'msg_type'=> 'info', 'title'=> $lang['NOTE'], 
+            'msg_type'=> 'info', 'title'=> $lang['NOTE'],
             'msg'     => sprintf($lang['PHPINI_MPOSTSIZE_SMALL'], $config['filesnum'], readable_size($post_max_size_s_must_be))
         ];
     }
@@ -187,7 +187,7 @@ if (empty($v['last_check']) || ((time() - $v['last_check']) > 3600 * 24 * 10 && 
 
 
 //if config not safe
-if (function_exists('fileperms') && ! defined('KLEEJA_NO_CONFIG_CHECK') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN' && ! @ini_get('safe_mode'))
+if (function_exists('fileperms') && ! defined('KLEEJA_NO_CONFIG_CHECK') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN')
 {
     if ((bool) (@fileperms(PATH . KLEEJA_CONFIG_FILE) & 0x0002))
     {
@@ -222,7 +222,7 @@ if (! file_exists(PATH . $config['foldername'] . '/thumbs') && (int) $config['th
 
 
 
-//is there copyrights for translator ? 
+//is there copyrights for translator ?
 $translator_copyrights = isset($lang['S_TRANSLATED_BY']) ?  $lang['S_TRANSLATED_BY'] : false;
 
 
@@ -242,22 +242,6 @@ $image_last_visit = filter_exists('i_lastvisit', 'filter_uid', 'lastvisit', $use
     ? get_filter('i_lastvisit', 'lastvisit', true, 'filter_uid', $userinfo['id']) : false;
 
 
-
-//hurry, hurry section, get styles
-$hurry_style_link	 = basename(ADMIN_PATH) . '?cp=m_styles&amp;sty_t=st&amp;method=2&amp;home=1&amp;smt=curstyle&amp;' . $GET_FORM_KEY . '&amp;style_choose=';
-$hurry_styles_list	= '';
-
-if ($dh = @opendir(PATH . 'styles'))
-{
-    while (($file = @readdir($dh)) !== false)
-    {
-        if (strpos($file, '.') === false && $file != '..' && $file != '.')
-        {
-            $hurry_styles_list .= '<option value="' . htmlspecialchars($file) . '"' . ($config['style'] == $file ? ' selected="selected"' : '') . '>' . $file . '</option>';
-        }
-    }
-    @closedir($dh);
-}
 
 //hurry, hurry section, get languages
 $hurry_lang_link	 = basename(ADMIN_PATH) . '?cp=g_users&smt=general&amp;smt=group_data&' . $GET_FORM_KEY . '&amp;lang_change=';
@@ -280,8 +264,8 @@ $hurry_groups_list .= '<option value="' . $config['default_group'] . '">' . $lan
 
 foreach ($d_groups as $id=>$ddt)
 {
-    $hurry_groups_list .= '<option value="' . $id . '">' .  
-            str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'], 
+    $hurry_groups_list .= '<option value="' . $id . '">' .
+            str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
             [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
             $d_groups[$id]['data']['group_name']) .
              '</option>';
@@ -312,7 +296,7 @@ if ($cf_num > 3)
     //get currently right now stats
     $prv_files   = get_actual_stats('files');
     $prev_imgs   = get_actual_stats('imgs');
-    $prev_date   = date('d-n-Y');	
+    $prev_date   = date('d-n-Y');
     $todayIsGone = false;
 
     while ($row=$SQL->fetch_array($cf_result))
