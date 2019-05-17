@@ -925,6 +925,7 @@ function time_zones()
 
     // for compatibility with earlier versions.
     $timezones['Asia/Buraydah'] = 3.01;
+    $timezones['Asia/Jerusalem'] = 3;
 
     asort($timezones);
 
