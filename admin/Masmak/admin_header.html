@@ -3,46 +3,46 @@
 
 <head>
 
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-	<title>{lang.KLEEJA_CP} - {config.sitename}</title>
+    <title>{lang.KLEEJA_CP} - {config.sitename}</title>
 
-	<link rel="shortcut icon" href="{STYLE_PATH_ADMIN}images/favicon.ico" />
-	<link rel="icon" type="image/png" href="{STYLE_PATH_ADMIN}images/favicon.png" />
+    <link rel="shortcut icon" href="{STYLE_PATH_ADMIN}images/favicon.ico" />
+    <link rel="icon" type="image/png" href="{STYLE_PATH_ADMIN}images/favicon.png" />
 
-	<!-- Bootstrap core CSS -->
-	<link href="{STYLE_PATH_ADMIN}css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="{STYLE_PATH_ADMIN}css/bootstrap.min.css" rel="stylesheet">
 
-	<!-- Custom fonts for this template -->
-	<link href="{STYLE_PATH_ADMIN}css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom fonts for this template -->
+    <link href="{STYLE_PATH_ADMIN}css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-	<!-- Plugin CSS -->
-	<link href="{STYLE_PATH_ADMIN}css/dataTables.bootstrap4.css" rel="stylesheet">
+    <!-- Plugin CSS -->
+    <link href="{STYLE_PATH_ADMIN}css/dataTables.bootstrap4.css" rel="stylesheet">
 
-	<!-- Custom styles for this template -->
-	<link href="{STYLE_PATH_ADMIN}css/sb-admin.css" rel="stylesheet">
-	<link href="{STYLE_PATH_ADMIN}css/custom.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{STYLE_PATH_ADMIN}css/sb-admin.css" rel="stylesheet">
+    <link href="{STYLE_PATH_ADMIN}css/custom.css" rel="stylesheet">
 
-	<IF NAME="lang.DIR==rtl">
+    <IF NAME="lang.DIR==rtl">
         <link rel="stylesheet" type="text/css"  href="{STYLE_PATH_ADMIN}css/bootstrap.rtl.min.css" />
         <link rel="stylesheet" type="text/css" href="{STYLE_PATH_ADMIN}css/sb-admin-rtl.css" />
 
 
-		<style type="text/css">
-			body{font-family: "Tahoma",Arial,sans-serif;}
-			body{
-				direction: rtl; /* placing it here fixes the issue with jquery white page bug */
-			}
-		</style>
-	</IF>
+        <style type="text/css">
+            body{font-family: "Tahoma",Arial,sans-serif;}
+            body{
+                direction: rtl; /* placing it here fixes the issue with jquery white page bug */
+            }
+        </style>
+    </IF>
 
 
-	<script type="text/javascript">
+    <script type="text/javascript">
         var STYLE_PATH_ADMIN = '{STYLE_PATH_ADMIN}';
         var go_to = '{go_to}';
-	</script>
+    </script>
 {extra_admin_header_code}
 </head>
 
@@ -53,31 +53,31 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-{admin_theme_color} bg-{admin_theme_color} fixed-top" id="mainNav">
 
-	<a class="navbar-brand" href="./"><img src="{STYLE_PATH_ADMIN}/images/kleeja.png" alt="Kleeja" style="margin:2px 8px;vertical-align:middle;width:24px"/> Kleeja <small>{assigned_klj_ver}</small></a>
+    <a class="navbar-brand" href="./"><img src="{STYLE_PATH_ADMIN}/images/kleeja.png" alt="Kleeja" style="margin:2px 8px;vertical-align:middle;width:24px"/> Kleeja <small>{assigned_klj_ver}</small></a>
 
-	<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarAcp" aria-controls="navbarAcp" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarAcp" aria-controls="navbarAcp" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
 
 
-	<div class="collapse navbar-collapse" id="navbarAcp">
+    <div class="collapse navbar-collapse" id="navbarAcp">
 
         <!-- side menu -->
         <ul class="navbar-nav navbar-sidenav">
-			<li class="nav-item<IF NAME="go_to==start"> activex</IF>" data-toggle="tooltip" data-placement="right" title="{lang.R_CPINDEX}">
-				<a class="first-level nav-link <IF NAME="go_to==start">nav-link-collapse</IF>" href="./"><i class="fa fa-fw fa-dashboard"></i> {lang.R_CPINDEX}</a>
+            <li class="nav-item<IF NAME="go_to==start"> activex</IF>" data-toggle="tooltip" data-placement="right" title="{lang.R_CPINDEX}">
+                <a class="first-level nav-link <IF NAME="go_to==start">nav-link-collapse</IF>" href="./"><i class="fa fa-fw fa-dashboard"></i> {lang.R_CPINDEX}</a>
                 <ul class="sidenav-second-level<IF NAME="go_to!=start"> collapse</IF>" id="collapseIndex">
                     <IF NAME="go_to==start">{go_menu_html}</IF>
                 </ul>
-			</li>
+            </li>
 
 
             <LOOP NAME="adm_extensions_menu">
                 <li class="nav-item ({{current}}?activex:)" id="menu_item{{i}}" data-toggle="tooltip" data-placement="right" title="{{title}}">
                     <a class="first-level nav-link<IF LOOP="current"><IF NAME="go_menu_html"> nav-link-collapse</IF></IF>"  title="{{title}}" href="{{link}}"<IF LOOP="confirm"> onclick="return confirm_form();"</IF>>
-						<i class="fa fa-fw fa-{{icon}}"></i> {{title}} {{bubble}}
-					</a>
+                        <i class="fa fa-fw fa-{{icon}}"></i> {{title}} {{bubble}}
+                    </a>
                     <IF NAME="go_menu_html">
                         <ul class="sidenav-second-level<IF LOOP="current"><ELSE> collapse</IF>" id="collapseItem{{i}}">
                             <IF LOOP="current">{go_menu_html}</IF>
@@ -85,10 +85,10 @@
                     </IF>
                 </li>
             </LOOP>
-		</ul>
+        </ul>
 
         <!-- top menu -->
-		<ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto">
 
 
             <LOOP NAME="adm_topmenu">
@@ -101,23 +101,23 @@
             </LOOP>
 
 
-			<li class="nav-item">
-				<a class="nav-link" href="./?cp={go_to}&amp;change_theme=<IF NAME="admin_theme_color==dark">light<ELSE>dark</IF>&amp;{GET_FORM_KEY_GLOBAL}"><i class="fa fa-fw fa-lightbulb-o"></i></a>
-			</li>
+            <li class="nav-item">
+                <a class="nav-link" href="./?cp={go_to}&amp;change_theme=<IF NAME="admin_theme_color==dark">light<ELSE>dark</IF>&amp;{GET_FORM_KEY_GLOBAL}"><i class="fa fa-fw fa-lightbulb-o"></i></a>
+            </li>
 
-			<li class="nav-item">
-				<a class="nav-link" href="https://www.kleeja.com" target="_blank" title="kleeja.com"><i class="fa fa-fw fa-support"></i></a>
-			</li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://www.kleeja.com" target="_blank" title="kleeja.com"><i class="fa fa-fw fa-support"></i></a>
+            </li>
 
-			<li class="nav-item">
-				<a class="nav-link" href="./?cp=b_lgoutcp&amp;{GET_FORM_KEY_GLOBAL}" onclick="javascript:return confirm_form();"><i class="fa fa-fw fa-sign-out"></i> {lang.R_LGOUTCP} [ {username} ]</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="{config.siteurl}"><i class="fa fa-fw fa-sign-out"></i> {lang.RETURN_HOME}</a>
-			</li>
-		</ul>
-	</div>
+            <li class="nav-item">
+                <a class="nav-link" href="./?cp=b_lgoutcp&amp;{GET_FORM_KEY_GLOBAL}" onclick="javascript:return confirm_form();"><i class="fa fa-fw fa-sign-out"></i> {lang.R_LGOUTCP} [ {username} ]</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{config.siteurl}"><i class="fa fa-fw fa-sign-out"></i> {lang.RETURN_HOME}</a>
+            </li>
+        </ul>
+    </div>
 </nav>
 
 <div class="content-wrapper">
-	<div class="container-fluid">
+    <div class="container-fluid">

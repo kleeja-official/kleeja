@@ -46,8 +46,8 @@ function getlang ($link = false)
 
     if (ig('lang'))
     {
-        $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
-        $ln	  = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
+        $lang    = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
+        $ln      = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
     }
 
     return $link ? 'lang=' . $ln : $ln;
@@ -117,11 +117,11 @@ function kleeja_eval($code)
 function do_config_export($srv, $usr, $pass, $nm, $prf)
 {
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
-    $data	.= '$dbserver		= \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
-    $data	.= '$dbuser			= \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
-    $data	.= '$dbpass			= \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
-    $data	.= '$dbname			= \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
-    $data .= '$dbprefix		= \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
+    $data    .= '$dbserver        = \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
+    $data    .= '$dbuser            = \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
+    $data    .= '$dbpass            = \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
+    $data    .= '$dbname            = \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
+    $data    .= '$dbprefix        = \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
 
     if (file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
     {
@@ -176,8 +176,8 @@ function inst_get_config($name)
         return false;
     }
 
-    $sql    = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
-    $result	= $SQL->query($sql);
+    $sql       = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
+    $result    = $SQL->query($sql);
 
     if ($SQL->num_rows($result) == 0)
     {
@@ -207,8 +207,8 @@ function get_cookies_settings()
     }
 
 
-    $cookie_secure	= isset($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] == 'on' ? true : false;
-    $cookie_name	  = 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(md5(mt_rand()), 16, 35)), 0, 5));
+    $cookie_secure    = isset($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] == 'on' ? true : false;
+    $cookie_name      = 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(md5(mt_rand()), 16, 35)), 0, 5));
 
     $name = (! empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
 
@@ -243,10 +243,10 @@ function get_cookies_settings()
     }
 
     return [
-        'server_name'	  => $server_name,
-        'cookie_secure'	=> $cookie_secure,
-        'cookie_name'	  => $cookie_name,
-        'cookie_domain'	=> $cookie_domain,
-        'cookie_path'	  => str_replace('/install', '', $script_path),
+        'server_name'      => $server_name,
+        'cookie_secure'    => $cookie_secure,
+        'cookie_name'      => $cookie_name,
+        'cookie_domain'    => $cookie_domain,
+        'cookie_path'      => str_replace('/install', '', $script_path),
     ];
 }

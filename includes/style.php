@@ -24,6 +24,7 @@ class kleeja_style
     /**
      * Function to load a template file.
      * @param $template_name
+     * @param null|mixed $style_path
      */
     protected function _load_template($template_name, $style_path = null)
     {
@@ -118,6 +119,8 @@ class kleeja_style
 
     /**
      * Function to parse the Template Tags
+     * @param mixed $html
+     * @param mixed $template_name
      */
     protected function _parse($html, $template_name = '')
     {
@@ -360,7 +363,7 @@ class kleeja_style
 
         ob_start();
 
-        if($eval_on)
+        if ($eval_on)
         {
             eval(' ?' . '>' . $parsed_html . '<' . '?php ');
         }
@@ -380,6 +383,7 @@ class kleeja_style
     /**
      * change name of template to be valid
      * @param $name
+     * @param  null|mixed $style_path
      * @return mixed
      */
     protected function re_name_tpl($name, $style_path = null)

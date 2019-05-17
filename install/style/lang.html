@@ -2,24 +2,24 @@
 
 
 <div class="language_choose">
-	<ul id="LangChoose">
-		{{if($dh = @opendir(PATH . 'lang')): while (($file = readdir($dh)) !== false): if(strpos($file, '.') === false && $file != '..' && $file != '.'):}}
-		<li>
-			<a href="{{echo './?step=language&amp;ln=' . $file}}">
-			{{if(file_exists('style/images/'.$file.'.png')):}}
-			<img src="style/images/{{echo $file}}.png" alt="{{echo $file}}" />
-			{{elseif(file_exists('../lang/'.$file.'/icon.png')):}}
-				<img src="../lang/{{echo $file}}/icon.png" alt="{{echo $file}}" />
-			{{else:}}
-				<p style="width: 100px; height: 65px; border: 1px solid #ccc;text-align: center; vertical-align: middle;background-color: #2aabd2;font-size: 20px">
-					{{echo $file}}
-				</p>
-			{{endif;}}
-		</a>
-		</li>
-		{{endif;endwhile;@closedir($dh);endif;}}
-	</ul>
+    <ul id="LangChoose">
+        {{if($dh = @opendir(PATH . 'lang')): while (($file = readdir($dh)) !== false): if(strpos($file, '.') === false && $file != '..' && $file != '.'):}}
+        <li>
+            <a href="{{echo './?step=language&amp;ln=' . $file}}">
+            {{if(file_exists('style/images/'.$file.'.png')):}}
+            <img src="style/images/{{echo $file}}.png" alt="{{echo $file}}" />
+            {{elseif(file_exists('../lang/'.$file.'/icon.png')):}}
+                <img src="../lang/{{echo $file}}/icon.png" alt="{{echo $file}}" />
+            {{else:}}
+                <p style="width: 100px; height: 65px; border: 1px solid #ccc;text-align: center; vertical-align: middle;background-color: #2aabd2;font-size: 20px">
+                    {{echo $file}}
+                </p>
+            {{endif;}}
+        </a>
+        </li>
+        {{endif;endwhile;@closedir($dh);endif;}}
+    </ul>
 </div>
 
-	<div class="clr"></div>
+    <div class="clr"></div>
 </div></div><div class="BoxBottomImg"></div></div>

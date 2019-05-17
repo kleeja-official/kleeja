@@ -16,10 +16,10 @@ if (! defined('IN_ADMIN'))
 
 
 //for style ..
-$stylee		   = 'admin_extra';
-$current_smt= preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'he'));
-$action		   = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;smt=' . $current_smt;
-$H_FORM_KEYS= kleeja_add_form_key('adm_extra');
+$stylee           = 'admin_extra';
+$current_smt      = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'he'));
+$action           = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;smt=' . $current_smt;
+$H_FORM_KEYS      = kleeja_add_form_key('adm_extra');
 
 //
 // Check form key
@@ -32,9 +32,9 @@ if (ip('submit'))
     }
 }
 
-$query	= [
-    'SELECT'	=> 'ex_header,ex_footer',
-    'FROM'		 => "{$dbprefix}stats"
+$query    = [
+    'SELECT'       => 'ex_header,ex_footer',
+    'FROM'         => "{$dbprefix}stats"
 ];
 
 $result = $SQL->build($query);
@@ -65,9 +65,9 @@ if (ip('submit'))
 
 
     //update
-    $update_query	= [
-        'UPDATE'	=> "{$dbprefix}stats",
-        'SET'		  => $update_sql
+    $update_query    = [
+        'UPDATE'       => "{$dbprefix}stats",
+        'SET'          => $update_sql
     ];
 
     $SQL->build($update_query);

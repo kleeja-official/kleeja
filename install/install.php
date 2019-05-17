@@ -101,7 +101,7 @@ case 'f':
     $check_ok = true;
     $advices  = $ziparchive_lib  = false;
 
-    if(! class_exists( 'ZipArchive'))
+    if (! class_exists('ZipArchive'))
     {
         $ziparchive_lib = true;
     }
@@ -125,8 +125,8 @@ case 'c':
     }
 
 
-    $no_config      = ! file_exists(PATH . 'config.php') || ig('force') ? false : true;
-    $writeable_path	= is_writable(PATH) ? true : false;
+    $no_config         = ! file_exists(PATH . 'config.php') || ig('force') ? false : true;
+    $writeable_path    = is_writable(PATH) ? true : false;
 
     echo gettpl('configs.html');
 
@@ -178,7 +178,7 @@ case 'data' :
 
         //check data ...
         if (empty(p('sitename')) || empty(p('siteurl')) || empty(p('sitemail'))
-             || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')) )
+             || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')))
         {
             echo $lang['EMPTY_FIELDS'];
             echo $footer_inst;
@@ -210,17 +210,17 @@ case 'data' :
         include_once PATH . 'includes/functions_alternative.php';
         $usrcp = new usrcp;
 
-        $user_salt			     = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
-        $user_pass 			    = $usrcp->kleeja_hash_password(p('password') . $user_salt);
-        $user_name 			    = $SQL->escape(p('username'));
-        $user_mail 			    = $SQL->escape(p('email'));
-        $config_sitename	 = $SQL->escape(p('sitename'));
-        $config_siteurl		 = $SQL->escape(p('siteurl'));
-        $config_sitemail	 = $SQL->escape(p('sitemail'));
-        $config_time_zone	= $SQL->escape(p('time_zone'));
-        //$config_style		= ip('style') ? $SQL->escape(p('style')) : '';
-        $config_urls_type	= in_array(p('urls_type'), ['id', 'filename', 'direct']) ? p('urls_type') : 'id';
-        $clean_name			    = $usrcp->cleanusername($SQL->escape($user_name));
+        $user_salt                 = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+        $user_pass                 = $usrcp->kleeja_hash_password(p('password') . $user_salt);
+        $user_name                 = $SQL->escape(p('username'));
+        $user_mail                 = $SQL->escape(p('email'));
+        $config_sitename           = $SQL->escape(p('sitename'));
+        $config_siteurl            = $SQL->escape(p('siteurl'));
+        $config_sitemail           = $SQL->escape(p('sitemail'));
+        $config_time_zone          = $SQL->escape(p('time_zone'));
+        //$config_style        = ip('style') ? $SQL->escape(p('style')) : '';
+        $config_urls_type          = in_array(p('urls_type'), ['id', 'filename', 'direct']) ? p('urls_type') : 'id';
+        $clean_name                = $usrcp->cleanusername($SQL->escape($user_name));
 
         /// ok .. we will get sqls now ..
         include 'includes/install_sqls.php';

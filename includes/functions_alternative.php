@@ -46,9 +46,9 @@ if (! function_exists('str_split'))
         {
             do
             {
-                $c       = strlen($string);
-                $parts[] = substr($string, 0, $string_length);
-                $string	 = substr($string, $string_length);
+                $c          = strlen($string);
+                $parts[]    = substr($string, 0, $string_length);
+                $string     = substr($string, $string_length);
             } while ($string !== false);
         }
         else

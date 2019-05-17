@@ -175,7 +175,7 @@ class Plugins
 
     /**
      * get an installed plugin information
-     * @param  string     $plugin_name
+     * @param  string $plugin_name
      * @return array
      */
     public function installed_plugin_info($plugin_name)
@@ -192,8 +192,8 @@ class Plugins
     /**
      * Bring all codes of this hook
      * This function scattered all over kleeja files
-     * @param  string     $hook_name
-     * @param  array      $args
+     * @param  string $hook_name
+     * @param  array  $args
      * @return array
      */
     public function run($hook_name, $args = [])

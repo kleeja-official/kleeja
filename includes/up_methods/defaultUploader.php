@@ -138,7 +138,7 @@ class defaultUploader implements KleejaUploader
 
         $fileInfo['DeleteCode'] = sha1($fileInfo['generatedFileName'] . uniqid());
 
-        $queryValues = 
+        $queryValues =
         [
             'name'           => $fileInfo['generatedFileName'],
             'real_filename'  => $fileInfo['originalFileName'],
@@ -160,9 +160,9 @@ class defaultUploader implements KleejaUploader
 
         // insertion query
         $insert_query = [
-            'INSERT'	=> '`' . implode('` , `', array_keys($queryValues)) . '`',
-            'INTO'		 => "{$dbprefix}files",
-            'VALUES'	=> "'" . implode("', '", array_map([$SQL, 'escape'], array_values($queryValues))) . "'"
+            'INSERT'       => '`' . implode('` , `', array_keys($queryValues)) . '`',
+            'INTO'         => "{$dbprefix}files",
+            'VALUES'       => "'" . implode("', '", array_map([$SQL, 'escape'], array_values($queryValues))) . "'"
         ];
 
 
@@ -177,8 +177,8 @@ class defaultUploader implements KleejaUploader
 
         // update Kleeja stats
         $update_query = [
-            'UPDATE'	=> "{$dbprefix}stats",
-            'SET'		  => ($is_img ? 'imgs=imgs+1' : 'files=files+1') . ',sizes=sizes+' . intval($fileInfo['fileSize']) . ''
+            'UPDATE'       => "{$dbprefix}stats",
+            'SET'          => ($is_img ? 'imgs=imgs+1' : 'files=files+1') . ',sizes=sizes+' . intval($fileInfo['fileSize']) . ''
         ];
 
         $SQL->build($update_query);
@@ -226,7 +226,7 @@ class defaultUploader implements KleejaUploader
 
         if ($config['del_url_file'])
         {
-            $extra_del	= get_up_tpl_box('del_file_code',
+            $extra_del    = get_up_tpl_box('del_file_code',
                      [
                          'b_title'     => $lang['URL_F_DEL'],
                          'b_code_link' => kleeja_get_link('del', ['::CODE::'=>$fileInfo['DeleteCode']])
@@ -259,9 +259,9 @@ class defaultUploader implements KleejaUploader
 
             $img_html_result .= get_up_tpl_box('image_thumb',
                         [
-                            'b_title'	  => $lang['URL_F_THMB'],
-                            'b_url_link'=> kleeja_get_link('image', $file_info),
-                            'b_img_link'=> kleeja_get_link('thumb', $file_info)
+                            'b_title'      => $lang['URL_F_THMB'],
+                            'b_url_link'   => kleeja_get_link('image', $file_info),
+                            'b_img_link'   => kleeja_get_link('thumb', $file_info)
                         ]
                     );
 
@@ -275,9 +275,9 @@ class defaultUploader implements KleejaUploader
             //then show, image box
             $img_html_result .= get_up_tpl_box('image',
                             [
-                                'b_title'	   => $lang['URL_F_IMG'],
-                                'b_bbc_title'=> $lang['URL_F_BBC'],
-                                'b_url_link' => kleeja_get_link('image', $file_info),
+                                'b_title'       => $lang['URL_F_IMG'],
+                                'b_bbc_title'   => $lang['URL_F_BBC'],
+                                'b_url_link'    => kleeja_get_link('image', $file_info),
                             ]
                     );
 
@@ -299,9 +299,9 @@ class defaultUploader implements KleejaUploader
             //then show other files
             $else_html_result = get_up_tpl_box('file',
                     [
-                        'b_title'	   => $lang['URL_F_FILE'],
-                        'b_bbc_title'=> $lang['URL_F_BBC'],
-                        'b_url_link' => kleeja_get_link('file', $file_info),
+                        'b_title'       => $lang['URL_F_FILE'],
+                        'b_bbc_title'   => $lang['URL_F_BBC'],
+                        'b_url_link'    => kleeja_get_link('file', $file_info),
                     ]
             );
 
@@ -328,13 +328,9 @@ class defaultUploader implements KleejaUploader
      * here happens the magic, call this on upload submit
      * @param int $uploadType upload from files input or links
      */
-    public function upload($uploadType)
+    public function upload()
     {
         global $usrcp, $config, $lang;
-
-        // when $uploadType = 1, then we upload from _file input
-        // if $uploadType = 2, then we uploading from url which is disabled by default and is buggy
-
 
         //upload to this folder
         $current_uploading_folder = $config['foldername'];
@@ -366,15 +362,8 @@ class defaultUploader implements KleejaUploader
             return;
         }
 
-        //no uploading yet, or just go to index.php, so we have make a new session
-        if (! $uploadType)
-        {
-            unset($_SESSION['FIILES_NOT_DUPLI'], $_SESSION['FIILES_NOT_DUPLI_LINKS']);
-        }
-
-
         // is captcha on, and there is uploading going on
-        if ($captcha_enabled && $uploadType)
+        if ($captcha_enabled)
         {
             //captcha is wrong
             if (! kleeja_check_captcha())
@@ -394,160 +383,105 @@ class defaultUploader implements KleejaUploader
 
 
         //detect flooding, TODO fix it or remove it
-        if ($uploadType == 1 && isset($_SESSION['FIILES_NOT_DUPLI']))
+        if (isset($_SESSION['FIILES_NOT_DUPLI']))
         {
             if (! empty($_SESSION['FIILES_NOT_DUPLI']) && $_SESSION['FIILES_NOT_DUPLI']  == sha1(serialize(array_column($_FILES, 'name'))))
             {
                 unset($_SESSION['FIILES_NOT_DUPLI']);
-//                if(!ip('ajax'))
-//                {
-//                    redirect('./');
-//                }
 
                 $this->addErrorMessage($lang['U_R_FLOODER']);
                 return;
             }
         }
-
-        if ($uploadType == 2 && isset($_SESSION['FIILES_NOT_DUPLI_LINKS']))
-        {
-            if ($_SESSION['FIILES_NOT_DUPLI_LINKS'] == sha1(serialize($_POST)))
-            {
-                unset($_SESSION['FIILES_NOT_DUPLI_LINKS']);
-
-                if (! ip('ajax'))
-                {
-                    redirect('./');
-                }
-
-                $this->addErrorMessage($lang['U_R_FLOODER']);
-                return;
-            }
-        }
-
 
         // flooding code, making sure every ok session is cleared
-        if ($uploadType == 1 && sizeof($_FILES) > 0)
+        if (sizeof($_FILES) > 0)
         {
             $_SESSION['FIILES_NOT_DUPLI'] = sha1(serialize(array_column($_FILES, 'name')));
-        }
-        elseif ($uploadType == 2)
-        {
-            $_SESSION['FIILES_NOT_DUPLI_LINKS'] = sha1(serialize($_POST));
         }
 
 
         //now close session to let user open any other page in Kleeja
         session_write_close();
 
-
-        // do upload
-        switch ($uploadType)
+        if (! empty($_FILES['file']['tmp_name']))
         {
-            //uploading from a _files input
-            default:
-            case 1:
-
-                if (! empty($_FILES['file']['tmp_name']))
-                {
-                    $_FILES['file'][0] = $_FILES['file'];
-                }
-
-
-                // loop the uploaded files
-                for ($i=0; $i<=$this->getUploadFieldsLimit(); $i++)
-                {
-                    //no file!
-                    if (empty($_FILES['file_' . $i . '_']['tmp_name']) && empty($_FILES['file'][$i]['tmp_name']))
-                    {
-                        if (is_null($_FILES['file_' . $i . '_']) && is_null($_FILES['file'][$i]))
-                        {
-                            continue;
-                        }
-
-                        $error = isset($_FILES['file_' . $i . '_'])
-                                ? $_FILES['file_' . $i . '_']['error']
-                                : (isset($_FILES['file'][$i]) ? $_FILES['file'][$i]['error'] : -1);
-
-                        $filename = isset($_FILES['file'][$i]['name'])
-                                    ? $_FILES['file'][$i]['name']
-                                    : (isset($_FILES['file_' . $i . '_']['name']) ? $_FILES['file_' . $i . '_']['name'] : '....');
-
-                        $upload_max_size = ini_get('upload_max_filesize');
-
-                        if ($error !== UPLOAD_ERR_OK)
-                        {
-                            switch ($error)
-                            {
-                                case UPLOAD_ERR_INI_SIZE:
-                                case UPLOAD_ERR_FORM_SIZE:
-                                    $this->addErrorMessage(sprintf(
-                                            $lang['SIZE_F_BIG'],
-                                            htmlspecialchars($filename),
-                                            'php.ini/upload_max_filesize: ' . $upload_max_size)
-                                    );
-
-                                    break;
-
-                                case UPLOAD_ERR_PARTIAL:
-                                   // $message = "The uploaded file was only partially uploaded";
-                                    break;
-
-                                case UPLOAD_ERR_NO_FILE:
-                                 //   $message = "No file was uploaded";
-                                    break;
-
-                                case UPLOAD_ERR_NO_TMP_DIR:
-                                    $this->addErrorMessage('Missing a temporary folder');
-
-                                    break;
-
-                                case UPLOAD_ERR_CANT_WRITE:
-                                    $this->addErrorMessage('Failed to write file to disk');
-
-                                    break;
-
-                                case UPLOAD_ERR_EXTENSION:
-                                    $this->addErrorMessage('File upload stopped by extension');
-
-                                    break;
-
-                                default:
-                                    $this->addErrorMessage(sprintf($lang['CANT_UPLAOD'], htmlspecialchars($filename)));
-
-                                    break;
-
-                            }
-                        }
-
-                        continue;
-                    }
-
-
-                    $this->uploadTypeFile($i, $current_uploading_folder, $current_user_id);
-                }
-
-                break;
-
-
-            //uploading from a url text-input
-            case 2:
-
-                //if not enabled, quit it
-                if ($config['www_url'] != 1)
-                {
-                    break;
-                }
-
-                //loop text inputs
-                for ($i=0; $i<=$this->getUploadFieldsLimit(); $i++)
-                {
-                    $this->uploadTypeUrl($i, $current_uploading_folder, $current_user_id);
-                }
-
-                break;
+            $_FILES['file'][0] = $_FILES['file'];
         }
 
+
+        // loop the uploaded files
+        for ($i=0; $i<=$this->getUploadFieldsLimit(); $i++)
+        {
+            //no file!
+            if (empty($_FILES['file_' . $i . '_']['tmp_name']) && empty($_FILES['file'][$i]['tmp_name']))
+            {
+                if (is_null($_FILES['file_' . $i . '_']) && is_null($_FILES['file'][$i]))
+                {
+                    continue;
+                }
+
+                $error = isset($_FILES['file_' . $i . '_'])
+                        ? $_FILES['file_' . $i . '_']['error']
+                        : (isset($_FILES['file'][$i]) ? $_FILES['file'][$i]['error'] : -1);
+
+                $filename = isset($_FILES['file'][$i]['name'])
+                            ? $_FILES['file'][$i]['name']
+                            : (isset($_FILES['file_' . $i . '_']['name']) ? $_FILES['file_' . $i . '_']['name'] : '....');
+
+                $upload_max_size = ini_get('upload_max_filesize');
+
+                if ($error !== UPLOAD_ERR_OK)
+                {
+                    switch ($error)
+                    {
+                        case UPLOAD_ERR_INI_SIZE:
+                        case UPLOAD_ERR_FORM_SIZE:
+                            $this->addErrorMessage(sprintf(
+                                    $lang['SIZE_F_BIG'],
+                                    htmlspecialchars($filename),
+                                    'php.ini/upload_max_filesize: ' . $upload_max_size)
+                            );
+
+                            break;
+
+                        case UPLOAD_ERR_PARTIAL:
+                            // $message = "The uploaded file was only partially uploaded";
+                            break;
+
+                        case UPLOAD_ERR_NO_FILE:
+                            //   $message = "No file was uploaded";
+                            break;
+
+                        case UPLOAD_ERR_NO_TMP_DIR:
+                            $this->addErrorMessage('Missing a temporary folder');
+
+                            break;
+
+                        case UPLOAD_ERR_CANT_WRITE:
+                            $this->addErrorMessage('Failed to write file to disk');
+
+                            break;
+
+                        case UPLOAD_ERR_EXTENSION:
+                            $this->addErrorMessage('File upload stopped by extension');
+
+                            break;
+
+                        default:
+                            $this->addErrorMessage(sprintf($lang['CANT_UPLAOD'], htmlspecialchars($filename)));
+
+                            break;
+
+                    }
+                }
+
+                continue;
+            }
+
+
+            $this->uploadTypeFile($i, $current_uploading_folder, $current_user_id);
+        }
 
 
         // well, no file uploaded, ask user to choose a file before submit
@@ -648,7 +582,7 @@ class defaultUploader implements KleejaUploader
             }
         }
         // bad chars in the filename
-        elseif (preg_match ("#[\\\/\:\*\?\<\>\|\"]#", $fileInfo['generatedFileName']))
+        elseif (preg_match("#[\\\/\:\*\?\<\>\|\"]#", $fileInfo['generatedFileName']))
         {
             $this->addErrorMessage(sprintf($lang['WRONG_F_NAME'], htmlspecialchars($_FILES['file_' . $fieldNumber . '_']['name'])));
         }
@@ -686,136 +620,6 @@ class defaultUploader implements KleejaUploader
             else
             {
                 $this->addErrorMessage(sprintf($lang['CANT_UPLAOD'], $fileInfo['originalFileName']));
-            }
-        }
-    }
-
-
-    /**
-     * upload a file from a URL
-     * @param $fieldNumber
-     * @param $current_uploading_folder
-     * @param $current_user_id
-     */
-    public function uploadTypeUrl($fieldNumber, $current_uploading_folder, $current_user_id)
-    {
-        global $config, $lang;
-
-        $fileInfo = [
-            'saveToFolder',
-            'originalFileName',
-            'generatedFileName',
-            'fileSize',
-            'currentUserId',
-            'fileExtension'
-        ];
-
-
-        $fileInfo['saveToFolder']  = $current_uploading_folder;
-        $fileInfo['currentUserId'] = $current_user_id;
-
-
-        if (p('file_' . $fieldNumber . '_') == '' || p('file_' . $fieldNumber . '_') == $lang['PAST_URL_HERE'])
-        {
-            return;
-        }
-
-
-        // get file name
-        $fileInfo['originalFileName'] = basename(p('file_' . $fieldNumber . '_'));
-
-
-        // file extension, type
-        $fileExtensions = array_map('strtolower', explode('.', $fileInfo['originalFileName']));
-
-
-        if (sizeof($fileExtensions) > 1 && in_array($fileExtensions[sizeof($fileExtensions)-1], ['html', 'php', 'html']))
-        {
-            $fileInfo['fileExtension'] = strtolower($fileExtensions[sizeof($fileExtensions)-2]);
-        }
-        elseif (sizeof($fileExtensions) > 0)
-        {
-            $fileInfo['fileExtension'] = strtolower($fileExtensions[sizeof($fileExtensions)-1]);
-        }
-        else
-        {
-            $fileInfo['fileExtension'] = ''; //what to do?
-        }
-
-
-        // change to another filename depend on kleeja settings
-        $fileInfo['generatedFileName'] = change_filename_decoding($fileInfo['originalFileName'], $fieldNumber, $fileInfo['fileExtension']);
-        $fileInfo['generatedFileName'] = change_filename_templates(trim($config['prefixname']) . $fileInfo['generatedFileName']);
-
-
-        is_array($plugin_run_result = Plugins::getInstance()->run('defaultUploader_uploadTypeUrl_1st', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-
-        //forbbiden type ? quit it
-        if (! in_array(strtolower($fileInfo['fileExtension']), array_keys($this->getAllowedFileExtensions())))
-        {
-            if ($current_user_id == '-1')
-            {
-                $this->addErrorMessage(
-                    sprintf($lang['FORBID_EXT'], $fileInfo['fileExtension']) .
-                    '<br> <a href="' . ($config['mod_writer'] ? 'register.html' : 'ucp.php?go=register') . '">' .
-                    $lang['REGISTER'] . '</a>'
-                );
-            }
-            // a member
-            else
-            {
-                $this->addErrorMessage(sprintf($lang['FORBID_EXT'], $fileInfo['fileExtension']));
-            }
-        }
-        // file exists before ? quit it
-        elseif (file_exists($current_uploading_folder . '/' . $fileInfo['generatedFileName']))
-        {
-            $this->addErrorMessage(sprintf($lang['SAME_FILE_EXIST'], htmlspecialchars($fileInfo['generatedFileName'])));
-        }
-        // no errors, ok, lets upload now
-        else
-        {
-            is_array($plugin_run_result = Plugins::getInstance()->run('defaultUploader_uploadTypeUrl_2nd', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-
-            //no prefix ? http or even ftp, then add one
-            if (! in_array(strtolower(substr(p('file_' . $fieldNumber . '_'), 0, 4)), ['http', 'ftp:']))
-            {
-                $_POST['file_' . $fieldNumber . '_'] = 'http://' . p('file_' . $fieldNumber . '_');
-            }
-
-            //get size, if big quit it
-            $fileInfo['fileSize'] = get_remote_file_size(p('file_' . $fieldNumber . '_'));
-
-            if ($this->getAllowedFileExtensions()[$fileInfo['fileExtension']] > 0 && $fileInfo['fileSize'] >= $this->getAllowedFileExtensions()[$fileInfo['fileExtension']])
-            {
-                $this->addErrorMessage(sprintf(
-                                        $lang['SIZE_F_BIG'],
-                                        p('file_' . $fieldNumber . '_'),
-                                        readable_size($this->getAllowedFileExtensions()[$fileInfo['fileExtension']])
-                                    ));
-            }
-            else
-            {
-                //get remote data, if no data quit it
-                $data = fetch_remote_file(
-                                    p('file_' . $fieldNumber . '_'),
-                                    $current_uploading_folder . '/' . $fileInfo['generatedFileName'],
-                                    15,
-                                    false,
-                                    2,
-                                    true
-                        );
-
-                if ($data === false)
-                {
-                    $this->addErrorMessage($lang['URL_CANT_GET']);
-                }
-                else
-                {
-                    $this->saveToDatabase($fileInfo);
-                }
             }
         }
     }

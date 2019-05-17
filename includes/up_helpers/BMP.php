@@ -34,21 +34,21 @@ function imagebmp(&$img, $filename = false)
     $size = 54 + ($wid + $wid_pad) * $hei;
 
     //prepare & save header
-    $header['identifier']		     = 'BM';
-    $header['file_size']		      = dword($size);
-    $header['reserved']			      = dword(0);
-    $header['bitmap_data']		    = dword(54);
-    $header['header_size']		    = dword(40);
-    $header['width']			         = dword($wid);
-    $header['height']			        = dword($hei);
-    $header['planes']			        = word(1);
-    $header['bits_per_pixel']	  = word(24);
-    $header['compression']		    = dword(0);
-    $header['data_size']		      = dword(0);
-    $header['h_resolution']		   = dword(0);
-    $header['v_resolution']		   = dword(0);
-    $header['colors']			        = dword(0);
-    $header['important_colors']	= dword(0);
+    $header['identifier']                = 'BM';
+    $header['file_size']                 = dword($size);
+    $header['reserved']                  = dword(0);
+    $header['bitmap_data']               = dword(54);
+    $header['header_size']               = dword(40);
+    $header['width']                     = dword($wid);
+    $header['height']                    = dword($hei);
+    $header['planes']                    = word(1);
+    $header['bits_per_pixel']            = word(24);
+    $header['compression']               = dword(0);
+    $header['data_size']                 = dword(0);
+    $header['h_resolution']              = dword(0);
+    $header['v_resolution']              = dword(0);
+    $header['colors']                    = dword(0);
+    $header['important_colors']          = dword(0);
 
     if ($filename)
     {
@@ -101,7 +101,7 @@ function imagecreatefrombmp($filename)
 
     //read header    
     $header = fread($f, 54);
-    $header = unpack(	'c2identifier/Vfile_size/Vreserved/Vbitmap_data/Vheader_size/' .
+    $header = unpack('c2identifier/Vfile_size/Vreserved/Vbitmap_data/Vheader_size/' .
                         'Vwidth/Vheight/vplanes/vbits_per_pixel/Vcompression/Vdata_size/' .
                         'Vh_resolution/Vv_resolution/Vcolors/Vimportant_colors', $header);
 
@@ -135,10 +135,10 @@ function imagecreatefrombmp($filename)
             imagesetpixel($img, $x, $y, dwordize($pixels[$x]));
         }
     }
-    fclose($f);    	    
+    fclose($f);            
 
     return $img;
-}	
+}    
 
 function dwordize($str)
 {

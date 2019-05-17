@@ -12,16 +12,16 @@
  * @ignore
  */
 define('IN_KLEEJA', true);
-define ('PATH', '../');
-define ('IN_ADMIN', true);
+define('PATH', '../');
+define('IN_ADMIN', true);
 require_once PATH . 'includes/common.php';
 
 
 
-$go_to		                  = ig('cp') ? g('cp') : 'start';
-$username	                = $usrcp->name();
-$AJAX_ACP	                = defined('AJAX_ACP');
-$config['enable_captcha'] = ! defined('STOP_CAPTCHA');
+$go_to                          = ig('cp') ? g('cp') : 'start';
+$username                       = $usrcp->name();
+$AJAX_ACP                       = defined('AJAX_ACP');
+$config['enable_captcha']       = ! defined('STOP_CAPTCHA');
 
 
 //for security
@@ -40,15 +40,15 @@ get_lang('acp');
 if (
     (empty($_SESSION['ADMINLOGIN']) || $_SESSION['ADMINLOGIN'] != md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl'])) || 
     (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != session_id()) ||
-    (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())	 
+    (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())     
 ) {
     if (ig('go') && g('go') == 'login')
     {
         if (ip('submit'))
         {
             //login
-            $ERRORS	    = [];
-            $pass_field = 'lpass_' . preg_replace('/[^0-9]/', '', sha1($klj_session . sha1($config['h_key']) . p('kid')));
+            $ERRORS        = [];
+            $pass_field    = 'lpass_' . preg_replace('/[^0-9]/', '', sha1($klj_session . sha1($config['h_key']) . p('kid')));
 
 
             if (! empty($_SESSION['SHOW_CAPTCHA']))
@@ -101,7 +101,7 @@ if (
             //let's see if there is errors
             if (sizeof($ERRORS))
             {
-                $errs =	'';
+                $errs =    '';
 
                 foreach ($ERRORS as $r)
                 {
@@ -112,11 +112,11 @@ if (
     }
 
     //show template login .
-    $action	      = './' . basename(ADMIN_PATH) . '?go=login&amp;cp=' . $go_to;
-    $H_FORM_KEYS	 = kleeja_add_form_key('admin_login');
-    $KEY_FOR_WEE	 = sha1(microtime() . sha1($config['h_key']));
-    $KEY_FOR_PASS	= preg_replace('/[^0-9]/', '', sha1($klj_session . sha1($config['h_key']) . $KEY_FOR_WEE)); 
-    $not_you		    = sprintf($lang['USERNAME_NOT_YOU'], '<a href="' . $config['siteurl'] . 'ucp.php?go=logout">', '</a>');
+    $action             = './' . basename(ADMIN_PATH) . '?go=login&amp;cp=' . $go_to;
+    $H_FORM_KEYS        = kleeja_add_form_key('admin_login');
+    $KEY_FOR_WEE        = sha1(microtime() . sha1($config['h_key']));
+    $KEY_FOR_PASS       = preg_replace('/[^0-9]/', '', sha1($klj_session . sha1($config['h_key']) . $KEY_FOR_WEE)); 
+    $not_you            = sprintf($lang['USERNAME_NOT_YOU'], '<a href="' . $config['siteurl'] . 'ucp.php?go=logout">', '</a>');
 
     $show_captcha = ! empty($_SESSION['SHOW_CAPTCHA']);
 
@@ -191,25 +191,25 @@ else
 
 (! defined('LAST_VISIT')) ? define('LAST_VISIT', time() - 3600 * 12) : null;
 //last visit
-$last_visit		= defined('LAST_VISIT') && preg_match('/[0-9]{10}/', LAST_VISIT) ? kleeja_date(LAST_VISIT) : false;
+$last_visit        = defined('LAST_VISIT') && preg_match('/[0-9]{10}/', LAST_VISIT) ? kleeja_date(LAST_VISIT) : false;
 
 //
 //exceptional
 //it won't be included in the menu list
 //
-$ext_expt	= [
+$ext_expt    = [
     'start',
     'b_lgoutcp',
     'i_exts'
 ];
 
 //confirm message
-$ext_confirm	= [];
+$ext_confirm    = [];
 
 
 //formkey extension, CSRF protection
-$GET_FORM_KEY_GLOBAL = kleeja_add_form_key_get('GLOBAL_FORM_KEY');
-$ext_formkey	        = [];
+$GET_FORM_KEY_GLOBAL    = kleeja_add_form_key_get('GLOBAL_FORM_KEY');
+$ext_formkey            = [];
 
 
 //default icons
@@ -286,7 +286,7 @@ if (! $go_to || empty($go_to) ||  ! in_array($go_to, $adm_extensions))
 }
 
 //make array for menu 
-$adm_extensions_menu =	$adm_topmenu = [];
+$adm_extensions_menu =    $adm_topmenu = [];
 
 
 //sort the items as alphabetic !
@@ -305,9 +305,9 @@ $kbubbles = [];
 //for calls and reports
 foreach (['call'=>'calls', 'reports'=>'reports'] as $table=>$n)
 {
-    $query	= [
-        'SELECT'	=> 'COUNT(' . $table[0] . '.id) AS total_rows',
-        'FROM'		 => "`{$dbprefix}" . $table . '` ' . $table[0]
+    $query    = [
+        'SELECT'       => 'COUNT(' . $table[0] . '.id) AS total_rows',
+        'FROM'         => "`{$dbprefix}" . $table . '` ' . $table[0]
     ];
 
     $fetched = $SQL->fetch_array($SQL->build($query));
@@ -346,19 +346,19 @@ foreach ($adm_extensions as $m)
 
 
     ++$i;
-    $adm_extensions_menu[$i]	= [
-        'm'         => $m,
-        'i'			      => $i+1,
-        'i2'		      => $i+2,
-        'icon'		    => ! empty($ext_icons[$m]) ? $ext_icons[$m] : 'puzzle-piece',
+    $adm_extensions_menu[$i]    = [
+        'm'                  => $m,
+        'i'                  => $i+1,
+        'i2'                 => $i+2,
+        'icon'               => ! empty($ext_icons[$m]) ? $ext_icons[$m] : 'puzzle-piece',
 
-        'lang'		  => ! empty($lang['R_' . strtoupper($m)]) ? $lang['R_' . strtoupper($m)] : (! empty($olang['R_' . strtoupper($m)]) ? $olang['R_' . strtoupper($m)] : strtoupper($m)),
-        'link'		  => './' . basename(ADMIN_PATH) . '?cp=' . ($m == 'configs' ? 'options' : $s) . (@in_array($m, $ext_formkey) ? '&amp;' . $GET_FORM_KEY_GLOBAL : ''),
-        'confirm'	=> (@in_array($m, $ext_confirm)) ? true : false,
-        'current'	=> ($s == $go_to) ? true : false,
-        'goto'		  => str_replace('a_configs', 'options', $s),
-        'bubble'	 => ! emptY($kbubbles[$m]) ? '<span class="badge badge-pill badge-warning bubble_' . $m . '"' . ($kbubbles[$m] == 0 ? ' style="display:none"' : '') . '>' . $kbubbles[$m] . '</span>' : '',
-        'counter'	=> ! emptY($kbubbles[$m]) ?  $kbubbles[$m] : ''
+        'lang'          => ! empty($lang['R_' . strtoupper($m)]) ? $lang['R_' . strtoupper($m)] : (! empty($olang['R_' . strtoupper($m)]) ? $olang['R_' . strtoupper($m)] : strtoupper($m)),
+        'link'          => './' . basename(ADMIN_PATH) . '?cp=' . ($m == 'configs' ? 'options' : $s) . (@in_array($m, $ext_formkey) ? '&amp;' . $GET_FORM_KEY_GLOBAL : ''),
+        'confirm'       => (@in_array($m, $ext_confirm)) ? true : false,
+        'current'       => ($s == $go_to) ? true : false,
+        'goto'          => str_replace('a_configs', 'options', $s),
+        'bubble'        => ! emptY($kbubbles[$m]) ? '<span class="badge badge-pill badge-warning bubble_' . $m . '"' . ($kbubbles[$m] == 0 ? ' style="display:none"' : '') . '>' . $kbubbles[$m] . '</span>' : '',
+        'counter'       => ! emptY($kbubbles[$m]) ?  $kbubbles[$m] : ''
     ];
 
     //add another item to array for title='' in href or other thing

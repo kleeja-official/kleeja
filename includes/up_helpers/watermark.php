@@ -70,7 +70,7 @@ function helper_watermark($name, $ext)
     elseif (strpos($ext, 'gif') !== false)
     {
         return;
-    //		$src_img = @imagecreatefromgif($name);
+    //        $src_img = @imagecreatefromgif($name);
     }
     elseif (strpos($ext, 'bmp') !== false)
     {
@@ -145,10 +145,10 @@ function helper_watermark_imagick($name, $ext, $logo)
     //$watermark->readImage($);
 
     //how big are the images?
-    $iWidth	= $im->getImageWidth();
-    $iHeight= $im->getImageHeight();
-    $wWidth	= $watermark->getImageWidth();
-    $wHeight= $watermark->getImageHeight();
+    $iWidth    = $im->getImageWidth();
+    $iHeight   = $im->getImageHeight();
+    $wWidth    = $watermark->getImageWidth();
+    $wHeight   = $watermark->getImageHeight();
 
     if ($iHeight < $wHeight || $iWidth < $wWidth)
     {
@@ -174,7 +174,7 @@ function helper_watermark_imagick($name, $ext, $logo)
         {
             $frame->compositeImage($watermark, imagick::COMPOSITE_OVER, $x, $y);
 
-            //	$gif_new->addImage($frame->getImage()); 
+            //    $gif_new->addImage($frame->getImage()); 
             if ($i >= 10)
             {
                 // more than 10 frames, quit it

@@ -25,15 +25,15 @@ function kleeja_detecting_bots()
     global $SQL, $dbprefix, $config;
 
     // get information ..
-    $agent	= $SQL->escape($_SERVER['HTTP_USER_AGENT']);
-    $time	 = time();
+    $agent    = $SQL->escape($_SERVER['HTTP_USER_AGENT']);
+    $time     = time();
 
     //for stats
     if (strpos($agent, 'Google') !== false)
     {
         $update_query = [
-            'UPDATE'	=> "{$dbprefix}stats",
-            'SET'		  => "last_google=$time, google_num=google_num+1"
+            'UPDATE'       => "{$dbprefix}stats",
+            'SET'          => "last_google=$time, google_num=google_num+1"
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_google_lst_num', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         $SQL->build($update_query);
@@ -41,8 +41,8 @@ function kleeja_detecting_bots()
     elseif (strpos($agent, 'Bing') !== false)
     {
         $update_query = [
-            'UPDATE'	=> "{$dbprefix}stats",
-            'SET'		  => "last_bing=$time, bing_num=bing_num+1"
+            'UPDATE'       => "{$dbprefix}stats",
+            'SET'          => "last_bing=$time, bing_num=bing_num+1"
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_bing_lst_num', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         $SQL->build($update_query);
@@ -71,7 +71,7 @@ function get_ban()
     global $banss, $lang, $tpl, $text, $SQL;
 
     //visitor ip now
-    $ip	= get_ip();
+    $ip    = get_ip();
 
     //now .. loop for banned ips
     if (is_array($banss) && ! empty($ip))
@@ -131,13 +131,13 @@ function kleeja_plugin_exists($plugin_name)
     global $SQL, $dbprefix;
 
     $query = [
-        'SELECT'	=> 'p.plg_id',
-        'FROM'		 => "{$dbprefix}plugins p",
-        'WHERE'		=> "p.plg_name = '" . $SQL->escape($plugin_name) . "'",
+        'SELECT'       => 'p.plg_id',
+        'FROM'         => "{$dbprefix}plugins p",
+        'WHERE'        => "p.plg_name = '" . $SQL->escape($plugin_name) . "'",
     ];
 
-    $result	= $SQL->build($query);
-    $num    = $SQL->num_rows($result);
+    $result    = $SQL->build($query);
+    $num       = $SQL->num_rows($result);
 
     if ($num)
     {
@@ -447,10 +447,10 @@ function fetch_remote_file($url, $save_in = false, $timeout = 20, $head_only = f
             $stream_context = stream_context_create(
                 [
                     'http' => [
-                        'method'		      => $head_only ? 'HEAD' : 'GET',
-                        'user_agent'	   => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Kleeja)',
-                        'max_redirects'	=> $max_redirects + 1,	// PHP >=5.1.0 only
-                        'timeout'		     => $timeout	// PHP >=5.2.1 only
+                        'method'              => $head_only ? 'HEAD' : 'GET',
+                        'user_agent'          => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Kleeja)',
+                        'max_redirects'       => $max_redirects + 1,    // PHP >=5.1.0 only
+                        'timeout'             => $timeout    // PHP >=5.2.1 only
                     ]
                 ]
             );
@@ -635,7 +635,7 @@ function get_mime_for_header($ext)
         'bcpio' => 'application/x-bcpio',
         'bin'   => 'application/octet-stream',
         'bmp'   => 'image/bmp', // this is not a good mime, but it work anyway
-        //"bmp"	=> "image/x-ms-bmp", # @see bugs.php.net/47359
+        //"bmp"    => "image/x-ms-bmp", # @see bugs.php.net/47359
         'c'       => 'text/plain',
         'cat'     => 'application/vnd.ms-pkiseccat',
         'cdf'     => 'application/x-cdf',
@@ -914,14 +914,14 @@ function get_config($name)
     }
 
     $query = [
-        'SELECT'	=> 'c.value',
-        'FROM'		 => $table,
-        'WHERE'		=> "c.name = '" . $SQL->escape($name) . "'" . $group_id_sql
+        'SELECT'       => 'c.value',
+        'FROM'         => $table,
+        'WHERE'        => "c.name = '" . $SQL->escape($name) . "'" . $group_id_sql
     ];
 
-    $result	= $SQL->build($query);
-    $v		    = $SQL->fetch($result);
-    $return	= $v['value'];
+    $result       = $SQL->build($query);
+    $v            = $SQL->fetch($result);
+    $return       = $v['value'];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     return $return;
@@ -955,10 +955,10 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
 
         foreach ($group_ids as $g_id)
         {
-            $insert_query	= [
-                'INSERT'	=> '`name`, `value`, `group_id`',
-                'INTO'		 => "{$dbprefix}groups_data",
-                'VALUES' => "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', " . $g_id,
+            $insert_query    = [
+                'INSERT'       => '`name`, `value`, `group_id`',
+                'INTO'         => "{$dbprefix}groups_data",
+                'VALUES'       => "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', " . $g_id,
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_add_config_func_groups_data', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -967,10 +967,10 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
         }
     }
 
-    $insert_query	= [
-        'INSERT'	=> '`name` ,`value` ,`option` ,`display_order`, `type`, `plg_id`, `dynamic`',
-        'INTO'		 => "{$dbprefix}config",
-        'VALUES'	=> "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', '" . $SQL->real_escape($html) . "','" . intval($order) . "','" . $SQL->escape($type) . "','" . intval($plg_id) . "','" . ($dynamic ? '1' : '0') . "'",
+    $insert_query    = [
+        'INSERT'       => '`name` ,`value` ,`option` ,`display_order`, `type`, `plg_id`, `dynamic`',
+        'INTO'         => "{$dbprefix}config",
+        'VALUES'       => "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', '" . $SQL->real_escape($html) . "','" . intval($order) . "','" . $SQL->escape($type) . "','" . intval($plg_id) . "','" . ($dynamic ? '1' : '0') . "'",
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_add_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1040,10 +1040,10 @@ function update_config($name, $value, $escape = true, $group = false)
         }
     }
 
-    $update_query	= [
-        'UPDATE'	=> $table,
-        'SET'		  => "value='" . ($escape ? $SQL->escape($value) : $value) . "'",
-        'WHERE'		=> 'name = "' . $SQL->escape($name) . '"' . $group_id_sql
+    $update_query    = [
+        'UPDATE'       => $table,
+        'SET'          => "value='" . ($escape ? $SQL->escape($value) : $value) . "'",
+        'WHERE'        => 'name = "' . $SQL->escape($name) . '"' . $group_id_sql
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('update_sql_update_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1083,9 +1083,9 @@ function delete_config($name)
     //
     // 'IN' doesnt work here with delete, i dont know why ?
     //
-    $delete_query	= [
-        'DELETE'	=> "{$dbprefix}config",
-        'WHERE'		=> "name  = '" . $SQL->escape($name) . "'"
+    $delete_query    = [
+        'DELETE'       => "{$dbprefix}config",
+        'WHERE'        => "name  = '" . $SQL->escape($name) . "'"
     ];
     is_array($plugin_run_result = Plugins::getInstance()->run('del_sql_delete_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -1093,9 +1093,9 @@ function delete_config($name)
 
     if (array_key_exists($name, $d_groups[$userinfo['group_id']]['configs']))
     {
-        $delete_query	= [
-            'DELETE'	=> "{$dbprefix}groups_data",
-            'WHERE'		=> "name  = '" . $SQL->escape($name) . "'"
+        $delete_query    = [
+            'DELETE'       => "{$dbprefix}groups_data",
+            'WHERE'        => "name  = '" . $SQL->escape($name) . "'"
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('del_sql_delete_config_func2', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -1118,10 +1118,10 @@ function update_olang($name, $lang = 'en', $value)
     global $SQL, $dbprefix;
 
 
-    $update_query	= [
-        'UPDATE'	=> "{$dbprefix}lang",
-        'SET'		  => "trans='" . $SQL->escape($value) . "'",
-        'WHERE'		=> 'word = "' . $SQL->escape($name) . '", lang_id = "' . $SQL->escape($lang) . '"'
+    $update_query    = [
+        'UPDATE'       => "{$dbprefix}lang",
+        'SET'          => "trans='" . $SQL->escape($value) . "'",
+        'WHERE'        => 'word = "' . $SQL->escape($name) . '", lang_id = "' . $SQL->escape($lang) . '"'
     ];
     is_array($plugin_run_result = Plugins::getInstance()->run('update_sql_update_olang_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -1147,9 +1147,9 @@ function add_olang($words = [], $lang = 'en', $plg_id = '0')
     foreach ($words as $w=> $t)
     {
         $insert_query = [
-            'INSERT'	=> 'word ,trans ,lang_id, plg_id',
-            'INTO'		 => "{$dbprefix}lang",
-            'VALUES'	=> "'" . $SQL->escape($w) . "','" . $SQL->real_escape($t) . "', '" . $SQL->escape($lang) . "','" . intval($plg_id) . "'",
+            'INSERT'       => 'word ,trans ,lang_id, plg_id',
+            'INTO'         => "{$dbprefix}lang",
+            'VALUES'       => "'" . $SQL->escape($w) . "','" . $SQL->real_escape($t) . "', '" . $SQL->escape($lang) . "','" . intval($plg_id) . "'",
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_add_olang_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         $SQL->build($insert_query);
@@ -1181,9 +1181,9 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
         return true;
     }
 
-    $delete_query	= [
-        'DELETE'	=> "{$dbprefix}lang",
-        'WHERE'		=> "word = '" . $SQL->escape($words) . "' AND lang_id = '" . $SQL->escape($lang) . "'"
+    $delete_query    = [
+        'DELETE'       => "{$dbprefix}lang",
+        'WHERE'        => "word = '" . $SQL->escape($words) . "' AND lang_id = '" . $SQL->escape($lang) . "'"
     ];
 
     if (! empty($plg_id))
@@ -1224,21 +1224,21 @@ function klj_clean_old_files($from = 0)
 
     if ((time() - $stat_last_f_del) >= 86400)
     {
-        $totaldays	= (time() - ($config['del_f_day']*86400));
-        $not_today	= time() - 86400;
+        $totaldays    = (time() - ($config['del_f_day']*86400));
+        $not_today    = time() - 86400;
 
         //This feature will work only if id_form is not empty or direct !
         $query = [
-            'SELECT'	  => 'f.id, f.last_down, f.name, f.type, f.folder, f.time, f.size, f.id_form',
-            'FROM'		   => "{$dbprefix}files f",
-            'WHERE'		  => "f.last_down < $totaldays AND f.time < $not_today AND f.id > $from AND f.id_form <> '' AND f.id_form <> 'direct'",
-            'ORDER BY'	=> 'f.id ASC',
-            'LIMIT'		  => '20',
+            'SELECT'         => 'f.id, f.last_down, f.name, f.type, f.folder, f.time, f.size, f.id_form',
+            'FROM'           => "{$dbprefix}files f",
+            'WHERE'          => "f.last_down < $totaldays AND f.time < $not_today AND f.id > $from AND f.id_form <> '' AND f.id_form <> 'direct'",
+            'ORDER BY'       => 'f.id ASC',
+            'LIMIT'          => '20',
         ];
 
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_klj_clean_old_files_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        $result	= $SQL->build($query);
+        $result    = $SQL->build($query);
 
         $num_of_files_to_delete = $SQL->num_rows($result);
 
@@ -1246,8 +1246,8 @@ function klj_clean_old_files($from = 0)
         {
             //update $stat_last_f_del !!
             $update_query = [
-                'UPDATE'	=> "{$dbprefix}stats",
-                'SET'		  => "last_f_del ='" . time() . "'",
+                'UPDATE'       => "{$dbprefix}stats",
+                'SET'          => "last_f_del ='" . time() . "'",
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_lstf_del_date_kcof', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1333,10 +1333,10 @@ function klj_clean_old_files($from = 0)
 
         if (sizeof($ex_ids))
         {
-            $update_query	= [
-                'UPDATE'	=> "{$dbprefix}files",
-                'SET'		  => "last_down = '" . (time() + 2*86400) . "'",
-                'WHERE'		=> 'id IN (' . implode(',', $ex_ids) . ')'
+            $update_query    = [
+                'UPDATE'       => "{$dbprefix}files",
+                'SET'          => "last_down = '" . (time() + 2*86400) . "'",
+                'WHERE'        => 'id IN (' . implode(',', $ex_ids) . ')'
             ];
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_lstdown_old_files', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
             $SQL->build($update_query);
@@ -1344,15 +1344,15 @@ function klj_clean_old_files($from = 0)
 
         if (sizeof($ids))
         {
-            $query_del	= [
-                'DELETE'	=> "{$dbprefix}files",
-                'WHERE'	 => 'id IN (' . implode(',', $ids) . ')'
+            $query_del    = [
+                'DELETE'    => "{$dbprefix}files",
+                'WHERE'     => 'id IN (' . implode(',', $ids) . ')'
             ];
 
             //update number of stats
-            $update_query	= [
-                'UPDATE'	=> "{$dbprefix}stats",
-                'SET'		  => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+            $update_query    = [
+                'UPDATE'       => "{$dbprefix}stats",
+                'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_delf_old_files', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1377,21 +1377,21 @@ function klj_clean_old($table, $for = 'all')
     $days = time() - (3600 * 24 * intval($for));
 
     $query = [
-        'SELECT'	  => 'f.id, f.time',
-        'DELETE'		 => "`{$dbprefix}" . $table . '` f',
-        'ORDER BY'	=> 'f.id ASC',
-        'LIMIT'		  => '30',
+        'SELECT'         => 'f.id, f.time',
+        'DELETE'         => "`{$dbprefix}" . $table . '` f',
+        'ORDER BY'       => 'f.id ASC',
+        'LIMIT'          => '30',
     ];
 
     if ($for != 'all')
     {
-        $query['WHERE']	= "f.time < $days";
+        $query['WHERE']    = "f.time < $days";
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_klj_clean_old_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    $result	       = $SQL->build($query);
-    $num_to_delete = $SQL->num_rows($result);
+    $result           = $SQL->build($query);
+    $num_to_delete    = $SQL->num_rows($result);
 
     if ($num_to_delete == 0)
     {
@@ -1409,9 +1409,9 @@ function klj_clean_old($table, $for = 'all')
 
     $SQL->freeresult($result);
 
-    $query_del	= [
-        'DELETE'	=> '`' . $dbprefix . $table . '`',
-        'WHERE'	 => 'id IN (' . implode(',', $ids) . ')'
+    $query_del    = [
+        'DELETE'    => '`' . $dbprefix . $table . '`',
+        'WHERE'     => 'id IN (' . implode(',', $ids) . ')'
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_delf_old_table', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1518,15 +1518,15 @@ function kleeja_log($text)
  */
 function kleeja_set_range($range, $fileSize)
 {
-    $dash	 = strpos($range, '-');
-    $first	= trim(substr($range, 0, $dash));
-    $last	 = trim(substr($range, $dash+1));
+    $dash     = strpos($range, '-');
+    $first    = trim(substr($range, 0, $dash));
+    $last     = trim(substr($range, $dash+1));
 
     if (! $first)
     {
-        $suffix	= $last;
-        $last   = $fileSize - 1;
-        $first  = $fileSize - $suffix;
+        $suffix    = $last;
+        $last      = $fileSize - 1;
+        $first     = $fileSize - $suffix;
 
         if ($first < 0)
         {
@@ -1574,8 +1574,8 @@ function kleeja_buffered_range($file, $bytes, $buffer_size = 1024)
             $bytes_to_read = $bytes_left;
         }
 
-        $bytes_left	-= $bytes_to_read;
-        $contents	= fread($file, $bytes_to_read);
+        $bytes_left    -= $bytes_to_read;
+        $contents    = fread($file, $bytes_to_read);
         echo $contents;
         @flush();
         @ob_flush();

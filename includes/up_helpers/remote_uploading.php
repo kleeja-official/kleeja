@@ -19,11 +19,15 @@ if (! defined('IN_COMMON'))
 
 /**
  * bring the file size from remote file; aka url 
+ * @param mixed $url
+ * @param mixed $method
+ * @param mixed $data
+ * @param mixed $redirect
  */
 function get_remote_file_size($url, $method = 'GET', $data = '', $redirect = 10)
 {
     $url = parse_url($url);
-    $fp  = @fsockopen ($url['host'], (! empty($url['port']) ? (int) $url['port'] : 80), $errno, $errstr, 30);
+    $fp  = @fsockopen($url['host'], (! empty($url['port']) ? (int) $url['port'] : 80), $errno, $errstr, 30);
 
     if ($fp)
     {
@@ -35,12 +39,12 @@ function get_remote_file_size($url, $method = 'GET', $data = '', $redirect = 10)
             $header .= "\r\nContent-Length: " . strlen($data);
         }
 
-        fputs ($fp, $method . ' ' . $path . ' HTTP/1.0' . $header . "\r\n\r\n" . ('post' == strtolower($method) ? $data : ''));
+        fputs($fp, $method . ' ' . $path . ' HTTP/1.0' . $header . "\r\n\r\n" . ('post' == strtolower($method) ? $data : ''));
 
         if (! feof($fp))
         {
             $scheme        = fgets($fp);
-            list(, $code ) = explode(' ', $scheme);
+            list(, $code)  = explode(' ', $scheme);
             $headers       = ['Scheme' => $scheme];
         }
 

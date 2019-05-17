@@ -87,7 +87,7 @@ class usrcp
         }
 
         //normal system
-        $u = $this->get_data('name', $user_id);	
+        $u = $this->get_data('name', $user_id);    
         return $u['name'];
     }
 
@@ -97,14 +97,14 @@ class usrcp
         global $SQL, $dbprefix, $config, $userinfo;
 
         $userinfo = [
-            'id'		     => 0,
-            'group_id'	=> 2,
+            'id'             => 0,
+            'group_id'       => 2,
         ];
 
         $query = [
-            'SELECT'	=> '*',
-            'FROM'		 => "{$dbprefix}users",
-            'LIMIT'		=> '1'
+            'SELECT'       => '*',
+            'FROM'         => "{$dbprefix}users",
+            'LIMIT'        => '1'
         ];
 
         if ($hashed)
@@ -146,9 +146,9 @@ class usrcp
 
                         ////update now !!
                         $update_query = [
-                            'UPDATE'	=> "{$dbprefix}users",
-                            'SET'		  => "password='" . $new_password . "' ,password_salt='" . $new_salt . "'",
-                            'WHERE'		=> 'id=' . intval($row['id'])
+                            'UPDATE'       => "{$dbprefix}users",
+                            'SET'          => "password='" . $new_password . "' ,password_salt='" . $new_salt . "'",
+                            'WHERE'        => 'id=' . intval($row['id'])
                         ];
 
                         $SQL->build($update_query);
@@ -189,9 +189,9 @@ class usrcp
                 if (empty($row['last_visit']) || time() - $row['last_visit'] > 60)
                 {
                     $update_last_visit = [
-                        'UPDATE'	=> "{$dbprefix}users",
-                        'SET'		  => 'last_visit=' . time(),
-                        'WHERE'		=> 'id=' . intval($row['id'])
+                        'UPDATE'       => "{$dbprefix}users",
+                        'SET'          => 'last_visit=' . time(),
+                        'WHERE'        => 'id=' . intval($row['id'])
                     ];
 
                     $SQL->build($update_last_visit);
@@ -228,9 +228,9 @@ class usrcp
 
         //te get files and update them !!
         $query_name = [
-            'SELECT'	=> $type,
-            'FROM'		 => "{$dbprefix}users",
-            'WHERE'		=> 'id=' . intval($user_id)
+            'SELECT'       => $type,
+            'FROM'         => "{$dbprefix}users",
+            'WHERE'        => 'id=' . intval($user_id)
         ];
 
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_userdata_in_usrclass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -282,7 +282,7 @@ class usrcp
             $this->logout_cp();
         }
 
-        //is ther any cookies	
+        //is ther any cookies    
         $this->kleeja_set_cookie('ulogu', '', time() - 31536000);//31536000 = year
 
         return true;
@@ -359,10 +359,10 @@ class usrcp
         //when user add cookie_* in config this will replace the current ones
         //
         global $config_cookie_name, $config_cookie_domain, $config_cookie_secure, $config_cookie_path;
-        $config['cookie_name']		 = isset($config_cookie_name) ? $config_cookie_name : $config['cookie_name'];
-        $config['cookie_domain']	= isset($config_cookie_domain) ? $config_cookie_domain : $config['cookie_domain'];
-        $config['cookie_secure']	= isset($config_cookie_secure) ? $config_cookie_secure : $config['cookie_secure'];
-        $config['cookie_path']		 = isset($config_cookie_path) ? $config_cookie_path : $config['cookie_path'];
+        $config['cookie_name']         = isset($config_cookie_name) ? $config_cookie_name : $config['cookie_name'];
+        $config['cookie_domain']       = isset($config_cookie_domain) ? $config_cookie_domain : $config['cookie_domain'];
+        $config['cookie_secure']       = isset($config_cookie_secure) ? $config_cookie_secure : $config['cookie_secure'];
+        $config['cookie_path']         = isset($config_cookie_path) ? $config_cookie_path : $config['cookie_path'];
 
         //
         //when user add define('FORCE_COOKIES', true) in config.php we will make our settings of cookies
@@ -452,8 +452,8 @@ class usrcp
 
         //to make sure
         $userinfo = [
-            'id'		     => -1,
-            'group_id'	=> 2,
+            'id'             => -1,
+            'group_id'       => 2,
         ];
 
         //if login up

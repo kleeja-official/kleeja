@@ -21,14 +21,14 @@ $new_version     = empty($new_version['version_number'])
                 ? KLEEJA_VERSION
                 : $new_version['version_number'];
 $backup_archive_path = PATH . 'cache/backup.zip';
-$GET_FORM_KEY = kleeja_add_form_key_get('UPDATER_FORM_KEY');
+$GET_FORM_KEY        = kleeja_add_form_key_get('UPDATER_FORM_KEY');
 
 define('KLEEJA_VERSION_CHECK_LINK', 'https://api.github.com/repos/kleeja-official/kleeja/releases/latest');
 define('KLEEJA_LATEST_PACKAGE_LINK', 'https://api.github.com/repos/kleeja-official/kleeja/zipball/');
 
-$stylee	     = 'admin_check_update';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
-$update_link = $config['siteurl'] . 'install/update.php?lang=' . $config['language'];
+$stylee         = 'admin_check_update';
+$current_smt    = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$update_link    = $config['siteurl'] . 'install/update.php?lang=' . $config['language'];
 
 
 if (in_array($current_smt, ['update1', 'update2', 'update3']))
@@ -84,17 +84,17 @@ if ($current_smt == 'check')
     {
         if (version_compare(strtolower($current_version), strtolower($version_data['version']), '<'))
         {
-            $text	 = sprintf($lang['UPDATE_NOW_S'], $current_version, strtolower($version_data['version'])) .
+            $text     = sprintf($lang['UPDATE_NOW_S'], $current_version, strtolower($version_data['version'])) .
                         '::--x--::' . $version_data['info'] . '::--x--::' . $version_data['date'];
-            $error	= 2;
+            $error    = 2;
         }
         elseif (version_compare(strtolower($current_version), strtolower($version_data['version']), '='))
         {
-            $text	= $lang['U_LAST_VER_KLJ'];
+            $text    = $lang['U_LAST_VER_KLJ'];
         }
         elseif (version_compare(strtolower($current_version), strtolower($version_data['version']), '>'))
         {
-            $text	= $lang['U_USE_PRE_RE'];
+            $text    = $lang['U_USE_PRE_RE'];
         }
         else
         {
@@ -102,9 +102,9 @@ if ($current_smt == 'check')
         }
     }
 
-    $data	= [
-        'version_number'	=> $version_data['version'],
-        'last_check'		   => time()
+    $data    = [
+        'version_number'       => $version_data['version'],
+        'last_check'           => time()
     ];
 
     $data = serialize($data);
@@ -120,10 +120,10 @@ elseif ($current_smt == 'general')
     //To prevent expected error [ infinit loop ]
     if (ig('show_msg'))
     {
-        $query_get	= [
-            'SELECT'	=> '*',
-            'FROM'		 => "{$dbprefix}config",
-            'WHERE'		=> "name = 'new_version'"
+        $query_get    = [
+            'SELECT'       => '*',
+            'FROM'         => "{$dbprefix}config",
+            'WHERE'        => "name = 'new_version'"
         ];
 
         $result_get =  $SQL->build($query_get);
@@ -151,7 +151,7 @@ elseif ($current_smt == 'update1')
     else
     {
         // downloaded the last package to cache folder
-        fetch_remote_file(KLEEJA_LATEST_PACKAGE_LINK . $new_version , PATH . "cache/kleeja-{$new_version}.zip", 60, false, 10, true);
+        fetch_remote_file(KLEEJA_LATEST_PACKAGE_LINK . $new_version, PATH . "cache/kleeja-{$new_version}.zip", 60, false, 10, true);
 
         if (file_exists(PATH . "cache/kleeja-{$new_version}.zip"))
         {
@@ -185,7 +185,8 @@ elseif ($current_smt == 'update2')
         $ex_folder = trim($zip->getNameIndex(0), '/');
         $zip->extractTo(PATH . 'cache/');
         $zip->close();
-        if(rename(
+
+        if (rename(
             PATH . "cache/{$ex_folder}",
             PATH . "cache/kleeja-{$new_version}"
         ) === false)
@@ -206,7 +207,7 @@ elseif ($current_smt == 'update2')
     {
         // move the update file from install folder to cache folder to include it later and delete install folder
         // becuse if install folder is exists , it can make some problems if dev mode is not active
-        if(rename($update_file, PATH . 'cache/update_schema.php') === false)
+        if (rename($update_file, PATH . 'cache/update_schema.php') === false)
         {
             copy($update_file, PATH . 'cache/update_schema.php');
         }
@@ -293,7 +294,6 @@ elseif ($current_smt == 'update3')
                 file_get_contents($file->getPathname())
             ) === false)
             {
-
                 if (copy($file->getPathname(), $file_path) === false)
                 {
                     $update_failed = true;

@@ -13,7 +13,7 @@
  * @ignore
  */
 define('IN_KLEEJA', true);
-define ('IN_DOWNLOAD', true);
+define('IN_DOWNLOAD', true);
 require_once 'includes/common.php';
 
 
@@ -31,19 +31,19 @@ if (ig('id') || ig('filename'))
     is_array($plugin_run_result = Plugins::getInstance()->run('begin_download_id_filename', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $query = [
-        'SELECT'	=> 'f.id, f.real_filename, f.name, f.folder, f.size, f.time, f.uploads, f.type',
-        'FROM'		 => "{$dbprefix}files f",
-        'LIMIT'		=> '1',
+        'SELECT'       => 'f.id, f.real_filename, f.name, f.folder, f.size, f.time, f.uploads, f.type',
+        'FROM'         => "{$dbprefix}files f",
+        'LIMIT'        => '1',
     ];
 
     //if user system is default, we use users table
     if ((int) $config['user_system'] == 1)
     {
         $query['SELECT'] .= ', u.name AS fusername, u.id AS fuserid';
-        $query['JOINS']	=	[
+        $query['JOINS']    =    [
             [
-                'LEFT JOIN'	=> "{$dbprefix}users u",
-                'ON'		      => 'u.id=f.user'
+                'LEFT JOIN'       => "{$dbprefix}users u",
+                'ON'              => 'u.id=f.user'
             ]
         ];
     }
@@ -54,21 +54,21 @@ if (ig('id') || ig('filename'))
 
         if (ig('x'))
         {
-            $query['WHERE']	= "f.name='" . $filename_l . '.' . $SQL->escape(g('x')) . "'";
+            $query['WHERE']    = "f.name='" . $filename_l . '.' . $SQL->escape(g('x')) . "'";
         }
         else
         {
-            $query['WHERE']	= "f.name='" . $filename_l . "'";
+            $query['WHERE']    = "f.name='" . $filename_l . "'";
         }
     }
     else
     {
-        $id_l           = g('id', 'int');
-        $query['WHERE']	= 'f.id=' . $id_l;
+        $id_l              = g('id', 'int');
+        $query['WHERE']    = 'f.id=' . $id_l;
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_download_id_filename', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-    $result	= $SQL->build($query);
+    $result    = $SQL->build($query);
 
     if ($SQL->num_rows($result) != 0)
     {
@@ -86,19 +86,19 @@ if (ig('id') || ig('filename'))
         $uploads       = $file_info['uploads'];
 
 
-        $fname2 	   = str_replace('.', '-', htmlspecialchars($name));
-        $name 		    = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
-        $name		     = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
-        $fusername	 = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
-        $userfolder	= $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
+        $fname2           = str_replace('.', '-', htmlspecialchars($name));
+        $name             = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
+        $name             = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
+        $fusername        = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
+        $userfolder       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
 
         if (ig('filename'))
         {
-            $url_file	= $config['mod_writer'] ? $config['siteurl'] . 'downf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downf=' . $fname;
+            $url_file    = $config['mod_writer'] ? $config['siteurl'] . 'downf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downf=' . $fname;
         }
         else
         {
-            $url_file	= $config['mod_writer'] ? $config['siteurl'] . 'down-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?down=' . $file_info['id'];
+            $url_file    = $config['mod_writer'] ? $config['siteurl'] . 'down-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?down=' . $file_info['id'];
         }
 
         if (! empty($config['livexts']))
@@ -109,25 +109,25 @@ if (ig('id') || ig('filename'))
             {
                 if (ig('filename'))
                 {
-                    $url_filex	= $config['mod_writer'] ? $config['siteurl'] . 'downexf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downexf=' . $fname;
+                    $url_filex    = $config['mod_writer'] ? $config['siteurl'] . 'downexf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downexf=' . $fname;
                 }
                 else
                 {
-                    $url_filex	= $config['mod_writer'] ? $config['siteurl'] . 'downex-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?downex=' . $file_info['id'];
+                    $url_filex    = $config['mod_writer'] ? $config['siteurl'] . 'downex-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?downex=' . $file_info['id'];
                 }
 
                 redirect($url_filex, false);
             }
         }
 
-        $REPORT		  = ($config['mod_writer']) ?  $config['siteurl'] . 'report-' . $file_info['id'] . '.html' :  $config['siteurl'] . 'go.php?go=report&amp;id=' . $file_info['id'];
-        $seconds_w	= user_can('enter_acp') ? 0 : $config['sec_down'];
-        $time		    = kleeja_date($time);
-        $size		    = readable_size($size);
+        $REPORT          = ($config['mod_writer']) ?  $config['siteurl'] . 'report-' . $file_info['id'] . '.html' :  $config['siteurl'] . 'go.php?go=report&amp;id=' . $file_info['id'];
+        $seconds_w       = user_can('enter_acp') ? 0 : $config['sec_down'];
+        $time            = kleeja_date($time);
+        $size            = readable_size($size);
 
-        $file_ext_icon = file_exists('images/filetypes/' . $type . '.png') ? 'images/filetypes/' . $type . '.png' : 'images/filetypes/file.png';
-        $sty		         = 'download';
-        $title 		      =  $name . ' - ' . $lang['DOWNLAOD'];
+        $file_ext_icon       = file_exists('images/filetypes/' . $type . '.png') ? 'images/filetypes/' . $type . '.png' : 'images/filetypes/file.png';
+        $sty                 = 'download';
+        $title               =  $name . ' - ' . $lang['DOWNLAOD'];
     }
     else
     {
@@ -499,10 +499,10 @@ elseif (ig('down') || ig('downf') ||
 
     //if(!$is_image && !$is_live && $is_ie8)
     //{
-    //	header('X-Download-Options: noopen');
+    //    header('X-Download-Options: noopen');
     //}
 
-    //header(($is_ie6 ? 'Expires: -1' : 'Expires: Mon, 26 Jul 1997 05:00:00 GMT'));	
+    //header(($is_ie6 ? 'Expires: -1' : 'Expires: Mon, 26 Jul 1997 05:00:00 GMT'));    
     //(($is_ie8) ? '; authoritative=true; X-Content-Type-Options: nosniff;' : '')
 
 

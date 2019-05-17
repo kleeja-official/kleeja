@@ -96,7 +96,7 @@ break;
 
 case 'choose' :
 
-    $install_or_no	= $php_ver = true;
+    $install_or_no    = $php_ver = true;
 
     //check version of PHP
     if (! function_exists('version_compare')

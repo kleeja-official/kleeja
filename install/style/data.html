@@ -1,87 +1,87 @@
 <div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner">
 <div class="clr"></div>
 
-	<form method="post" action="{{echo './install.php?step=data&amp;' . getlang(1)}}" onsubmit="javascript:return formCheck(this, Array('sitename','siteurl','sitemail' ,'username', 'password','email' ));">
-		<h2><img src="style/images/s-home.png" alt="" class="img" />{{echo $lang['INST_SITE_INFO']}}</h2>
-		<table class="DataTable" dir="{{echo $lang['DIR']}}">
-			<tr>
-				<td class="tdd">{{echo $lang['SITENAME']}}</td>
-				<td><input name="sitename" type="text" style="width:70%" /></td>
-			</tr>
-			<tr>
-				<td class="tdd">{{echo $lang['SITEURL']}}</td>
-				<td><input name="siteurl" type="text" value="{{echo $GLOBALS['urlsite']}}" style="direction:ltr;width:70%" /></td>
-			</tr>
-			<tr>
-				<td class="tdd">{{echo $lang['SITEMAIL']}}</td>
-				<td><input name="sitemail" id="sitemail" type="text" onchange="return w_email(this.name);" style="direction:ltr;width:40%" /></td>
-			</tr>
-		</table>
+    <form method="post" action="{{echo './install.php?step=data&amp;' . getlang(1)}}" onsubmit="javascript:return formCheck(this, Array('sitename','siteurl','sitemail' ,'username', 'password','email' ));">
+        <h2><img src="style/images/s-home.png" alt="" class="img" />{{echo $lang['INST_SITE_INFO']}}</h2>
+        <table class="DataTable" dir="{{echo $lang['DIR']}}">
+            <tr>
+                <td class="tdd">{{echo $lang['SITENAME']}}</td>
+                <td><input name="sitename" type="text" style="width:70%" /></td>
+            </tr>
+            <tr>
+                <td class="tdd">{{echo $lang['SITEURL']}}</td>
+                <td><input name="siteurl" type="text" value="{{echo $GLOBALS['urlsite']}}" style="direction:ltr;width:70%" /></td>
+            </tr>
+            <tr>
+                <td class="tdd">{{echo $lang['SITEMAIL']}}</td>
+                <td><input name="sitemail" id="sitemail" type="text" onchange="return w_email(this.name);" style="direction:ltr;width:40%" /></td>
+            </tr>
+        </table>
 
-		<div class="hr"></div>
+        <div class="hr"></div>
 
-		<h2><img src="style/images/s-user.png" alt="" class="img" />{{echo $lang['INST_ADMIN_INFO']}}</h2>
-		<table class="DataTable" dir="{{echo $lang['DIR']}}">
-			<tr>
-				<td class="tdd">{{echo $lang['USERNAME']}}</td>
-				<td><input name="username" type="text" style="width:40%" /></td>
-			</tr>
-			<tr>
-				<td class="tdd">{{echo $lang['PASSWORD']}}</td>
-				<td>
-					<input id="pass1" name="password" type="text" style="width:40%" />
-				</td>
-			</tr>
-			<tr>
-				<td class="tdd">{{echo $lang['PASSWORD2']}}</td>
-				<td><input id="pass2" name="password2" id="password2" type="text" style="width:40%"  onkeyup="checkPass(); return false;" /></td>
-			</tr>
-			<tr>
-				<td class="tdd">{{echo $lang['EMAIL']}}</td>
-				<td><input name="email" id="email" type="text" style="direction:ltr;width:40%" onchange="return w_email(this.name);" /></td>
-			</tr>
-		</table>
+        <h2><img src="style/images/s-user.png" alt="" class="img" />{{echo $lang['INST_ADMIN_INFO']}}</h2>
+        <table class="DataTable" dir="{{echo $lang['DIR']}}">
+            <tr>
+                <td class="tdd">{{echo $lang['USERNAME']}}</td>
+                <td><input name="username" type="text" style="width:40%" /></td>
+            </tr>
+            <tr>
+                <td class="tdd">{{echo $lang['PASSWORD']}}</td>
+                <td>
+                    <input id="pass1" name="password" type="text" style="width:40%" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdd">{{echo $lang['PASSWORD2']}}</td>
+                <td><input id="pass2" name="password2" id="password2" type="text" style="width:40%"  onkeyup="checkPass(); return false;" /></td>
+            </tr>
+            <tr>
+                <td class="tdd">{{echo $lang['EMAIL']}}</td>
+                <td><input name="email" id="email" type="text" style="direction:ltr;width:40%" onchange="return w_email(this.name);" /></td>
+            </tr>
+        </table>
 
-		<div class="hr"></div>
+        <div class="hr"></div>
 
-		<h2><img src="style/images/klj_info.png" alt="" class="img" />{{echo $lang['INST_OTHER_INFO']}}</h2>
-		<table class="DataTable" dir="{{echo $lang['DIR']}}">
-			<tr>
-				<td class="tdd">{{echo $lang['TIME_ZONE']}}</td>
-				<td>
-						<select name="time_zone" id="time_zone" style="text-align:left;direction:ltr">
-							{{foreach(time_zones() as $z=>$t):}}
-								<option value="{{echo $z}}" {{if($z=='Asia/Buraydah'):}}selected="selected"{{endif;}}>{{echo $z}} (GMT{{echo $t < 0 ? $t : '+' . $t}}</option>
-							{{endforeach}}
-						</select>
-				</td>
-			</tr>
-			<tr>
-				<td class="tdd">{{echo $lang['URLS_TYPES']}}</td>
-				<td>
-					<script type="text/javascript">
-						var explains = new Array(3);
-						explains["id"] = "{{echo $GLOBALS['urlsite']}}do.php?id=123";
-						explains["filename"] =  "{{echo $GLOBALS['urlsite']}}do.php?filename=12542219930.gif";
-						explains["direct"] = "{{echo $GLOBALS['urlsite']}}uploads/12542219930.gif";
-					</script>
-					<select name="urls_type" onChange="document.getElementById('like_this').innerHTML=explains[this.options[this.selectedIndex].value]" style="width:30%">
-						<option value="id">{{echo $lang['DEFAULT']}}</option>
-						<option value="filename">{{echo $lang['FILENAME_URL']}}</option>
-						<option value="direct">{{echo $lang['DIRECT_URL']}}</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td class="tdd">{{echo $lang['LIKE_THIS']}}</td>
-				<td style="direction:ltr;text-align:left" id="like_this">{{echo $GLOBALS['urlsite']}}do.php?id=123</td>
-			</tr>
-		</table>
+        <h2><img src="style/images/klj_info.png" alt="" class="img" />{{echo $lang['INST_OTHER_INFO']}}</h2>
+        <table class="DataTable" dir="{{echo $lang['DIR']}}">
+            <tr>
+                <td class="tdd">{{echo $lang['TIME_ZONE']}}</td>
+                <td>
+                        <select name="time_zone" id="time_zone" style="text-align:left;direction:ltr">
+                            {{foreach(time_zones() as $z=>$t):}}
+                                <option value="{{echo $z}}" {{if($z=='Asia/Buraydah'):}}selected="selected"{{endif;}}>{{echo $z}} (GMT{{echo $t < 0 ? $t : '+' . $t}}</option>
+                            {{endforeach}}
+                        </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdd">{{echo $lang['URLS_TYPES']}}</td>
+                <td>
+                    <script type="text/javascript">
+                        var explains = new Array(3);
+                        explains["id"] = "{{echo $GLOBALS['urlsite']}}do.php?id=123";
+                        explains["filename"] =  "{{echo $GLOBALS['urlsite']}}do.php?filename=12542219930.gif";
+                        explains["direct"] = "{{echo $GLOBALS['urlsite']}}uploads/12542219930.gif";
+                    </script>
+                    <select name="urls_type" onChange="document.getElementById('like_this').innerHTML=explains[this.options[this.selectedIndex].value]" style="width:30%">
+                        <option value="id">{{echo $lang['DEFAULT']}}</option>
+                        <option value="filename">{{echo $lang['FILENAME_URL']}}</option>
+                        <option value="direct">{{echo $lang['DIRECT_URL']}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdd">{{echo $lang['LIKE_THIS']}}</td>
+                <td style="direction:ltr;text-align:left" id="like_this">{{echo $GLOBALS['urlsite']}}do.php?id=123</td>
+            </tr>
+        </table>
 
-		<div class="hr"></div>
-		<button onclick="window.location.href='./install.php?step=check&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
-		<button name="datasubmit" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
-	</form>
+        <div class="hr"></div>
+        <button onclick="window.location.href='./install.php?step=check&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+        <button name="datasubmit" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
+    </form>
 
 <div class="clr"></div>
 </div></div><div class="BoxBottomImg"></div></div>

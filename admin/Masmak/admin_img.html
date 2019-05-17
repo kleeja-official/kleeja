@@ -1,13 +1,13 @@
 
 <!-- Breadcrumbs -->
 <ol class="breadcrumb">
-	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-	<li class="breadcrumb-item active justify-content-between">
-		{lang.R_IMG_CTRL} ({current_page}/{total_pages})
-	</li>
-	<li class="pull-(lang.DIR==ltr?right:left)">
-		<div id="imgs_loading"><img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" /></div>
-	</li>
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item active justify-content-between">
+        {lang.R_IMG_CTRL} ({current_page}/{total_pages})
+    </li>
+    <li class="pull-(lang.DIR==ltr?right:left)">
+        <div id="imgs_loading"><img src="{STYLE_PATH_ADMIN}images/ajax-loader-small.gif" /></div>
+    </li>
 </ol>
 
 <IF NAME="config.thumbs_imgs"><ELSE>
@@ -20,37 +20,37 @@
 <form method="post" name="imgform" action="{action}" id="imgs_form">
 
 <IF NAME="no_results">
-	<div class="alert alert-info">
-		{lang.NO_RESULT_USE_SYNC}
-	</div>
+    <div class="alert alert-info">
+        {lang.NO_RESULT_USE_SYNC}
+    </div>
 <ELSE>
 
 
 <!-- start data div -->
 
 
-	<div class="row text-center text-lg-left xthumbs">
-		<LOOP NAME="arr">
-		<div class="col-lg-3 col-md-4 col-xs-6 img-thumb-item" data-toggle="tooltip" data-html="true" title="<span>{lang.FILENAME} : </span>{{name}}<br />
-			<span>{lang.FILEUPS} : </span> {{ups}}<br />
-			<span>{lang.FILESIZE} : </span> {{size}}<br />
-			<span>{lang.FILEDATE} : </span> {{time}}<br />
-			<span>{lang.BY} : </span> {{user}}<br />
-			<span>{lang.IP} : </span> {{ip}}">
-			<a href="{{href}}" target="_blank" data-img-url="{{href}}" class="d-block mb-4 h-100" data-toggle="modal" data-target=".image-model">
-				<img class="img-fluid img-thumbnail" src="{{thumb_link}}" alt="" style="min-height:200px;" id="su[{{id}}]" onError="this.onerror=null;this.src='{STYLE_PATH_ADMIN}images/image-not-found.png';">
-			</a>
-			<div class="ktip" style="display: none;">
-				<span id="user_{{id}}">{{user}}</span>
-				<span id="ip_{{id}}">{{ip}}</span>
-			</div>
-			<p class="kcheck">
-				<input id="del_{{id}}" name="del_{{id}}" type="checkbox" value="{{id}}" rel="_del" onclick="change_color(this, 'su[{{id}}]', 'img-thumbnail img-fluid bg-danger', 'img-thumbnail img-fluid');" />
-			</p>
+    <div class="row text-center text-lg-left xthumbs">
+        <LOOP NAME="arr">
+        <div class="col-lg-3 col-md-4 col-xs-6 img-thumb-item" data-toggle="tooltip" data-html="true" title="<span>{lang.FILENAME} : </span>{{name}}<br />
+            <span>{lang.FILEUPS} : </span> {{ups}}<br />
+            <span>{lang.FILESIZE} : </span> {{size}}<br />
+            <span>{lang.FILEDATE} : </span> {{time}}<br />
+            <span>{lang.BY} : </span> {{user}}<br />
+            <span>{lang.IP} : </span> {{ip}}">
+            <a href="{{href}}" target="_blank" data-img-url="{{href}}" class="d-block mb-4 h-100" data-toggle="modal" data-target=".image-model">
+                <img class="img-fluid img-thumbnail" src="{{thumb_link}}" alt="" style="min-height:200px;" id="su[{{id}}]" onError="this.onerror=null;this.src='{STYLE_PATH_ADMIN}images/image-not-found.png';">
+            </a>
+            <div class="ktip" style="display: none;">
+                <span id="user_{{id}}">{{user}}</span>
+                <span id="ip_{{id}}">{{ip}}</span>
+            </div>
+            <p class="kcheck">
+                <input id="del_{{id}}" name="del_{{id}}" type="checkbox" value="{{id}}" rel="_del" onclick="change_color(this, 'su[{{id}}]', 'img-thumbnail img-fluid bg-danger', 'img-thumbnail img-fluid');" />
+            </p>
 
-		</div>
-		</LOOP>
-	</div>
+        </div>
+        </LOOP>
+    </div>
 
 <!-- end data div -->
 
@@ -61,18 +61,18 @@
 
 
 <div class="row justify-content-between">
-	<div class="col col-md-auto check_all">[ <a href="javascript:void(0);" onclick="checkAll(document.imgform, '_del', 'su',  'img-thumbnail img-fluid bg-danger', 'img-thumbnail img-fluid');">{lang.CHECK_ALL}</a> ]</div>
+    <div class="col col-md-auto check_all">[ <a href="javascript:void(0);" onclick="checkAll(document.imgform, '_del', 'su',  'img-thumbnail img-fluid bg-danger', 'img-thumbnail img-fluid');">{lang.CHECK_ALL}</a> ]</div>
 
-	<div class="col col-md-auto" id="search-one-item" style="display:none">
-	<select class="custom-select">
-		<option value="0">{lang.SEARCH_SUBMIT} : </option>
-		<option value="1">{lang.SEARCH4FILES_BYIP}</option>
-		<option value="2">{lang.SEARCH4FILES_BYUSER}</option>
-	</select>
-	</div>
-	<div class="col col-md-auto">
-	<input type="submit" class="btn btn-outline-primary" name="submit" value="{lang.DEL_SELECTED}" />
-	</div>
+    <div class="col col-md-auto" id="search-one-item" style="display:none">
+    <select class="custom-select">
+        <option value="0">{lang.SEARCH_SUBMIT} : </option>
+        <option value="1">{lang.SEARCH4FILES_BYIP}</option>
+        <option value="2">{lang.SEARCH4FILES_BYUSER}</option>
+    </select>
+    </div>
+    <div class="col col-md-auto">
+    <input type="submit" class="btn btn-outline-primary" name="submit" value="{lang.DEL_SELECTED}" />
+    </div>
 </div>
 
 
@@ -85,12 +85,12 @@
 
 
 <div class="modal fade image-model"  tabindex="-1" role="dialog" aria-labelledby="ImagePreviewModel" aria-hidden="true">
-	<div class="modal-dialog ">
-		<div class="modal-content">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-			<img src="{STYLE_PATH_ADMIN}images/placeholder.jpg" class="img-fluid" style="height: auto" onclick="window.open(this.src, '_blank');"/>
-		</div>
-	</div>
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <img src="{STYLE_PATH_ADMIN}images/placeholder.jpg" class="img-fluid" style="height: auto" onclick="window.open(this.src, '_blank');"/>
+        </div>
+    </div>
 </div>

@@ -40,11 +40,11 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
         {
             include PATH . $script_path . SCRIPT_CONFIG_PATH;
 
-            $forum_srv	   = $dbhost;
-            $forum_db	    = $dbname;
-            $forum_user	  = $dbuser;
-            $forum_pass	  = $dbpasswd;
-            $forum_prefix = $table_prefix;
+            $forum_srv       = $dbhost;
+            $forum_db        = $dbname;
+            $forum_user      = $dbuser;
+            $forum_pass      = $dbpasswd;
+            $forum_prefix    = $table_prefix;
 
             if (empty($dbhost))
             {
@@ -63,11 +63,11 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     }
     else
     {
-        $forum_srv	   = $script_srv;
-        $forum_db	    = $script_db;
-        $forum_user	  = $script_user;
-        $forum_pass	  = $script_pass;
-        $forum_prefix = $script_prefix;
+        $forum_srv       = $script_srv;
+        $forum_db        = $script_db;
+        $forum_user      = $script_user;
+        $forum_pass      = $script_pass;
+        $forum_prefix    = $script_prefix;
     }
 
     //if no variables of db
@@ -76,7 +76,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
         return;
     }
 
-    //conecting ...		
+    //conecting ...        
     $SQLBB = new KleejaDatabase($forum_srv, $forum_user, $forum_pass, $forum_db, true);
 
     $SQLBB->set_names('utf8');
@@ -91,10 +91,10 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     include_once PATH . $script_path . '/includes/utf/utf_tools.' . $phpEx;
 
     $row_leve    = 'user_type';
-    $admin_level = 3;					
+    $admin_level = 3;                    
     $query2      = [
-        'SELECT'	=> '*',
-        'FROM'		 => "`{$forum_prefix}users`",
+        'SELECT'       => '*',
+        'FROM'         => "`{$forum_prefix}users`",
     ];
 
     $query2['WHERE'] = $hashed ?  'user_id=' . intval($name) . "  AND user_password='" . $SQLBB->real_escape($pass) . "' " : "username_clean='" . $SQLBB->real_escape(utf8_clean_string($name)) . "'";
@@ -109,7 +109,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
     if (! $hashed)
     {
-        $result2 = $SQLBB->build($query2);					
+        $result2 = $SQLBB->build($query2);                    
         while ($row=$SQLBB->fetch_array($result2))
         {
             $SQLBB->freeresult($result2); 
@@ -208,12 +208,14 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
 function kleeja_auth_username ($user_id)
 {
-    return kleeja_auth_login ($user_id, false, false, 0, false, true);
+    return kleeja_auth_login($user_id, false, false, 0, false, true);
 }
 
 
 /**
 * Check for correct password
+* @param mixed $password
+* @param mixed $hash
 */
 function phpbb_check_hash($password, $hash)
 {
@@ -229,6 +231,9 @@ function phpbb_check_hash($password, $hash)
 
 /**
 * Generate salt for hash generation
+* @param mixed $input
+* @param mixed $itoa64
+* @param mixed $iteration_count_log2
 */
 function _hash_gensalt_private($input, &$itoa64, $iteration_count_log2 = 6)
 {
@@ -246,6 +251,9 @@ function _hash_gensalt_private($input, &$itoa64, $iteration_count_log2 = 6)
 
 /**
 * Encode hash
+* @param mixed $input
+* @param mixed $count
+* @param mixed $itoa64
 */
 function _hash_encode64($input, $count, &$itoa64)
 {
@@ -289,6 +297,9 @@ function _hash_encode64($input, $count, &$itoa64)
 
 /**
 * The crypt function/replacement
+* @param mixed $password
+* @param mixed $setting
+* @param mixed $itoa64
 */
 function _hash_crypt_private($password, $setting, &$itoa64)
 {

@@ -19,37 +19,37 @@ function check_search_files_form(form) {
             do_it = true;
     }
 
-	if(!do_it)
-	{
-		 alert("{lang.NO_SEARCH_WORD}");
-		 return false;
-	}
+    if(!do_it)
+    {
+         alert("{lang.NO_SEARCH_WORD}");
+         return false;
+    }
 }
 function check_search_users_form(form)
 {
-	var do_it = false;
-	if(form.username.value != '') {
+    var do_it = false;
+    if(form.username.value != '') {
         do_it = true;
     }else if(form.username.value != '') {
         do_it = true;
     }
 
-	if(!do_it)
-	{
-		 alert("{lang.NO_SEARCH_WORD}");
-		 return false;
-	}
+    if(!do_it)
+    {
+         alert("{lang.NO_SEARCH_WORD}");
+         return false;
+    }
 }
 </script>
 
 <IF NAME="current_smt==files">
 
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item active">{lang.SEARCH_FILES}</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item active">{lang.SEARCH_FILES}</li>
+    </ol>
 
 
 <form method="post" action="{action}" onsubmit="return check_search_files_form(this);" id="adv_search">
@@ -128,7 +128,7 @@ function check_search_users_form(form)
 
     <br>
 
-	<input type="submit" name="search_file" value="{lang.SEARCH_SUBMIT}" class="btn btn-primary btn-lg"/>
+    <input type="submit" name="search_file" value="{lang.SEARCH_SUBMIT}" class="btn btn-primary btn-lg"/>
 
 
 {H_FORM_KEYS}
@@ -141,14 +141,14 @@ function check_search_users_form(form)
 <!-- start users search  -->
 <IF NAME="default_user_system">
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item active">{lang.SEARCH_USERS}</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item active">{lang.SEARCH_USERS}</li>
+    </ol>
 
 
-	<form method="post" action="{action}" onsubmit="return check_search_users_form(this);" id="user_search">
+    <form method="post" action="{action}" onsubmit="return check_search_users_form(this);" id="user_search">
 
         <div class="form-group">
             <label for="username">{lang.USERNAME}</label>

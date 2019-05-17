@@ -56,11 +56,11 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
             //
             //get config from config file
             //
-            $forum_srv	  = $config['MasterServer']['servername'];
-            $forum_db	   = $config['Database']['dbname'];
-            $forum_user	 = $config['MasterServer']['username'];
-            $forum_pass	 = $config['MasterServer']['password'];
-            $forum_prefix= $config['Database']['tableprefix'];
+            $forum_srv      = $config['MasterServer']['servername'];
+            $forum_db       = $config['Database']['dbname'];
+            $forum_user     = $config['MasterServer']['username'];
+            $forum_pass     = $config['MasterServer']['password'];
+            $forum_prefix   = $config['Database']['tableprefix'];
 
             if ($config['MasterServer']['port'] != 3306)
             {
@@ -83,11 +83,11 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
         //
         //custom config data
         //
-        $forum_srv	   = $script_srv;
-        $forum_db	    = $script_db;
-        $forum_user	  = $script_user;
-        $forum_pass	  = $script_pass;
-        $forum_prefix = $script_prefix;
+        $forum_srv       = $script_srv;
+        $forum_db        = $script_db;
+        $forum_user      = $script_user;
+        $forum_pass      = $script_pass;
+        $forum_prefix    = $script_prefix;
 
         //some people change their db charset 
         if (isset($script_db_charset))
@@ -105,7 +105,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
 
     if (isset($forum_db_charset))
-    {	//config
+    {    //config
         $SQLVB->set_names($forum_db_charset);
     }
     else
@@ -120,8 +120,8 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     $name = empty($script_cp1256) || ! $script_cp1256 || $hashed ? $name : $usrcp->kleeja_utf8($name, false);
 
     $query_salt = [
-        'SELECT'	=> $hashed ? '*' : ($isVB5 ? 'token' : 'salt'), 
-        'FROM'		 => "`{$forum_prefix}user`",
+        'SELECT'       => $hashed ? '*' : ($isVB5 ? 'token' : 'salt'), 
+        'FROM'         => "`{$forum_prefix}user`",
     ];
 
     $query_salt['WHERE'] = $hashed ? 'userid=' . intval($name) . ' AND ' . ($isVB5 ? 'token' : 'password') . "='" . $SQLVB->real_escape($pass) . "' AND usergroupid != '8'" :  "username='" . $SQLVB->real_escape($name) . "' AND usergroupid != '8'";
@@ -129,8 +129,8 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     //if return only name let's ignore the above
     if ($return_name)
     {
-        $query_salt['SELECT']	= 'username';
-        $query_salt['WHERE']	 = 'userid=' . intval($name);
+        $query_salt['SELECT']    = 'username';
+        $query_salt['WHERE']     = 'userid=' . intval($name);
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_usrdata_vb_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -151,10 +151,10 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
                         ? md5(md5($pass) . $row1['salt'])  // without normal md5
                         : crypt(md5($pass), $row1['token']);
 
-                $query	= [
-                    'SELECT'	=> '*',
-                    'FROM'	  => "`{$forum_prefix}user`",
-                    'WHERE'	 => "username='" . $SQLVB->real_escape($name) . "' AND " . ($isVB5 ? 'token' : 'password') . "='" . $SQLVB->real_escape($pass) . "' AND usergroupid != '8'"
+                $query    = [
+                    'SELECT'    => '*',
+                    'FROM'      => "`{$forum_prefix}user`",
+                    'WHERE'     => "username='" . $SQLVB->real_escape($name) . "' AND " . ($isVB5 ? 'token' : 'password') . "='" . $SQLVB->real_escape($pass) . "' AND usergroupid != '8'"
                 ];
 
                 $result = $SQLVB->build($query);
@@ -233,5 +233,5 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
 function kleeja_auth_username ($user_id)
 {
-    return kleeja_auth_login ($user_id, false, true, 0, false, true);
+    return kleeja_auth_login($user_id, false, true, 0, false, true);
 }

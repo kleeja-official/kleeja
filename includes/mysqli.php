@@ -20,12 +20,12 @@ define('SQL_LAYER', 'mysqli');
 
 class KleejaDatabase
 {
-    public $connect_id		= null;		
+    public $connect_id        = null;        
     public $result;
-    public $query_num		    = 0;
-    public $in_transaction = 0;
-    public $debugr			      = false;
-    public $show_errors 	  = true;
+    public $query_num               = 0;
+    public $in_transaction          = 0;
+    public $debugr                  = false;
+    public $show_errors             = true;
 
 
     /*
@@ -36,14 +36,14 @@ class KleejaDatabase
     {
         global $script_encoding;
 
-        $host 	.= strpos($host, ':') !== false ? '' : ':';
-        $this->host 		      = substr($host, 0, strpos($host, ':'));
-        $this->port 		      = (int) substr($host, strpos($host, ':')+1);
-        $this->db_username 	= $db_username;
-        $this->db_name     	= $db_name;
-        $this->db_password 	= 'hidden';
+        $host     .= strpos($host, ':') !== false ? '' : ':';
+        $this->host               = substr($host, 0, strpos($host, ':'));
+        $this->port               = (int) substr($host, strpos($host, ':')+1);
+        $this->db_username        = $db_username;
+        $this->db_name            = $db_name;
+        $this->db_password        = 'hidden';
 
-        $this->connect_id = @mysqli_connect($this->host, $this->db_username, $db_password, $this->db_name, (! $this->port ? 3306 : $this->port ));
+        $this->connect_id = @mysqli_connect($this->host, $this->db_username, $db_password, $this->db_name, (! $this->port ? 3306 : $this->port));
 
         //no error
         if (defined('MYSQL_NO_ERRORS'))
@@ -178,7 +178,7 @@ class KleejaDatabase
         }
         else
         {
-            if ( $transaction == 2 && $this->in_transaction )
+            if ($transaction == 2 && $this->in_transaction)
             {
                 $this->result = mysqli_commit($this->connect_id);
             }

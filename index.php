@@ -58,11 +58,11 @@ $uploader->setAllowedFileExtensions($d_groups[$userinfo['group_id']]['exts']);
 $uploader->setUploadFieldsLimit($config['filesnum']);
 
 
-$uploading_type = ip('submitr') ? 1 : (ip('submittxt') ? 2 : false);
 
-if ($uploading_type)
+
+if(ip('submitr'))
 {
-    $uploader->upload($uploading_type);
+    $uploader->upload();
 }
 
 
@@ -99,10 +99,10 @@ foreach ($uploader->getMessages() as $t => $s)
 
 
 //some words for template
-$welcome_msg	= $config['welcome_msg'];
-$filecp_link	= $usrcp->id() ? $config['siteurl'] . ($config['mod_writer'] ? 'filecp.html' : 'ucp.php?go=filecp') : false;
-$terms_msg		 = sprintf($lang['AGREE_RULES'], '<a href="' . ($config['mod_writer'] ? 'rules.html' : 'go.php?go=rules') . '">', '</a>');
-$link_avater = sprintf($lang['EDIT_U_AVATER_LINK'], '<a href="https://www.gravatar.com/" target="_blank">', '</a>');
+$welcome_msg       = $config['welcome_msg'];
+$filecp_link       = $usrcp->id() ? $config['siteurl'] . ($config['mod_writer'] ? 'filecp.html' : 'ucp.php?go=filecp') : false;
+$terms_msg         = sprintf($lang['AGREE_RULES'], '<a href="' . ($config['mod_writer'] ? 'rules.html' : 'go.php?go=rules') . '">', '</a>');
+$link_avater       = sprintf($lang['EDIT_U_AVATER_LINK'], '<a href="https://www.gravatar.com/" target="_blank">', '</a>');
 
 
 $js_allowed_extensions_types = "['" . implode("', '", array_keys($d_groups[$userinfo['group_id']]['exts'])) . "']";
@@ -118,23 +118,23 @@ $show_online = $config['allow_online'] == 1 ? true : false;
 
 if ($show_online)
 {
-    $current_online_users = 0;
-    $online_names	        = [];
-    $timeout		            = 60; //30 second
-    $timeout2		           = time()-$timeout;
+    $current_online_users       = 0;
+    $online_names               = [];
+    $timeout                    = 60; //30 second
+    $timeout2                   = time()-$timeout;
 
     //put another bot name
     is_array($plugin_run_result = Plugins::getInstance()->run('anotherbots_online_index_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $query = [
-        'SELECT'	=> 'u.name',
-        'FROM'		 => "{$dbprefix}users u",
-        'WHERE'		=> "u.last_visit > $timeout2"
+        'SELECT'       => 'u.name',
+        'FROM'         => "{$dbprefix}users u",
+        'WHERE'        => "u.last_visit > $timeout2"
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_online_index_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    $result	= $SQL->build($query);
+    $result    = $SQL->build($query);
 
     while ($row=$SQL->fetch_array($result))
     {

@@ -3,75 +3,75 @@
 
 <div class="mt-3 mb-3">
 
-	<IF NAME="user_himself">
-		<h2>{lang.YOUR_FILEUSER}</h2>
-	<ELSE>
-		<h2>{title}</h2>
-	</IF>
+    <IF NAME="user_himself">
+        <h2>{lang.YOUR_FILEUSER}</h2>
+    <ELSE>
+        <h2>{title}</h2>
+    </IF>
 
-	<IF NAME="user_name">
-		<p class="text-muted">
-			{lang.PUBLIC_USER_FILES}: {user_name} ({lang.ALL_FILES}: {nums_rows})
-		</p>
-	</IF>
+    <IF NAME="user_name">
+        <p class="text-muted">
+            {lang.PUBLIC_USER_FILES}: {user_name} ({lang.ALL_FILES}: {nums_rows})
+        </p>
+    </IF>
 </div>
 
 
 
 
 <IF NAME="user_himself">
-	<form name="c" action="{action}" method="post" onsubmit="javascript:return confirm_from();">
+    <form name="c" action="{action}" method="post" onsubmit="javascript:return confirm_from();">
 </IF>
 
 
 <IF NAME="no_results">
-	<!-- no files yet -->
-	<div id="alert alert-info">
-		{lang.NO_FILE_USER}
-	</div>
+    <!-- no files yet -->
+    <div id="alert alert-info">
+        {lang.NO_FILE_USER}
+    </div>
 <ELSE>
 
 
 <div class="card-columns">
 
-	<LOOP NAME="arr">
+    <LOOP NAME="arr">
 
 
-		<IF LOOP="is_image">
+        <IF LOOP="is_image">
 
-			<!-- image -->
-			<div class="card file-user-image mb-2" data-toggle="tooltip"  data-html="true" title="{lang.FILEUPS}:{{uploads}} <br> {lang.FILESIZE}:{{size}} <br> {lang.FILEDATE}:{{time}}" id="su[{{id}}]">
-				<a href="{{href}}" target="_blank">
-					<img class="card-img-top img-fluid mw-100" src="{{thumb_link}}" alt="{{name_file}}"  onError="this.onerror=null;this.src='images/not_exists.jpg';">
-				</a>
-				<IF NAME="user_himself">
-					<div class="kcheck-image">
-						<input id="del_{{id}}" name="del_{{id}}" type="checkbox" value="{{id}}" rel="_del"  />
-					</div>
-				</IF>
-			</div>
+            <!-- image -->
+            <div class="card file-user-image mb-2" data-toggle="tooltip"  data-html="true" title="{lang.FILEUPS}:{{uploads}} <br> {lang.FILESIZE}:{{size}} <br> {lang.FILEDATE}:{{time}}" id="su[{{id}}]">
+                <a href="{{href}}" target="_blank">
+                    <img class="card-img-top img-fluid mw-100" src="{{thumb_link}}" alt="{{name_file}}"  onError="this.onerror=null;this.src='images/not_exists.jpg';">
+                </a>
+                <IF NAME="user_himself">
+                    <div class="kcheck-image">
+                        <input id="del_{{id}}" name="del_{{id}}" type="checkbox" value="{{id}}" rel="_del"  />
+                    </div>
+                </IF>
+            </div>
 
-		<ELSE>
+        <ELSE>
 
-			<!-- file -->
-			<div class="card card-info card-inverse mb-2 file-user-file" style="height: 200px">
-				<div class="card-body">
-					<a href="{{href}}" target="_blank"><h5 class="card-title"><img src="{{thumb_link}}" alt="{{name_file}}" height="30" width="30"> {{name_file}}</h5></a>
-					<p class="card-text mt-2">
-						<span>{lang.FILEUPS}: {{uploads}}</span><br>
-						<span>{lang.FILESIZE}: {{size}}</span><br>
-						<span>{lang.FILEDATE}: {{time}}</span>
-						<IF NAME="user_himself">
-						<div class="kcheck">
-							<input id="del_{{id}}" name="del_{{id}}" type="checkbox" value="{{id}}" rel="_del" />
-						</div>
-						</IF>
-					</p>
-				</div>
-			</div>
+            <!-- file -->
+            <div class="card card-info card-inverse mb-2 file-user-file" style="height: 200px">
+                <div class="card-body">
+                    <a href="{{href}}" target="_blank"><h5 class="card-title"><img src="{{thumb_link}}" alt="{{name_file}}" height="30" width="30"> {{name_file}}</h5></a>
+                    <p class="card-text mt-2">
+                        <span>{lang.FILEUPS}: {{uploads}}</span><br>
+                        <span>{lang.FILESIZE}: {{size}}</span><br>
+                        <span>{lang.FILEDATE}: {{time}}</span>
+                        <IF NAME="user_himself">
+                        <div class="kcheck">
+                            <input id="del_{{id}}" name="del_{{id}}" type="checkbox" value="{{id}}" rel="_del" />
+                        </div>
+                        </IF>
+                    </p>
+                </div>
+            </div>
 
-		</IF>
-	</LOOP>
+        </IF>
+    </LOOP>
 </div>
 
 </IF>
@@ -83,30 +83,30 @@
 
 <IF NAME="user_himself">
 
-	<div class="row justify-content-between mb-5">
-		<div class="col col-md-auto"><input type="submit" name="submit_files"  class="btn btn-outline-danger" value="{lang.DEL_SELECTED}" /></div>
-		<div class="col col-md-auto"><input type="submit" name="submit_all_files"  class="btn btn-outline-danger" value="{lang.DEL_ALL}" /></div>
-		<div class="col col-md-auto">[ <a href="javascript:void(0);" onclick="checkAll(document.c, '_del', 'su');" title="{lang.CHECK_ALL}">{lang.CHECK_ALL}</a> ]</div>
-	</div>
+    <div class="row justify-content-between mb-5">
+        <div class="col col-md-auto"><input type="submit" name="submit_files"  class="btn btn-outline-danger" value="{lang.DEL_SELECTED}" /></div>
+        <div class="col col-md-auto"><input type="submit" name="submit_all_files"  class="btn btn-outline-danger" value="{lang.DEL_ALL}" /></div>
+        <div class="col col-md-auto">[ <a href="javascript:void(0);" onclick="checkAll(document.c, '_del', 'su');" title="{lang.CHECK_ALL}">{lang.CHECK_ALL}</a> ]</div>
+    </div>
 
-	{H_FORM_KEYS}
+    {H_FORM_KEYS}
 
-	</form>
+    </form>
 
-	<!-- link user folder -->
-	<div class="card">
-		<div class="card-header copylink">{lang.COPY_AND_GET_DUD}</div>
-		<div class="card-body">
-			<input class="form-control" readonly="readonly" onclick="this.select();" type="text" name="option" value="{your_fileuser}" />
-		</div>
-	</div>
+    <!-- link user folder -->
+    <div class="card">
+        <div class="card-header copylink">{lang.COPY_AND_GET_DUD}</div>
+        <div class="card-body">
+            <input class="form-control" readonly="readonly" onclick="this.select();" type="text" name="option" value="{your_fileuser}" />
+        </div>
+    </div>
 
 </IF>
 
 
 
 <IF NAME="user_himself">
-	<script type="text/javascript">
+    <script type="text/javascript">
         function confirm_from()
         {
             if(confirm('{lang.ARE_YOU_SURE_DO_THIS}')) {
@@ -133,5 +133,5 @@
                 form.elements[i].checked = false;
             }
         }
-	</script>
+    </script>
 </IF>

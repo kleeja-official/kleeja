@@ -117,15 +117,15 @@ function Saafooter()
 
     if ($config['statfooter'] != 0 || defined('DEV_STAGE'))
     {
-        $gzip		     = $config['gzip'] == '1' ?  'Enabled' : 'Disabled';
-        $hksys      = ! defined('STOP_PLUGINS') ? 'Enabled' : 'Disabled';
-        $endtime	   = get_microtime();
-        $loadtime	  = number_format($endtime - $starttm, 4);
-        $queries_num= $SQL->query_num;
-        $time_sql	  = round($SQL->query_num / $loadtime);
-        $page_url	  = preg_replace(['/([\&\?]+)debug/i', '/&amp;/i'], ['', '&'], kleeja_get_page());
-        $link_dbg	  = user_can('enter_acp') && defined('DEV_STAGE') ? '[ <a href="' . str_replace('&', '&amp;', $page_url) . (strpos($page_url, '?') === false ? '?' : '&amp;') . 'debug">Debug Info ... </a> ]' : '';
-        $page_stats	= "<strong>[</strong> GZIP : $gzip - Generation Time: $loadtime Sec  - Queries: $queries_num - Hook System:  $hksys <strong>]</strong>  " . $link_dbg;
+        $gzip             = $config['gzip'] == '1' ?  'Enabled' : 'Disabled';
+        $hksys            = ! defined('STOP_PLUGINS') ? 'Enabled' : 'Disabled';
+        $endtime          = get_microtime();
+        $loadtime         = number_format($endtime - $starttm, 4);
+        $queries_num      = $SQL->query_num;
+        $time_sql         = round($SQL->query_num / $loadtime);
+        $page_url         = preg_replace(['/([\&\?]+)debug/i', '/&amp;/i'], ['', '&'], kleeja_get_page());
+        $link_dbg         = user_can('enter_acp') && defined('DEV_STAGE') ? '[ <a href="' . str_replace('&', '&amp;', $page_url) . (strpos($page_url, '?') === false ? '?' : '&amp;') . 'debug">Debug Info ... </a> ]' : '';
+        $page_stats       = "<strong>[</strong> GZIP : $gzip - Generation Time: $loadtime Sec  - Queries: $queries_num - Hook System:  $hksys <strong>]</strong>  " . $link_dbg;
     }
 
     $tpl->assign('page_stats', $page_stats);
@@ -197,7 +197,7 @@ function readable_size($size)
         $size = $size / 1024;
         $ext  = $sizes[$i];
     }
-    $result	=	 round($size, 2) . $ext;
+    $result    =     round($size, 2) . $ext;
     is_array($plugin_run_result = Plugins::getInstance()->run('func_readable_size', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     return  $result;
 }
@@ -220,7 +220,7 @@ function kleeja_err($message, $title = '', $exit = true, $redirect = false, $rs 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_err_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     // assign {text} in err template
-    $text	= $message . ($redirect ? redirect($redirect, false, $exit, $rs, true) : '');
+    $text    = $message . ($redirect ? redirect($redirect, false, $exit, $rs, true) : '');
     //header
     Saaheader($title, $extra_code_header);
     //show tpl
@@ -272,7 +272,7 @@ function kleeja_debug()
     {
         if ($memory_usage = memory_get_usage())
         {
-            $base_memory_usage	=	0;
+            $base_memory_usage    =    0;
             $memory_usage -= $base_memory_usage;
             $memory_usage = ($memory_usage >= 1048576) ? round((round($memory_usage / 1048576 * 100) / 100), 2) . ' MB' : (($memory_usage >= 1024) ? round((round($memory_usage / 1024 * 100) / 100), 2) . ' KB' : $memory_usage . ' BYTES');
             $debug_output = 'Memory Usage : <em>' . $memory_usage . '</em>';
@@ -297,7 +297,7 @@ function kleeja_debug()
         {
             echo '<fieldset name="sql"  dir="ltr" style="background:white"><legend><em>Query # [' . ($key+1) . '</em>]</legend> ';
             echo '<textarea style="font-family:Courier New,monospace;width:99%; background:#F4F4F4" rows="5" cols="10">' . $val[0] . '';
-            echo '</textarea>	<br />';
+            echo '</textarea>    <br />';
             echo 'Duration :' . $val[1] . '';
             echo '</fieldset>';
             echo '<br /><br />';
@@ -314,7 +314,7 @@ function kleeja_debug()
     if (sizeof(Plugins::getInstance()->getDebugInfo()) > 0)
     {
         echo '<textarea style="font-family:\'Courier New\',monospace;width:99%; background:#F4F4F4" rows="20" cols="10">' . var_export(Plugins::getInstance()->getDebugInfo(), true) . '';
-        echo '</textarea>	<br />';
+        echo '</textarea>    <br />';
     }
     else
     {
@@ -851,18 +851,18 @@ function kleeja_date($time, $human_time = true, $format = false)
 
     if ((time() - $time > (86400 * 9)) || $format || ! $human_time)
     {
-        $format = ! $format ? TIME_FORMAT : $format;
-        $time	  = $time + $timezone_offset;
+        $format    = ! $format ? TIME_FORMAT : $format;
+        $time      = $time + $timezone_offset;
         return str_replace(['am', 'pm'], [$lang['TIME_AM'], $lang['TIME_PM']], gmdate($format, $time));
     }
 
-    $lengths	= ['60','60','24','7','4.35','12','10'];
+    $lengths    = ['60','60','24','7','4.35','12','10'];
 
-    $timezone_diff = (int) $config['time_zone'] * 60 * 60;
-    $now           = time() + $timezone_diff;
-    $time          = $time  + $timezone_diff;
-    $difference	   = $now > $time ? $now - $time :  $time - $now;
-    $tense		       = $now > $time ? $lang['W_AGO'] : $lang['W_FROM'];
+    $timezone_diff       = (int) $config['time_zone'] * 60 * 60;
+    $now                 = time() + $timezone_diff;
+    $time                = $time  + $timezone_diff;
+    $difference          = $now > $time ? $now - $time :  $time - $now;
+    $tense               = $now > $time ? $lang['W_AGO'] : $lang['W_FROM'];
 
     for ($j = 0; $difference >= $lengths[$j] && $j < sizeof($lengths)-1; $j++)
     {

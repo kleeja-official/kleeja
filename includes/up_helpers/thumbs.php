@@ -76,18 +76,18 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     switch ($ext)
     {
         case 'gif':
-            $source_gdim = imagecreatefromgif( $source_path );
+            $source_gdim = imagecreatefromgif($source_path);
 
             break;
 
         case 'jpg':
         case 'jpeg':
-            $source_gdim = imagecreatefromjpeg( $source_path );
+            $source_gdim = imagecreatefromjpeg($source_path);
 
             break;
 
         case 'png':
-            $source_gdim = imagecreatefrompng( $source_path );
+            $source_gdim = imagecreatefrompng($source_path);
 
             break;
 
@@ -98,7 +98,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
                 define('BMP_CLASS_INCLUDED', true);
             }
 
-            $source_gdim = imagecreatefrombmp( $source_path );
+            $source_gdim = imagecreatefrombmp($source_path);
 
             break;
     }
@@ -123,7 +123,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     }
 
     // Resize the image into a temporary GD image
-    $temp_gdim = imagecreatetruecolor( $temp_width, $temp_height );
+    $temp_gdim = imagecreatetruecolor($temp_width, $temp_height);
 
     imagecopyresampled(
         $temp_gdim,
@@ -189,6 +189,10 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
 /**
  * generating thumb from image using Imagick
  * 
+ * @param mixed $x
+ * @param mixed $y
+ * @param mixed $cx
+ * @param mixed $cy
  */
 function scale_image_imagick($x, $y, $cx, $cy)
 {
@@ -232,7 +236,7 @@ function scale_image_imagick($x, $y, $cx, $cy)
 
 function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
 {
-    //intiating the Imagick lib	
+    //intiating the Imagick lib    
     $im = new Imagick($name);
 
     //guess the right thumb height, weights
@@ -252,7 +256,7 @@ function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
         {
             $frame->thumbnailImage($thumb_w, $thumb_h);
             $frame->setImagePage($thumb_w, $thumb_h, 0, 0);
-            //	$gif_new->addImage($frame->getImage()); 
+            //    $gif_new->addImage($frame->getImage()); 
             if ($i >= 10)
             {
                 // more than 10 frames, quit it

@@ -1,60 +1,60 @@
 <div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner">
 <div class="clr"></div>
 
-	{{if(empty($GLOBALS['dbname']) || empty($GLOBALS['dbuser'])): $GLOBALS['submit_disabled'] = true;}}
-		<div class="notice">
-			<p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo $lang['INST_CHANG_CONFIG']}}</p>
-		</div>
-	{{endif}}
+    {{if(empty($GLOBALS['dbname']) || empty($GLOBALS['dbuser'])): $GLOBALS['submit_disabled'] = true;}}
+        <div class="notice">
+            <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo $lang['INST_CHANG_CONFIG']}}</p>
+        </div>
+    {{endif}}
 
 
 
-	{{if($GLOBALS['no_connection']): $GLOBALS['submit_disabled'] = true;}}
-		<div class="notice">
-			<p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo $lang['INST_CONNCET_ERR']}}</p>
-		</div>
-	{{endif}}
+    {{if($GLOBALS['no_connection']): $GLOBALS['submit_disabled'] = true;}}
+        <div class="notice">
+            <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo $lang['INST_CONNCET_ERR']}}</p>
+        </div>
+    {{endif}}
 
-	{{if($GLOBALS['mysql_ver']): $GLOBALS['submit_disabled'] = true;}}
-		<div class="notice">
-			<p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo sprintf($lang['INST_MYSQL_LESSMIN'], MIN_MYSQL_VERSION, $GLOBALS['mysql_ver'])}}</p>
-		</div>
-	{{endif}}
+    {{if($GLOBALS['mysql_ver']): $GLOBALS['submit_disabled'] = true;}}
+        <div class="notice">
+            <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo sprintf($lang['INST_MYSQL_LESSMIN'], MIN_MYSQL_VERSION, $GLOBALS['mysql_ver'])}}</p>
+        </div>
+    {{endif}}
 
-	{{if(!is_writable(PATH . 'cache')) : $GLOBALS['submit_disabled'] = true;}}
-		<div class="notice">
-			<p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />[ cache ] : {{echo $lang['INST_NO_WRTABLE']}}</p>
-		</div>
-	{{endif}}
+    {{if(!is_writable(PATH . 'cache')) : $GLOBALS['submit_disabled'] = true;}}
+        <div class="notice">
+            <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />[ cache ] : {{echo $lang['INST_NO_WRTABLE']}}</p>
+        </div>
+    {{endif}}
 
-	{{if(!is_writable(PATH . 'uploads')) : $GLOBALS['submit_disabled'] = true;}}
-		<div class="notice">
-			<p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />[ uploads ] : {{echo $lang['INST_NO_WRTABLE']}}</p>
-		</div>
-	{{endif}}
+    {{if(!is_writable(PATH . 'uploads')) : $GLOBALS['submit_disabled'] = true;}}
+        <div class="notice">
+            <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />[ uploads ] : {{echo $lang['INST_NO_WRTABLE']}}</p>
+        </div>
+    {{endif}}
 
-	{{if(!is_writable(PATH . 'uploads/thumbs')) : $GLOBALS['submit_disabled'] = true;}}
-		<div class="notice">
-			<p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />[ uploads/thumbs ] : {{echo $lang['INST_NO_WRTABLE']}}</p>
-		</div>
-	{{endif}}
+    {{if(!is_writable(PATH . 'uploads/thumbs')) : $GLOBALS['submit_disabled'] = true;}}
+        <div class="notice">
+            <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />[ uploads/thumbs ] : {{echo $lang['INST_NO_WRTABLE']}}</p>
+        </div>
+    {{endif}}
 
-	{{if(!$GLOBALS['submit_disabled']):}}
-		<div class="clr"></div><br />
-		<img src="style/images/good.png" alt="" />
-		<div class="clr"></div><br />
-		<h2 class="h2">[ {{echo $lang['INST_GOOD_GO']}} ]</h2>
-		<div class="hr"></div>
-		<form method="post" action="{{echo './install.php?step=data&amp;' . getlang(1)}}">
-			<button onclick="window.location.href='./install.php?step=c&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
-			<button name="agres" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
-		</form>
-	{{else:}}
-		<form method="post" action="{{echo './install.php?step=check&amp;' . getlang(1)}}">
-			<button onclick="window.location.href='./install.php?step=c&amp;force=1&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" id="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
-			<button name="agres" type="submit" class="btn"><span>{{echo $lang['RE_CHECK']}} &raquo;</span></button>
-		</form>
-	{{endif}}
+    {{if(!$GLOBALS['submit_disabled']):}}
+        <div class="clr"></div><br />
+        <img src="style/images/good.png" alt="" />
+        <div class="clr"></div><br />
+        <h2 class="h2">[ {{echo $lang['INST_GOOD_GO']}} ]</h2>
+        <div class="hr"></div>
+        <form method="post" action="{{echo './install.php?step=data&amp;' . getlang(1)}}">
+            <button onclick="window.location.href='./install.php?step=c&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+            <button name="agres" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
+        </form>
+    {{else:}}
+        <form method="post" action="{{echo './install.php?step=check&amp;' . getlang(1)}}">
+            <button onclick="window.location.href='./install.php?step=c&amp;force=1&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" id="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+            <button name="agres" type="submit" class="btn"><span>{{echo $lang['RE_CHECK']}} &raquo;</span></button>
+        </form>
+    {{endif}}
 
 <div class="clr"></div>
 </div></div><div class="BoxBottomImg"></div></div>

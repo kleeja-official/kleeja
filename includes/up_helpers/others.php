@@ -18,14 +18,15 @@ if (! defined('IN_COMMON'))
 /**
  * checking the safety and validity of sub-extension of given file
  * 
+ * @param mixed $filename
  */
 function ext_check_safe($filename)
 {
     //bad files extensions
-    $not_allowed =	['php', 'php3' ,'php5', 'php4', 'asp' ,'shtml' , 'html' ,'htm' ,'xhtml' ,'phtml', 'pl', 'cgi', 'htaccess', 'ini'];
+    $not_allowed =    ['php', 'php3' ,'php5', 'php4', 'asp' ,'shtml' , 'html' ,'htm' ,'xhtml' ,'phtml', 'pl', 'cgi', 'htaccess', 'ini'];
 
     //let split the file name, suppose it filename.gif.php
-    $tmp	= explode('.', $filename);
+    $tmp    = explode('.', $filename);
 
     //if it's less than 3, that its means normal
     if (sizeof($tmp) < 3)
@@ -49,6 +50,7 @@ function ext_check_safe($filename)
 
 /**
  * create htaccess files for uploading folder
+ * @param mixed $folder
  */
 function generate_safety_htaccess($folder)
 {
@@ -66,8 +68,8 @@ function generate_safety_htaccess($folder)
     $htaccess_data = "<Files ~ \"^.*\.(php|php*|cgi|pl|phtml|shtml|sql|asp|aspx)\">\nOrder allow,deny\nDeny from all\n</Files>\n<IfModule mod_php4.c>\nphp_flag engine off\n</IfModule>\n<IfModule mod_php5.c>\nphp_flag engine off\n</IfModule>\nRemoveType .php .php* .phtml .pl .cgi .asp .aspx .sql";
 
     //generate the htaccess
-    $fi		= @fopen($folder . '/.htaccess', 'w');
-    $fi2	= @fopen($folder . '/thumbs/.htaccess', 'w');
+    $fi        = @fopen($folder . '/.htaccess', 'w');
+    $fi2       = @fopen($folder . '/thumbs/.htaccess', 'w');
     @fwrite($fi, $htaccess_data);
     @fwrite($fi2, $htaccess_data);
 }
@@ -123,6 +125,10 @@ function make_folder($folder)
 
 /**
  * Change the file name depend on given decoding type
+ * @param mixed $filename
+ * @param mixed $i_loop
+ * @param mixed $ext
+ * @param mixed $decoding_type
  */
 function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
 {
@@ -143,15 +149,15 @@ function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
     // md5
     elseif ($decoding_type == 'md5' || $decoding_type == 2)
     {
-        list($usec, $sec) = explode(' ', microtime());
-        $extra	           = md5(((float) $usec + (float) $sec) . $filename);
-        $extra	           = substr($extra, 0, 12);
-        $return	          = $extra . $i_loop . '.' . $ext;
+        list($usec, $sec)    = explode(' ', microtime());
+        $extra               = md5(((float) $usec + (float) $sec) . $filename);
+        $extra               = substr($extra, 0, 12);
+        $return              = $extra . $i_loop . '.' . $ext;
     }
     // exists before, change it a little
     elseif ($decoding_type == 'exists')
     {
-        $return = substr($filename, 0, -(strlen($ext)+1)) . '_' . substr(md5(  microtime(true) . $i_loop), rand(0, 20), 5) . '.' . $ext;
+        $return = substr($filename, 0, -(strlen($ext)+1)) . '_' . substr(md5(microtime(true) . $i_loop), rand(0, 20), 5) . '.' . $ext;
     }
     //nothing
     else
@@ -168,6 +174,7 @@ function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
 
 /**
  * Change the file name depend on used templates {rand:..} {date:..}
+ * @param mixed $filename
  */
 function change_filename_templates($filename)
 {
@@ -191,6 +198,9 @@ function change_filename_templates($filename)
 /**
  * check mime type of uploaded file
  * @return bool
+ * @param  mixed $given_file_mime
+ * @param  mixed $file_ext
+ * @param  mixed $file_path
  */
 function check_mime_type($given_file_mime, $file_ext, $file_path)
 {
@@ -276,6 +286,7 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
 
 /**
  * to prevent flooding at uploading  
+ * @param mixed $user_id
  */
 function user_is_flooding($user_id = '-1')
 {
@@ -301,9 +312,9 @@ function user_is_flooding($user_id = '-1')
     $time = time() - ($user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']); 
 
     $query = [
-        'SELECT'	   => 'f.time',
-        'FROM'		    => "{$dbprefix}files f",
-        'WHERE'     => 'f.time >= ' . $time . ' AND f.user_ip = \'' . $SQL->escape(get_ip()) . '\'',
+        'SELECT'          => 'f.time',
+        'FROM'            => "{$dbprefix}files f",
+        'WHERE'           => 'f.time >= ' . $time . ' AND f.user_ip = \'' . $SQL->escape(get_ip()) . '\'',
     ];
 
     if ($SQL->num_rows($SQL->build($query)))

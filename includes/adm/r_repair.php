@@ -52,12 +52,12 @@ $all_sizes  = readable_size(get_actual_stats('sizes'));
 
 
 //links
-$del_cache_link		   = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . $GET_FORM_KEY;
-$resync_files_link	 = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_files';
-$resync_images_link	= $config['siteurl'] . 'go.php?go=resync&amp;case=sync_images';
-$resync_users_link	 = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_users&amp;' . $GET_FORM_KEY;
-$resync_sizes_link	 = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_sizes&amp;' . $GET_FORM_KEY;
-$repair_tables_link	= basename(ADMIN_PATH) . '?cp=r_repair&amp;case=tables&amp;' . $GET_FORM_KEY;
+$del_cache_link           = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . $GET_FORM_KEY;
+$resync_files_link        = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_files';
+$resync_images_link       = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_images';
+$resync_users_link        = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_users&amp;' . $GET_FORM_KEY;
+$resync_sizes_link        = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_sizes&amp;' . $GET_FORM_KEY;
+$repair_tables_link       = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=tables&amp;' . $GET_FORM_KEY;
 
 $queue_cron_job_url = $config['siteurl'] . 'go.php?go=queue';
 
@@ -71,14 +71,14 @@ break;
 //
 case 'tables':
 
-$query	 = 'SHOW TABLE STATUS';
-$result	= $SQL->query($query);
-$text   = '';
+$query     = 'SHOW TABLE STATUS';
+$result    = $SQL->query($query);
+$text      = '';
 
 while ($row=$SQL->fetch_array($result))
 {
-    $queryf	 =	'REPAIR TABLE `' . $row['Name'] . '`';
-    $resultf = $SQL->query($queryf);
+    $queryf     =    'REPAIR TABLE `' . $row['Name'] . '`';
+    $resultf    = $SQL->query($queryf);
 
     if ($resultf)
     {
@@ -100,9 +100,9 @@ break;
 case 'sync_sizes':
 
 
-$query_s	= [
-    'SELECT'	=> 'size',
-    'FROM'		 => "{$dbprefix}files"
+$query_s    = [
+    'SELECT'       => 'size',
+    'FROM'         => "{$dbprefix}files"
 ];
 
 $result_s = $SQL->build($query_s);
@@ -117,9 +117,9 @@ while ($row=$SQL->fetch_array($result_s))
 
 $SQL->freeresult($result_s);
 
-$update_query	= [
-    'UPDATE'	=> "{$dbprefix}stats",
-    'SET'		  => 'files=' . $files_number . ', sizes=' . $files_sizes
+$update_query    = [
+    'UPDATE'       => "{$dbprefix}stats",
+    'SET'          => 'files=' . $files_number . ', sizes=' . $files_sizes
 ];
 
 if ($SQL->build($update_query))
@@ -139,9 +139,9 @@ break;
 //
 case 'sync_users':
 
-$query_w	= [
-    'SELECT'	=> 'name',
-    'FROM'		 => "{$dbprefix}users"
+$query_w    = [
+    'SELECT'       => 'name',
+    'FROM'         => "{$dbprefix}users"
 ];
 
 $result_w = $SQL->build($query_w);
@@ -154,9 +154,9 @@ while ($row=$SQL->fetch_array($result_w))
 
 $SQL->freeresult($result_w);
 
-$update_query	= [
-    'UPDATE'	=> "{$dbprefix}stats",
-    'SET'		  => 'users=' . $user_number
+$update_query    = [
+    'UPDATE'       => "{$dbprefix}stats",
+    'SET'          => 'users=' . $user_number
 ];
 
 $result = $SQL->build($update_query);

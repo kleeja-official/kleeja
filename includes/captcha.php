@@ -68,12 +68,12 @@ function kleeja_cpatcha_image()
         // We figure a bug that happens when you add font name without './' before it .. 
         // he search in the Linux fonts cache , but when you add './' he will know it's our font.
         //
-        imagettftext ($image, 16, $angle, rand(50, $x), $y+rand(1, 3), $white, dirname(__FILE__) . '/arial.ttf', $security_code);
+        imagettftext($image, 16, $angle, rand(50, $x), $y+rand(1, 3), $white, dirname(__FILE__) . '/arial.ttf', $security_code);
     //imagettftext ($image, 7, 0, $width-30, $height-4, $white,'./arial.ttf', 'Kleeja');
     }
     else
     {
-        imagestring ($image, imageloadfont(dirname(__FILE__) . '/arial.gdf'), $x+rand(10, 15), $y-rand(10, 15), $security_code, $white);
+        imagestring($image, imageloadfont(dirname(__FILE__) . '/arial.gdf'), $x+rand(10, 15), $y-rand(10, 15), $security_code, $white);
         //imagestring ($image, 1, $width-35, $height-10, 'Kleeja', ImageColorAllocate($image, 200, 200, 200));
     }
 

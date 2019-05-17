@@ -110,6 +110,6 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 function kleeja_auth_username ($user_id)
 {
     return kleeja_auth_login($user_id, false, false, false, false, true);
-}	
+}    
 
 //<-- EOF

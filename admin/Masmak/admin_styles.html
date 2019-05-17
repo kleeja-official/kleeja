@@ -2,14 +2,14 @@
 
 <!-- Breadcrumbs -->
 <ol class="breadcrumb">
-	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-	<li class="breadcrumb-item">{lang.R_STYLES}</li>
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item">{lang.R_STYLES}</li>
 
-	<li class="float-right">
-		<a class="btn btn-primary btn-sm" href="#"  data-toggle="modal" data-target="#style_add_new">
-			<i class="fa fa-upload"></i> {lang.UPLOAD_LOCAL_PC}
-		</a>
-	</li>
+    <li class="float-right">
+        <a class="btn btn-primary btn-sm" href="#"  data-toggle="modal" data-target="#style_add_new">
+            <i class="fa fa-upload"></i> {lang.UPLOAD_LOCAL_PC}
+        </a>
+    </li>
 </ol>
 
 <ul class="nav nav-tabs mb-3">
@@ -26,25 +26,25 @@
 
 <IF NAME="case == local">
 <ul class="list-unstyled list-group">
-	<LOOP NAME="available_styles">
-		<li class="media justify-content-between d-lg-flex list-group-item">
-			<img class="mr-3" src="{{icon}}" alt="{{name}}" style="width: 250px">
-			<div class="media-body col-xs-12" style="padding: 10px">
-				<h5 class="mt-0 mb-1">{{info.name}} <small class="text-muted">{{info.version}}</small> </h5>
+    <LOOP NAME="available_styles">
+        <li class="media justify-content-between d-lg-flex list-group-item">
+            <img class="mr-3" src="{{icon}}" alt="{{name}}" style="width: 250px">
+            <div class="media-body col-xs-12" style="padding: 10px">
+                <h5 class="mt-0 mb-1">{{info.name}} <small class="text-muted">{{info.version}}</small> </h5>
 
-				<p>{{info.desc}}</p>
-				<p class="text-muted">{{info.copyright}}</p>
-				<div class="mt-4">
-					<IF LOOP="is_default">
-						<span class="badge badge-pill badge-dark"><i class="fa fa-certificate text-warning" title="{lang.STYLE_IS_DEFAULT}"></i> {lang.STYLE_IS_DEFAULT}</span>
-						<ELSE>
-						<a href="{style_select_link}{{name}}" class="btn btn-primary" title="{lang.MAKE_AS_DEFAULT}"><i class="fa fa-check-square-o" title="{lang.MAKE_AS_DEFAULT}"></i> {lang.MAKE_AS_DEFAULT}</a>
-						<a href="{style_delete_link}{{name}}" onclick="javascript:return confirm_form();" class="btn btn-danger" title="{lang.DELETE}"><i class="fa fa-trash" title="{lang.DELETE}"></i> {lang.DELETE}</a>
-					</IF>
-				</div>
-			</div>
-		</li>
-	</LOOP>
+                <p>{{info.desc}}</p>
+                <p class="text-muted">{{info.copyright}}</p>
+                <div class="mt-4">
+                    <IF LOOP="is_default">
+                        <span class="badge badge-pill badge-dark"><i class="fa fa-certificate text-warning" title="{lang.STYLE_IS_DEFAULT}"></i> {lang.STYLE_IS_DEFAULT}</span>
+                        <ELSE>
+                        <a href="{style_select_link}{{name}}" class="btn btn-primary" title="{lang.MAKE_AS_DEFAULT}"><i class="fa fa-check-square-o" title="{lang.MAKE_AS_DEFAULT}"></i> {lang.MAKE_AS_DEFAULT}</a>
+                        <a href="{style_delete_link}{{name}}" onclick="javascript:return confirm_form();" class="btn btn-danger" title="{lang.DELETE}"><i class="fa fa-trash" title="{lang.DELETE}"></i> {lang.DELETE}</a>
+                    </IF>
+                </div>
+            </div>
+        </li>
+    </LOOP>
 </ul>
 
 <!-- ...... -->

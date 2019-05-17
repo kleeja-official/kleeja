@@ -1,65 +1,65 @@
 
 <div class="mt-3 mb-5">
-	<h2>{title}</h2>
+    <h2>{title}</h2>
 </div>
 
 
 
 <div class="row">
-	<div class="col-md-6 mt-2">
-		<!-- Information File -->
-		<!-- <p class="text-center"><strong>{lang.FILE_INFO}</strong></p> -->
+    <div class="col-md-6 mt-2">
+        <!-- Information File -->
+        <!-- <p class="text-center"><strong>{lang.FILE_INFO}</strong></p> -->
 
-			<ul class="list-group">
-				<li class="list-group-item d-flex justify-content-between">
-					<span class="text-secondary">{lang.FILENAME}</span>
-					<div class="list-group-item-text">{name}</div>
-				</li>
-				<li class="list-group-item d-flex justify-content-between">
-					<span class="text-secondary">{lang.FILETYPE}</span>
-					<div class="list-group-item-text">{type}</div>
-				</li>
-				<li class="list-group-item d-flex justify-content-between">
-					<span class="text-secondary">{lang.FILESIZE}</span>
-					<div class="list-group-item-text">{size}</div>
-				</li>
-				<li class="list-group-item d-flex justify-content-between">
-					<span class="text-secondary">{lang.FILEDATE}</span>
-					<div class="list-group-item-text">{time}</div>
-				</li>
-				<li class="list-group-item d-flex justify-content-between">
-					<span class="text-secondary">{lang.FILEUPS}</span>
-					<div class="list-group-item-text">{uploads}</div>
-				</li>
-				<IF NAME="fusername">
-				<li class="list-group-item d-flex justify-content-between">
-					<span class="list-group-item-heading text-secondary">{lang.USERNAME}</span>
-					<div class="list-group-item-text"><a href="{userfolder}">{fusername}</a></div>
-				</li>
-				</IF>
-				<li class="list-group-item list-group-item-info text-center justify-content-end">
-					<small><a href="{REPORT}" rel="nofollow"> {lang.FILEREPORT}</a></small>
-				</li>
-			</ul>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">{lang.FILENAME}</span>
+                    <div class="list-group-item-text">{name}</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">{lang.FILETYPE}</span>
+                    <div class="list-group-item-text">{type}</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">{lang.FILESIZE}</span>
+                    <div class="list-group-item-text">{size}</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">{lang.FILEDATE}</span>
+                    <div class="list-group-item-text">{time}</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">{lang.FILEUPS}</span>
+                    <div class="list-group-item-text">{uploads}</div>
+                </li>
+                <IF NAME="fusername">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="list-group-item-heading text-secondary">{lang.USERNAME}</span>
+                    <div class="list-group-item-text"><a href="{userfolder}">{fusername}</a></div>
+                </li>
+                </IF>
+                <li class="list-group-item list-group-item-info text-center justify-content-end">
+                    <small><a href="{REPORT}" rel="nofollow"> {lang.FILEREPORT}</a></small>
+                </li>
+            </ul>
 
-	</div>
-	<!-- @end-Information-File -->
+    </div>
+    <!-- @end-Information-File -->
 
 
 
-	<!-- Download box -->
-	<div class="col-md-6 mt-2">
-			<div class="jumbotron text-center">
-				<b>{lang.FILE_FOUNDED}</b>
-				<br>
-				<img src="{STYLE_PATH}images/spin_lg.gif" id="loadingImage" class="mb-5" alt="{lang.WAIT}" />
+    <!-- Download box -->
+    <div class="col-md-6 mt-2">
+            <div class="jumbotron text-center">
+                <b>{lang.FILE_FOUNDED}</b>
+                <br>
+                <img src="{STYLE_PATH}images/spin_lg.gif" id="loadingImage" class="mb-5" alt="{lang.WAIT}" />
 
-				<h2 id="url" class="text">
-					<div class="alert alert-danger">{lang.JS_MUST_ON}</div>
-				</h2>
+                <h2 id="url" class="text">
+                    <div class="alert alert-danger">{lang.JS_MUST_ON}</div>
+                </h2>
 
-			</div>
-	</div>
+            </div>
+    </div>
 
 
 </div>
@@ -73,17 +73,17 @@ var timer = {seconds_w};
 ti();
 function ti()
 {
-	if(timer > 0)
-	{
-		document.getElementById("url").innerHTML = '<div class="wait">{lang.WAIT} ' + timer + ' <\/div>';
-		timer = timer - 1;
-		setTimeout("ti()", 1000)
-	}
-	else
-	{
-	    document.getElementById('loadingImage').src = '{STYLE_PATH}images/download.png';
-		document.getElementById("url").innerHTML = '<p class="download"><a href="{url_file}" target="_blank" class="btn btn-outline-primary btn-lg">{lang.CLICK_DOWN}<\/a><br /><span class="badge badge-default">{size}<\/span><\/p>';
-	}
+    if(timer > 0)
+    {
+        document.getElementById("url").innerHTML = '<div class="wait">{lang.WAIT} ' + timer + ' <\/div>';
+        timer = timer - 1;
+        setTimeout("ti()", 1000)
+    }
+    else
+    {
+        document.getElementById('loadingImage').src = '{STYLE_PATH}images/download.png';
+        document.getElementById("url").innerHTML = '<p class="download"><a href="{url_file}" target="_blank" class="btn btn-outline-primary btn-lg">{lang.CLICK_DOWN}<\/a><br /><span class="badge badge-default">{size}<\/span><\/p>';
+    }
 }
 //-->
 </script>
