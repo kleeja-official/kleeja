@@ -19,8 +19,6 @@ if (! defined('IN_COMMON'))
 include_once dirname(__file__) . '/../up_helpers/others.php';
 include_once dirname(__file__) . '/../up_helpers/thumbs.php';
 include_once dirname(__file__) . '/../up_helpers/watermark.php';
-include_once dirname(__file__) . '/../up_helpers/remote_uploading.php';
-
 
 /*
  * uploading class, the most important class in Kleeja
