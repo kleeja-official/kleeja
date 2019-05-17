@@ -10,7 +10,7 @@ return [
 
     'HOME' 					            => 'Home',
     'INDEX' 				            => 'Homepage',
-    'SITE_CLOSED' 			       => 'The website is closed.',
+    'SITE_CLOSED' 			       => 'The website is under maintenance.',
     'STOP_FOR_SIZE' 		      => 'The service is suspended.',
     'SIZES_EXCCEDED' 		     => 'We have ran out of space ... we will be back soon.',
     'SAFE_CODE' 			         => 'Enable safety code for downloads',
@@ -223,7 +223,7 @@ return [
     'NO_FILE_USER'				       => 'No files were found in the account!',
     'SHOWFILESBYIP'				      => 'Show files by IP',
     'WAIT_LOADING'				       => 'Please wait, the files are being uploaded to the server...',
-    'NOTICECLOSED'				       => 'Note: website is closed',
+    'NOTICECLOSED'				       => 'Note: website is in maintenance mode!',
     'UNKNOWN'					           => 'Unknown',
     'WE_UPDATING_KLEEJA_NOW'	=> 'Closed for maintenance, Check back soon...',
     'ERROR_TRY_AGAIN'			     => 'Error, try again.',
