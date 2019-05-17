@@ -235,13 +235,20 @@ while ($row=$SQL->fetch_array($result))
                 if (! file_exists(PATH . '.htaccess') && file_exists(PATH . 'htaccess.txt') && function_exists('rename'))
                 {
                     rename(PATH . 'htaccess.txt', PATH . '.htaccess');
+
+                    if(! file_exists(PATH . '.htaccess'))
+                    {
+                        chmod(PATH . '.htaccess', K_FILE_CHMOD);
+                    }
+
+                    //re-do after chmod
+                    rename(PATH . 'htaccess.txt', PATH . '.htaccess');
                 }
             }
         }
         elseif ($row['name'] == 'language')
         {
             $got_lang = preg_replace('[^a-zA-Z0-9]', '', $new[$row['name']]);
-
 
             //all groups
             foreach ($d_groups as $group_id => $group_info)

@@ -39,14 +39,14 @@
         <div class="card">
             <img class="card-img-top" src="{{icon}}" alt="{{plg_name}}">
             <div class="card-body">
-                <h4 class="card-title"  style="max-height: 30px; min-height: 30px; overflow-y: auto">
+                <h5 class="card-title"  style="max-height: 30px; min-height: 30px; overflow-y: auto">
                     <IF LOOP="plg_disabled">
                         {{plg_name}}
                         <i class="fa fa-toggle-off"></i>
                         <ELSE>
                             {{extra_info.plugin_title}} {{extra_info.plugin_version}}
                     </IF>
-                </h4>
+                </h5>
                 <p class="card-text" style="max-height: 100px; min-height: 100px; overflow-y: auto">
                     <IF LOOP="plg_disabled">
                         {{plg_dsc}}
