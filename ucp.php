@@ -142,7 +142,7 @@ switch (g('go'))
             {
                 if (isset($script_path))
                 {
-                    $goto_forum_link = ($config['user_system'] == 'api') ? dirname($script_path) : $script_path;
+                    $goto_forum_link = $config['user_system'] == 'api' ? dirname($script_path) : $script_path;
 
                     if ($config['user_system'] == 'phpbb' || ($config['user_system'] == 'api' && strpos($script_path, 'phpbb') !== false))
                     {
@@ -306,7 +306,7 @@ switch (g('go'))
         $H_FORM_KEYS    = kleeja_add_form_key('fileuser');
 
         $user_id_get           = ig('id') ? g('id', 'int') : false;
-        $user_id               = (! $user_id_get && $usrcp->id()) ? $usrcp->id() : $user_id_get;
+        $user_id               = ! $user_id_get && $usrcp->id() ? $usrcp->id() : $user_id_get;
         $user_himself          = $usrcp->id() == $user_id;
         $action                = $config['siteurl'] . 'ucp.php?go=fileuser' . (ig('page') ? '&amp;page=' . g('page', 'int') : '');
 

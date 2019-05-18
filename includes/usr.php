@@ -248,7 +248,7 @@ class usrcp
     }
 
     // group ids
-    public function group_id ()
+    public function group_id()
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('group_id_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -256,7 +256,7 @@ class usrcp
     }
 
     // user name
-    public function name ()
+    public function name()
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('name_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -264,7 +264,7 @@ class usrcp
     }
 
     // user mail
-    public function mail ()
+    public function mail()
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('mail_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -446,7 +446,7 @@ class usrcp
     //return : mean return true or false, but if return is false will show msg
     public function kleeja_check_user()
     {
-        global $config, $SQL, $dbprefix, $userinfo;
+        global $config, $userinfo;
 
         is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_check_user_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -509,139 +509,4 @@ class usrcp
 
         return false; //nothing
     }
-
-
-    // convert from utf8 to cp1256 and vice versa
-    public function kleeja_utf8($str, $to_utf8 = true)
-    {
-        $utf8 = new kleeja_utf8;
-
-        if ($to_utf8)
-        {
-            //return iconv('CP1256', "UTF-8//IGNORE", $str);
-            return $utf8->to_utf8($str);
-        }
-        return $utf8->from_utf8($str);
-        //return iconv('UTF-8', "CP1256//IGNORE", $str);
-    }
-}//end class
-
-
-/**
-* Deep modifieded by Kleeja team ...
-* depend on class by Alexander Minkovsky (a_minkovsky@hotmail.com)
-*/
-class kleeja_utf8
-{
-    public $ascMap = [];
-    public $utfMap = [];
-    //ignore the untranslated char, of you put true we will translate it to html tags
-    //it's same the action of //IGNORE in iconv
-    public $ignore = false;
-
-    //Constructor
-    public function __construct()
-    {
-        static $lines = [];
-
-        if (empty($lines))
-        {
-            $lines = explode("\n", preg_replace(['/#.*$/m', "/\n\n/"], '', file_get_contents(PATH . 'includes/CP1256.MAP')));
-        }
-
-        if (empty($this->ascMap))
-        {
-            foreach ($lines as $line)
-            {
-                $parts = explode('0x', $line);
-
-                if (sizeof($parts) == 3)
-                {
-                    $this->ascMap[hexdec(trim($parts[1]))] = hexdec(trim($parts[2]));
-                }
-            }
-            $this->utfMap = array_flip($this->ascMap);
-        }
-    }
-
-    //Translate string ($str) to UTF-8 from given charset
-    public function to_utf8($str)
-    {
-        $chars = unpack('C*', $str);
-        $cnt   = sizeof($chars);
-
-        for ($i=1;$i <= $cnt; ++$i)
-        {
-            $this->_charToUtf8($chars[$i]);
-        }
-        return implode('', $chars);
-    }
-
-    //Translate UTF-8 string to single byte string in the given charset
-    public function from_utf8($utf)
-    {
-        $chars = unpack('C*', $utf);
-        $cnt   = sizeof($chars);
-        $res   = ''; //No simple way to do it in place... concatenate char by char
-        for ($i=1;$i<=$cnt;$i++)
-        {
-            $res .= $this->_utf8ToChar($chars, $i);
-        }
-        return $res;
-    }
-
-    //Char to UTF-8 sequence
-    public function _charToUtf8(&$char)
-    {
-        $c = (int) $this->ascMap[$char];
-
-        if ($c < 0x80)
-        {
-            $char = chr($c);
-        }
-        elseif ($c<0x800)
-        { // 2 bytes
-            $char = (chr(0xC0 | $c>>6) . chr(0x80 | $c & 0x3F));
-        }
-        elseif ($c<0x10000)
-        { // 3 bytes
-            $char = (chr(0xE0 | $c>>12) . chr(0x80 | $c>>6 & 0x3F) . chr(0x80 | $c & 0x3F));
-        }
-        elseif ($c<0x200000)
-        { // 4 bytes
-            $char = (chr(0xF0 | $c>>18) . chr(0x80 | $c>>12 & 0x3F) . chr(0x80 | $c>>6 & 0x3F) . chr(0x80 | $c & 0x3F));
-        }
-    }
-
-    //UTF-8 sequence to single byte character
-    public function _utf8ToChar(&$chars, &$idx)
-    {
-        if (($chars[$idx] >= 240) && ($chars[$idx] <= 255))
-        {// 4 bytes
-            $utf = (intval($chars[$idx]-240)   << 18) + (intval($chars[++$idx]-128) << 12) + (intval($chars[++$idx]-128) << 6) + (intval($chars[++$idx]-128) << 0);
-        }
-        elseif (($chars[$idx] >= 224) && ($chars[$idx] <= 239))
-        { // 3 bytes
-            $utf = (intval($chars[$idx]-224)   << 12) + (intval($chars[++$idx]-128) << 6) + (intval($chars[++$idx]-128) << 0);
-        }
-        elseif (($chars[$idx] >= 192) && ($chars[$idx] <= 223))
-        {// 2 bytes
-            $utf = (intval($chars[$idx]-192)   << 6) + (intval($chars[++$idx]-128) << 0);
-        }
-        else
-        {// 1 byte
-            $utf = $chars[$idx];
-        }
-
-        if (array_key_exists($utf, $this->utfMap))
-        {
-            return chr($this->utfMap[$utf]);
-        }
-        else
-        {
-            return $this->ignore ? '' : '&#' . $utf . ';';
-        }
-    }
 }
-
-//<-- EOF

@@ -257,7 +257,7 @@ class kleeja_style
         }
 
         $var = ! empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '';
-        return (! empty($matches[1]) && trim($matches[1]) == '{{') ? '$value[\'' . $var . '\']' : '$this->vars[\'' . $var . '\']';
+        return ! empty($matches[1]) && trim($matches[1]) == '{{' ? '$value[\'' . $var . '\']' : '$this->vars[\'' . $var . '\']';
     }
 
     /**

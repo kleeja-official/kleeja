@@ -156,7 +156,7 @@ return [
     'ADMINCP'                       => 'Control Panel',
 
     'GO_BACK_BROWSER'                             => 'Go back',
-    'U_R_BANNED'                                  => 'Your IP has been banned.',
+    'U_R_BANNED'                                  => 'Your IP/membership has been banned.',
     'U_R_FLOODER'                                 => 'it&#039;s anti-flood system ...',
     'YES'                                         => 'Yes',
     'NO'                                          => 'No',

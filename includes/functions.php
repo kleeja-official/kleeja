@@ -68,28 +68,42 @@ function kleeja_detecting_bots()
 */
 function get_ban()
 {
-    global $banss, $lang, $tpl, $text, $SQL;
+    global $banss, $lang, $SQL, $usrcp;
 
     //visitor ip now
     $ip    = get_ip();
+    $username  = $usrcp->name();
 
     //now .. loop for banned ips
-    if (is_array($banss) && ! empty($ip))
+    if (is_array($banss) && (! empty($ip) || ! empty($username)))
     {
-        foreach ($banss as $ip2)
+        foreach ($banss as $banned_item)
         {
-            $ip2 = trim($ip2);
+            $banned_item = trim($banned_item);
 
-            if (empty($ip2))
+            if (empty($banned_item))
             {
                 continue;
             }
 
-            //first .. replace all * with something good .
-            $replace_it = str_replace('*', '([0-9]{1,3})', $ip2);
-            $replace_it = str_replace('.', '\.', $replace_it);
 
-            if ($ip == $ip2 || @preg_match('/' . preg_quote($replace_it, '/') . '/i', $ip))
+            $is_banned = false;
+
+            //first .. replace all * with something good .
+
+            if (! empty($ip) && strpos($banned_item, '.') !== false)
+            {
+                $replace_it = str_replace('*', '([0-9]{1,3})', $banned_item);
+                $replace_it = str_replace('.', '\.', $replace_it);
+
+              $is_banned = $ip == $banned_item || @preg_match('/' . preg_quote($replace_it, '/') . '/i', $ip);
+            }
+            else if(! empty($username) && $banned_item == $username)
+            {
+                $is_banned = true;
+            }
+
+            if ($is_banned)
             {
                 is_array($plugin_run_result = Plugins::getInstance()->run('banned_get_ban_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 

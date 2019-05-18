@@ -47,7 +47,6 @@ return [
     'DEL_F_DAY'                        => 'Auto Delete undownloaded files (days) (0 = disabled)',
     'NUMFIELD_S'                       => 'You can only use numbers with some fields !!',
     'CONFIGS_UPDATED'                  => 'Settings updated successfully.',
-
     'EXT_DELETED'                 => 'The extension deleted successfully.',
     'E_EXTS'                      => 'Note : Sizes are measured in kilobytes.',
     'UPDATED_EXTS'                => 'Extensions updated successfully.',
@@ -56,7 +55,6 @@ return [
     'U_REPORT_ON'                 => 'For your report about ',
     'BY_EMAIL'                    => 'By email ',
     'ADMIN_REPLIED'               => 'Admin Reply',
-
     'IS_SEND_MAIL'                   => 'Reply has been sent.',
     'REPORTS_UPDATED'                => 'Reports have been updated.',
     'REPLY_CALL'                     => 'Reply to this message',
@@ -89,8 +87,8 @@ return [
     'R_REPAIR'                       => 'Maintenance',
     'R_LGOUTCP'                      => 'Clear Session',
     'R_BAN'                          => 'Ban Control',
-    'BAN_EXP1'                       => 'Edit the banned IPs and add new ones here ..',
-    'BAN_EXP2'                       => 'Use the star (*) symbol to replace numbers if you want a total ban.... and use the (|) to separate the IPs',
+    'BAN_EXP1'                       => 'You can ban users/guests by their IPs or usernames.',
+    'BAN_EXP2'                       => 'To block range of IPs, use star (*) symbol i.e. 116.10.191.*',
     'UPDATE_BAN'                     => 'Save Changes',
     'BAN_UPDATED'                    => 'Changes saved successfully.',
     'R_RULES'                        => 'Terms',
@@ -111,14 +109,10 @@ return [
     'UPDATE_EXTRA'                   => 'Update template',
     'EXTRA_UPDATED'                  => 'Template additions updated successfully',
     'R_STYLES'                       => 'Styles',
-
     'NO_TPL_SHOOSED'         => 'You did not select a template!',
-
-
     'R_PLUGINS'                        => 'Plugins',
     'ADD_NEW_PLUGIN'                   => 'Add plugin',
-
-    'ITEM_DELETED'                          => '%s has been deleted successfully...',
+    'ITEM_DELETED'                          => 'We have deleted "%s" successfully...',
     'PLGUIN_DISABLED_ENABLED'               => 'Plugin Enabled / Disabled',
     'NO_PLUGINS'                            => 'No available plugins found...',
     'NO_STYLES'                             => 'No available styles found...',
@@ -131,9 +125,7 @@ return [
     'U_USE_PRE_RE'                          => 'You are using a Pre-release version, Click <a href="https://github.com/kleeja-official/kleeja/issues">here</a> to report any bugs or exploits.',
     'STYLE_IS_DEFAULT'                      => 'Default style',
     'MAKE_AS_DEFAULT'                       => 'Set as default',
-
     'STYLE_NOW_IS_DEFAULT'         => 'The style "%s" was set as default',
-
     'UPDATE_NOW_S'                      => 'You are using an old version of Kleeja. Update Now. Your current version is %1$s and the latest one is %2$s',
     'ADD_NEW_EXT'                       => 'Add a new extension',
     'ADD_NEW_EXT_EXP'                   => 'Type a file extension to add it to this group (for example: doc)',
@@ -203,7 +195,6 @@ return [
     'DELETE_PROCESS_IN_WORK'                   => 'Currently, the delete process is executing ...',
     'SHOW_FROM_24H'                            => 'Show past 24 hours',
     'THUMB_DIS_LONGTIME'                       => 'Thumbs are disabled, this will force Kleeja to resize every images to be small here, and cost you time and bandwidth!. Enable thumbs now.',
-
     'R_GROUPS'                          => 'Groups Management',
     'ESSENTIAL_GROUPS'                  => 'Fundamental Groups',
     'CUSTOM_GROUPS'                     => 'User-defined Groups',
@@ -228,7 +219,6 @@ return [
     'DEFAULT_GROUP'                     => 'The default group',
     'G_USERS_MOVE_TO'                   => 'Move the group users to',
     'TAKEN_NAMES'                       => 'This name is taken. Choose another name',
-
     'GROUP_DELETED'                            => 'Group "%1$s" has been deleted and its user moved to group "%2$s".',
     'NO_MOVE_SAME_GRP'                         => 'You can not move the users to the same group!.',
     'DEFAULT_GRP_NO_DEL'                       => 'You can not delete this group becuase it is the current default group, change the default group then try to delete it!.',
@@ -256,7 +246,6 @@ return [
     'EXTRACT_ZIP_FAILED'                       => 'We encounter a problem while extracting this archive file, make sure it\'s a valid zip file, and that "%s" folder is writable',
     'NO_PROBLEM_AFTER_ZIP'                     => 'The file has been extracted successfully and it\'s ready to be enabled',
     'SESSION_ENDED'                            => 'Session has ended, do you want to login again?',
-    //3.0.3
     'CUSTOMIZATION'                               => 'Customization',
     'SHOW'                                        => 'Show',
     'HIDE'                                        => 'Hide',
