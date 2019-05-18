@@ -174,8 +174,6 @@ case 'data' :
 
     if (ip('datasubmit'))
     {
-
-
         //check data ...
         if (empty(p('sitename')) || empty(p('siteurl')) || empty(p('sitemail'))
              || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')))

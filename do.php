@@ -502,7 +502,7 @@ elseif (ig('down') || ig('downf') ||
     //    header('X-Download-Options: noopen');
     //}
 
-    //header(($is_ie6 ? 'Expires: -1' : 'Expires: Mon, 26 Jul 1997 05:00:00 GMT'));    
+    //header(($is_ie6 ? 'Expires: -1' : 'Expires: Mon, 26 Jul 1997 05:00:00 GMT'));
     //(($is_ie8) ? '; authoritative=true; X-Content-Type-Options: nosniff;' : '')
 
 

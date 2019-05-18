@@ -98,6 +98,7 @@ function Saaheader($title = '', $extra = '')
     header('Pragma: no-cache');
     header('x-frame-options: SAMEORIGIN');
     header('x-xss-protection: 1; mode=block');
+    header('X-Content-Type-Options: nosniff');
 
     echo $header;
     flush();

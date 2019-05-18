@@ -53,7 +53,7 @@ class usrcp
             }
         }
 
-        //normal 
+        //normal
         return $this->normal(trim($name), trim($pass), $hashed, $expire, $loginadm);
     }
 
@@ -87,7 +87,7 @@ class usrcp
         }
 
         //normal system
-        $u = $this->get_data('name', $user_id);    
+        $u = $this->get_data('name', $user_id);
         return $u['name'];
     }
 
@@ -185,7 +185,7 @@ class usrcp
                     $this->kleeja_set_cookie('ulogu', $this->en_de_crypt($row['id'] . '|' . $row['password'] . '|' . $expire . '|' . $hash_key_expire . '|' . $row['group_id'] . '|' . $user_y), $expire);
                 }
 
-                //if last visit > 1 minute then update it 
+                //if last visit > 1 minute then update it
                 if (empty($row['last_visit']) || time() - $row['last_visit'] > 60)
                 {
                     $update_last_visit = [
@@ -223,7 +223,7 @@ class usrcp
             $user_id = $this->id();
         }
 
-        //todo : 
+        //todo :
         //if type != '*' and contains no , and type in 'name, id, email' return $this->id .. etc
 
         //te get files and update them !!
@@ -282,7 +282,7 @@ class usrcp
             $this->logout_cp();
         }
 
-        //is ther any cookies    
+        //is ther any cookies
         $this->kleeja_set_cookie('ulogu', '', time() - 31536000);//31536000 = year
 
         return true;
@@ -322,7 +322,7 @@ class usrcp
             //Arabic chars must be stay in utf8 format, so we encoded them
             $arabic_t = unserialize(kleeja_base64_decode('YToyOntpOjA7YToxMjp7aTowO3M6Mjoi2KMiO2k6MTtzOjI6ItilIjtpOjI7czoyOiLYpCI7aTozO3M6Mjoi2YAiO2k6NDtzOjI6Itm' .
             'LIjtpOjU7czoyOiLZjCI7aTo2O3M6Mjoi2Y8iO2k6NztzOjI6ItmOIjtpOjg7czoyOiLZkCI7aTo5O3M6Mjoi2ZIiO2k6MTA7czoyOiLYoiI7aToxMTtzOjI6ItimIjt9aToxO' .
-            '2E6MTI6e2k6MDtzOjI6ItinIjtpOjE7czoyOiLYpyI7aToyO3M6Mjoi2YgiO2k6MztzOjA6IiI7aTo0O3M6MDoiIjtpOjU7czowOiIiO2k6NjtzOjA6IiI7aTo3O3M6MDoiIjt' . 
+            '2E6MTI6e2k6MDtzOjI6ItinIjtpOjE7czoyOiLYpyI7aToyO3M6Mjoi2YgiO2k6MztzOjA6IiI7aTo0O3M6MDoiIjtpOjU7czowOiIiO2k6NjtzOjA6IiI7aTo3O3M6MDoiIjt' .
             'pOjg7czowOiIiO2k6OTtzOjA6IiI7aToxMDtzOjI6ItinIjtpOjExO3M6Mjoi2YkiO319'));
         }
 
@@ -369,10 +369,10 @@ class usrcp
         //
         if (defined('FORCE_COOKIES'))
         {
-            $config['cookie_domain'] = (! empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((! empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : @getenv('SERVER_NAME'));
+            $config['cookie_domain'] = ! empty($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : (! empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : @getenv('SERVER_NAME'));
             $config['cookie_domain'] = str_replace('www.', '.', substr($config['cookie_domain'], 0, strpos($config['cookie_domain'], ':')));
             $config['cookie_path']   = '/';
-            $config['cookie_secure'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false;
+            $config['cookie_secure'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
         }
 
         // Enable sending of a P3P header
@@ -382,7 +382,7 @@ class usrcp
         $rexpire   = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $expire);
         $domain    = (! $config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain'];
 
-        header('Set-Cookie: ' . $name_data . (($expire) ? '; expires=' . $rexpire : '') . '; path=' . $config['cookie_path'] . $domain . ((! $config['cookie_secure']) ? '' : '; secure') . '; HttpOnly', false);
+        header('Set-Cookie: ' . $name_data . ($expire ? '; expires=' . $rexpire : '') . '; path=' . $config['cookie_path'] . $domain . (! $config['cookie_secure'] ? '' : '; secure') . '; HttpOnly', false);
     }
 
     //encrypt and decrypt any data with our function
@@ -419,7 +419,7 @@ class usrcp
             break;
 
             case 2:
-                $txtx = array_flip($txt); 
+                $txtx = array_flip($txt);
                 $txtx = array_reverse($txtx, true);
                 $data = strtr($data, $txtx);
                 $data = kleeja_base64_decode(str_replace('_', '=', $data));
@@ -442,7 +442,7 @@ class usrcp
         return isset($_COOKIE[$config['cookie_name'] . '_' . $name]) ? $_COOKIE[$config['cookie_name'] . '_' . $name] : false;
     }
 
-    //check if user is admin or not 
+    //check if user is admin or not
     //return : mean return true or false, but if return is false will show msg
     public function kleeja_check_user()
     {
@@ -463,7 +463,7 @@ class usrcp
 
             list($user_id, $hashed_password, $expire_at, $hashed_expire, $group_id, $u_info) =  @explode('|', $this->en_de_crypt($this->kleeja_get_cookie('ulogu'), 2));
 
-            //if not expire 
+            //if not expire
             if (($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at)) && ($expire_at > time()))
             {
                 // For better performance we will take the risks

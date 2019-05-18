@@ -137,6 +137,7 @@ case 'update_now':
     }
 
 
+    delete_cache('', true);
     echo gettpl('update_end.html');
 
 break;
