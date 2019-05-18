@@ -1642,7 +1642,17 @@ function p($name, $type = 'str', $default = '')
  */
 function add_to_serve_rules($rules, $unique_id = '')
 {
-    $current_serve_content = file_get_contents(PATH . 'serve.php');
+    if(! file_exists(PATH  . 'plugins_rules.php'))
+    {
+        if(! is_writable(PATH))
+        {
+            chmod(PATH, K_DIR_CHMOD);
+        }
+
+        file_put_contents(PATH . 'plugins_rules.php', '<?php return [' . PHP_EOL . '];');
+    }
+
+    $current_serve_content = file_get_contents(PATH . 'plugins_rules.php');
 
     $rules = is_array($rules) ? implode(PHP_EOL, $rules) : $rules;
 
@@ -1651,29 +1661,19 @@ function add_to_serve_rules($rules, $unique_id = '')
         $rules = '#start_' . $unique_id . PHP_EOL . $rules . PHP_EOL . '#end_' . $unique_id;
     }
 
-    if (strpos($current_serve_content, '#end_kleeja_rewrites_rules#') !== false)
+    $current_serve_content = preg_replace(
+                        '/return\s{0,4}\[/',
+                        'return [' . PHP_EOL . $rules,
+                        $current_serve_content
+                    );
+
+
+    if (! is_writable(PATH . 'plugins_rules.php'))
     {
-        $current_serve_content = str_replace(
-                                '#end_kleeja_rewrites_rules#',
-                                '#end_kleeja_rewrites_rules#' . PHP_EOL . $rules,
-                                $current_serve_content
-                        );
-    }
-    else
-    {
-        $current_serve_content = preg_replace(
-                            '/\$rules\s{0,4}=\s{0,4}array\(/',
-                            '$rules = array(' . PHP_EOL . $rules,
-                            $current_serve_content
-                        );
+        chmod(PATH . 'plugins_rules.php', K_FILE_CHMOD);
     }
 
-    if (! is_writable(PATH . 'serve.php'))
-    {
-        chmod(PATH . 'serve.php', K_FILE_CHMOD);
-    }
-
-    file_put_contents(PATH . 'serve.php', $current_serve_content);
+    file_put_contents(PATH . 'plugins_rules.php', $current_serve_content);
 
     return true;
 }
@@ -1686,7 +1686,7 @@ function add_to_serve_rules($rules, $unique_id = '')
  */
 function remove_from_serve_rules($unique_id)
 {
-    $file = PATH . 'serve.php';
+    $file = PATH . 'plugins_rules.php';
 
     $current_serve_content = file_get_contents($file);
 
@@ -1701,9 +1701,9 @@ function remove_from_serve_rules($unique_id)
         return false;
     }
 
-    if (! is_writable(PATH . 'serve.php'))
+    if (! is_writable(PATH . 'plugins_rules.php'))
     {
-        chmod(PATH . 'serve.php', K_FILE_CHMOD);
+        chmod(PATH . 'plugins_rules.php', K_FILE_CHMOD);
     }
 
     file_put_contents($file, $new_serve_content);
