@@ -177,7 +177,7 @@ if (! empty($d_groups) && is_array($d_groups))
 // rev: let's say cache is not refreshed, so we will redirect alots of time,
 // so update_done will be good solution
 //
-if (empty($v['last_check']) || ((time() - $v['last_check']) > 3600 * 24 * 10 && $_SERVER['SERVER_NAME'] != 'localhost' && ! ig('update_done')))
+if ((empty($v['last_check']) || time() - $v['last_check'] > 3600 * 24 * 10) && ! ig('update_done'))
 {
     redirect(basename(ADMIN_PATH) . '?cp=p_check_update&amp;show_msg=1');
     $SQL->close();

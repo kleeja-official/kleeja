@@ -144,7 +144,7 @@ switch ($case):
         {
             $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
 
-            $store_catalog = fetch_remote_file($store_link);
+            $store_catalog = FetchFile::make($store_link)->get();
             $store_catalog = json_decode($store_catalog, true);
 
             if (json_last_error() == JSON_ERROR_NONE)
@@ -552,7 +552,7 @@ switch ($case):
         // plugins avilable in kleeja store
         $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
 
-        $catalog_plugins = fetch_remote_file($store_link);
+        $catalog_plugins = FetchFile::make($store_link)->get();
 
         if ($catalog_plugins)
         {
@@ -587,7 +587,10 @@ switch ($case):
                     ) {
                     $plugin_name_link = $store_plugins[$plugin_name]['url'];
 
-                    $plugin_archive = fetch_remote_file($plugin_name_link, PATH . 'cache/' . $plugin_name . '.zip', 60, false, 10, true);
+                    $plugin_archive = FetchFile::make($plugin_name_link)
+                                        ->setDestinationPath(PATH . 'cache/' . $plugin_name . '.zip')
+                                        ->isBinaryFile(true)
+                                        ->get();
 
                     if ($plugin_archive)
                     {

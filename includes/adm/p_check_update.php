@@ -54,7 +54,7 @@ if ($current_smt == 'check')
     //get data from kleeja github repo
     if (! ($version_data = $cache->get('kleeja_repo_version')))
     {
-        $github_data = fetch_remote_file(KLEEJA_VERSION_CHECK_LINK, false, 100);
+        $github_data = FetchFile::make(KLEEJA_VERSION_CHECK_LINK)->setTimeOut(100)->get();
 
         if (! empty($github_data))
         {
@@ -151,7 +151,10 @@ elseif ($current_smt == 'update1')
     else
     {
         // downloaded the last package to cache folder
-        fetch_remote_file(KLEEJA_LATEST_PACKAGE_LINK . $new_version, PATH . "cache/kleeja-{$new_version}.zip", 60, false, 10, true);
+        FetchFile::make(KLEEJA_LATEST_PACKAGE_LINK . $new_version)
+                    ->setDestinationPath(PATH . "cache/kleeja-{$new_version}.zip")
+                    ->isBinaryFile(true)
+                    ->get();
 
         if (file_exists(PATH . "cache/kleeja-{$new_version}.zip"))
         {

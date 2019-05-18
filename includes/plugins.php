@@ -6,6 +6,7 @@
  * @license http://www.kleeja.com/license
  *
  */
+
 //no for directly open
 if (! defined('IN_COMMON'))
 {

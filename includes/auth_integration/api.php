@@ -26,7 +26,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     }
 
     //api key is the key to make the query between the remote script and kleeja more secure !
-    //this must be changed in the real use 
+    //this must be changed in the real use
     if (empty($script_api_key))
     {
         big_error('api key', 'To connect to the remote script you have to write the API key ...');
@@ -43,7 +43,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
 
     //get it
-    $remote_data = fetch_remote_file($script_path . '?' . $api_http_query);
+    $remote_data = FetchFile::make($script_path . '?' . $api_http_query)->get();
 
     //no responde
     //empty or can not connect
@@ -53,7 +53,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     }
 
     //see kleeja_api.php file
-    //split the data , the first one is always 0 or 1 
+    //split the data , the first one is always 0 or 1
     //0 : error
     //1: ok
     $user_info = explode('%|%', kleeja_base64_decode($remote_data));
@@ -105,11 +105,11 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 }
 
 //
-//return username 
+//return username
 //
 function kleeja_auth_username ($user_id)
 {
     return kleeja_auth_login($user_id, false, false, false, false, true);
-}    
+}
 
 //<-- EOF
