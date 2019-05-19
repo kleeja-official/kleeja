@@ -280,7 +280,7 @@ elseif (ig('down') || ig('downf') ||
     $livexts = explode(',', $config['livexts']);
 
     //get info file
-    $query = ['SELECT' => 'f.id, f.name, f.real_filename, f.folder, f.type, f.size, f.time',
+    $query = ['SELECT' => 'f.id, f.name, f.real_filename, f.folder, f.type, f.size, f.time , f.user',
         'FROM'         => "{$dbprefix}files f",
         'WHERE'        => $is_id_filename ? "f.name='" . $filename . "'" . (ig('downexf') ? " AND f.type IN ('" . implode("', '", $livexts) . "')" : '') :
             'f.id=' . $id . (ig('downex') ? " AND f.type IN ('" . implode("', '", $livexts) . "')" : ''),
@@ -312,6 +312,7 @@ elseif (ig('down') || ig('downf') ||
         $f      = $row['folder'];
         $ftime  = $row['time'];
         $d_size = $row['size'];
+        $u      = $row['user'];
 
 
         //img or not
@@ -333,29 +334,45 @@ elseif (ig('down') || ig('downf') ||
         //check if the vistor is new in this page before updating kleeja counter
         if (! preg_match('/,' . $ii . ',/i', $usrcp->kleeja_get_cookie('oldvistor')) && ! isset($_SERVER['HTTP_RANGE']))
         {
-            //updates number of uploads ..
-            $update_query = [
-                'UPDATE' => "{$dbprefix}files",
-                'SET'    => 'uploads=uploads+1, last_down=' . time(),
-                'WHERE'  => $is_id_filename ? "name='" . $filename . "'" : 'id=' . $id,
-            ];
-
-            is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_no_uploads_down', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-            $SQL->build($update_query);
-
-            //
-            //Define as old vistor
-            //if this vistor has other views then add this view too
-            //old vistor just for 1 day
-            //
-            if ($usrcp->kleeja_get_cookie('oldvistor'))
+            if (
+                ( // not in admin panel
+                    (empty($_SESSION['ADMINLOGIN']) || $_SESSION['ADMINLOGIN'] != md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl'])) || 
+                    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != session_id()) ||
+                    (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())
+                )
+                && !(
+                $usrcp->name()
+                &&
+                $usrcp->id() == $u ) //the user is login and the owner of the file
+                /**
+                 * if the user is a guest , or not the owner or not admin then update the number of downloads
+                 */
+            ) 
             {
-                $usrcp->kleeja_set_cookie('oldvistor', $usrcp->kleeja_get_cookie('oldvistor') . $ii . ',', time() + 86400);
-            }
-            else
-            {
-                //first time
-                $usrcp->kleeja_set_cookie('oldvistor', ',' . $ii . ',', time() + 86400);
+                //updates number of uploads ..
+                $update_query = [
+                    'UPDATE' => "{$dbprefix}files",
+                    'SET'    => 'uploads=uploads+1, last_down=' . time(),
+                    'WHERE'  => $is_id_filename ? "name='" . $filename . "'" : 'id=' . $id,
+                ];
+
+                is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_no_uploads_down', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                $SQL->build($update_query);
+
+                //
+                //Define as old vistor
+                //if this vistor has other views then add this view too
+                //old vistor just for 1 day
+                //
+                if ($usrcp->kleeja_get_cookie('oldvistor'))
+                {
+                    $usrcp->kleeja_set_cookie('oldvistor', $usrcp->kleeja_get_cookie('oldvistor') . $ii . ',', time() + 86400);
+                }
+                else
+                {
+                    //first time
+                    $usrcp->kleeja_set_cookie('oldvistor', ',' . $ii . ',', time() + 86400);
+                }
             }
         }
     }
