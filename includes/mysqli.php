@@ -12,7 +12,7 @@
 if (! defined('IN_COMMON'))
 {
     exit();
-}  
+}
 
 if (! defined('SQL_LAYER')):
 
@@ -20,7 +20,7 @@ define('SQL_LAYER', 'mysqli');
 
 class KleejaDatabase
 {
-    public $connect_id        = null;        
+    public $connect_id        = null;
     public $result;
     public $query_num               = 0;
     public $in_transaction          = 0;
@@ -60,7 +60,7 @@ class KleejaDatabase
             return false;
         }
 
-        //loggin -> connecting 
+        //loggin -> connecting
         kleeja_log('[Connected] : ' . kleeja_get_page());
 
 
@@ -68,7 +68,7 @@ class KleejaDatabase
         {
             if (mysqli_set_charset($this->connect_id, 'utf8'))
             {
-                //loggin -> set utf8 
+                //loggin -> set utf8
                 kleeja_log('[Set to UTF8] : --> ');
             }
         }
@@ -128,7 +128,7 @@ class KleejaDatabase
     }
 
     /*
-     * the query func . its so important to do 
+     * the query func . its so important to do
      * the quries and give results
      */
     public function query($query, $transaction = false)
@@ -347,7 +347,7 @@ class KleejaDatabase
     }
 
     /*
-     * if we have a result and we have to know 
+     * if we have a result and we have to know
      * the number of it , this is a func ..
      */
     public function num_rows($query_id = 0)
@@ -427,11 +427,21 @@ class KleejaDatabase
         //some ppl want hide their table names
         if (! defined('DEV_STAGE'))
         {
-            $error_sql = preg_replace("#\s{1,3}`*{$dbprefix}([a-z0-9]+)`*\s{1,3}#e", "' <span style=\"color:blue\">' . substr('$1', 0, 1) . '</span> '", $error_sql);
-            $error_msg = preg_replace("#{$this->db_name}.{$dbprefix}([a-z0-9]+)#e", "' <span style=\"color:blue\">' . substr('$1', 0, 1) . '</span> '", $error_msg);
-            $error_sql = preg_replace("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#ie", "' $1 <span style=\"color:blue\">' . substr('$2', 0, 1) . '</span> '", $error_sql);
-            $error_msg = preg_replace("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#ie", "' $1 <span style=\"color:blue\">' . substr('$2', 0, 1) . '</span> '", $error_msg);
-            $error_msg = preg_replace("#\s'([^']+)'@'([^']+)'#ie", "' <span style=\"color:blue\">hidden</span>@$2 '", $error_msg);
+            $error_sql = preg_replace_callback("#\s{1,3}`*{$dbprefix}([a-z0-9]+)`*\s{1,3}#", function($m) {
+                return '<span style="color:blue">' . substr($m[1], 0, 1) . '</span>';
+            }, $error_sql);
+            $error_msg = preg_replace_callback("#{$this->db_name}.{$dbprefix}([a-z0-9]+)#", function($m) {
+                return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
+            }, $error_msg);
+            $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+                return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
+            }, $error_sql);
+            $error_msg = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+                return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
+            }, $error_msg);
+            $error_msg = preg_replace_callback("#\s'([^']+)'@'([^']+)'#i", function($m) {
+                return ' <span style="color:blue">hidden</span>@' . $m[2] . ' ';
+            }, $error_msg);
             $error_sql = preg_replace("#password\s*=\s*'[^']+'#i", "password='<span style=\"color:blue\">hidden</span>'", $error_sql);
         }
 
@@ -444,12 +454,12 @@ class KleejaDatabase
         }
 
         header('HTTP/1.1 500 Internal Server Error');
-        $error_message = '<html><head><title>ERROR IM MYSQL</title>';
+        $error_message = '<html><head><title>MYSQL ERROR</title>';
         $error_message .= "<style>BODY{font-family:'Tahoma',serif;font-size:12px;}.error {}</style></head><body>";
         $error_message .= '<br />';
         $error_message .= '<div class="error">';
         $error_message .= " <a href='#' onclick='window.location.reload( false );'>click to Refresh this page ...</a><br />";
-        $error_message .= '<h2>Sorry , There is an error in mysql ' . ($msg !='' ? ", error : $msg" : '') . '</h2>';
+        $error_message .= '<h2>Sorry , We encounter a MySQL error: ' . ($msg !='' ? $msg : '') . '</h2>';
 
         if ($error_sql != '')
         {
