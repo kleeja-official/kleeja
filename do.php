@@ -280,7 +280,7 @@ elseif (ig('down') || ig('downf') ||
     $livexts = explode(',', $config['livexts']);
 
     //get info file
-    $query = ['SELECT' => 'f.id, f.name, f.real_filename, f.folder, f.type, f.size, f.time , f.user',
+    $query = ['SELECT' => 'f.id, f.name, f.real_filename, f.folder, f.type, f.size, f.time',
         'FROM'         => "{$dbprefix}files f",
         'WHERE'        => $is_id_filename ? "f.name='" . $filename . "'" . (ig('downexf') ? " AND f.type IN ('" . implode("', '", $livexts) . "')" : '') :
             'f.id=' . $id . (ig('downex') ? " AND f.type IN ('" . implode("', '", $livexts) . "')" : ''),
@@ -312,7 +312,6 @@ elseif (ig('down') || ig('downf') ||
         $f      = $row['folder'];
         $ftime  = $row['time'];
         $d_size = $row['size'];
-        $u      = $row['user'];
 
 
         //img or not
@@ -334,20 +333,7 @@ elseif (ig('down') || ig('downf') ||
         //check if the vistor is new in this page before updating kleeja counter
         if (! preg_match('/,' . $ii . ',/i', $usrcp->kleeja_get_cookie('oldvistor')) && ! isset($_SERVER['HTTP_RANGE']))
         {
-            if (
-                ( // not in admin panel
-                    (empty($_SESSION['ADMINLOGIN']) || $_SESSION['ADMINLOGIN'] != md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl'])) || 
-                    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != session_id()) ||
-                    (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())
-                )
-                && !(
-                $usrcp->name()
-                &&
-                $usrcp->id() == $u ) //the user is login and the owner of the file
-                /**
-                 * if the user is a guest , or not the owner or not admin then update the number of downloads
-                 */
-            ) 
+            if ($usrcp->group_id() != 1)
             {
                 //updates number of uploads ..
                 $update_query = [
