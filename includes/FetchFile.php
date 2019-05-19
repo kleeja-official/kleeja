@@ -64,7 +64,7 @@ class FetchFile
                             ? strtolower(@ini_get('allow_url_fopen'))
                             : strtolower(@get_cfg_var('allow_url_fopen'));
 
-        if (! function_exists('curl_init'))
+        if (function_exists('curl_init'))
         {
             $fetchType = 'curl';
         }
