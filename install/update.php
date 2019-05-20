@@ -34,7 +34,7 @@ include_once 'includes/functions_install.php';
 include_once 'includes/update_schema.php';
 
 
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 //
 // fix missing db_version

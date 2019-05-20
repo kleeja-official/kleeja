@@ -20,30 +20,34 @@ define('SQL_LAYER', 'mysqli');
 
 class KleejaDatabase
 {
-    public $connect_id        = null;
-    public $result;
-    public $query_num               = 0;
-    public $in_transaction          = 0;
-    public $debugr                  = false;
-    public $show_errors             = true;
+    private $connect_id               = null;
+    private $result                   = null;
+    public $dbprefix                 = '';
+    private $dbname                   = '';
+    public $query_num                = 0;
+    private $in_transaction           = 0;
+    public $debugr                   = false;
+    private $show_errors              = true;
 
 
     /*
      * initiate the class
      * with basic data
     */
-    public function __construct($host, $db_username, $db_password, $db_name, $new_link = false)
+    public function __construct($host, $db_username, $db_password, $db_name, $dbprefix)
     {
-        global $script_encoding;
+        $port  = 3306;
 
-        $host     .= strpos($host, ':') !== false ? '' : ':';
-        $this->host               = substr($host, 0, strpos($host, ':'));
-        $this->port               = (int) substr($host, strpos($host, ':')+1);
-        $this->db_username        = $db_username;
-        $this->db_name            = $db_name;
-        $this->db_password        = 'hidden';
+        if (strpos($host, ':') !== false)
+        {
+            $host = substr($host, 0, strpos($host, ':'));
+            $port = (int) substr($host, strpos($host, ':')+1);
+        }
 
-        $this->connect_id = @mysqli_connect($this->host, $this->db_username, $db_password, $this->db_name, (! $this->port ? 3306 : $this->port));
+        $this->dbprefix        = $dbprefix;
+        $this->dbname        = $db_name;
+
+        $this->connect_id = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
 
         //no error
         if (defined('MYSQL_NO_ERRORS'))
@@ -56,19 +60,18 @@ class KleejaDatabase
         {
             //loggin -> no database -> close connection
             $this->close();
-            $this->error_msg('we can not connect to the server ...');
+            $this->error_msg('We can not connect to the server ...');
             return false;
         }
 
-        //loggin -> connecting
+        //connecting
         kleeja_log('[Connected] : ' . kleeja_get_page());
 
 
-        if ((! preg_match('/utf/i', strtolower($script_encoding)) && ! defined('IN_LOGINPAGE') && ! defined('IN_ADMIN_LOGIN') && ! defined('DISABLE_INTR')) || (empty($script_encoding) || preg_match('/utf/i', strtolower($script_encoding)) || defined('DISABLE_INTR')))
+        if (! defined('DISABLE_MYSQL_UTF8'))
         {
             if (mysqli_set_charset($this->connect_id, 'utf8'))
             {
-                //loggin -> set utf8
                 kleeja_log('[Set to UTF8] : --> ');
             }
         }
@@ -413,7 +416,6 @@ class KleejaDatabase
     // error message func
     public function error_msg($msg)
     {
-        global $dbprefix;
 
         if (! $this->show_errors)
         {
@@ -427,10 +429,10 @@ class KleejaDatabase
         //some ppl want hide their table names
         if (! defined('DEV_STAGE'))
         {
-            $error_sql = preg_replace_callback("#\s{1,3}`*{$dbprefix}([a-z0-9]+)`*\s{1,3}#", function($m) {
-                return '<span style="color:blue">' . substr($m[1], 0, 1) . '</span>';
+            $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function($m) {
+                return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_sql);
-            $error_msg = preg_replace_callback("#{$this->db_name}.{$dbprefix}([a-z0-9]+)#", function($m) {
+            $error_msg = preg_replace_callback("#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#", function($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_msg);
             $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
@@ -459,7 +461,7 @@ class KleejaDatabase
         $error_message .= '<br />';
         $error_message .= '<div class="error">';
         $error_message .= " <a href='#' onclick='window.location.reload( false );'>click to Refresh this page ...</a><br />";
-        $error_message .= '<h2>Sorry , We encounter a MySQL error: ' . ($msg !='' ? $msg : '') . '</h2>';
+        $error_message .= '<h2>Sorry , We encountered a MySQL error: ' . ($msg !='' ? $msg : '') . '</h2>';
 
         if ($error_sql != '')
         {

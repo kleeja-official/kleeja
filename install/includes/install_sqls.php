@@ -101,18 +101,18 @@ $install_sqls['files'] = "
 CREATE TABLE `{$dbprefix}files` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `last_down` int(11) unsigned NOT NULL DEFAULT '0',
-  `name` varchar(300) collate utf8_bin NOT NULL,
-  `real_filename` VARCHAR( 350 ) collate utf8_bin NOT NULL,
+  `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
+  `real_filename` VARCHAR( 350 ) collate utf8_bin NOT NULL DEFAULT '',
   `size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `uploads` int(11) unsigned NOT NULL DEFAULT '0',
-  `time` int(11) unsigned NOT NULL,
+  `time` int(11) unsigned NOT NULL DEFAULT '0',
   `type` varchar(20) collate utf8_bin NOT NULL,
   `folder` varchar(100) collate utf8_bin NOT NULL,
   `report` int(11) unsigned  NOT NULL DEFAULT '0',
   `user` int(11)  NOT NULL default '-1',
-  `code_del` varchar(150) collate utf8_bin NOT NULL,
-  `user_ip` VARCHAR( 250 ) NOT NULL,
-  `id_form` VARCHAR( 100 ) NOT NULL,
+  `code_del` varchar(150) collate utf8_bin NOT NULL DEFAULT '',
+  `user_ip` VARCHAR( 250 ) NOT NULL DEFAULT '',
+  `id_form` VARCHAR( 100 ) NOT NULL DEFAULT 'id',
   PRIMARY KEY (`id`),
   KEY `name` (`name`(300)),
   KEY `user` (`user`),
@@ -128,8 +128,8 @@ CREATE TABLE `{$dbprefix}files` (
 $install_sqls['config'] = "
 CREATE TABLE `{$dbprefix}config` (
   `name` varchar(255) collate utf8_bin NOT NULL,
-  `value` varchar(255) collate utf8_bin NOT NULL,
-  `option` mediumtext collate utf8_bin  NOT NULL,
+  `value` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
+  `option` mediumtext collate utf8_bin  NOT NULL DEFAULT '',
   `display_order` int(10)  NOT NULL DEFAULT '1',
   `type` varchar(20) NULL DEFAULT 'other',
   `plg_id` int(11) NOT NULL DEFAULT '0',
@@ -157,16 +157,16 @@ CREATE TABLE `{$dbprefix}config` (
 $install_sqls['plugins'] = "
 CREATE TABLE `{$dbprefix}plugins` (
   `plg_id` int(11) unsigned NOT NULL auto_increment,
-  `plg_name` varchar(255) collate utf8_bin NOT NULL,
+  `plg_name` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
   `plg_ver` varchar(255) collate utf8_bin NOT NULL,
-  `plg_author` varchar(255) collate utf8_bin NOT NULL,
-  `plg_dsc` mediumtext COLLATE utf8_bin NOT NULL,
-  `plg_icon` blob NOT NULL,
-  `plg_uninstall` mediumtext COLLATE utf8_bin NOT NULL,
+  `plg_author` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
+  `plg_dsc` mediumtext COLLATE utf8_bin NOT NULL DEFAULT '',
+  `plg_icon` blob NOT NULL DEFAULT '',
+  `plg_uninstall` mediumtext COLLATE utf8_bin NOT NULL DEFAULT '',
   `plg_disabled` tinyint(1) unsigned NOT NULL default '0',
-  `plg_instructions` mediumtext COLLATE utf8_bin NOT NULL,
-  `plg_store` longtext COLLATE utf8_bin NOT NULL,
-  `plg_files` text COLLATE utf8_bin NOT NULL,
+  `plg_instructions` mediumtext COLLATE utf8_bin NOT NULL DEFAULT '',
+  `plg_store` longtext COLLATE utf8_bin NOT NULL DEFAULT '',
+  `plg_files` text COLLATE utf8_bin NOT NULL DEFAULT '',
   PRIMARY KEY (`plg_id`),
   KEY `plg_name` (`plg_name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
@@ -174,9 +174,9 @@ CREATE TABLE `{$dbprefix}plugins` (
 
 $install_sqls['lang'] = "
 CREATE TABLE `{$dbprefix}lang` (
-  `word` varchar(255) collate utf8_bin NOT NULL,
-  `trans` varchar(255) collate utf8_bin NOT NULL,
-  `lang_id` varchar(100) COLLATE utf8_bin NOT NULL,
+  `word` varchar(255) collate utf8_bin NOT NULL ,
+  `trans` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
+  `lang_id` varchar(100) COLLATE utf8_bin NOT NULL DEFAULT 'en',
   `plg_id` int(11) unsigned NOT NULL DEFAULT '0',
   KEY `lang_id` (`lang_id`),
   KEY `plg_id` (`plg_id`),
@@ -198,7 +198,7 @@ $install_sqls['groups_data'] = "
 CREATE TABLE `{$dbprefix}groups_data` (
   `group_id` int(11) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8_bin NOT NULL,
-  `value` varchar(255) COLLATE utf8_bin NOT NULL,
+  `value` varchar(255) COLLATE utf8_bin NOT NULL DEFAULT '',
   KEY `group_id` (`group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";

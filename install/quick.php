@@ -49,7 +49,7 @@ else
     exit('`config.php` was missing! so we created one for you, kindly edit the file with database information.');
 }
 
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 if (! $SQL->is_connected())
 {
@@ -76,7 +76,7 @@ foreach (['cache', 'uploads', 'uploads/thumbs'] as $folder)
 
 
 //install
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 include_once PATH . 'includes/usr.php';
 include_once PATH . 'includes/functions_alternative.php';

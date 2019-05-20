@@ -17,20 +17,14 @@ if (! defined('IN_COMMON'))
 
 class usrcp
 {
-    // this function like a traffic sign :)
     public function data ($name, $pass, $hashed = false, $expire = 86400, $loginadm = false)
     {
         global $config, $userinfo;
 
-        //return user system to normal
-        if (defined('DISABLE_INTR') || $config['user_system'] == '' || empty($config['user_system']))
-        {
-            $config['user_system'] = '1';
-        }
-
-
         //expire
         $expire = time() + ((int) $expire ? intval($expire) : 86400);
+        $name  = trim($name);
+        $pass  = trim($pass);
 
         $return_now = $login_status = false;
 
@@ -42,31 +36,14 @@ class usrcp
         }
 
 
-        if ((int) $config['user_system'] != 1)
-        {
-            if (file_exists(PATH . 'includes/auth_integration/' . trim($config['user_system']) . '.php'))
-            {
-                include_once PATH . 'includes/auth_integration/' . trim($config['user_system']) . '.php';
-                $login_status = kleeja_auth_login(trim($name), trim($pass), $hashed, $expire, $loginadm);
-
-                return $login_status;
-            }
-        }
-
         //normal
-        return $this->normal(trim($name), trim($pass), $hashed, $expire, $loginadm);
+        return $this->normal($name, $pass, $hashed, $expire, $loginadm);
     }
 
     //get username by id
     public function usernamebyid($user_id)
     {
         global $config;
-
-        //return user system to normal
-        if (defined('DISABLE_INTR'))
-        {
-            $config['user_system'] = 1;
-        }
 
         $return_now = $auth_status = false;
 
@@ -77,22 +54,13 @@ class usrcp
             return $auth_status;
         }
 
-        if ((int) $config['user_system'] != 1)
-        {
-            if (file_exists(PATH . 'includes/auth_integration/' . trim($config['user_system']) . '.php'))
-            {
-                include_once PATH . 'includes/auth_integration/' . trim($config['user_system']) . '.php';
-                return kleeja_auth_username($user_id);
-            }
-        }
-
         //normal system
         $u = $this->get_data('name', $user_id);
         return $u['name'];
     }
 
     //now our table, normal user system
-    public function normal ($name, $pass, $hashed = false, $expire, $loginadm = false)
+    public function normal($name, $pass, $hashed = false, $expire, $loginadm = false)
     {
         global $SQL, $dbprefix, $config, $userinfo;
 

@@ -162,7 +162,7 @@ if (empty($script_encoding))
 }
 
 //start classes ..
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 //no need after now
 unset($dbpass);
 

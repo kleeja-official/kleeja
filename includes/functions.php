@@ -796,7 +796,7 @@ function update_config($name, $value, $escape = true, $group = false)
 {
     global $SQL, $dbprefix, $d_groups, $userinfo;
 
-    $value = ($escape) ? $SQL->escape($value) : $value;
+    $value = $escape ? $SQL->escape($value) : $value;
     $table = "{$dbprefix}config";
 
     //what if this config is a group-configs related ?

@@ -140,7 +140,7 @@ case 'check':
     if (! empty($dbname) && ! empty($dbuser))
     {
         //connect .. for check
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 
         if (! $SQL->is_connected())
@@ -202,7 +202,7 @@ case 'data' :
         }
 
         //connect .. for check
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
         include_once PATH . 'includes/usr.php';
         include_once PATH . 'includes/functions_alternative.php';

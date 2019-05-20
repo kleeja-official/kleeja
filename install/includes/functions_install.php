@@ -168,7 +168,7 @@ function inst_get_config($name)
             return false;
         }
 
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
     }
 
     if (empty($SQL))

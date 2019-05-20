@@ -27,7 +27,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     global $lang, $config, $usrcp, $userinfo;
     global $script_path, $script_encoding, $script_srv, $script_db, $script_user, $script_pass, $script_prefix;
 
-    //check for last slash / 
+    //check for last slash /
     if (isset($script_path))
     {
         if (isset($script_path[strlen($script_path)]) && $script_path[strlen($script_path)] == '/')
@@ -76,7 +76,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
         return;
     }
 
-    //conecting ...        
+    //conecting ...
     $SQLBB = new KleejaDatabase($forum_srv, $forum_user, $forum_pass, $forum_db, true);
 
     $SQLBB->set_names('utf8');
@@ -91,7 +91,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     include_once PATH . $script_path . '/includes/utf/utf_tools.' . $phpEx;
 
     $row_leve    = 'user_type';
-    $admin_level = 3;                    
+    $admin_level = 3;
     $query2      = [
         'SELECT'       => '*',
         'FROM'         => "`{$forum_prefix}users`",
@@ -109,7 +109,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
     if (! $hashed)
     {
-        $result2 = $SQLBB->build($query2);                    
+        $result2 = $SQLBB->build($query2);
         while ($row=$SQLBB->fetch_array($result2))
         {
             $SQLBB->freeresult($result2); 
@@ -169,11 +169,11 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
                 if (! $hashed && ! $loginadm)
                 {
                     $usrcp->kleeja_set_cookie('ulogu', $usrcp->en_de_crypt(
-                                                    $row['user_id'] . '|' . 
-                                                    $row['user_password'] . '|' . 
-                                                    $expire . '|' . 
-                                                    sha1(md5($config['h_key'] . $row['user_password']) . $expire) . '|' . 
-                                                    ($row[$row_leve] == $admin_level ? '1' : '3') . '|' . 
+                                                    $row['user_id'] . '|' .
+                                                    $row['user_password'] . '|' .
+                                                    $expire . '|' .
+                                                    sha1(md5($config['h_key'] . $row['user_password']) . $expire) . '|' .
+                                                    ($row[$row_leve] == $admin_level ? '1' : '3') . '|' .
                                                     $user_y
                                             ), $expire);
                 }
@@ -183,14 +183,14 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
             else
             {
                 //he is banned from phpBB
-                $SQLBB->freeresult($result);   
+                $SQLBB->freeresult($result);
                 unset($pass);
                 $SQLBB->close();
                 return false;
             }
         }
 
-        $SQLBB->freeresult($result);   
+        $SQLBB->freeresult($result);
         unset($pass);
         $SQLBB->close();
         return true;
