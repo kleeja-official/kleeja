@@ -17,10 +17,8 @@ if (! defined('IN_COMMON'))
 
 class usrcp
 {
-    public function data ($name, $pass, $hashed = false, $expire = 86400, $loginadm = false)
+    public function data($name, $pass, $hashed = false, $expire = 86400, $loginadm = false)
     {
-        global $config, $userinfo;
-
         //expire
         $expire = time() + ((int) $expire ? intval($expire) : 86400);
         $name  = trim($name);
@@ -35,7 +33,6 @@ class usrcp
             return $login_status;
         }
 
-
         //normal
         return $this->normal($name, $pass, $hashed, $expire, $loginadm);
     }
@@ -43,8 +40,6 @@ class usrcp
     //get username by id
     public function usernamebyid($user_id)
     {
-        global $config;
-
         $return_now = $auth_status = false;
 
         is_array($plugin_run_result = Plugins::getInstance()->run('auth_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -92,7 +87,8 @@ class usrcp
             while ($row=$SQL->fetch_array($result))
             {
                 if (empty($row['password']))
-                { //more security
+                {
+                    //more security
                     return false;
                 }
 
@@ -208,7 +204,7 @@ class usrcp
     }
 
     // user ids
-    public function id ()
+    public function id()
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('id_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -429,9 +425,6 @@ class usrcp
             //if not expire
             if (($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at)) && ($expire_at > time()))
             {
-                // For better performance we will take the risks
-                // !defined('IN_DOWNLOAD')
-                //exit(print_r( @explode('|', $this->en_de_crypt($this->kleeja_get_cookie('ulogu'), 2))));
                 if (user_can('enter_acp', $group_id))
                 {
                     $user_data = $this->data($user_id, $hashed_password, true, $expire_at);

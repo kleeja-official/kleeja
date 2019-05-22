@@ -38,9 +38,9 @@ get_lang('acp');
 //need to login again
 //
 if (
-    (empty($_SESSION['ADMINLOGIN']) || $_SESSION['ADMINLOGIN'] != md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl'])) || 
-    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != session_id()) ||
-    (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())     
+    (empty($_SESSION['ADMINLOGIN']) || $_SESSION['ADMINLOGIN'] != md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl'])) ||
+    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != KJ_SESSION) ||
+    (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())
 ) {
     if (ig('go') && g('go') == 'login')
     {
@@ -48,7 +48,7 @@ if (
         {
             //login
             $ERRORS        = [];
-            $pass_field    = 'lpass_' . preg_replace('/[^0-9]/', '', sha1($klj_session . sha1($config['h_key']) . p('kid')));
+            $pass_field    = 'lpass_' . preg_replace('/[^0-9]/', '', sha1(KJ_SESSION . sha1($config['h_key']) . p('kid')));
 
 
             if (! empty($_SESSION['SHOW_CAPTCHA']))
@@ -79,7 +79,7 @@ if (
             {
                 if ($f = $usrcp->data(p('lname'), p($pass_field), false, 3600*6, true))
                 {
-                    $_SESSION['USER_SESS']  = session_id();
+                    $_SESSION['USER_SESS']  = KJ_SESSION;
                     $_SESSION['ADMINLOGIN'] = md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl']);
                     //to make sure, sometime setting time from functions doesn't work
                     $_SESSION['ADMINLOGIN_T'] = time() + 18000;
@@ -115,7 +115,7 @@ if (
     $action             = './' . basename(ADMIN_PATH) . '?go=login&amp;cp=' . $go_to;
     $H_FORM_KEYS        = kleeja_add_form_key('admin_login');
     $KEY_FOR_WEE        = sha1(microtime() . sha1($config['h_key']));
-    $KEY_FOR_PASS       = preg_replace('/[^0-9]/', '', sha1($klj_session . sha1($config['h_key']) . $KEY_FOR_WEE)); 
+    $KEY_FOR_PASS       = preg_replace('/[^0-9]/', '', sha1(KJ_SESSION . sha1($config['h_key']) . $KEY_FOR_WEE));
     $not_you            = sprintf($lang['USERNAME_NOT_YOU'], '<a href="' . $config['siteurl'] . 'ucp.php?go=logout">', '</a>');
 
     $show_captcha = ! empty($_SESSION['SHOW_CAPTCHA']);
@@ -272,7 +272,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('begin_admin_page', ge
 /**
 * Exception of 406 ! dirty hosting
 * 'configs' word listed as dangrous requested word
-* so we replaced this word with 'options' instead. 
+* so we replaced this word with 'options' instead.
 */
 if ($go_to == 'options')
 {
@@ -285,7 +285,7 @@ if (! $go_to || empty($go_to) ||  ! in_array($go_to, $adm_extensions))
     $go_to = 'start';
 }
 
-//make array for menu 
+//make array for menu
 $adm_extensions_menu =    $adm_topmenu = [];
 
 
@@ -298,7 +298,7 @@ $cr_time = LAST_VISIT > 0 ? LAST_VISIT : time() - 3600*12;
 // check calls and reports numbers
 if (ig('check_msgs') || ! ig('_ajax_')):
 
-//small bubble system 
+//small bubble system
 //any item can show what is inside it as unread messages
 $kbubbles = [];
 
@@ -375,7 +375,7 @@ $assigned_klj_ver = preg_replace('!#([a-z0-9]+)!', '', KLEEJA_VERSION);
 //for plugins
 $styleePath = null;
 
-//get it 
+//get it
 if (file_exists(ADM_FILES_PATH . '/' . $go_to . '.php'))
 {
     $include = true;

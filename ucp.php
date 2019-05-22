@@ -235,7 +235,7 @@ switch (g('go'))
                 $user_salt         = (string) substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
                 $pass              = (string) $usrcp->kleeja_hash_password($SQL->escape(trim(p('lpass'))) . $user_salt);
                 $mail              = (string) strtolower(trim($SQL->escape(p('lmail'))));
-                $session_id        = (string) session_id();
+                $session_id        = (string) constant('KJ_SESSION');
                 $clean_name        = (string) $usrcp->cleanusername($name);
 
                 $insert_query    = [

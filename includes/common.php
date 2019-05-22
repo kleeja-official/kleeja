@@ -123,8 +123,6 @@ if (! is_bot() && ! isset($_SESSION))
 }
 
 
-
-
 //no enough data
 if (empty($dbname) || empty($dbuser))
 {
@@ -188,6 +186,7 @@ while ($row=$SQL->fetch_array($result))
     $config[$row['name']] = $row['value'];
 }
 
+
 $SQL->freeresult($result);
 
 //check user or guest
@@ -242,16 +241,10 @@ date_default_timezone_set('GMT');
 
 
 //kleeja session id
-$klj_session = $SQL->escape(session_id());
-
+define('KJ_SESSION', preg_replace('/[^-,a-zA-Z0-9]/', '', session_id()));
 
 //site url must end with /
-if ($config['siteurl'])
-{
-    $config['siteurl'] = $config['siteurl'][strlen($config['siteurl'])-1] != '/'
-        ? $config['siteurl'] . '/'
-        : $config['siteurl'];
-}
+$config['siteurl'] = rtrim($config['siteurl'], '/') . '/';
 
 
 //check lang

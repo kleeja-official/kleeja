@@ -91,9 +91,10 @@ class FetchFile
 
     protected function finishUp()
     {
-        global $klj_session;
-
-        session_id($klj_session);
+        if(defined('KJ_SESSION'))
+        {
+             session_id(constant('KJ_SESSION'));
+        }
 
         session_start();
     }
@@ -102,13 +103,15 @@ class FetchFile
     {
         $ch = curl_init($this->url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Kleeja)');
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, false);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
+
 
         if ($this->binary)
         {
@@ -120,7 +123,13 @@ class FetchFile
         {
             $out = fopen($this->destinationPath, 'w');
             curl_setopt($ch, CURLOPT_FILE, $out);
-            curl_exec($ch);
+            $result = curl_exec($ch);
+
+            if ($result === false)
+            {
+                kleeja_log(sprintf("cUrl error (#%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
+            }
+
             curl_close($ch);
             fclose($out);
 
@@ -129,7 +138,12 @@ class FetchFile
         else
         {
             $data = curl_exec($ch);
+            if ($data === false)
+            {
+                kleeja_log(sprintf("FetchFile error (curl: #%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
+            }
             curl_close($ch);
+
             return $data;
         }
     }
