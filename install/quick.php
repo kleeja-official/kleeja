@@ -83,7 +83,7 @@ include_once PATH . 'includes/functions_alternative.php';
 
 $usrcp                     = new usrcp;
 $password                  = ! empty($cli_options['password']) ? $cli_options['password'] : mt_rand();
-$user_salt                 = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+$user_salt                 = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
 $user_pass                 = $usrcp->kleeja_hash_password($password . $user_salt);
 $user_name                 = $clean_name = 'admin';
 $user_mail                 = $config_sitemail = 'admin@example.com';

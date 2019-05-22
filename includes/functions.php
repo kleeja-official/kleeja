@@ -216,7 +216,7 @@ function kleeja_get_page()
  */
 function _sm_mk_utf8($text)
 {
-    return '=?UTF-8?B?' . kleeja_base64_encode($text) . '?=';
+    return '=?UTF-8?B?' . base64_encode($text) . '?=';
 }
 
 /**

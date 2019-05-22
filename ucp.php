@@ -232,7 +232,7 @@ switch (g('go'))
             if (empty($ERRORS))
             {
                 $name              = (string) $SQL->escape(trim(p('lname')));
-                $user_salt         = (string) substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+                $user_salt         = (string) substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
                 $pass              = (string) $usrcp->kleeja_hash_password($SQL->escape(trim(p('lpass'))) . $user_salt);
                 $mail              = (string) strtolower(trim($SQL->escape(p('lmail'))));
                 $session_id        = (string) session_id();
@@ -701,7 +701,7 @@ switch (g('go'))
             //no errors , do it
             if (empty($ERRORS))
             {
-                $user_salt        = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+                $user_salt        = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
                 $mail             = $new_mail ? "mail='" . $SQL->escape(strtolower(trim(p('pmail')))) . "'" : '';
                 $showmyfile       = p('show_my_filecp', 'int') != $show_my_filecp ?  ($mail == '' ? '': ',') . "show_my_filecp='" . p('show_my_filecp', 'int') . "'" : '';
                 $pass             = ! empty(p('ppass_new')) ? ($showmyfile != ''  || $mail != '' ? ',' : '') . "password='" . $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt) .

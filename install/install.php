@@ -208,7 +208,7 @@ case 'data' :
         include_once PATH . 'includes/functions_alternative.php';
         $usrcp = new usrcp;
 
-        $user_salt                 = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+        $user_salt                 = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
         $user_pass                 = $usrcp->kleeja_hash_password(p('password') . $user_salt);
         $user_name                 = $SQL->escape(p('username'));
         $user_mail                 = $SQL->escape(p('email'));

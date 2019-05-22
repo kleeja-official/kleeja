@@ -112,7 +112,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
         $result2 = $SQLBB->build($query2);
         while ($row=$SQLBB->fetch_array($result2))
         {
-            $SQLBB->freeresult($result2); 
+            $SQLBB->freeresult($result2);
 
             if ($return_name)
             {
@@ -164,7 +164,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
                 $userinfo             = $row;
                 $userinfo['group_id'] = ($row[$row_leve] == $admin_level ? '1' : '3');
 
-                $user_y = kleeja_base64_encode(serialize(['id'=>$row['user_id'], 'name'=>$row['username'], 'mail'=>$row['user_email'], 'last_visit'=>time()]));
+                $user_y = base64_encode(serialize(['id'=>$row['user_id'], 'name'=>$row['username'], 'mail'=>$row['user_email'], 'last_visit'=>time()]));
 
                 if (! $hashed && ! $loginadm)
                 {

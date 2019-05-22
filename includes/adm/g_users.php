@@ -237,7 +237,7 @@ elseif (ip('newuser'))
     if (empty($ERRORS))
     {
         $name                 = (string) $SQL->escape(trim(p('lname')));
-        $user_salt            = (string) substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+        $user_salt            = (string) substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
         $pass                 = (string) $usrcp->kleeja_hash_password($SQL->escape(trim(p('lpass'))) . $user_salt);
         $mail                 = (string) trim(strtolower(p('lmail')));
         $clean_name           = (string) $usrcp->cleanusername($name);
@@ -349,7 +349,7 @@ if (ip('edituser'))
     }
     elseif (trim(p('l_pass')) != '')
     {
-        $user_salt       = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+        $user_salt       = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
         $pass            = "password = '" . $usrcp->kleeja_hash_password(trim(p('l_pass')) . $user_salt) . "', password_salt='" . $user_salt . "',";
     }
 

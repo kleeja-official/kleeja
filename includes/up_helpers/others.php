@@ -17,7 +17,7 @@ if (! defined('IN_COMMON'))
 
 /**
  * checking the safety and validity of sub-extension of given file
- * 
+ *
  * @param mixed $filename
  */
 function ext_check_safe($filename)
@@ -256,7 +256,7 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
 
     //if normal checks failed!
 
-    if (@kleeja_filesize($file_path) > 6*(1000*1024))
+    if (@filesize($file_path) > 6*(1000*1024))
     {
         return true;
     }
@@ -285,7 +285,7 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
 
 
 /**
- * to prevent flooding at uploading  
+ * to prevent flooding at uploading
  * @param mixed $user_id
  */
 function user_is_flooding($user_id = '-1')
@@ -307,9 +307,9 @@ function user_is_flooding($user_id = '-1')
         return false;
     }
 
-    //In my point of view I see 30 seconds is not bad rate to stop flooding .. 
-    //even though this minimum rate sometime isn't enough to protect Kleeja from flooding attacks 
-    $time = time() - ($user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']); 
+    //In my point of view I see 30 seconds is not bad rate to stop flooding ..
+    //even though this minimum rate sometime isn't enough to protect Kleeja from flooding attacks
+    $time = time() - ($user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']);
 
     $query = [
         'SELECT'          => 'f.time',

@@ -417,7 +417,7 @@ elseif (ig('down') || ig('downf') ||
         }
     }
 
-    if (! ($size = @kleeja_filesize($path_file)))
+    if (! ($size = @filesize($path_file)))
     {
         $size = $d_size;
     }

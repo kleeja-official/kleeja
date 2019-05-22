@@ -37,7 +37,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
     // @see file : docs/kleeja_(vb,mysmartbb,phpbb)_api.txt
 
-    $api_http_query = 'api_key=' . kleeja_base64_encode($script_api_key) . '&' . ($hashed ? 'userid' : 'username') . '=' . urlencode($name) . '&pass=' . kleeja_base64_encode($pass);
+    $api_http_query = 'api_key=' . base64_encode($script_api_key) . '&' . ($hashed ? 'userid' : 'username') . '=' . urlencode($name) . '&pass=' . base64_encode($pass);
     //if only username, let tell him in the query
     $api_http_query .= $return_username ? '&return_username=1' : '';
 
@@ -56,7 +56,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     //split the data , the first one is always 0 or 1
     //0 : error
     //1: ok
-    $user_info = explode('%|%', kleeja_base64_decode($remote_data));
+    $user_info = explode('%|%', base64_decode($remote_data));
 
     //omg, it's 0 , 0 : error, lets die here
     if ((int) $user_info[0] == 0)
@@ -88,7 +88,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     //and this must be filled with user data comming from url
     $userinfo             = [];
     $userinfo['group_id'] = GROUP_ID;
-    $user_y               = kleeja_base64_encode(serialize(['id'=>USER_ID, 'name'=>USER_NAME, 'mail'=>USER_MAIL, 'last_visit'=>time()]));
+    $user_y               = base64_encode(serialize(['id'=>USER_ID, 'name'=>USER_NAME, 'mail'=>USER_MAIL, 'last_visit'=>time()]));
 
 
     //add cookies

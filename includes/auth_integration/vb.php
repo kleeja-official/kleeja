@@ -67,7 +67,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
                 $forum_srv .= ':' . $config['MasterServer']['port'];
             }
 
-            //some people change their db charset 
+            //some people change their db charset
             if (isset($config['Mysqli']['charset']))
             {
                 $forum_db_charset = $config['Mysqli']['charset'];
@@ -89,7 +89,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
         $forum_pass      = $script_pass;
         $forum_prefix    = $script_prefix;
 
-        //some people change their db charset 
+        //some people change their db charset
         if (isset($script_db_charset))
         {
             $forum_db_charset = $script_db_charset;
@@ -120,7 +120,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
     $name = empty($script_cp1256) || ! $script_cp1256 || $hashed ? $name : $usrcp->kleeja_utf8($name, false);
 
     $query_salt = [
-        'SELECT'       => $hashed ? '*' : ($isVB5 ? 'token' : 'salt'), 
+        'SELECT'       => $hashed ? '*' : ($isVB5 ? 'token' : 'salt'),
         'FROM'         => "`{$forum_prefix}user`",
     ];
 
@@ -147,7 +147,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
             if (! $hashed)
             {
-                $pass = ! $isVB5 
+                $pass = ! $isVB5
                         ? md5(md5($pass) . $row1['salt'])  // without normal md5
                         : crypt(md5($pass), $row1['token']);
 
@@ -176,18 +176,18 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
 
                         $userinfo             = $row;
                         $userinfo['group_id'] =  ($row['usergroupid'] == 6 ? 1 : 3);
-                        $user_y               = kleeja_base64_encode(serialize(['id'=>$row['userid'], 'name'=>USER_NAME, 'mail'=>$row['email'], 'last_visit'=>time()]));
+                        $user_y               = base64_encode(serialize(['id'=>$row['userid'], 'name'=>USER_NAME, 'mail'=>$row['email'], 'last_visit'=>time()]));
 
                         $hash_key_expire = sha1(md5($config['h_key'] . ($isVB5 ? $row['token'] : $row['password'])) . $expire);
 
                         if (! $loginadm)
                         {
                             $usrcp->kleeja_set_cookie('ulogu', $usrcp->en_de_crypt(
-                                                    $row['userid'] . '|' . 
-                                                    ($isVB5 ? $row['token'] : $row['password']) . '|' . 
-                                                    $expire . '|' . 
-                                                    $hash_key_expire . '|' . 
-                                                    ($row['usergroupid'] == 6 ? 1 : 3) . '|' . 
+                                                    $row['userid'] . '|' .
+                                                    ($isVB5 ? $row['token'] : $row['password']) . '|' .
+                                                    $expire . '|' .
+                                                    $hash_key_expire . '|' .
+                                                    ($row['usergroupid'] == 6 ? 1 : 3) . '|' .
                                                     $user_y
                                                 ), $expire);
                         }
@@ -217,7 +217,7 @@ function kleeja_auth_login ($name, $pass, $hashed = false, $expire, $loginadm = 
             }
         }//whil1
 
-        $SQLVB->freeresult($result_salt); 
+        $SQLVB->freeresult($result_salt);
 
         unset($pass);
         $SQLVB->close();
