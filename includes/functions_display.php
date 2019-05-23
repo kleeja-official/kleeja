@@ -296,7 +296,7 @@ function kleeja_debug()
     {
         foreach ($SQL->debugr as $key=>$val)
         {
-            echo '<fieldset name="sql"  dir="ltr" style="background:white"><legend><em>Query # [' . ($key+1) . '</em>]</legend> ';
+            echo '<fieldset name="sql"  dir="ltr" style="background:white"><legend><em>Query # [' . ($key) . '</em>]</legend> ';
             echo '<textarea style="font-family:Courier New,monospace;width:99%; background:#F4F4F4" rows="5" cols="10">' . $val[0] . '';
             echo '</textarea>    <br />';
             echo 'Duration :' . $val[1] . '';
