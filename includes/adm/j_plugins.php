@@ -74,6 +74,11 @@ switch ($case):
 
         while ($row = $SQL->fetch($result))
         {
+            if(! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/init.php'))
+            {
+                continue;
+            }
+
             $installed_plugins[$row['plg_name']] = $row;
 
             $installed_plugins[$row['plg_name']]['extra_info'] = Plugins::getInstance()->installed_plugin_info($row['plg_name']);
@@ -83,6 +88,11 @@ switch ($case):
                 )
                 ? PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/icon.png'
                 : $STYLE_PATH_ADMIN . 'images/plugin.png';
+
+            $installed_plugins[$row['plg_name']]['has_settings_page'] = ! empty(
+                $installed_plugins[$row['plg_name']]['extra_info']['settings_page']
+                ) && ! preg_match('/^https?:\/\//', $installed_plugins[$row['plg_name']]['extra_info']['settings_page']);
+
 
             foreach (['plugin_title', 'plugin_description'] as $localizedInfo)
             {
@@ -588,9 +598,9 @@ switch ($case):
                     $plugin_name_link = $store_plugins[$plugin_name]['url'];
 
                     $plugin_archive = FetchFile::make($plugin_name_link)
-                                        ->setDestinationPath(PATH . 'cache/' . $plugin_name . '.zip')
-                                        ->isBinaryFile(true)
-                                        ->get();
+                        ->setDestinationPath(PATH . 'cache/' . $plugin_name . '.zip')
+                        ->isBinaryFile(true)
+                        ->get();
 
                     if ($plugin_archive)
                     {

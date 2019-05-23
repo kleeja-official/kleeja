@@ -794,7 +794,7 @@ function add_config_r($configs)
 
 function update_config($name, $value, $escape = true, $group = false)
 {
-    global $SQL, $dbprefix, $d_groups, $userinfo;
+    global $SQL, $dbprefix, $d_groups, $userinfo, $config;
 
     $value = $escape ? $SQL->escape($value) : $value;
     $table = "{$dbprefix}config";

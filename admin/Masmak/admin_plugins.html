@@ -37,17 +37,20 @@
         <LOOP NAME="installed_plugins">
         <div class="col-sm-12 col-md-3 mt-2">
         <div class="card">
-            <img class="card-img-top" src="{{icon}}" alt="{{plg_name}}">
-            <div class="card-body">
-                <h5 class="card-title"  style="max-height: 30px; min-height: 30px; overflow-y: auto">
+                <img class="card-img-top img-responsive" src="{{icon}}" alt="{{plg_name}}">
+                <div class="card-img-overlay p-3">
+                    <div class="font-weight-normal px-2 rounded text-white" style="line-height:2; background: rgba(18, 16, 16, 0.4);">
                     <IF LOOP="plg_disabled">
                         {{plg_name}}
                         <i class="fa fa-toggle-off"></i>
                         <ELSE>
-                            {{extra_info.plugin_title}} {{extra_info.plugin_version}}
+                        {{extra_info.plugin_title}} {{extra_info.plugin_version}}
                     </IF>
-                </h5>
-                <p class="card-text" style="max-height: 100px; min-height: 100px; overflow-y: auto">
+                    </div>
+                </div>
+
+            <div class="card-body">
+                <p class="card-text " style="font-size:13px; max-height: 100px; min-height: 50px; overflow-y: auto">
                     <IF LOOP="plg_disabled">
                         {{plg_dsc}}
                         <ELSE>
@@ -58,14 +61,17 @@
                 </p>
             </div>
 
-            <div class="card-footer">
+            <div class="card-footer btn-group">
                 <IF LOOP="plg_disabled">
-                    <a  class="btn btn-outline-primary btn-sm" href="{plugin_enable_link}{{plg_name}}" title="{lang.ENABLE}"><i class="fa fa-toggle-on" title="{lang.ENABLE}"></i> {lang.ENABLE}</a>
+                    <a  class="btn btn-outline-secondary btn-sm" href="{plugin_enable_link}{{plg_name}}" title="{lang.ENABLE}"><i class="fa fa-toggle-on" title="{lang.ENABLE}"></i> {lang.ENABLE}</a>
                     <ELSE>
-                    <a class="btn btn-outline-primary btn-sm" href="{plugin_disable_link}{{plg_name}}" title="{lang.DISABLE}"><i class="fa fa-toggle-off" title="{lang.DISABLE}"></i> {lang.DISABLE}</a>
+                   <IF LOOP="has_settings_page">
+                        <a class="btn btn-outline-secondary btn-sm" href="./?{{extra_info.settings_page}}" title="{lang.R_CONFIGS}"><i class="fa fa-gear" title="{lang.R_CONFIGS}"></i></a>
+                    </IF>
+                    <a class="btn btn-outline-secondary btn-sm" href="{plugin_disable_link}{{plg_name}}" title="{lang.DISABLE}"><i class="fa fa-toggle-off" title="{lang.DISABLE}"></i> {lang.DISABLE}</a>
                 </IF>
 
-                <a class="btn btn-outline-primary btn-sm" href="{plugin_uninstall_link}{{plg_name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form();"><i class="fa fa-remove" title="{lang.DELETE}"></i> {lang.DELETE}</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{plugin_uninstall_link}{{plg_name}}" title="{lang.DELETE}" onclick="javascript:return confirm_form();"><i class="fa fa-remove" title="{lang.DELETE}"></i> {lang.DELETE}</a>
             </div>
         </div>
         </div>
@@ -164,7 +170,6 @@
             <div class="media-body d-flex justify-content-between">
                 <div>
                     <h5 class="mt-0 mb-2">{{title}}</h5>
-
                     <div style="direction: ltr;">
                         <IF NAME="case == check">{{current_version}} → </IF>{{version}}
                     </div>
