@@ -153,27 +153,8 @@ while ($row=$SQL->fetch_array($result))
     }
     elseif ($row['name'] == 'user_system')
     {
-        //get auth types
-        //fix previous choices in old kleeja
-        if (in_array($con['user_system'], ['2', '3', '4']))
-        {
-            $con['user_system'] = str_replace(['2', '3', '4'], ['phpbb', 'vb', 'mysmartbb'], $con['user_system']);
-        }
 
-        $authtypes .= '<option value="1"' . ($con['user_system']=='1' ? ' selected="selected"' : '') . '>' . $lang['NORMAL'] . '</option>' . "\n";
-
-        if ($dh = @opendir(PATH . 'includes/auth_integration'))
-        {
-            while (($file = readdir($dh)) !== false)
-            {
-                if (strpos($file, '.php') !== false)
-                {
-                    $file = trim(str_replace('.php', '', $file));
-                    $authtypes .= '<option value="' . $file . '"' . ($con['user_system'] == $file ? ' selected="selected"' : '') . '>' . $file . '</option>' . "\n";
-                }
-            }
-            @closedir($dh);
-        }
+        continue;
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('while_fetch_adm_config', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
