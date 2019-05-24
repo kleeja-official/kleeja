@@ -335,10 +335,13 @@ switch ($case):
             //'plugin_kleeja_version_min' => '1.8',
             // Max version of Kleeja that's required to run this plugin
             //'plugin_kleeja_version_max' => '3.8',
+            //3.1.0 < 3.1.0
 
-            if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
+            if (! empty($plugin_info['plugin_kleeja_version_min']))
             {
-                kleeja_admin_info(
+                if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
+                {
+                    kleeja_admin_info(
                     $lang['PACKAGE_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'],
                     true,
                     '',
@@ -346,10 +349,11 @@ switch ($case):
                     ADMIN_PATH . '?cp=' . basename(__FILE__, '.php')
                 );
 
-                exit;
+                    exit;
+                }
             }
 
-            if ($plugin_info['plugin_kleeja_version_max'] != '0')
+            if (! empty($plugin_info['plugin_kleeja_version_max']))
             {
                 if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_max'], '>'))
                 {
