@@ -20,4 +20,3 @@ if (! defined('IN_COMMON'))
 {
     exit();
 }
-

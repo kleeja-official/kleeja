@@ -43,7 +43,7 @@ $rules = [
 if (file_exists('plugins_rules.php'))
 {
     $plugins_rules = include_once 'plugins_rules.php';
-    $rules  = array_merge($rules, $plugins_rules);
+    $rules         = array_merge($rules, $plugins_rules);
 }
 
 

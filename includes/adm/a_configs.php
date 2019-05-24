@@ -153,7 +153,6 @@ while ($row=$SQL->fetch_array($result))
     }
     elseif ($row['name'] == 'user_system')
     {
-
         continue;
     }
 

@@ -16,10 +16,10 @@ if (! defined('IN_COMMON'))
 class FetchFile
 {
     private $url;
-    private $timeout  = 60;
+    private $timeout         = 60;
     private $destinationPath = '';
-    private $maxRedirects = 3;
-    private $binary       = false;
+    private $maxRedirects    = 3;
+    private $binary          = false;
 
 
     public function __construct($url)
@@ -91,9 +91,9 @@ class FetchFile
 
     protected function finishUp()
     {
-        if(defined('KJ_SESSION'))
+        if (defined('KJ_SESSION'))
         {
-             session_id(constant('KJ_SESSION'));
+            session_id(constant('KJ_SESSION'));
         }
 
         session_start();
@@ -138,6 +138,7 @@ class FetchFile
         else
         {
             $data = curl_exec($ch);
+
             if ($data === false)
             {
                 kleeja_log(sprintf("FetchFile error (curl: #%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
@@ -150,8 +151,8 @@ class FetchFile
 
     protected function fopen()
     {
-            // Setup a stream context
-            $stream_context = stream_context_create(
+        // Setup a stream context
+        $stream_context = stream_context_create(
             [
                 'http' => [
                     'method'              => 'GET',
@@ -178,6 +179,11 @@ class FetchFile
             }
 
             return $content;
+        }
+        else
+        {
+            $error = error_get_last();
+            kleeja_log(sprintf("FetchFile error (stream: #%d): %s\n", $error['type'], $error['message']));
         }
 
         return false;

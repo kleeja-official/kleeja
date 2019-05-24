@@ -21,8 +21,8 @@ class usrcp
     {
         //expire
         $expire = time() + ((int) $expire ? intval($expire) : 86400);
-        $name  = trim($name);
-        $pass  = trim($pass);
+        $name   = trim($name);
+        $pass   = trim($pass);
 
         $return_now = $login_status = false;
 

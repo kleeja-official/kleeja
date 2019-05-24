@@ -60,16 +60,6 @@ class cache
 
     public function save($name, $data, $time = 86400)
     {
-        //
-        //We have problems if APC is enabled, so we disable our cache
-        //system if it's lodoed to prevent those problems, but we will
-        //try to fix it in the near future .. I hope that.
-        //
-        if (defined('APC_CACHE'))
-        {
-            //return;
-        }
-
         $name          =  preg_replace('![^a-z0-9_]!i', '_', $name);
         $data_for_save = '<?' . 'php' . "\n";
         $data_for_save .= '//Cache file, generated for Kleeja at ' . gmdate('d-m-Y h:i A') . "\n\n";

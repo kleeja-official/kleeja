@@ -74,7 +74,7 @@ switch ($case):
 
         while ($row = $SQL->fetch($result))
         {
-            if(! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/init.php'))
+            if (! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/init.php'))
             {
                 continue;
             }
@@ -285,7 +285,7 @@ switch ($case):
 
         if (empty($plg_name))
         {
-            if (defined('DEBUG'))
+            if (defined('DEV_STAGE'))
             {
                 exit('empty($plg_name)');
             }
@@ -296,7 +296,7 @@ switch ($case):
         {
             if (! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php'))
             {
-                if (defined('DEBUG'))
+                if (defined('DEV_STAGE'))
                 {
                     exit('!file_exists($plg_name)');
                 }

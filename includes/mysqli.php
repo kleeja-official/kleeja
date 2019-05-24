@@ -22,11 +22,11 @@ class KleejaDatabase
 {
     private $connect_id               = null;
     private $result                   = null;
-    public $dbprefix                 = '';
+    public $dbprefix                  = '';
     private $dbname                   = '';
-    public $query_num                = 0;
+    public $query_num                 = 0;
     private $in_transaction           = 0;
-    public $debugr                   = false;
+    public $debugr                    = false;
     private $show_errors              = true;
 
 
@@ -45,7 +45,7 @@ class KleejaDatabase
         }
 
         $this->dbprefix        = $dbprefix;
-        $this->dbname        = $db_name;
+        $this->dbname          = $db_name;
 
         $this->connect_id = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
 
@@ -416,7 +416,6 @@ class KleejaDatabase
     // error message func
     public function error_msg($msg)
     {
-
         if (! $this->show_errors)
         {
             return false;

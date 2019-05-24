@@ -316,7 +316,7 @@ switch (g('go'))
         $data_user = $config['user_system'] == 1 ? $usrcp->get_data('name, show_my_filecp', $user_id) : ['name' => $usrcp->usernamebyid($user_id), 'show_my_filecp' => '1'];
 
         //if there is no username, then there is no user at all
-        if (! $data_user['name'])
+        if (empty($data_user['name']))
         {
             kleeja_err($lang['NOT_EXSIT_USER'], $lang['PLACE_NO_YOU']);
         }

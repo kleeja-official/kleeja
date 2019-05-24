@@ -60,7 +60,7 @@ $uploader->setUploadFieldsLimit($config['filesnum']);
 
 
 
-if(ip('submitr'))
+if (ip('submitr'))
 {
     $uploader->upload();
 }

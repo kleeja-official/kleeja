@@ -71,7 +71,7 @@ function get_ban()
     global $banss, $lang, $SQL, $usrcp;
 
     //visitor ip now
-    $ip    = get_ip();
+    $ip        = get_ip();
     $username  = $usrcp->name();
 
     //now .. loop for banned ips
@@ -96,9 +96,9 @@ function get_ban()
                 $replace_it = str_replace('*', '([0-9]{1,3})', $banned_item);
                 $replace_it = str_replace('.', '\.', $replace_it);
 
-              $is_banned = $ip == $banned_item || @preg_match('/' . preg_quote($replace_it, '/') . '/i', $ip);
+                $is_banned = $ip == $banned_item || @preg_match('/' . preg_quote($replace_it, '/') . '/i', $ip);
             }
-            else if(! empty($username) && $banned_item == $username)
+            elseif (! empty($username) && $banned_item == $username)
             {
                 $is_banned = true;
             }
@@ -1418,9 +1418,9 @@ function p($name, $type = 'str', $default = '')
  */
 function add_to_serve_rules($rules, $unique_id = '')
 {
-    if(! file_exists(PATH  . 'plugins_rules.php'))
+    if (! file_exists(PATH . 'plugins_rules.php'))
     {
-        if(! is_writable(PATH))
+        if (! is_writable(PATH))
         {
             chmod(PATH, K_DIR_CHMOD);
         }
