@@ -1230,6 +1230,10 @@ case 'edit_user':
     ];
 
     $result = $SQL->build($query);
+    if (! $SQL->num_rows($result))
+    {
+        kleeja_admin_err('ERROR-NO-USER-FOUND', true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
+    }
     $udata  = $SQL->fetch_array($result);
     $SQL->freeresult($result);
 
