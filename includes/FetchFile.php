@@ -183,7 +183,7 @@ class FetchFile
         else
         {
             $error = error_get_last();
-            kleeja_log(sprintf("FetchFile error (stream: #%d): %s\n", $error['type'], $error['message']));
+            kleeja_log(sprintf("FetchFile error (stream: #%s): %s\n", $error['type'], $error['message']));
         }
 
         return false;
