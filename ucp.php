@@ -35,7 +35,7 @@ switch (g('go'))
         $stylee                       = 'login';
         $titlee                       = $lang['LOGIN'];
         $action                       = 'ucp.php?go=login' . (ig('return') ? '&amp;return=' . g('return') : '');
-        $forget_pass_link             = ! empty($forgetpass_script_path) && (int) $config['user_system'] != 1 ? $forgetpass_script_path : 'ucp.php?go=get_pass';
+        $forget_pass_link             = 'ucp.php?go=get_pass';
         $H_FORM_KEYS                  = kleeja_add_form_key('login');
         //no error yet
         $ERRORS = false;
@@ -132,32 +132,8 @@ switch (g('go'))
         }
         elseif ($config['user_system'] != '1')
         {
+            $goto_forum_link = '...';
             is_array($plugin_run_result = Plugins::getInstance()->run('register_not_default_sys', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-            if (! empty($register_script_path))
-            {
-                $goto_forum_link = $register_script_path;
-            }
-            else
-            {
-                if (isset($script_path))
-                {
-                    $goto_forum_link = $config['user_system'] == 'api' ? dirname($script_path) : $script_path;
-
-                    if ($config['user_system'] == 'phpbb' || ($config['user_system'] == 'api' && strpos($script_path, 'phpbb') !== false))
-                    {
-                        $goto_forum_link .= '/ucp.php?mode=register';
-                    }
-                    elseif ($config['user_system'] == 'vb' || ($config['user_system'] == 'api' && strpos($script_path, 'vb') !== false))
-                    {
-                        $goto_forum_link .= '/register.php';
-                    }
-                }
-                else
-                {
-                    $goto_forum_link = '...';
-                }
-            }
 
             kleeja_info('<a href="' . $goto_forum_link . '" title="' . $lang['REGISTER'] . '" target="_blank">' . $lang['REGISTER'] . '</a>', $lang['REGISTER']);
         }
@@ -316,19 +292,19 @@ switch (g('go'))
             kleeja_err($lang['USER_PLACE'], $lang['PLACE_NO_YOU'], true, 'index.php');
         }
 
-            //Not allowed to browse files's folders of other users
+        //Not allowed to browse files's folders of other users
         if (! user_can('access_fileusers') && ! $user_himself)
         {
             is_array($plugin_run_result = Plugins::getInstance()->run('user_cannot_access_fileusers', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
             kleeja_info($lang['HV_NOT_PRVLG_ACCESS'], $lang['HV_NOT_PRVLG_ACCESS']);
         }
 
-            //Not allowed to access this page ?
-            if (! user_can('access_fileuser') && $user_himself)
-            {
-                is_array($plugin_run_result = Plugins::getInstance()->run('user_cannot_access_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-                kleeja_info($lang['HV_NOT_PRVLG_ACCESS'], $lang['HV_NOT_PRVLG_ACCESS']);
-            }
+        //Not allowed to access this page ?
+        if (! user_can('access_fileuser') && $user_himself)
+        {
+            is_array($plugin_run_result = Plugins::getInstance()->run('user_cannot_access_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+            kleeja_info($lang['HV_NOT_PRVLG_ACCESS'], $lang['HV_NOT_PRVLG_ACCESS']);
+        }
 
         //fileuser is closed ?
         if ((int) $config['enable_userfile'] != 1 && ! user_can('enter_acp'))
@@ -336,10 +312,10 @@ switch (g('go'))
             kleeja_info($lang['USERFILE_CLOSED'], $lang['CLOSED_FEATURE']);
         }
 
-            //get user options and name
-            $data_user = $config['user_system'] == 1 ? $usrcp->get_data('name, show_my_filecp', $user_id) : ['name' => $usrcp->usernamebyid($user_id), 'show_my_filecp' => '1'];
+        //get user options and name
+        $data_user = $config['user_system'] == 1 ? $usrcp->get_data('name, show_my_filecp', $user_id) : ['name' => $usrcp->usernamebyid($user_id), 'show_my_filecp' => '1'];
 
-            //if there is no username, then there is no user at all
+        //if there is no username, then there is no user at all
         if (! $data_user['name'])
         {
             kleeja_err($lang['NOT_EXSIT_USER'], $lang['PLACE_NO_YOU']);
@@ -382,6 +358,7 @@ switch (g('go'))
         {
             $data_user['name'] = $usrcp->usernamebyid($user_id);
         }
+
         $user_name = ! $data_user['name'] ? false : $data_user['name'];
 
         //set page title
@@ -604,36 +581,13 @@ switch (g('go'))
         $name          = $usrcp->name();
         $mail          = $usrcp->mail();
         extract($usrcp->get_data('show_my_filecp, password_salt'));
-        $data_forum        = (int) $config['user_system'] == 1 ? true : false;
+        $data_forum        = (int) $config['user_system'] == 1;
         $link_avater       = sprintf($lang['EDIT_U_AVATER_LINK'], '<a target="_blank" href="http://www.gravatar.com/">', '</a>');
         $H_FORM_KEYS       = kleeja_add_form_key('profile');
         //no error yet
         $ERRORS = false;
 
-        if (! empty($profile_script_path))
-        {
-            $goto_forum_link = $profile_script_path;
-        }
-        else
-        {
-            if (isset($script_path))
-            {
-                $goto_forum_link = ($config['user_system'] == 'api') ? dirname($script_path) : $script_path;
-
-                if ($config['user_system'] == 'phpbb' || ($config['user_system'] == 'api' && strpos(strtolower($script_path), 'phpbb') !== false))
-                {
-                    $goto_forum_link .= '/ucp.php?i=164';
-                }
-                elseif ($config['user_system'] == 'vb' || ($config['user_system'] == 'api' && strpos(strtolower($script_path), 'vb') !== false))
-                {
-                    $goto_forum_link .= '/profile.php?do=editprofile';
-                }
-            }
-            else
-            {
-                $goto_forum_link = '...';
-            }
-        }
+        $goto_forum_link = '...';
 
         //_post
         $t_pppass_old = p('pppass_old');
@@ -641,7 +595,7 @@ switch (g('go'))
         $t_ppass_new  = p('ppass_new');
         $t_ppass_new2 = p('ppass_new2');
 
-            is_array($plugin_run_result = Plugins::getInstance()->run('no_submit_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+        is_array($plugin_run_result = Plugins::getInstance()->run('no_submit_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         //
         // after submit
@@ -742,7 +696,10 @@ switch (g('go'))
         //if not default system, let's give him a link for integrated script
         if ((int) $config['user_system'] != 1)
         {
-            $text = '<a href="' . (! empty($forgetpass_script_path) ? $forgetpass_script_path : $script_path) . '">' . $lang['LOST_PASS_FORUM'] . '</a>';
+            $forgetpass_link = '...';
+            is_array($plugin_run_result = Plugins::getInstance()->run('get_pass_resetpass_link', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+            $text = '<a href="' . $forgetpass_link . '">' . $lang['LOST_PASS_FORUM'] . '</a>';
             kleeja_info($text, $lang['PLACE_NO_YOU']);
         }
 

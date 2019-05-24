@@ -33,10 +33,6 @@ if (@extension_loaded('apc'))
 //path
 if (! defined('PATH'))
 {
-    if (! defined('__DIR__'))
-    {
-        define('__DIR__', dirname(__FILE__));
-    }
     define('PATH', str_replace('/includes', '', __DIR__) . '/');
 }
 

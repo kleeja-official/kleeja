@@ -26,7 +26,7 @@ $action_all        = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') 
 $cp_users_url = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php');
 
 //if not normal user system
-$user_not_normal    = (int) $config['user_system'] != 1 ?  true : false;
+$user_not_normal    = (int) $config['user_system'] != 1;
 $is_search          = $affected       = false;
 $GET_FORM_KEY       = kleeja_add_form_key_get('adm_users');
 $H_FORM_KEYS        = kleeja_add_form_key('adm_users');

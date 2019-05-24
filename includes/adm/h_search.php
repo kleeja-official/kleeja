@@ -20,7 +20,7 @@ $stylee = 'admin_search';
 $action = basename(ADMIN_PATH) . '?cp=h_search';
 
 //wut the default user system
-$default_user_system = (int) $config['user_system'] == 1 ? true : false;
+$default_user_system = (int) $config['user_system'] == 1;
 
 $H_FORM_KEYS     = kleeja_add_form_key('adm_files_search');
 $H_FORM_KEYS2    = kleeja_add_form_key('adm_users_search');

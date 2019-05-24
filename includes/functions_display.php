@@ -268,7 +268,7 @@ function kleeja_debug()
 
     $debug_output = '';
 
-    //get memory usage ; code of phpbb
+    //get memory usage
     if (function_exists('memory_get_usage'))
     {
         if ($memory_usage = memory_get_usage())
