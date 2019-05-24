@@ -1219,7 +1219,7 @@ case 'edit_user':
 
         if (! $SQL->num_rows($SQL->query("SELECT * FROM {$dbprefix}users WHERE id=" . $userid)))
         {
-            kleeja_admin_err('ERROR-NO-USER-FOUND', true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
+            kleeja_admin_err($lang['NOT_EXSIT_USER'], true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
         }
     }
 
@@ -1232,7 +1232,7 @@ case 'edit_user':
     $result = $SQL->build($query);
     if (! $SQL->num_rows($result))
     {
-        kleeja_admin_err('ERROR-NO-USER-FOUND', true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
+        kleeja_admin_err($lang['NOT_EXSIT_USER'], true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
     }
     $udata  = $SQL->fetch_array($result);
     $SQL->freeresult($result);
