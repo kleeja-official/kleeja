@@ -414,7 +414,7 @@ class defaultUploader implements KleejaUploader
             //no file!
             if (empty($_FILES['file_' . $i . '_']['tmp_name']) && empty($_FILES['file'][$i]['tmp_name']))
             {
-                if (is_null($_FILES['file_' . $i . '_']) && is_null($_FILES['file'][$i]))
+                if (! isset($_FILES['file_' . $i . '_'], $_FILES['file'][$i]))
                 {
                     continue;
                 }

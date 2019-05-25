@@ -118,7 +118,6 @@ function Saafooter()
 
     if ($config['statfooter'] != 0 || defined('DEV_STAGE'))
     {
-        $gzip             = $config['gzip'] == '1' ?  'Enabled' : 'Disabled';
         $hksys            = ! defined('STOP_PLUGINS') ? 'Enabled' : 'Disabled';
         $endtime          = get_microtime();
         $loadtime         = number_format($endtime - $starttm, 4);
@@ -126,7 +125,7 @@ function Saafooter()
         $time_sql         = round($SQL->query_num / $loadtime);
         $page_url         = preg_replace(['/([\&\?]+)debug/i', '/&amp;/i'], ['', '&'], kleeja_get_page());
         $link_dbg         = user_can('enter_acp') && defined('DEV_STAGE') ? '[ <a href="' . str_replace('&', '&amp;', $page_url) . (strpos($page_url, '?') === false ? '?' : '&amp;') . 'debug">Debug Info ... </a> ]' : '';
-        $page_stats       = "<strong>[</strong> GZIP : $gzip - Generation Time: $loadtime Sec  - Queries: $queries_num - Hook System:  $hksys <strong>]</strong>  " . $link_dbg;
+        $page_stats       = "<strong>[</strong> Generation Time: $loadtime Sec  - Queries: $queries_num - Hook System:  $hksys <strong>]</strong>  " . $link_dbg;
     }
 
     $tpl->assign('page_stats', $page_stats);
@@ -850,7 +849,7 @@ function kleeja_date($time, $human_time = true, $format = false)
         $timezone_offset = intval($config['time_zone']) * 60 * 60;
     }
 
-    if ((time() - $time > (86400 * 9)) || $format || ! $human_time)
+    if ((time() - $time) > (86400 * 9) || $format || ! $human_time)
     {
         $format    = ! $format ? TIME_FORMAT : $format;
         $time      = $time + $timezone_offset;
@@ -885,7 +884,7 @@ function kleeja_date($time, $human_time = true, $format = false)
     }
     else
     {
-        $return = $lang['W_PERIODS_' . $j];
+        $return = '1 ' . $lang['W_PERIODS_' . $j];
     }
 
     $return = $now > $time  ? $return . '  ' . $lang['W_AGO']: $lang['W_FROM'] . ' ' . $return;

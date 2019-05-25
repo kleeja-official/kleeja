@@ -98,6 +98,11 @@ class KleejaDatabase
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
+            if(! $this->connect_id)
+            {
+                return true;
+            }
+
             return @mysqli_close($this->connect_id);
         }
         else
