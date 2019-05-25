@@ -680,7 +680,10 @@ function kleeja_style_info($style_name)
         }
         else
         {
-            $inf_r[$t[0]] = $t[1];
+            if (! empty($t[0]))
+            {
+                $inf_r[$t[0]] = empty($t[1]) ? '' : $t[1];
+            }
         }
     }
 

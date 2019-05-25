@@ -427,7 +427,7 @@ if (isset($go_menu))
     foreach ($go_menu as $m=>$d)
     {
         $go_menu_html .= '<li class="' . ($d['current'] ? 'active' : '') . '" id="c_' . $d['goto'] . '">' .
-            '<a' . ($m == 'site' ? ' target="_blank" ' : ' ') . 'href="' . $d['link'] . '" ' . ($d['confirm'] ? ' onclick="javascript:return confirm_form();"' : '') . '>' .
+            '<a' . ($m == 'site' ? ' target="_blank" ' : ' ') . 'href="' . $d['link'] . '" ' . (! empty($d['confirm']) ? ' onclick="javascript:return confirm_form();"' : '') . '>' .
             $d['name'] . '</a></li>';
     }
 }

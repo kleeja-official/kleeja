@@ -160,7 +160,9 @@
                     <select class="form-control" id="cfrom" name="cfrom">
                         <option value="-1">{lang.DEFAULT_GROUP}</option>
                         <LOOP NAME="e_groups"><IF LOOP="id == 2"><ELSE><option value="{{id}}">{{name}}</option></IF></LOOP>
+                        <IF NAME="c_groups">
                         <LOOP NAME="c_groups"><option value="{{id}}">{{name}}</option></LOOP>
+                        </IF>
                     </select>
                 </div>
 
@@ -178,6 +180,7 @@
 
 
 <!-- end delete group modal -->
+<IF NAME="c_groups">
 <LOOP NAME="c_groups">
 
     <div id="delete_group_{{id}}"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delAGroup" aria-hidden="true">
@@ -218,6 +221,7 @@
         </form>
     </div>
 </LOOP>
+</IF>
 <!-- end delete group modal -->
 
 <!-- ********** -->
