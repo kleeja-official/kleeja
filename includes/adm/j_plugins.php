@@ -316,7 +316,13 @@ switch ($case):
 
             $kleeja_plugin = [];
 
-            include PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php';
+            //don't show mysql errors
+            if (! defined('MYSQL_NO_ERRORS'))
+            {
+                define('MYSQL_NO_ERRORS', true);
+            }
+
+            @include PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php';
 
             $install_callback = $kleeja_plugin[$plg_name]['install'];
             $plugin_info      = $kleeja_plugin[$plg_name]['information'];
