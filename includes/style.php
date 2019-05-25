@@ -126,11 +126,22 @@ class kleeja_style
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('style_parse_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
+
+        $html = preg_replace_callback('/<IGNORE>(.*?)<\/IGNORE>/is', function($m) {
+            return '<STRREV>' . strrev($m[1]) . '</STRREV>';
+        }, $html);
         $html = preg_replace(['#<([\?%])=?.*?\1>#s', '#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s', '#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'], '', $html);
-        $html = preg_replace_callback('/\(([{A-Z0-9_\.}\s!=<>]+)\?(.*):(.*)\)/iU', ['kleeja_style', '_iif_callback'], $html);
+        $html = preg_replace_callback('/\(([{A-Z0-9_\.}\s!=<>]+)\?(.*):(.*)\)/iU', function($m) {
+            return '<IF NAME="' . $m[1] . '">' . $m[2] . '<ELSE>' . $m[3] . '</IF>';
+        }, $html);
         $html = preg_replace_callback('/<(IF|ELSEIF|UNLESS) (.+)>/iU', ['kleeja_style', '_if_callback'], $html);
-        $html = preg_replace_callback('/<LOOP\s+NAME\s*=\s*(\"|)+([a-z0-9_\.]{1,})+(\"|)\s*>/i', ['kleeja_style', '_loop_callback'], $html);
+        $html = preg_replace_callback('/<LOOP\s+NAME\s*=\s*(\"|)+([a-z0-9_\.]{1,})+(\"|)\s*>/i', function($m) {
+            return '<?php foreach($this->vars["' . (strpos($m[2], '.') !== false ? str_replace('.', '"]["', $m[2]) : $m[2]) . '"] as $key=>$value){ ?>';
+        }, $html);
         $html = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_vars_callback'], $html);
+        $html = preg_replace_callback('/<STRREV>(.*?)<\/STRREV>/is', function($m) {
+            return strrev($m[1]);
+        }, $html);
 
         $rep =
         [
@@ -147,19 +158,6 @@ class kleeja_style
 
         return preg_replace(array_keys($rep), array_values($rep), $html);
     }
-
-
-    /**
-     * loop tag
-     * @param $matches
-     * @return string
-     */
-    protected function _loop_callback($matches)
-    {
-        $var = strpos($matches[2], '.') !== false ? str_replace('.', '"]["', $matches[2]) : $matches[2];
-        return '<?php foreach($this->vars["' . $var . '"] as $key=>$value){ ?>';
-    }
-
 
     /**
      * if tag
@@ -182,17 +180,6 @@ class kleeja_style
         return strtoupper($matches[1]) == 'IF'
               ? '<?php if(' . $condition . '){ ?>'
               : (strtoupper($matches[1]) == 'UNLESS' ? '<?php if(!(' . $condition . ')){ ?>' : '<?php }elseif(' . $condition . '){ ?>');
-    }
-
-
-    /**
-     * iif tag, if else /if
-     * @param $matches
-     * @return string
-     */
-    protected function _iif_callback($matches)
-    {
-        return '<IF NAME="' . $matches[1] . '">' . $matches[2] . '<ELSE>' . $matches[3] . '</IF>';
     }
 
     protected function parse_condition($condition, $is_loop)

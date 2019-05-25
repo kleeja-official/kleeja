@@ -70,8 +70,12 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
         case E_NOTICE: case E_WARNING: case E_USER_WARNING: case E_USER_NOTICE: case E_STRICT:
             if (function_exists('kleeja_log'))
             {
-                kleeja_log($error_number . ':' . basename($error_file) . ':' . $error_line .'  ' . $error_string);
+                $error_name = [
+                    2 => 'Warning', 8 => 'Notice', 512 => 'U_Warning', 1024 => 'U_Notice', 2048 => 'Strict'
+                ][$error_number];
+                kleeja_log('[' . $error_name . '] ' . basename($error_file) . ':' . $error_line . ' ' . $error_string);
             }
+
         break;
 
         default:

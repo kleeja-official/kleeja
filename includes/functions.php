@@ -852,6 +852,8 @@ function delete_config($name)
         {
             delete_config($n);
         }
+
+        return;
     }
 
     global $dbprefix, $SQL, $d_groups, $userinfo;

@@ -237,7 +237,9 @@ function downloadPlugin(name, nextPlugins) {
         .done(function (data) {
             if(data.content) {
                 var info = data.content.split(":::");
-                $('#installLoading-'+name).removeClass('badge-light').addClass(info[0] != 1 ? 'badge-warning' : 'badge-success');
+                $('#installLoading-'+name).removeClass('badge-light').addClass(
+                    info[0] != 1 ? 'badge-warning' : 'badge-success'
+                );
                 $('#installLoading-'+name).html(info[1]);
             } else {
                 this.fail();
@@ -249,9 +251,10 @@ function downloadPlugin(name, nextPlugins) {
             }, 500);
         })
         .fail(function(data) {
+            var tryAgainMsg = '{lang.ERROR_TRY_AGAIN}';
             $('#downloadBtn-' + name).prop('disabled', false);
             $('#installLoading-'+name).removeClass('badge-light').addClass('badge-danger').html(
-                (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
+                <IGNORE>(data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : tryAgainMsg))</IGNORE>
             );
     });
 }

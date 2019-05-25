@@ -17,7 +17,10 @@ function toggleStartBox(name, hide, current) {
             }
         })
         .fail(function(data) {
-            $('#boxesErrors>span').html((data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}')));
+            var tryAgainMsg = '{lang.ERROR_TRY_AGAIN}';
+            $('#boxesErrors>span').html(
+                <IGNORE>(data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : tryAgainMsg))</IGNORE>
+                );
             $('#boxesErrors').removeClass('d-none alert-info').addClass('alert-danger');
                 var itemRemoveClass = current == 1 ? 'cb-disable' : 'cb-enable';
                 var itemAddClass = current == 0 ? 'cb-disable' : 'cb-enable';

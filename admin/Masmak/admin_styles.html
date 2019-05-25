@@ -159,9 +159,10 @@ function downloadStyle(name, nextStyles) {
             }, 500);
         })
         .fail(function(data) {
+            var tryAgainMsg = '{lang.ERROR_TRY_AGAIN}';
             $('#downloadBtn-' + name).prop('disabled', false);
             $('#installLoading-'+name).removeClass('badge-light').addClass('badge-danger').html(
-                (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
+             <IGNORE>(data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : tryAgainMsg))</IGNORE>
             );
     });
 }
