@@ -418,6 +418,7 @@ class KleejaDatabase
     {
         if (! $this->show_errors)
         {
+            kleeja_log('MySQL: ' . $msg);
             return false;
         }
 

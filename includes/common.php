@@ -67,7 +67,12 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
 {
     switch ($error_number)
     {
-        case E_NOTICE: case E_WARNING: case E_USER_WARNING: case E_USER_NOTICE: case E_STRICT: break;
+        case E_NOTICE: case E_WARNING: case E_USER_WARNING: case E_USER_NOTICE: case E_STRICT:
+            if (function_exists('kleeja_log'))
+            {
+                kleeja_log($error_number . ':' . basename($error_file) . ':' . $error_line .'  ' . $error_string);
+            }
+        break;
 
         default:
             header('HTTP/1.1 503 Service Temporarily Unavailable');
