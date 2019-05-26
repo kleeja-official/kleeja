@@ -137,7 +137,7 @@ else
 {
 
 //
-    //Delete all user files [only one user]            
+    //Delete all user files [only one user]
 //
     if (ig('deletefiles'))
     {
@@ -250,7 +250,7 @@ else
     //posts search ..
     if (ig('search_id'))
     {
-        //get search filter 
+        //get search filter
         $filter            = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
         $deletelink        = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&deletefiles=' . g('search_id');
         $is_search         = true;
@@ -277,7 +277,7 @@ else
     {
         //display files or display pics and files only in search
         $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
-        $query['WHERE'] = $query['WHERE'] . (empty($query['WHERE']) ? '' : ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
+        $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE']  . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
     }
     else
     {
@@ -303,7 +303,7 @@ else
     }
 
 
-    //pager 
+    //pager
     $currentPage      = ig('page') ? g('page', 'int') : 1;
     $Pager            = new Pagination($files_acp_perpage, $nums_rows, $currentPage);
     $start            = $Pager->getStartRow();

@@ -55,9 +55,10 @@
                         {{plg_dsc}}
                         <ELSE>
                         {{extra_info.plugin_description}}
-                    </IF>
+                    </ELSE>
                     <br>
                     <small>{{extra_info.plugin_developer}}</small>
+                    </IF>
                 </p>
             </div>
 
@@ -155,7 +156,7 @@
         </div>
     </UNLESS>
 
-    <IF NAME="store_plugins_count gt 1" AND="case == check">
+    <IF NAME="store_plugins_count gt 1" NAME="case == check">
     <div class="d-flex justify-content-end my-3">
         <button id="updateAllBtn" type="button" onclick="updateAll()" class="btn btn-primary px-5">
             <i class="fa fa-flash"></i> {lang.UPDATE_ALL}

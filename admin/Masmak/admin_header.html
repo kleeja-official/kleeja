@@ -68,7 +68,7 @@
             <li class="nav-item<IF NAME="go_to==start"> activex</IF>" data-toggle="tooltip" data-placement="right" title="{lang.R_CPINDEX}">
                 <a class="first-level nav-link <IF NAME="go_to==start">nav-link-collapse</IF>" href="./"><i class="fa fa-fw fa-dashboard"></i> {lang.R_CPINDEX}</a>
                 <ul class="sidenav-second-level<IF NAME="go_to!=start"> collapse</IF>" id="collapseIndex">
-                    <IF NAME="go_to==start">{go_menu_html}</IF>
+                    <IF NAME="go_to==start" AND="" ISSET="go_menu_html">{go_menu_html}</IF>
                 </ul>
             </li>
 
@@ -78,7 +78,7 @@
                     <a class="first-level nav-link<IF LOOP="current"><IF NAME="go_menu_html"> nav-link-collapse</IF></IF>"  title="{{title}}" href="{{link}}"<IF LOOP="confirm"> onclick="return confirm_form();"</IF>>
                         <i class="fa fa-fw fa-{{icon}}"></i> {{title}} {{bubble}}
                     </a>
-                    <IF NAME="go_menu_html">
+                    <IF ISSET="go_menu_html">
                         <ul class="sidenav-second-level<IF LOOP="current"><ELSE> collapse</IF>" id="collapseItem{{i}}">
                             <IF LOOP="current">{go_menu_html}</IF>
                         </ul>

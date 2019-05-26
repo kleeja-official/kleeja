@@ -174,7 +174,7 @@ if ($show_online)
         update_config('most_user_online_ever', $current_online_users . ':' . time());
     }
 
-    $online_time = kleeja_date('d-m-Y h:i a', $online_time);
+    $online_time = kleeja_date($online_time, true, 'd-m-Y h:i a');
 
 
     //before 1.8, styles computability

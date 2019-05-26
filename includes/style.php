@@ -169,11 +169,18 @@ class kleeja_style
         $atts      = call_user_func(['kleeja_style', '_get_attributes'], $matches[0]);
         $condition = '';
 
-        foreach (['NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || '] as $attribute=>$separator)
+        foreach ([
+                'NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || ', 'ISSET' => ' isset', 'EMPTY' => ' empty'
+                    ] as $attribute=>$separator)
         {
-            if (! empty($atts[$attribute]))
+            if (isset($atts[$attribute]))
             {
-                $condition .= $separator . $this->parse_condition($atts[$attribute], ! empty($atts['LOOP']));
+                $haveParentheses = in_array($attribute, ['ISSET', 'EMPTY']);
+
+                $condition .= $separator . ($haveParentheses ? '(' : '') .
+                                $this->parse_condition($atts[$attribute], ! empty($atts['LOOP'])) .
+                                ($haveParentheses ? ')' : '')
+                    ;
             }
         }
 
@@ -186,6 +193,11 @@ class kleeja_style
     {
         $char = [' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>'];
         $reps = ['==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>'];
+
+        if(trim($condition) == '')
+        {
+            return '';
+        }
 
         $con = str_replace('$this->vars', '[----this-vars----]', $condition);
 
@@ -243,7 +255,13 @@ class kleeja_style
             preg_match(kleeja_style::reg('var'), $matches, $matches);
         }
 
-        $var = ! empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '';
+        $var = trim(! empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '');
+
+        if(empty($var))
+        {
+            return '';
+        }
+
         return ! empty($matches[1]) && trim($matches[1]) == '{{' ? '$value[\'' . $var . '\']' : '$this->vars[\'' . $var . '\']';
     }
 
@@ -266,7 +284,7 @@ class kleeja_style
     protected function reg($var)
     {
         $vars = get_class_vars(__CLASS__);
-        return ($vars['reg'][$var]);
+        return $vars['reg'][$var];
     }
 
 
@@ -277,7 +295,7 @@ class kleeja_style
      */
     protected function _get_attributes($tag)
     {
-        preg_match_all('/([a-z]+)="(.+)"/iU', $tag, $attribute);
+        preg_match_all('/([a-z]+)="(.+)?"/iU', $tag, $attribute);
 
         $attributes = [];
 
@@ -285,14 +303,7 @@ class kleeja_style
         {
             $att = strtoupper($attribute[1][$i]);
 
-            if (preg_match('/NAME|LOOP/', $att))
-            {
-                $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback'], $attribute[2][$i]);
-            }
-            else
-            {
-                $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback_att'], $attribute[2][$i]);
-            }
+            $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback'], $attribute[2][$i]);
         }
         return $attributes;
     }

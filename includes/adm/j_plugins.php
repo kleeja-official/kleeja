@@ -94,24 +94,25 @@ switch ($case):
                 ) && ! preg_match('/^https?:\/\//', $installed_plugins[$row['plg_name']]['extra_info']['settings_page']);
 
 
-            foreach (['plugin_title', 'plugin_description'] as $localizedInfo)
+            foreach (['plugin_title', 'plugin_description'] as $localized_info)
             {
-                if (is_array($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo]))
+                if (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]) &&
+                    is_array($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]))
                 {
-                    if (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo][$config['language']]))
+                    if (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localized_info][$config['language']]))
                     {
-                        $installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo] =
-                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo][$config['language']], 100);
+                        $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
+                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info][$config['language']], 100);
                     }
-                    elseif (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo]['en']))
+                    elseif (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]['en']))
                     {
-                        $installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo] =
-                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo]['en'], 100);
+                        $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
+                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]['en'], 100);
                     }
                     else
                     {
-                        $installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo] =
-                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo][0], 100);
+                        $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
+                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info][0], 100);
                     }
                 }
             }

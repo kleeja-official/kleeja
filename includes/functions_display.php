@@ -838,6 +838,8 @@ function kleeja_date($time, $human_time = true, $format = false)
 {
     global $lang, $config;
 
+    $time      = intval($time);
+
     if (! defined('TIME_FORMAT'))
     {
         define('TIME_FORMAT', 'd-m-Y h:i a'); // to be moved to configs later
