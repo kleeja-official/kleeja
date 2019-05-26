@@ -98,7 +98,7 @@ class KleejaDatabase
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-            if(! $this->connect_id)
+            if(! is_resource($this->connect_id))
             {
                 return true;
             }
@@ -225,7 +225,7 @@ class KleejaDatabase
     {
         $sql = '';
 
-        if (isset($query['SELECT']))
+        if (isset($query['SELECT']) && isset($query['FROM']))
         {
             $sql = 'SELECT ' . $query['SELECT'] . ' FROM ' . $query['FROM'];
 

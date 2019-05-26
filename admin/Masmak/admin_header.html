@@ -43,7 +43,9 @@
         var STYLE_PATH_ADMIN = '{STYLE_PATH_ADMIN}';
         var go_to = '{go_to}';
     </script>
+<IF ISSET="extra_admin_header_code">
 {extra_admin_header_code}
+</IF>
 </head>
 
 <body class="fixed-nav sticky-footer bg-{admin_theme_color}" id="page-top">
@@ -75,7 +77,7 @@
 
             <LOOP NAME="adm_extensions_menu">
                 <li class="nav-item ({{current}}?activex:)" id="menu_item{{i}}" data-toggle="tooltip" data-placement="right" title="{{title}}">
-                    <a class="first-level nav-link<IF LOOP="current"><IF NAME="go_menu_html"> nav-link-collapse</IF></IF>"  title="{{title}}" href="{{link}}"<IF LOOP="confirm"> onclick="return confirm_form();"</IF>>
+                    <a class="first-level nav-link<IF LOOP="current"><IF ISSET="go_menu_html"> nav-link-collapse</IF></IF>"  title="{{title}}" href="{{link}}"<IF LOOP="confirm"> onclick="return confirm_form();"</IF>>
                         <i class="fa fa-fw fa-{{icon}}"></i> {{title}} {{bubble}}
                     </a>
                     <IF ISSET="go_menu_html">

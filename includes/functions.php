@@ -1156,7 +1156,7 @@ function klj_clean_old($table, $for = 'all')
 
     $query = [
         'SELECT'         => 'f.id, f.time',
-        'DELETE'         => "`{$dbprefix}" . $table . '` f',
+        'FROM'         => "`{$dbprefix}" . $table . '` f',
         'ORDER BY'       => 'f.id ASC',
         'LIMIT'          => '30',
     ];

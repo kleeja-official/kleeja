@@ -40,6 +40,9 @@ if ($case && in_array($case, ['clearc', 'sync_files', 'sync_images', 'sync_users
     }
 }
 
+$text      = '';
+
+
 switch ($case):
 
 default:
@@ -73,7 +76,6 @@ case 'tables':
 
 $query     = 'SHOW TABLE STATUS';
 $result    = $SQL->query($query);
-$text      = '';
 
 while ($row=$SQL->fetch_array($result))
 {

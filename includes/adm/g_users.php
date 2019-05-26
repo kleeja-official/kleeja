@@ -818,7 +818,7 @@ case 'group_data':
     $gdata        = $d_groups[$req_group]['data'];
 
     $query = [
-        'SELECT'         => 'c.name, c.option',
+        'SELECT'         => 'c.name, c.option, c.value',
         'FROM'           => "{$dbprefix}config c",
         'WHERE'          => "c.type='groups'",
         'ORDER BY'       => 'c.display_order ASC'
@@ -852,6 +852,8 @@ case 'group_data':
 
         if ($row['name'] == 'language')
         {
+            $lngfiles = '';
+
             //get languages
             if ($dh = @opendir(PATH . 'lang'))
             {
