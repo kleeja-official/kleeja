@@ -137,7 +137,7 @@ else
 {
 
 //
-    //Delete all user files [only one user]
+//Delete all user files [only one user]
 //
     if (ig('deletefiles'))
     {
@@ -277,7 +277,7 @@ else
     {
         //display files or display pics and files only in search
         $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
-        $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE']  . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
+        $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
     }
     else
     {

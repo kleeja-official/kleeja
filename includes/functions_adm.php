@@ -242,7 +242,7 @@ function build_search_query($search)
         return '';
     }
 
-    global $SQL;
+    global $SQL, $dbprefix, $config;
 
     $search['filename']       = ! isset($search['filename']) ? '' : $search['filename'];
     $search['username']       = ! isset($search['username']) ? '' : $search['username'];
@@ -256,14 +256,41 @@ function build_search_query($search)
     $search['ext']            = ! isset($search['ext']) ? '' : $search['ext'];
     $search['user_ip']        = ! isset($search['user_ip']) ? '' : $search['user_ip'];
 
+    //if searched by a username
+    $usernamee = '';
+    if (! empty($search['username']) && (int) $config['user_system'] == 1)
+    {
+        $query = [
+            'SELECT'       => 'u.id',
+            'FROM'         => "{$dbprefix}users u",
+            'WHERE'        => "u.name LIKE '%" . $SQL->escape($search['username']) . "%'"
+        ];
+
+        is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_usersids_in_build_search_query', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+        $result = $SQL->build($query);
+
+        while ($row=$SQL->fetch_array($result))
+        {
+            $usernamee .= ($usernamee != '' ? ' OR ' : '') . 'f.user=' . $row['id'];
+        }
+
+        $SQL->freeresult($result);
+
+        if(! empty($usernamee))
+        {
+            $usernamee = 'AND (' . $usernamee . ')';
+        }
+    }
+
+    //build query
     $file_namee       = $search['filename'] != '' ? 'AND (f.real_filename LIKE \'%' . $SQL->escape($search['filename']) . '%\' OR f.name LIKE \'%' . $SQL->escape($search['filename']) . '%\')' : '';
-    $usernamee        = $search['username'] != '' ? 'AND u.name LIKE \'%' . $SQL->escape($search['username']) . '%\'' : '';
-    $size_than        = ' f.size ' . ($search['than']!=1 ? '<=' : '>=') . (intval($search['size']) * 1024) . ' ';
+    $size_than        = ' f.size ' . ($search['than'] != 1 ? '<=' : '>=') . (intval($search['size']) * 1024) . ' ';
     $ups_than         = $search['ups']      != '' ? 'AND f.uploads ' . ($search['uthan']!=1 ? '<' : '>') . intval($search['ups']) . ' ' : '';
     $rep_than         = $search['rep']      != '' ? 'AND f.report ' . ($search['rthan']!=1 ? '<' : '>') . intval($search['rep']) . ' ' : '';
     $lstd_than        = $search['lastdown'] != '' ? 'AND f.last_down =' . (time()-(intval($search['lastdown']) * (24 * 60 * 60))) . ' ' : '';
     $exte             = $search['ext']      != '' ? "AND f.type IN ('" . implode("', '", @explode(',', $SQL->escape($search['ext']))) . "')" : '';
     $ipp              = $search['user_ip']  != '' ? 'AND f.user_ip LIKE \'%' . $SQL->escape($search['user_ip']) . '%\' ' : '';
+
 
     return "$size_than $file_namee $ups_than $exte $rep_than $usernamee $lstd_than $exte $ipp";
 }
