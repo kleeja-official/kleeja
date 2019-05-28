@@ -176,7 +176,7 @@ switch ($case):
                 continue;
             }
 
-            if (isset($plugin_info['preview']) && defined('KLEEJA_DEV'))
+            if (isset($plugin_info['preview']) && defined('DEV_STAGE'))
             {
                 $plugin_file = $plugin_info['preview'];
             }
@@ -603,7 +603,7 @@ switch ($case):
                     continue;
                 }
 
-                if (isset($plugin_info['preview']) && defined('KLEEJA_DEV'))
+                if (isset($plugin_info['preview']) && defined('DEV_STAGE'))
                 {
                     $plugin_file = $plugin_info['preview'];
                 }
