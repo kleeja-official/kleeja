@@ -176,6 +176,20 @@ switch ($case):
                 continue;
             }
 
+            if (isset($plugin_info['preview']) && defined('KLEEJA_DEV'))
+            {
+                $plugin_file = $plugin_info['preview'];
+            }
+            elseif (isset($plugin_info['file']))
+            {
+                $plugin_file = $plugin_info['file'];
+            }
+            else
+            {
+                continue;
+            }
+
+
             if ($case == 'store' && (in_array($plugin_info['name'], $available_plugins_names) ||
                  ! empty($installed_plugins[$plugin_info['name']]))
                  ) {
@@ -186,7 +200,7 @@ switch ($case):
             elseif ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) &&
                 version_compare(
                     strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']),
-                    strtolower($plugin_info['file']['version']),
+                    strtolower($plugin_file['version']),
                     '>='
                 ) || empty($installed_plugins[$plugin_info['name']]))
             ) {
@@ -196,7 +210,7 @@ switch ($case):
             $store_plugins[$plugin_info['name']] = [
                 'name'            => $plugin_info['name'],
                 'developer'       => $plugin_info['developer'],
-                'version'         => $plugin_info['file']['version'],
+                'version'         => $plugin_file['version'],
                 'title'           => ! empty($plugin_info['title'][$config['language']]) ? $plugin_info['title'][$config['language']] : $plugin_info['title']['en'],
                 'website'         => $plugin_info['website'],
                 'current_version' => ! empty($installed_plugins[$plugin_info['name']]) ? strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']) : '',
@@ -589,10 +603,24 @@ switch ($case):
                     continue;
                 }
 
+                if (isset($plugin_info['preview']) && defined('KLEEJA_DEV'))
+                {
+                    $plugin_file = $plugin_info['preview'];
+                }
+                elseif (isset($plugin_info['file']))
+                {
+                    $plugin_file = $plugin_info['file'];
+                }
+                else
+                {
+                    continue;
+                }
+
+
                 $store_plugins[$plugin_info['name']] = [
                     'name'           => $plugin_info['name'],
-                    'plg_version'    => $plugin_info['file']['version'],
-                    'url'            => $plugin_info['file']['url'],
+                    'plg_version'    => $plugin_file['version'],
+                    'url'            => $plugin_file['url'],
                     'kj_min_version' => $plugin_info['kleeja_version']['min'],
                     'kj_max_version' => $plugin_info['kleeja_version']['max'],
                 ];
