@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.1.0
+- add the ability to auto-update kleeja from admin panel with one click!
+- add plugins/styles store (one click  download, install and update)
+- a plugins/styles catalog (any developer can add his/her plugins/styles now)
+- fix `fields doesn't have a default value` error #104
+- fix  e modifier is deprecated #103
+- fix update check redirect error #97
+- improve ban control page #94
+- add the ability to ban by username
+- add support of mkv files #83
+- add support of most known-to-humans timezones #78
+- fix download counter to skip unwanted visits.
+- fix pagination error in user files page
+- fix some issues with some plugins (kj_ftp, for example.)
+- replace Kleeja team page with current github contributors 😇
+- add ability to hide/show widgets in home page of admin panel.
+- fix issues with downloaded persian/arabic filesnames #53
+- fix `remember me` issue on login page.
+- add solution for hosts running under suexec (by adding `define('HAS_SUEXEC', true);` to config.php)
+- fix issue with auto-deleting old files feature.
+
+
 ## 3.0.2
 - new styles, drag and drop and progressbar and bootstrap black.
 - cleaning the header and footer after removing the plugin.
@@ -101,13 +123,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - remove backup feature, no need for it.
 
 
-## 1.5.4 
+## 1.5.4
 - When the database old, tell the user to update.
 - fix bug in ACP where secondary menu not appear
 - add link to user folder at do.php?id=.. page
 
 
-## 1.5.3 
+## 1.5.3
 - add turkish language.
 - disable ajax by default at ACP ( you can add AJAX_ACP in config.php to turn ajax on )
 - some style improvments at ACP
