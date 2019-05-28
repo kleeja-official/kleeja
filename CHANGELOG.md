@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 3.1.0
 - add the ability to auto-update kleeja from admin panel with one click!
-- add plugins/styles store (one click  download, install and update)
+- add plugins/styles store (one click  download, install and update or even delete)
 - a plugins/styles catalog (any developer can add his/her plugins/styles now)
 - fix `fields doesn't have a default value` error #104
 - fix  e modifier is deprecated #103
