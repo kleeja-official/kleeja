@@ -59,12 +59,10 @@ $(document).ready(function(){
             }
         });
 
-       <IF NAME="config.www_url == 0">
         if(numfiles == 0){
             alert('{lang.NO_FILE_SELECTED}');
             return false;
         }
-       </IF>
 
         $('#loadbox').css('display', 'block');
         $('#uploader').css('display', 'none');

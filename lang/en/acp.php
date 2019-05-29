@@ -39,7 +39,6 @@ return [
     'IDFF_IMG'                              => 'File name (example.com/do.php?imgf=filename.png)',
     'IDFD_IMG'                              => 'Direct (example.com/uploads/filename.png)',
     'DEL_URL_FILE'                          => 'Enable file deletion URL feature',
-    'WWW_URL'                               => 'Enable uploading from URL',
     'ALLOW_STAT_PG'                         => 'Enable statistics page',
     'ALLOW_ONLINE'                          => 'Enable Who is Online',
     'MOD_WRITER'                            => 'Mod Rewrite',

@@ -39,7 +39,6 @@ return [
     'IDFF_IMG'                             => 'إسم الملف (example.com/do.php?imgf=filename.png)',
     'IDFD_IMG'                             => 'رابط مباشر (example.com/uploads/filename.png)',
     'DEL_URL_FILE'                         => 'تفعيل رابط الحذف المباشر',
-    'WWW_URL'                              => 'تفعيل التحميل من رابط',
     'ALLOW_STAT_PG'                        => 'تفعيل صفحة الإحصائيات',
     'ALLOW_ONLINE'                         => 'تفعيل عرض المتواجدون الآن',
     'DEL_F_DAY'                            => 'حذف الملفات الخاملة بعد × يوم - صفر للتعطيل',

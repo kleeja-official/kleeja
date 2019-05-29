@@ -151,7 +151,7 @@ while ($row=$SQL->fetch_array($result))
             @closedir($dh);
         }
     }
-    elseif ($row['name'] == 'user_system')
+    elseif (in_array($row['name'], ['user_system', 'www_url']))
     {
         continue;
     }
