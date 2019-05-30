@@ -12,7 +12,7 @@
 require PATH . 'includes/version.php';
 
 //set mysql to show no errors
-define('MYSQL_NO_ERRORS', true);
+define('SQL_NO_ERRORS', true);
 define('EVAL_IS_ON', is_eval_is_on());
 
 
@@ -161,11 +161,16 @@ function inst_get_config($name)
 
     if (empty($SQL))
     {
-        global $dbserver, $dbuser, $dbpass, $dbname;
+        global $dbserver, $dbuser, $dbpass, $dbname, $dbtype;
 
-        if (! isset($dbserver))
+        if (! isset($dbname))
         {
             return false;
+        }
+
+        if(isset($dbtype) && $dbtype == 'sqlite')
+        {
+            @touch(PATH . $dbname);
         }
 
         $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);

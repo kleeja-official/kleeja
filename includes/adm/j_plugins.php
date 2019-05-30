@@ -117,7 +117,7 @@ switch ($case):
                 }
             }
         }
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
         //get available plugins
         $dh                = opendir(PATH . KLEEJA_PLUGINS_FOLDER);
@@ -332,9 +332,9 @@ switch ($case):
             $kleeja_plugin = [];
 
             //don't show mysql errors
-            if (! defined('MYSQL_NO_ERRORS'))
+            if (! defined('SQL_NO_ERRORS'))
             {
-                define('MYSQL_NO_ERRORS', true);
+                define('SQL_NO_ERRORS', true);
             }
 
             @include PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php';

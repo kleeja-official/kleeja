@@ -48,7 +48,15 @@ if (file_exists(PATH . 'config.php'))
 
 include_once PATH . 'includes/functions.php';
 
-include_once PATH . 'includes/mysqli.php';
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
+
 
 include_once 'includes/functions_install.php';
 

@@ -189,7 +189,7 @@ function get_filter($item, $filter_type = false, $just_value = false, $get_by = 
     $result = $SQL->build($query);
     $v      = $SQL->fetch($result);
 
-    $SQL->free($result);
+    $SQL->freeresult($result);
 
     if ($just_value)
     {

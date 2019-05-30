@@ -75,7 +75,7 @@ class Plugins
         {
             $this->installed_plugins[$row['plg_name']] = $row['plg_ver'];
         }
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
 
         $this->load_enabled_plugins();

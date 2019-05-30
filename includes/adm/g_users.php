@@ -460,7 +460,7 @@ if (ip('newgroup'))
             ];
             $SQL->build($insert_query);
         }
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
         //copy configs from the other group to this group
         $query = [
@@ -480,7 +480,7 @@ if (ip('newgroup'))
             ];
             $SQL->build($insert_query);
         }
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
         //copy exts from the other group to this group
         $query = [
@@ -500,7 +500,7 @@ if (ip('newgroup'))
             ];
             $SQL->build($insert_query);
         }
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
         //show group-is-added message
         delete_cache('data_groups');
@@ -934,50 +934,6 @@ case 'group_exts':
                         $d_groups[$req_group]['data']['group_name']);
 
 
-    //check if there is klj_exts which means this is an upgraded website !
-    if (empty($config['exts_upraded1_5']))
-    {
-        $ex_exts = $SQL->query("SHOW TABLES LIKE '{$dbprefix}exts';");
-
-        if ($SQL->num_rows($ex_exts))
-        {
-            $xquery = [
-                'SELECT'       => 'ext, gust_size, user_size, gust_allow, user_allow',
-                'FROM'         => "{$dbprefix}exts",
-                'WHERE'        => 'gust_allow=1 OR user_allow=1',
-            ];
-
-            $xresult = $SQL->build($xquery);
-
-            $xexts = '';
-            while ($row=$SQL->fetch_array($xresult))
-            {
-                if ($row['gust_allow'])
-                {
-                    $xexts .= ($xexts == '' ? '' : ',') . "('" . $SQL->escape($row['ext']) . "', 2, " . $row['gust_size'] . ')';
-                }
-
-                if ($row['user_allow'])
-                {
-                    $xexts .= ($xexts == '' ? '' : ',') . "('" . $SQL->escape($row['ext']) . "', 3, " . $row['user_size'] . ')';
-                }
-            }
-
-            $SQL->freeresult($result);
-
-            //delete prev exts before adding
-            $query_del    = [
-                'DELETE'       => "{$dbprefix}groups_exts",
-                'WHERE'        => 'group_id=2 OR group_id=3'
-            ];
-
-            $SQL->build($query_del);
-
-            $SQL->query("INSERT INTO {$dbprefix}groups_exts (ext, group_id, size) VALUES " . $xexts . ';');
-
-            add_config('exts_upraded1_5', 'done');
-        }
-    }
 
     //delete ext?
     $DELETED_EXT = $GE_INFO =  false;

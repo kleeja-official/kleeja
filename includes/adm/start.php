@@ -29,7 +29,7 @@ $files_sizes                 = readable_size($stat_sizes);
 $users_number                = $stat_users;
 $last_del_fles               = (int) $config['del_f_day'] <= 0 ? $lang['CLOSED_FEATURE'] : kleeja_date($stat_last_f_del);
 $php_version                 = isset($NO_PHPINFO) || ! function_exists('phpinfo') ? phpversion() : 'PHP ' . phpversion();
-$mysql_version               = 'MySQL ' . $SQL->mysql_version();
+$mysql_version               = $SQL->server_info();
 $max_execution_time          = function_exists('ini_get') ?  @ini_get('max_execution_time') : @get_cfg_var('max_execution_time');
 $upload_max_filesize         = function_exists('ini_get') ?  @ini_get('upload_max_filesize') : @get_cfg_var('upload_max_filesize');
 $post_max_size               = function_exists('ini_get') ?  @ini_get('post_max_size') : @get_cfg_var('post_max_size');

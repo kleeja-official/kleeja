@@ -847,6 +847,11 @@ function kleeja_date($time, $human_time = true, $format = false)
 
     if (! empty($config['time_zone']) && strpos($config['time_zone'], '/') !== false)
     {
+        if(strpos($config['time_zone'], 'Buraydah') !== false)
+        {
+            $config['time_zone'] = 'Asia/Riyadh';
+        }
+
         $timezone_offset = timezone_offset_get(new DateTimeZone($config['time_zone']), new DateTime);
     }
     else

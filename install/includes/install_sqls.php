@@ -26,26 +26,24 @@ ALTER DATABASE `{$dbname}` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin
 
 $install_sqls['call'] = "
 CREATE TABLE `{$dbprefix}call` (
-  `id` int(10) NOT NULL auto_increment,
+  `id` int(10) NOT NULL auto_increment PRIMARY KEY,
   `name` varchar(200) collate utf8_bin NOT NULL,
   `text` varchar(350) collate utf8_bin NOT NULL,
   `mail` varchar(350) collate utf8_bin NOT NULL,
   `time` int(11) NOT NULL,
-  `ip` varchar(40) collate utf8_bin NOT NULL,
-  PRIMARY KEY  (`id`)
+  `ip` varchar(40) collate utf8_bin NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 
 $install_sqls['reports'] = "
 CREATE TABLE `{$dbprefix}reports` (
-  `id` int(10) NOT NULL auto_increment,
+  `id` int(10) NOT NULL auto_increment PRIMARY KEY,
   `name` varchar(350) collate utf8_bin NOT NULL,
   `mail` varchar(350) collate utf8_bin NOT NULL,
   `url` varchar(250) collate utf8_bin NOT NULL,
   `text` varchar(400) collate utf8_bin NOT NULL,
   `time` int(11) NOT NULL,
-  `ip` varchar(40) collate utf8_bin NOT NULL,
-  PRIMARY KEY  (`id`)
+  `ip` varchar(40) collate utf8_bin NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 
@@ -77,7 +75,7 @@ CREATE TABLE `{$dbprefix}stats` (
 
 $install_sqls['users'] = "
 CREATE TABLE `{$dbprefix}users` (
-  `id` int(10) NOT NULL auto_increment,
+  `id` int(10) NOT NULL auto_increment PRIMARY KEY,
   `name` varchar(300) collate utf8_bin NOT NULL,
   `group_id` int(11) unsigned NOT NULL DEFAULT '3',
   `password` varchar(200) collate utf8_bin NOT NULL,
@@ -91,7 +89,6 @@ CREATE TABLE `{$dbprefix}users` (
   `show_my_filecp` tinyint(1) unsigned NOT NULL default '1',
   `new_password` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '',
   `hash_key` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
   KEY `clean_name` (`clean_name`(300)),
   KEY `group_id` (`group_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -99,7 +96,7 @@ CREATE TABLE `{$dbprefix}users` (
 
 $install_sqls['files'] = "
 CREATE TABLE `{$dbprefix}files` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
   `last_down` int(11) unsigned NOT NULL DEFAULT '0',
   `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
   `real_filename` VARCHAR( 350 ) collate utf8_bin NOT NULL DEFAULT '',
@@ -113,7 +110,6 @@ CREATE TABLE `{$dbprefix}files` (
   `code_del` varchar(150) collate utf8_bin NOT NULL DEFAULT '',
   `user_ip` VARCHAR( 250 ) NOT NULL DEFAULT '',
   `id_form` VARCHAR( 100 ) NOT NULL DEFAULT 'id',
-  PRIMARY KEY (`id`),
   KEY `name` (`name`(300)),
   KEY `user` (`user`),
   KEY `code_del` (`code_del`(150)),
@@ -127,36 +123,22 @@ CREATE TABLE `{$dbprefix}files` (
 
 $install_sqls['config'] = "
 CREATE TABLE `{$dbprefix}config` (
-  `name` varchar(255) collate utf8_bin NOT NULL,
+  `name` varchar(255) collate utf8_bin NOT NULL PRIMARY KEY,
   `value` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
   `option` mediumtext collate utf8_bin  NOT NULL DEFAULT '',
   `display_order` int(10)  NOT NULL DEFAULT '1',
   `type` varchar(20) NULL DEFAULT 'other',
   `plg_id` int(11) NOT NULL DEFAULT '0',
   `dynamic` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`name`),
   KEY `type` (`type`),
   KEY `plg_id` (`plg_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 
 
-
-// $install_sqls['hooks'] = "
-// CREATE TABLE `{$dbprefix}hooks` (
-//   `hook_id` int(11) unsigned NOT NULL  auto_increment,
-//   `plg_id` int(11) unsigned NOT NULL,
-//   `hook_name` varchar(255) collate utf8_bin NOT NULL,
-//   `hook_content` mediumtext collate utf8_bin NOT NULL,
-//   PRIMARY KEY (`hook_id`),
-//   KEY `plg_id` (`plg_id`)
-// ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-// ";
-
-
 $install_sqls['plugins'] = "
 CREATE TABLE `{$dbprefix}plugins` (
-  `plg_id` int(11) unsigned NOT NULL auto_increment,
+  `plg_id` int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
   `plg_name` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
   `plg_ver` varchar(255) collate utf8_bin NOT NULL,
   `plg_author` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
@@ -167,7 +149,6 @@ CREATE TABLE `{$dbprefix}plugins` (
   `plg_instructions` mediumtext COLLATE utf8_bin NOT NULL DEFAULT '',
   `plg_store` longtext COLLATE utf8_bin NOT NULL DEFAULT '',
   `plg_files` text COLLATE utf8_bin NOT NULL DEFAULT '',
-  PRIMARY KEY (`plg_id`),
   KEY `plg_name` (`plg_name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 ";
@@ -186,11 +167,10 @@ CREATE TABLE `{$dbprefix}lang` (
 
 $install_sqls['groups'] = "
 CREATE TABLE `{$dbprefix}groups` (
-  `group_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `group_id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `group_name` varchar(255) COLLATE utf8_bin NOT NULL,
   `group_is_default` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `group_is_essential` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`group_id`)
+  `group_is_essential` tinyint(1) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 
@@ -214,25 +194,23 @@ CREATE TABLE `{$dbprefix}groups_acl` (
 
 $install_sqls['groups_exts'] = "
 CREATE TABLE `{$dbprefix}groups_exts` (
-  `ext_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ext_id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `ext` varchar(20) COLLATE utf8_bin NOT NULL,
   `group_id` int(11) unsigned NOT NULL DEFAULT '0',
   `size` bigint(11) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ext_id`),
   KEY `group_id` (`group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;
 ";
 
 $install_sqls['filters'] = "
 CREATE TABLE `{$dbprefix}filters` (
-  `filter_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `filter_id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `filter_uid` varchar(30) COLLATE utf8_bin  NOT NULL DEFAULT '',
   `filter_type` varchar(20) COLLATE utf8_bin NOT NULL,
   `filter_value` varchar(255) COLLATE utf8_bin NOT NULL,
   `filter_time` int(11) unsigned  NOT NULL DEFAULT '0',
   `filter_user` int(11) unsigned NOT NULL DEFAULT '0',
   `filter_status` varchar(50) COLLATE utf8_bin NOT NULL DEFAULT '',
-  PRIMARY KEY (`filter_id`),
   KEY `filter_user` (`filter_user`),
   KEY `filter_uid` (`filter_uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;

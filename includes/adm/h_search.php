@@ -66,7 +66,7 @@ if (ip('search_file'))
         $ids[] = $row['filter_id'];
     }
 
-    $SQL->free($result);
+    $SQL->freeresult($result);
 
     if ($ids != '')
     {
@@ -128,7 +128,7 @@ if (ip('search_user'))
     {
         $ids[] = $row['filter_id'];
     }
-    $SQL->free($result);
+    $SQL->freeresult($result);
 
     if ($ids != '')
     {

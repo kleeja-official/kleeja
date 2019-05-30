@@ -142,7 +142,16 @@ define('K_DIR_CHMOD', defined('HAS_SUEXEC') ? (0755 & ~umask()) : 0755);
 
 include PATH . 'includes/functions_alternative.php';
 include PATH . 'includes/version.php';
-include PATH . 'includes/mysqli.php';
+
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
+
 include PATH . 'includes/style.php';
 include PATH . 'includes/usr.php';
 include PATH . 'includes/pager.php';
@@ -383,11 +392,13 @@ if (defined('STOP_CAPTCHA'))
 is_array($plugin_run_result = Plugins::getInstance()->run('end_common', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 
-if (function_exists('session_register_shutdown'))
-{
-    session_register_shutdown();
-}
-else
-{
-    register_shutdown_function('session_write_close');
-}
+
+register_shutdown_function(function() {
+    session_write_close();
+
+    $err = error_get_last();
+    if(is_array($err) && ! empty($err['type']) && in_array($err['type'], [E_ERROR, E_PARSE]))
+    {
+        kleeja_log('[FATAL] ' . basename($err['file']) . ':' . $err['line'] . ' ' . $err['message']);
+    }
+});

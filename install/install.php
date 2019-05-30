@@ -30,7 +30,14 @@ include_once PATH . 'includes/functions_alternative.php';
 include_once PATH . 'includes/functions.php';
 
 
-include_once PATH . 'includes/mysqli.php';
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
 
 include_once 'includes/functions_install.php';
 
@@ -149,9 +156,13 @@ case 'check':
         }
         else
         {
-            if (! empty($SQL->mysql_version()) && version_compare($SQL->mysql_version(), MIN_MYSQL_VERSION, '<'))
+
+            if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli')
             {
-                $mysql_ver = $SQL->mysql_version();
+                if (! empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<'))
+                {
+                    $mysql_ver = $SQL->version();
+                }
             }
         }
     }

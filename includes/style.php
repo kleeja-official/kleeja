@@ -357,7 +357,7 @@ class kleeja_style
         $eval_on = false;
         eval('$eval_on = true;');
 
-        $parsed_html = trim($this->_parse($html));
+        $parsed_html = trim($this->_parse(stripcslashes($html)));
 
         ob_start();
 

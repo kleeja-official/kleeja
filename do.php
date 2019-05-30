@@ -320,7 +320,7 @@ elseif (ig('down') || ig('downf') ||
         $is_live = in_array($t, $livexts) ? true : false;
 
 
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
         //fix bug where a user can override files wait counter
         if (! $is_image && (ig('img') || ig('thmb')))

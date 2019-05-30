@@ -69,11 +69,11 @@ if (ip('submit'))
                 @kleeja_unlink(PATH . $row['folder'] . '/thumbs/' . $row['name']);
             }
             $ids[] = $row['id'];
-            $num++;        
+            $num++;
             $sizes += $row['size'];
         }
 
-        $SQL->free($result);
+        $SQL->freeresult($result);
     }
 
 
@@ -105,9 +105,9 @@ if (ip('submit'))
         }
     }
 
-    //after submit 
+    //after submit
     $text    = ($affected ? $lang['FILES_UPDATED'] : $lang['NO_UP_CHANGE_S']) .
-                '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . 
+                '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') .
                 '&page=' . (ig('page') ? g('page', 'int') : '1') . '\');", 2000);</script>' . "\n";
 
     $stylee    = 'admin_info';
@@ -231,8 +231,8 @@ else
                 'thumb_link'      => $url_thumb
             ];
 
-            //fix ... 
-            $tdnum = $tdnum == 4 ? 0 : $tdnum+1; 
+            //fix ...
+            $tdnum = $tdnum == 4 ? 0 : $tdnum+1;
 
             $del[$row['id']] = p('del_' . $row['id']);
 
@@ -260,7 +260,7 @@ else
     }
 
     //pages
-    $total_pages        = $Pager->getTotalPages(); 
+    $total_pages        = $Pager->getTotalPages();
     $page_nums          = $Pager->print_nums(basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') .
     (ig('last_visit') ? '&last_vists=' . g('last_visit', 'int') : '') .
     (ig('smt') ? '&smt=' . g('smt') : ''), 'onclick="javascript:get_kleeja_link($(this).attr(\'href\'), \'#content\'); return false;"');

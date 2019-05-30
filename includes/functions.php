@@ -1281,7 +1281,7 @@ function kleeja_log($text)
     }
 
     file_put_contents(
-        PATH . 'cache/kleeja_log.log',
+        __DIR__ . '/../cache/kleeja_log.log',
         date_format(date_create(), 'Y-m-d h:i:s.ua') . ' | INFO | ' . $text . PHP_EOL,
         FILE_APPEND | LOCK_EX
     );
