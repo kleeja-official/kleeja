@@ -136,7 +136,7 @@ function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
     $data    .= '$dbprefix = \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
 
 
-    if (is_writable(PATH . 'config.php'))
+    if (is_writable(PATH))
     {
         if (@file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
         {
