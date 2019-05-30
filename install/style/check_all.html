@@ -11,7 +11,14 @@
 
     {{if($GLOBALS['no_connection']): $GLOBALS['submit_disabled'] = true;}}
         <div class="notice">
-            <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo $lang['INST_CONNCET_ERR']}}</p>
+            <p class="error2">
+                <img src="style/images/k_info.png" class="img" alt=" " />
+                {{echo $lang['INST_CONNCET_ERR']}}
+                {{if(! empty($GLOBALS['dbtype']) && $GLOBALS['dbtype'] == 'sqlite'):}}
+                <br>
+                {{echo $lang['INST_CONNCET_ERR_SQLITE']}}
+                {{endif;}}
+            </p>
         </div>
     {{endif}}
 

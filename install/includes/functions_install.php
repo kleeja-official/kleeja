@@ -135,16 +135,19 @@ function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
     $data    .= '$dbname   = \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
     $data    .= '$dbprefix = \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
 
-    if (file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
+
+    if (is_writable(PATH . 'config.php'))
     {
-        return true;
+        if (@file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
+        {
+            return true;
+        }
     }
 
     if (defined('CLI') && CLI)
     {
         return true;
     }
-
 
     header('Content-Type: text/x-delimtext; name="config.php"');
     header('Content-disposition: attachment; filename=config.php');

@@ -17,6 +17,7 @@ return [
     'INST_ADMIN_INFO'             => 'Admin Info',
     'INST_CHANG_CONFIG'           => 'Missing requirements ... make sure you have edited the config.php file.',
     'INST_CONNCET_ERR'            => 'Cannot connect ..',
+    'INST_CONNCET_ERR_SQLITE'     => 'Make sure that there is a file in Kleeja root folder called: %s.',
     'INST_NO_WRTABLE'             => 'The directory is not writable',
     'INST_GOOD_GO'                => 'Everything seems to be OK .... continue',
     'INST_MSGINS'                 => 'Welcome to our uploading service, here you can upload anything as long as it does not violate our terms.',
