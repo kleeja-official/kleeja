@@ -44,7 +44,14 @@ class KleejaDatabase
      */
     public function __construct($location, $db_username, $db_password, $db_name, $dbprefix)
     {
-        $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
+        try
+        {
+            $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
+        }
+        catch (Exception $e)
+        {
+            //...
+        }
 
         $this->dbprefix        = $dbprefix;
         $this->dbname          = $db_name;
@@ -144,23 +151,23 @@ class KleejaDatabase
         //
         unset($this->result);
 
-        if(strpos($query, 'CREATE TABLE') !== false || strpos($query, 'ALTER DATABASE') !== false)
+        if (strpos($query, 'CREATE TABLE') !== false || strpos($query, 'ALTER DATABASE') !== false)
         {
             $sqlite_types = [
-                '/AUTO_INCREMENT/i'                                                   => '',
-                '/VARCHAR\s?(\\([0-9]+\\))?/i'                                         => 'TEXT',
-                '/COLLATE\s+([a-z0-9_]+)/i'                                                        => '',
-                '/(TINY|SMALL|MEDIUM|BIG)?INT\s?(\([0-9]+\))?\s?(UNSIGNED)?/i'      => 'INTEGER ',
-                '/(TINY|MEDIUM|LONG)?TEXT/i'                                          => 'TEXT',
-                '/KEY\s`?([a-z0-9_]+)`?\s\(`?([a-z0-9_]+)`?(\([0-9]+\))?\)\s?,?/i'                                          => '',
+                '/AUTO_INCREMENT/i'                                                                                                                                                 => '',
+                '/VARCHAR\s?(\\([0-9]+\\))?/i'                                                                                                                                      => 'TEXT',
+                '/COLLATE\s+([a-z0-9_]+)/i'                                                                                                                                         => '',
+                '/(TINY|SMALL|MEDIUM|BIG)?INT\s?(\([0-9]+\))?\s?(UNSIGNED)?/i'                                                                                                      => 'INTEGER ',
+                '/(TINY|MEDIUM|LONG)?TEXT/i'                                                                                                                                        => 'TEXT',
+                '/KEY\s`?([a-z0-9_]+)`?\s\(`?([a-z0-9_]+)`?(\([0-9]+\))?\)\s?,?/i'                                                                                                  => '',
                 '/\)(\s{0,4}ENGINE=([a-z0-9_]+))?(\s{0,4}DEFAULT)?(\s{0,4}CHARSET=([a-z0-9_]+))?(\s{0,4}COLLATE=([a-z0-9_]+))?(\s{0,4}AUTOINCREMENT)?(\s{0,4}=\s?1)?(\s{0,4};)?/i'  => ')',
-                '/,\s+\)/' => ')',
-                '/INTEGER\s{0,4}NOT\s{0,4}NULL/i' => 'INTEGER',
+                '/,\s+\)/'                                                                                                                                                          => ')',
+                '/INTEGER\s{0,4}NOT\s{0,4}NULL/i'                                                                                                                                   => 'INTEGER',
             ];
 
             //todo extract keys and add as CREATE INDEX index_name ON table (column);
 
-            foreach($sqlite_types as $old_type => $new_type)
+            foreach ($sqlite_types as $old_type => $new_type)
             {
                 $query = preg_replace($old_type, $new_type, $query);
             }
