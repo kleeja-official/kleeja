@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fix `remember me` issue on login page.
 - add solution for hosts running under suexec (by adding `define('HAS_SUEXEC', true);` to config.php)
 - fix issue with auto-deleting old files feature.
+- removed feature : Uploading from URLs (leech).
 
 
 ## 3.0.2
