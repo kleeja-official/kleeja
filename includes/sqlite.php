@@ -389,7 +389,9 @@ class KleejaDatabase
             $query_id = $this->result;
         }
 
-        if ($results = $query_id->numColumns())
+
+
+        if ($query_id && $results = $query_id->numColumns())
         {
             return $results;
         }

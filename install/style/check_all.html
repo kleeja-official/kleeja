@@ -1,7 +1,7 @@
 <div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner">
 <div class="clr"></div>
 
-    {{if(empty($GLOBALS['dbname']) || empty($GLOBALS['dbuser'])): $GLOBALS['submit_disabled'] = true;}}
+    {{if(empty($GLOBALS['dbname'])): $GLOBALS['submit_disabled'] = true;}}
         <div class="notice">
             <p class="error2"><img src="style/images/k_info.png" class="img" alt=" " />{{echo $lang['INST_CHANG_CONFIG']}}</p>
         </div>

@@ -114,14 +114,26 @@ function kleeja_eval($code)
 * @param mixed $nm
 * @param mixed $prf
 */
-function do_config_export($srv, $usr, $pass, $nm, $prf)
+function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
 {
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
-    $data    .= '$dbserver        = \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
-    $data    .= '$dbuser            = \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
-    $data    .= '$dbpass            = \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
-    $data    .= '$dbname            = \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
-    $data    .= '$dbprefix        = \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
+    $data .= '//for more information about this file, visit: ' . "\n";
+    $data .= '//https://github.com/kleeja-official/kleeja/wiki/config.php-file' . "\n\n";
+
+    if(!empty($type) && $type != 'mysql')
+    {
+        if ($type == 'sqlite' && strpos($nm, '.') === false)
+        {
+            $nm = $nm . '.db';
+        }
+
+        $data    .= '$dbtype   = \'' . str_replace("'", "\'", $type) . "'; //database type \n";
+    }
+    $data    .= '$dbserver = \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
+    $data    .= '$dbuser   = \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
+    $data    .= '$dbpass   = \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
+    $data    .= '$dbname   = \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
+    $data    .= '$dbprefix = \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
 
     if (file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
     {

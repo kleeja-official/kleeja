@@ -128,9 +128,8 @@ case 'c':
     if (ip('dbsubmit'))
     {
         //create config file, or export it to browser on failure
-        do_config_export(p('db_server'), p('db_user'), p('db_pass'), p('db_name'), p('db_prefix'));
+        do_config_export(p('db_server'), p('db_user'), p('db_pass'), p('db_name'), p('db_prefix'), p('db_type'));
     }
-
 
     $no_config         = ! file_exists(PATH . 'config.php') || ig('force') ? false : true;
     $writeable_path    = is_writable(PATH) ? true : false;
@@ -144,8 +143,13 @@ case 'check':
     $submit_disabled = $no_connection = $mysql_ver = false;
 
     //config.php
-    if (! empty($dbname) && ! empty($dbuser))
+    if (! empty($dbname))
     {
+        if (isset($dbtype) && $dbtype == 'sqlite')
+        {
+            @touch(PATH . $dbname);
+        }
+
         //connect .. for check
         $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
@@ -156,7 +160,6 @@ case 'check':
         }
         else
         {
-
             if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli')
             {
                 if (! empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<'))

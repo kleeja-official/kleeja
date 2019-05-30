@@ -125,7 +125,7 @@ $install_sqls['config'] = "
 CREATE TABLE `{$dbprefix}config` (
   `name` varchar(255) collate utf8_bin NOT NULL PRIMARY KEY,
   `value` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
-  `option` mediumtext collate utf8_bin  NOT NULL DEFAULT '',
+  `option` mediumtext collate utf8_bin  NOT NULL,
   `display_order` int(10)  NOT NULL DEFAULT '1',
   `type` varchar(20) NULL DEFAULT 'other',
   `plg_id` int(11) NOT NULL DEFAULT '0',
@@ -142,13 +142,13 @@ CREATE TABLE `{$dbprefix}plugins` (
   `plg_name` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
   `plg_ver` varchar(255) collate utf8_bin NOT NULL,
   `plg_author` varchar(255) collate utf8_bin NOT NULL DEFAULT '',
-  `plg_dsc` mediumtext COLLATE utf8_bin NOT NULL DEFAULT '',
-  `plg_icon` blob NOT NULL DEFAULT '',
-  `plg_uninstall` mediumtext COLLATE utf8_bin NOT NULL DEFAULT '',
+  `plg_dsc` mediumtext COLLATE utf8_bin NOT NULL,
+  `plg_icon` blob NOT NULL,
+  `plg_uninstall` mediumtext COLLATE utf8_bin NOT NULL,
   `plg_disabled` tinyint(1) unsigned NOT NULL default '0',
-  `plg_instructions` mediumtext COLLATE utf8_bin NOT NULL DEFAULT '',
-  `plg_store` longtext COLLATE utf8_bin NOT NULL DEFAULT '',
-  `plg_files` text COLLATE utf8_bin NOT NULL DEFAULT '',
+  `plg_instructions` mediumtext COLLATE utf8_bin NOT NULL,
+  `plg_store` longtext COLLATE utf8_bin NOT NULL,
+  `plg_files` text COLLATE utf8_bin NOT NULL,
   KEY `plg_name` (`plg_name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 ";

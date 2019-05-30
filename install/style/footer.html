@@ -1,149 +1,131 @@
-<div class="clr"></div></div><div class="ins_klj"></div>
+<div class="clr"></div>
+</div>
+<div class="ins_klj"></div>
 <!-- strart code java script -->
 <script type="text/javascript" src="{{echo getjquerylink()}}"></script>
-<script type="text/javascript">{{echo gettpl('javascript.js')}}</script>
 
 <script type="text/javascript">
-$(document).ready(function() {
-    $("#lang").msDropDown();
-    $("#toggleElement").click(function() {        
-        $("#next").toggle(!$(this).attr('checked'));        
+    $(document).ready(function () {
+        $("#toggleElement").click(function () {
+            $("#next").toggle(!$(this).attr('checked'));
+        });
+        $('#sitemail').keydown(function (e) {
+            if ($(this).val().length > 1 && $('#email').val() == '') {
+                $('#email').val($(this).val());
+            }
+        });
+
+        $('#db_type').change(function(e) {
+            var state = $('#db_type').val() == 'sqlite';
+            $('#db_server').attr('disabled', state);
+            $('#db_user').attr('disabled', state);
+            $('#db_pass').attr('disabled', state);
+        });
     });
-    $('input:checkbox:not([safari])').checkbox();
-    $('#sitemail').keydown( function(e){
-        if( $(this).val().length > 1) { 
-            $('#email').val($(this).val());
+
+    function w_email(l) {
+        var m = document.getElementById(l);
+        if (m.value.indexOf("@") == -1 || m.value.indexOf(".") == -1 || m.value.length < 7) {
+            alert("{{echo $lang['WRONG_EMAIL']}}");
+            m.focus();
         }
-    });
-});
-/** By JavaScript Kit (http://javascriptkit.com) **/            
-function w_email(l){
-    var m = document.getElementById(l);
-    if (m.value.indexOf("@") == - 1 || m.value.indexOf(".") == - 1 || m.value.length < 7 ) {
-        alert("{{echo $lang['WRONG_EMAIL']}}");
-        m.focus();
     }
-}
-function checkrequired(which){
-    var pass    =    true;
-    if (document.images)
-    {
-        for (i=0;i<which.length;i++)
-        {
-            var tempobj=which.elements[i]
-            if (tempobj.name.substring(0,8)=="required")
-            {
-                if (((tempobj.type=="text"||tempobj.type=="textarea")&&tempobj.value=='')||(tempobj.type.toString().charAt(0)=="s" && tempobj.selectedIndex==-1))
-                {
-                    pass    =    false;
-                    break
+
+    function checkrequired(which) {
+        var pass = true;
+        if (document.images) {
+            for (i = 0; i < which.length; i++) {
+                var tempobj = which.elements[i]
+                if (tempobj.name.substring(0, 8) == "required") {
+                    if (((tempobj.type == "text" || tempobj.type == "textarea") && tempobj.value == '') || (tempobj.type
+                            .toString().charAt(0) == "s" && tempobj.selectedIndex == -1)) {
+                        pass = false;
+                        break
+                    }
                 }
             }
         }
+        if (!pass) {
+            alert("{{echo $lang['VALIDATING_FORM_WRONG']}}");
+            return false;
+        } else {
+            return true;
+        }
     }
-    if (!pass)
-    {
-        alert("{{echo $lang['VALIDATING_FORM_WRONG']}}");
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-/** http://www.dynamicdrive.com **/ 
-function formCheck(formobj, fieldRequired){
 
-    if( document.getElementById('pass1').value != document.getElementById('pass2').value)
-    {
-        alert("{{echo $lang['PASS_NEQ_PASS2']}}");
-        return false;
-    }
-    // dialog message
-    var alertMsg = "{{echo $lang['VALIDATING_FORM_WRONG']}}:\n";
-    var l_Msg = alertMsg.length;
-    //lang
-    var lang = new Array(9);
-    lang["db_server"] = "{{echo $lang['DB_SERVER']}}";
-    lang["db_user"] = "{{echo $lang['DB_USER']}}";
-    lang["db_name"] = "{{echo $lang['DB_NAME']}}";
-    lang["sitename"] = "{{echo $lang['SITENAME']}}";
-    lang["siteurl"] = "{{echo $lang['SITEURL']}}";
-    lang["sitemail"] = "{{echo $lang['SITEMAIL']}}";
-    lang["username"] = "{{echo $lang['USERNAME']}}";
-    lang["password"] = "{{echo $lang['PASSWORD']}}";
-    lang["password2"] = "{{echo $lang['PASSWORD2']}}";
-    lang["email"] = "{{echo $lang['EMAIL']}}";
-    
-    for (var i = 0; i < fieldRequired.length; i++)
-    {
-        var obj = formobj.elements[fieldRequired[i]];
-        if (obj)
-        {
-            switch(obj.type)
-            {
-                case "text":
-                case "textarea":
-                    if (obj.value == "" || obj.value == null)
+    function formCheck(formobj, fieldRequired) {
+
+        if (document.getElementById('pass1').value != document.getElementById('pass2').value) {
+            alert("{{echo $lang['PASS_NEQ_PASS2']}}");
+            return false;
+        }
+        // dialog message
+        var alertMsg = "{{echo $lang['VALIDATING_FORM_WRONG']}}:\n";
+        var l_Msg = alertMsg.length;
+        //lang
+        var lang = new Array(9);
+        lang["db_server"] = "{{echo $lang['DB_SERVER']}}";
+        lang["db_user"] = "{{echo $lang['DB_USER']}}";
+        lang["db_name"] = "{{echo $lang['DB_NAME']}}";
+        lang["sitename"] = "{{echo $lang['SITENAME']}}";
+        lang["siteurl"] = "{{echo $lang['SITEURL']}}";
+        lang["sitemail"] = "{{echo $lang['SITEMAIL']}}";
+        lang["username"] = "{{echo $lang['USERNAME']}}";
+        lang["password"] = "{{echo $lang['PASSWORD']}}";
+        lang["password2"] = "{{echo $lang['PASSWORD2']}}";
+        lang["email"] = "{{echo $lang['EMAIL']}}";
+
+        for (var i = 0; i < fieldRequired.length; i++) {
+            var obj = formobj.elements[fieldRequired[i]];
+            if (obj) {
+                switch (obj.type) {
+                    case "text":
+                    case "textarea":
+                        if (obj.value == "" || obj.value == null)
+                            alertMsg += " - " + lang[fieldRequired[i]] + "\n";
+                        break;
+                    default:
+                }
+
+                if (obj.type == undefined) {
+                    var blnchecked = false;
+                    for (var j = 0; j < obj.length; j++) {
+                        if (obj[j].checked)
+                            blnchecked = true;
+                    }
+
+                    if (!blnchecked)
                         alertMsg += " - " + lang[fieldRequired[i]] + "\n";
-                    break;
-                default:
-            }
-            
-            if (obj.type == undefined)
-            {
-                var blnchecked = false;
-                for (var j = 0; j < obj.length; j++)
-                {
-                    if (obj[j].checked)
-                        blnchecked = true;
                 }
-                
-                if (!blnchecked)
-                    alertMsg += " - " + lang[fieldRequired[i]] + "\n";
             }
+        }
+
+        if (alertMsg.length == l_Msg)
+            return true;
+        else {
+            alert(alertMsg);
+            return false;
         }
     }
 
-    if (alertMsg.length == l_Msg)
-        return true;
-    else
-    {
-        alert(alertMsg);
-        return false;
+
+    function checkPass() {
+        var pass1 = document.getElementById('pass1');
+        var pass2 = document.getElementById('pass2');
+
+        var goodColor = "#66cc66";
+        var badColor = "#ff6666";
+        //Compare the values in the password field
+        if(pass1.value != '' && pass2.value != '') {
+            if (pass1.value == pass2.value) {
+                pass1.style.backgroundColor = goodColor;
+                pass2.style.backgroundColor = goodColor;
+            } else {
+                pass1.style.backgroundColor = badColor;
+                pass2.style.backgroundColor = badColor;
+            }
+        }
     }
-}
-
-
-    function checkPass(){
-      //Store the password field objects into variables ...
-      var pass1 = document.getElementById('pass1');
-      var pass2 = document.getElementById('pass2');
-      //Store the Confimation Message Object ...
-      //var message = document.getElementById('confirmMessage');
-      //Set the colors we will be using ...
-      var goodColor = "#66cc66";
-      var badColor = "#ff6666";
-      //Compare the values in the password field 
-      //and the confirmation field
-      if(pass1.value == pass2.value){
-        //The passwords match. 
-        //Set the color to the good color and inform
-        //the user that they have entered the correct password 
-        pass1.style.backgroundColor = goodColor;
-        pass2.style.backgroundColor = goodColor;
-        //message.style.color = goodColor;
-        //message.innerHTML = "Passwords Match!"
-      }else{
-        //The passwords do not match.
-        //Set the color to the bad color and
-        //notify the user.
-        pass1.style.backgroundColor = badColor;
-        pass2.style.backgroundColor = badColor;
-        //message.style.color = badColor;
-        //message.innerHTML = "Passwords Do Not Match!"
-      }
-    } 
 </script>
 </body>
 </html>

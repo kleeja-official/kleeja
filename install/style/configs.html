@@ -2,28 +2,38 @@
 <div class="clr"></div>
 
 {{if(!$GLOBALS['no_config']):}}
-<form method="post" action="{{echo './install.php?step=c&amp;' . getlang(1)}}"  onsubmit="javascript:return formCheck(this, Array('db_server','db_user' ,'db_name'));">
+<form method="post" action="{{echo './install.php?step=c&amp;' . getlang(1)}}">
     <h2><img src="style/images/klj_info.png" class="img" alt="!" />{{echo $lang['DB_INFO']}}</h2>
     <table class="TableConf" dir="{{echo $lang['DIR']}}">
         <tr>
+            <td class="TdConf">{{echo $lang['DB_TYPE']}}</td>
+            <td class="TdInput">
+                <select name="db_type" id="db_type" style="text-align:left;direction:ltr">
+                    <option value="mysql" selected>{{echo $lang['DB_TYPE_MYSQL']}}</option>
+                    <option value="sqlite">{{echo $lang['DB_TYPE_SQLITE']}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
             <td class="TdConf">{{echo $lang['DB_SERVER']}}</td>
-            <td class="TdInput"><input name="db_server" type="text" value="localhost" class="InputConf" /></td>
+            <td class="TdInput"><input name="db_server" id="db_server" type="text" value="localhost" class="InputConf" /></td>
         </tr>
         <tr>
             <td class="TdConf">{{echo $lang['DB_NAME']}}</td>
-            <td class="TdInput"><input name="db_name" type="text" class="InputConf" /></td>
+            <td class="TdInput"><input name="db_name" id="db_name" type="text" value="kleeja" class="InputConf" /></td>
         </tr>
         <tr>
             <td class="TdConf">{{echo $lang['DB_USER']}}</td>
-            <td class="TdInput"><input name="db_user" type="text" class="InputConf" /></td>
+            <td class="TdInput"><input name="db_user" id="db_user" type="text" class="InputConf" /></td>
         </tr>
         <tr>
             <td class="TdConf">{{echo $lang['DB_PASSWORD']}}</td>
-            <td class="TdInput"><input name="db_pass" type="text" class="InputConf" /></td>
+            <td class="TdInput"><input name="db_pass" id="db_pass" type="text" class="InputConf" /></td>
         </tr>
         <tr>
             <td class="TdConf">{{echo $lang['DB_PREFIX']}}</td>
-            <td class="TdInput"><input name="db_prefix" type="text" value="klj_" class="InputConf" /></td>
+            <td class="TdInput"><input name="db_prefix" id="db_prefix" type="text" value="klj_" class="InputConf" />
+            </td>
         </tr>
     </table>
     <div class="clr"></div>
