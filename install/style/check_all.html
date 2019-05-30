@@ -16,7 +16,7 @@
                 {{echo $lang['INST_CONNCET_ERR']}}
                 {{if(! empty($GLOBALS['dbtype']) && $GLOBALS['dbtype'] == 'sqlite'):}}
                 <br>
-                {{echo $lang['INST_CONNCET_ERR_SQLITE']}}
+                {{echo sprintf($lang['INST_CONNCET_ERR_SQLITE'], $GLOBALS['dbname']);}}
                 {{endif;}}
             </p>
         </div>
