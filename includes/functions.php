@@ -951,9 +951,12 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     if (is_array($words))
     {
-        foreach ($words as $w)
+        foreach ((array) $lang as $language)
         {
-            delete_olang($w, $lang);
+            foreach ($words as $w)
+            {
+                delete_olang($w, $language);
+            }
         }
 
         return true;
