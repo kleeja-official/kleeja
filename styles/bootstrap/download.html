@@ -1,6 +1,6 @@
 
 <div class="mt-3 mb-5">
-    <h2>{title}</h2>
+    <h2 style="word-wrap:break-word;">{title}</h2>
 </div>
 
 
@@ -11,9 +11,9 @@
         <!-- <p class="text-center"><strong>{lang.FILE_INFO}</strong></p> -->
 
             <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between">
+                <li class="list-group-item d-flex justify-content-between flex-column">
                     <span class="text-secondary">{lang.FILENAME}</span>
-                    <div class="list-group-item-text">{name}</div>
+                    <div class="list-group-item-text break-all" style="word-wrap:break-word!important;">{name}</div>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
                     <span class="text-secondary">{lang.FILETYPE}</span>

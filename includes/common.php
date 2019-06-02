@@ -253,6 +253,8 @@ is_array($plugin_run_result = Plugins::getInstance()->run('boot_common', get_def
  */
 date_default_timezone_set('GMT');
 
+//remove PHP version header
+header_remove('X-Powered-By');
 
 //kleeja session id
 define('KJ_SESSION', preg_replace('/[^-,a-zA-Z0-9]/', '', session_id()));

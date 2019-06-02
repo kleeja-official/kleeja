@@ -893,7 +893,7 @@ function delete_config($name)
 //
 function update_olang($name, $lang = 'en', $value)
 {
-    global $SQL, $dbprefix;
+    global $SQL, $dbprefix, $olang;
 
 
     $update_query    = [

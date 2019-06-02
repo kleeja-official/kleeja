@@ -275,7 +275,7 @@ elseif (ig('down') || ig('downf') ||
     //is internet explore 8 ?
     $is_ie8 = is_browser('ie8');
     //is internet explore 6 ?
-    $is_ie6 = is_browser('ie6');
+    // $is_ie6 = is_browser('ie6');
 
     $livexts = explode(',', $config['livexts']);
 
@@ -424,6 +424,13 @@ elseif (ig('down') || ig('downf') ||
 
     $name = empty($rn) ? $n : $rn;
 
+    $dots_in_name = substr_count($name, '.') - 1;
+
+    if ($dots_in_name > 0)
+    {
+        $name      = preg_replace('/\./', '_', $name, $dots_in_name);
+    }
+
     if (is_browser('mozilla'))
     {
         $h_name = "filename*=UTF-8''" . rawurlencode(htmlspecialchars_decode($name));
@@ -504,10 +511,6 @@ elseif (ig('down') || ig('downf') ||
     //{
     //    header('X-Download-Options: noopen');
     //}
-
-    //header(($is_ie6 ? 'Expires: -1' : 'Expires: Mon, 26 Jul 1997 05:00:00 GMT'));
-    //(($is_ie8) ? '; authoritative=true; X-Content-Type-Options: nosniff;' : '')
-
 
     //add multipart download and resume support
     if (isset($_SERVER['HTTP_RANGE']) && $resuming_on)
