@@ -499,7 +499,7 @@ elseif (ig('down') || ig('downf') ||
     header('Content-Description: File Transfer');
 
     //dirty fix
-    if (! is_browser('chrome') && $ext != 'apk')
+    if ($ext != 'apk')
     {
         header("Content-Type: $mime_type");
     }
