@@ -428,7 +428,7 @@ elseif (ig('down') || ig('downf') ||
 
     if ($dots_in_name > 0)
     {
-        $name      = preg_replace('/\./', '_', $name, $dots_in_name);
+        $name      =  preg_replace('/\./', '_', $name, $dots_in_name);
     }
 
     if (is_browser('mozilla'))
@@ -497,7 +497,12 @@ elseif (ig('down') || ig('downf') ||
     header('Pragma: public');
     header('Accept-Ranges: bytes');
     header('Content-Description: File Transfer');
-    header("Content-Type: $mime_type");
+
+    //dirty fix
+    if (! is_browser('chrome') && $ext != 'apk')
+    {
+        header("Content-Type: $mime_type");
+    }
     header('Date: ' . gmdate('D, d M Y H:i:s', empty($ftime) ? time() : $ftime) . ' GMT');
     //header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $ftime) . ' GMT');
     //header('Content-Encoding: none');
@@ -530,6 +535,7 @@ elseif (ig('down') || ig('downf') ||
     }
     else
     {
+        header('HTTP/1.1 200 OK');
         $partial_length = $size;
         header("Content-Length: $partial_length");
     }
