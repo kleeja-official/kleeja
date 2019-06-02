@@ -33,10 +33,6 @@ if (@extension_loaded('apc'))
 //path
 if (! defined('PATH'))
 {
-    if (! defined('__DIR__'))
-    {
-        define('__DIR__', dirname(__FILE__));
-    }
     define('PATH', str_replace('/includes', '', __DIR__) . '/');
 }
 
@@ -71,7 +67,16 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
 {
     switch ($error_number)
     {
-        case E_NOTICE: case E_WARNING: case E_USER_WARNING: case E_USER_NOTICE: case E_STRICT: break;
+        case E_NOTICE: case E_WARNING: case E_USER_WARNING: case E_USER_NOTICE: case E_STRICT:
+            if (function_exists('kleeja_log'))
+            {
+                $error_name = [
+                    2 => 'Warning', 8 => 'Notice', 512 => 'U_Warning', 1024 => 'U_Notice', 2048 => 'Strict'
+                ][$error_number];
+                kleeja_log('[' . $error_name . '] ' . basename($error_file) . ':' . $error_line . ' ' . $error_string);
+            }
+
+        break;
 
         default:
             header('HTTP/1.1 503 Service Temporarily Unavailable');
@@ -123,8 +128,6 @@ if (! is_bot() && ! isset($_SESSION))
 }
 
 
-
-
 //no enough data
 if (empty($dbname) || empty($dbuser))
 {
@@ -139,13 +142,23 @@ define('K_DIR_CHMOD', defined('HAS_SUEXEC') ? (0755 & ~umask()) : 0755);
 
 include PATH . 'includes/functions_alternative.php';
 include PATH . 'includes/version.php';
-include PATH . 'includes/mysqli.php';
+
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
+
 include PATH . 'includes/style.php';
 include PATH . 'includes/usr.php';
 include PATH . 'includes/pager.php';
 include PATH . 'includes/functions.php';
 include PATH . 'includes/functions_display.php';
 include PATH . 'includes/plugins.php';
+include PATH . 'includes/FetchFile.php';
 
 
 if (defined('IN_ADMIN'))
@@ -161,23 +174,23 @@ if (empty($script_encoding))
 }
 
 //start classes ..
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 //no need after now
 unset($dbpass);
 
 
 
-$tpl	= new kleeja_style;
-$usrcp	= new usrcp;
+$tpl      = new kleeja_style;
+$usrcp    = new usrcp;
 
 //then get caches
 include PATH . 'includes/cache.php';
 
 //getting dynamic configs
 $query = [
-    'SELECT'	=> 'c.name, c.value',
-    'FROM'		 => "{$dbprefix}config c",
-    'WHERE'		=> 'c.dynamic = 1',
+    'SELECT'       => 'c.name, c.value',
+    'FROM'         => "{$dbprefix}config c",
+    'WHERE'        => 'c.dynamic = 1',
 ];
 
 $result = $SQL->build($query);
@@ -186,6 +199,7 @@ while ($row=$SQL->fetch_array($result))
 {
     $config[$row['name']] = $row['value'];
 }
+
 
 $SQL->freeresult($result);
 
@@ -239,18 +253,14 @@ is_array($plugin_run_result = Plugins::getInstance()->run('boot_common', get_def
  */
 date_default_timezone_set('GMT');
 
+//remove PHP version header
+header_remove('X-Powered-By');
 
 //kleeja session id
-$klj_session = $SQL->escape(session_id());
-
+define('KJ_SESSION', preg_replace('/[^-,a-zA-Z0-9]/', '', session_id()));
 
 //site url must end with /
-if ($config['siteurl'])
-{
-    $config['siteurl'] = $config['siteurl'][strlen($config['siteurl'])-1] != '/'
-        ? $config['siteurl'] . '/'
-        : $config['siteurl'];
-}
+$config['siteurl'] = rtrim($config['siteurl'], '/') . '/';
 
 
 //check lang
@@ -289,13 +299,13 @@ if (empty($config['h_key']))
 define('ACP_STYLE_NAME', 'Masmak');
 
 //path variables for Kleeja
-$STYLE_PATH				         = $config['siteurl'] . 'styles/' . (trim($config['style_depend_on']) == '' ? $config['style'] : $config['style_depend_on']) . '/';
-$THIS_STYLE_PATH		      = $config['siteurl'] . 'styles/' . $config['style'] . '/';
-$THIS_STYLE_PATH_ABS	   = PATH . 'styles/' . $config['style'] . '/';
-$STYLE_PATH_ADMIN 		    = $config['siteurl'] . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME : ACP_STYLE_NAME) . '/';
-$STYLE_PATH_ADMIN_ABS	  = PATH . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME . '/' : ACP_STYLE_NAME . '/');
-$DEFAULT_PATH_ADMIN_ABS = PATH . 'admin/' . ACP_STYLE_NAME . '/';
-$DEFAULT_PATH_ADMIN		   = $config['siteurl'] . 'admin/' . ACP_STYLE_NAME . '/';
+$STYLE_PATH                         = $config['siteurl'] . 'styles/' . (trim($config['style_depend_on']) == '' ? $config['style'] : $config['style_depend_on']) . '/';
+$THIS_STYLE_PATH                    = $config['siteurl'] . 'styles/' . $config['style'] . '/';
+$THIS_STYLE_PATH_ABS                = PATH . 'styles/' . $config['style'] . '/';
+$STYLE_PATH_ADMIN                   = $config['siteurl'] . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME : ACP_STYLE_NAME) . '/';
+$STYLE_PATH_ADMIN_ABS               = PATH . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME . '/' : ACP_STYLE_NAME . '/');
+$DEFAULT_PATH_ADMIN_ABS             = PATH . 'admin/' . ACP_STYLE_NAME . '/';
+$DEFAULT_PATH_ADMIN                 = $config['siteurl'] . 'admin/' . ACP_STYLE_NAME . '/';
 
 
 //get languge of common
@@ -384,11 +394,13 @@ if (defined('STOP_CAPTCHA'))
 is_array($plugin_run_result = Plugins::getInstance()->run('end_common', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 
-if (function_exists('session_register_shutdown'))
-{
-    session_register_shutdown();
-}
-else
-{
-    register_shutdown_function('session_write_close');
-}
+
+register_shutdown_function(function() {
+    session_write_close();
+
+    $err = error_get_last();
+    if(is_array($err) && ! empty($err['type']) && in_array($err['type'], [E_ERROR, E_PARSE]))
+    {
+        kleeja_log('[FATAL] ' . basename($err['file']) . ':' . $err['line'] . ' ' . $err['message']);
+    }
+});

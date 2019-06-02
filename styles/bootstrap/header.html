@@ -2,101 +2,101 @@
 <!DOCTYPE html>
 <html lang="{lang.LANG_SMALL_NAME}" dir="{dir}">
 <head>
-	<meta charset="{charset}">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="author" content="Kleeja.com">
+    <meta charset="{charset}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Kleeja.com">
 
-	<title>{title}(title? - :){config.sitename}</title>
+    <title>{title}(title? - :){config.sitename}</title>
 
-	<link rel="shortcut icon" href="images/favicon.ico" />
-	<link rel="icon" type="image/gif" href="images/favicon.gif" />
-	<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
-	<link rel="apple-touch-startup-image" href="images/iPhone.png" />
-
-
-	<!-- Bootstrap core CSS -->
-	<link href="{STYLE_PATH}css/bootstrap.min.css" rel="stylesheet">
-	<link href="{STYLE_PATH}css/stylesheet.css" rel="stylesheet">
-
-	<IF NAME="lang.DIR==rtl">
-		<style type="text/css">
-			body{font-family: "Tahoma",Arial,sans-serif;}
-			body{
-				direction: rtl; /* placing it here fixes the issue with jquery white page bug */
-			}
-		</style>
-		<link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/bootstrap.rtl.min.css" />
-	</IF>
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="icon" type="image/gif" href="images/favicon.gif" />
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+    <link rel="apple-touch-startup-image" href="images/iPhone.png" />
 
 
-	<script type="text/javascript">
+    <!-- Bootstrap core CSS -->
+    <link href="{STYLE_PATH}css/bootstrap.min.css" rel="stylesheet">
+    <link href="{STYLE_PATH}css/stylesheet.css" rel="stylesheet">
+
+    <IF NAME="lang.DIR==rtl">
+        <style type="text/css">
+            body{font-family: "Tahoma",Arial,sans-serif;}
+            body{
+                direction: rtl; /* placing it here fixes the issue with jquery white page bug */
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/bootstrap.rtl.min.css" />
+    </IF>
+
+
+    <script type="text/javascript">
         <!--
         var LANG_PAST_URL_HERE = "{lang.PAST_URL_HERE}";
         var LANG_MORE_F_FILES = "{lang.MORE_F_FILES}";
         var STYLE_PATH  = "{STYLE_PATH}";
         -->
-	</script>
+    </script>
 
-	<!-- Extra code -->
-	{EXTRA_CODE_META}
+    <!-- Extra code -->
+    {EXTRA_CODE_META}
 </head>
 <body>
 
-	<!-- header -->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-inverse">
-		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#TopMenuNavbar" aria-controls="TopMenuNavbar" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
+    <!-- header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-inverse">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#TopMenuNavbar" aria-controls="TopMenuNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-		<a class="navbar-brand" href="{config.siteurl}">
-			<img src="{STYLE_PATH}images/logo.png" width="30" height="30" class="d-inline-block align-top" alt="{username}">
-			{config.sitename}
-		</a>
+        <a class="navbar-brand" href="{config.siteurl}">
+            <img src="{STYLE_PATH}images/logo.png" width="30" height="30" class="d-inline-block align-top" alt="{username}">
+            {config.sitename}
+        </a>
 
-		<div class="collapse navbar-collapse" id="TopMenuNavbar">
-			<ul class="navbar-nav mr-auto">
-				<LOOP NAME="top_menu">
-					<IF LOOP="show">
-						<li class="nav-item"><a href="{{url}}" class="nav-link(go_current=={{name}}? active:)">{{title}}</a></li>
-					</IF>
-				</LOOP>
-			</ul>
-		</div>
-	</nav>
+        <div class="collapse navbar-collapse" id="TopMenuNavbar">
+            <ul class="navbar-nav mr-auto">
+                <LOOP NAME="top_menu">
+                    <IF LOOP="show">
+                        <li class="nav-item"><a href="{{url}}" class="nav-link(go_current=={{name}}? active:)">{{title}}</a></li>
+                    </IF>
+                </LOOP>
+            </ul>
+        </div>
+    </nav>
 
-	<!-- use related menu -->
-	<nav class="navbar navbar-expand-lg bg-light navbar-light">
-		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<span class="navbar-brand">
-			<img src="{STYLE_PATH}images/user.png" width="26" height="26" class="d-inline-block align-top" alt="{username}">
-		</span>
+    <!-- use related menu -->
+    <nav class="navbar navbar-expand-lg bg-light navbar-light">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand">
+            <img src="{STYLE_PATH}images/user.png" width="26" height="26" class="d-inline-block align-top" alt="{username}">
+        </span>
 
-		<div class="collapse navbar-collapse" id="navbarText">
-			<ul class="navbar-nav mr-auto">
-				<LOOP NAME="side_menu">
-					<IF LOOP="show">
-						<li class="nav-item"><a href="{{url}}" class="nav-link(go_current=={{name}}? active:)">{{title}}</a></li>
-					</IF>
-				</LOOP>
-			</ul>
-			<IF NAME="user_is">
-			<span class="navbar-text">
-			   {username}
-			</span>
-			</IF>
-		</div>
-	</nav>
-
-
-
-	<div class="container mt-4">
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+                <LOOP NAME="side_menu">
+                    <IF LOOP="show">
+                        <li class="nav-item"><a href="{{url}}" class="nav-link(go_current=={{name}}? active:)">{{title}}</a></li>
+                    </IF>
+                </LOOP>
+            </ul>
+            <IF NAME="user_is">
+            <span class="navbar-text">
+               {username}
+            </span>
+            </IF>
+        </div>
+    </nav>
 
 
-	<IF NAME="extras.header">
-		<div class="extras_header mb-5">{extras.header}</div>
-	</IF>
+
+    <div class="container mt-4">
+
+
+    <IF NAME="extras.header">
+        <div class="extras_header mb-5">{extras.header}</div>
+    </IF>
 
 
 

@@ -1,42 +1,42 @@
 <div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner">
 <div class="clr"></div>
-	{{if (!$GLOBALS['err']):}}
-	<div id="Scro11">
-		<ul class="inside">
-			{{foreach($GLOBALS['sqls_done'] as $sql):}}
-			<li><img src="style/images/ok.png" class="img" alt=" " /> {{echo $sql}}</li>
-			{{endforeach;}}
-		</ul>
-	</div>
-	<div class="hr"></div>
-	<form method="post" action="{{echo './install.php?step=end&' . getlang(1)}}">
-		<button name="agres" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
-	</form>
-	{{else:}}
-	<div id="Scro11">
-		<ul class="inside insideError">
-			{{foreach($GLOBALS['sql_err'] as $sql):}}
-			<li style="color:red"><img src="style/images/error.png" class="img" alt=" " /> {{echo $sql}}</li>
-			{{endforeach;}}
-		</ul>
-	</div>
-	<div class="hr"></div>
-	<div class="notice">
-		<p class="error2"><img src="style/images/info2.png" class="img" alt=" " />{{echo $lang['INST_FINISH_ERRSQL']}}</p>
-		<textarea rows="4" style="width:98%;direction:ltr">{{echo $GLOBALS['errors']}}</textarea>
-	</div>
-	{{endif;}}
+    {{if (!$GLOBALS['err']):}}
+    <div id="Scro11">
+        <ul class="inside">
+            {{foreach($GLOBALS['sqls_done'] as $sql):}}
+            <li><img src="style/images/ok.png" class="img" alt=" " /> {{echo $sql}}</li>
+            {{endforeach;}}
+        </ul>
+    </div>
+    <div class="hr"></div>
+    <form method="post" action="{{echo './install.php?step=end&' . getlang(1)}}">
+        <button name="agres" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
+    </form>
+    {{else:}}
+    <div id="Scro11">
+        <ul class="inside insideError">
+            {{foreach($GLOBALS['sql_err'] as $sql):}}
+            <li style="color:red"><img src="style/images/error.png" class="img" alt=" " /> {{echo $sql}}</li>
+            {{endforeach;}}
+        </ul>
+    </div>
+    <div class="hr"></div>
+    <div class="notice">
+        <p class="error2"><img src="style/images/info2.png" class="img" alt=" " />{{echo $lang['INST_FINISH_ERRSQL']}}</p>
+        <textarea rows="4" style="width:98%;direction:ltr">{{echo $GLOBALS['errors']}}</textarea>
+    </div>
+    {{endif;}}
 <div class="clr"></div></div></div><div class="BoxBottomImg"></div></div>
 <script type="text/javascript">
 <!--
 jQuery(document).ready(function($){
     // fixed error in the browser Explore
     $('#Scro11').animate({scrollTop:$('#Scro11 > .inside').outerHeight() });
-	var elem = $('#Scro11');
-	var inside = $('#Scro11 > .inside');
-	if ( Math.abs(inside.offset().top) + elem.height() + elem.offset().top >= inside.outerHeight() ) {
-	  // We're at the bottom!
-	}
+    var elem = $('#Scro11');
+    var inside = $('#Scro11 > .inside');
+    if ( Math.abs(inside.offset().top) + elem.height() + elem.offset().top >= inside.outerHeight() ) {
+      // We're at the bottom!
+    }
 });
 //-->
 </script>

@@ -1,151 +1,122 @@
 <!-- Powered by kleeja -->
 <div id="content_index">
 
-	<!-- welcome -->
-	<div class="jumbotron">
-		<h5><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>  {lang.WELCOME} <IF NAME="user_is">[ {username} ]</IF></h5>
-		<p>{welcome_msg}</p>
-	</div>
+    <!-- welcome -->
+    <div class="jumbotron">
+        <h5><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>  {lang.WELCOME} <IF NAME="user_is">[ {username} ]</IF></h5>
+        <p>{welcome_msg}</p>
+    </div>
 
 
 
 
-	<!-- messages: error or info -->
-	<IF NAME="info">
-		<div class="card mb-5">
-			<ul class="list-group list-group-flush">
-				<LOOP NAME="info">
-					<IF LOOP="message_type == info">
-						<li class="list-group-item">
-							{{message_content}}
-						</li>
-					<ELSE>
-						<!-- error -->
-						<li class="list-group-item  list-group-item-danger">
-							<strong>{lang.INFORMATION}</strong> : {{message_content}}
-						</li>
-					</IF>
-				</LOOP>
-			</ul>
-		</div>
-	</IF>
+    <!-- messages: error or info -->
+    <IF NAME="info">
+        <div class="card mb-5">
+            <ul class="list-group list-group-flush">
+                <LOOP NAME="info">
+                    <IF LOOP="message_type == info">
+                        <li class="list-group-item">
+                            {{message_content}}
+                        </li>
+                    <ELSE>
+                        <!-- error -->
+                        <li class="list-group-item  list-group-item-danger">
+                            <strong>{lang.INFORMATION}</strong> : {{message_content}}
+                        </li>
+                    </IF>
+                </LOOP>
+            </ul>
+        </div>
+    </IF>
 
 
 
 
-	<!-- form upload -->
-	<form id="uploader" action="{action}" method="post" enctype="multipart/form-data">
+    <!-- form upload -->
+    <form id="uploader" action="{action}" method="post" enctype="multipart/form-data">
 
 
-		<div class="card text-center">
-			<div class="card-header">
-				<ul class="nav nav-tabs card-header-tabs">
-					<li class="nav-item">
-						<a class="nav-link active" data-toggle="tab" href="#fileUpload" role="tab">{lang.DOWNLOAD_F}</a>
-					</li>
-					<IF NAME="config.www_url == 1">
-					<li class="nav-item">
-						<a class="nav-link" data-toggle="tab" href="#linkUpload" role="tab">{lang.DOWNLOAD_T}</a>
-					</li>
-					</IF>
-				</ul>
-			</div>
-			<div class="card-body tab-content">
+        <div class="card text-center">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#fileUpload" role="tab">{lang.DOWNLOAD_F}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body tab-content">
 
-				<IF NAME="config.safe_code">
-					<!-- verification code -->
-					<div class="safe_code card">
-						<div class="card-body">
-							<h4 class="card-title">{lang.VERTY_CODE}</h4>
-							<h6 class="card-subtitle mb-2 text-muted">{lang.NOTE_CODE}</h6>
-							<p class="card-text">
-								<img style="vertical-align:middle;" id="kleeja_img_captcha" src="{captcha_file_path}" alt="{lang.REFRESH_CAPTCHA}" title="{lang.REFRESH_CAPTCHA}" onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
-								<input type="text" name="kleeja_code_answer" id="kleeja_code_answer" />
-							</p>
-						</div>
-					</div>
-				</IF>
+                <IF NAME="config.safe_code">
+                    <!-- verification code -->
+                    <div class="safe_code card">
+                        <div class="card-body">
+                            <h4 class="card-title">{lang.VERTY_CODE}</h4>
+                            <h6 class="card-subtitle mb-2 text-muted">{lang.NOTE_CODE}</h6>
+                            <p class="card-text">
+                                <img style="vertical-align:middle;" id="kleeja_img_captcha" src="{captcha_file_path}" alt="{lang.REFRESH_CAPTCHA}" title="{lang.REFRESH_CAPTCHA}" onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
+                                <input type="text" name="kleeja_code_answer" id="kleeja_code_answer" />
+                            </p>
+                        </div>
+                    </div>
+                </IF>
 
 
-				<!-- files upload tab -->
-				<div class="tab-pane active" id="fileUpload" role="tabpanel">
+                <!-- files upload  -->
+                <div class="tab-pane active" id="fileUpload" role="tabpanel">
 
-					<LOOP NAME=FILES_NUM_LOOP>
+                    <LOOP NAME=FILES_NUM_LOOP>
 
-					<div class="input-group mb-2" style="{{show}}" id="file-block-{{i}}" onclick="document.getElementById('file{{i}}').click();">
-						<span class="input-group-prepend">
-							<div class="btn btn-primary file-button-browse">
-								<img src="{STYLE_PATH}images/folder.png" width="20" height="20">
-								<span class="image-preview-input-title">{lang.OPEN}</span>
-							</div>
-						</span>
-						<input type="file" name="file_{{i}}_" id="file{{i}}" data-number="{{i}}" style="display:none">
-						<input type="text" id="file-text{{i}}" disabled="disabled" placeholder="{lang.NO_FILE_SELECTED}" class="form-control">
-					</div>
+                    <div class="input-group mb-2" style="{{show}}" id="file-block-{{i}}" onclick="document.getElementById('file{{i}}').click();">
+                        <span class="input-group-prepend">
+                            <div class="btn btn-primary file-button-browse">
+                                <img src="{STYLE_PATH}images/folder.png" width="20" height="20">
+                                <span class="image-preview-input-title">{lang.OPEN}</span>
+                            </div>
+                        </span>
+                        <input type="file" name="file_{{i}}_" id="file{{i}}" data-number="{{i}}" style="display:none">
+                        <input type="text" id="file-text{{i}}" disabled="disabled" placeholder="{lang.NO_FILE_SELECTED}" class="form-control">
+                    </div>
 
-					</LOOP>
+                    </LOOP>
 
-					<div>
-						<br>
-						<div class="agree text-muted"><small>{terms_msg}</small></div>
-						<input type="submit" id="submitr" name="submitr" value="{lang.DOWNLOAD_F}" class="btn btn-outline-primary">
-					</div>
+                    <div>
+                        <br>
+                        <div class="agree text-muted"><small>{terms_msg}</small></div>
+                        <input type="submit" id="submitr" name="submitr" value="{lang.DOWNLOAD_F}" class="btn btn-outline-primary">
+                    </div>
 
-				</div>
+                </div>
+            </div>
+        </div>
 
-				<IF NAME="config.www_url == 1">
-				<!-- links upload tab -->
-				<div class="tab-pane" id="linkUpload" role="tabpanel">
+    </form>
 
-					<LOOP NAME=FILES_NUM_LOOP>
-						<input class="url form-control mb-2" type="text" name="file_{{i}}_" style="{{show}}" size="70" placeholder="{lang.PAST_URL_HERE}">
-					</LOOP>
-
-					<div>
-						<br>
-						<div class="agree text-muted"><small>{terms_msg}</small></div>
-						<input type="submit" id="submittxt" name="submittxt" value="{lang.DOWNLOAD_T}" class="btn btn-outline-primary">
-					</div>
-
-				</div>
-				</IF>
-
-
-			</div>
-		</div>
-
-	</form>
-
-	<!-- box loading -->
-	<div id="loadbox" class="card">
-		<div class="card-body">
-			{lang.WAIT_LOADING}
-			<br>
-			<img src="{STYLE_PATH}images/loading.gif" alt="{lang.LOADING}" />
-		</div>
-
-
-	</div>
+    <!-- box loading -->
+    <div id="loadbox" class="card">
+        <div class="card-body">
+            {lang.WAIT_LOADING}
+            <br>
+            <img src="{STYLE_PATH}images/loading.gif" alt="{lang.LOADING}" />
+        </div>
+    </div>
 
 
 
-	<IF NAME="show_online">
-		<!-- who's onLine -->
-		<div class="card who-online">
-			<div class="card-header">
-				{lang.NUMBER_ONLINE}: <b>{current_online_users}</b>
-			</div>
+    <IF NAME="show_online">
+        <!-- who's onLine -->
+        <div class="card who-online">
+            <div class="card-header">
+                {lang.NUMBER_ONLINE}: <b>{current_online_users}</b>
+            </div>
 
-			<IF NAME="show_names">
-				<div class="card-body">
-				<LOOP NAME="show_names">
-					<span class="badge badge-pill badge-default">{{name}}</span>
-				</LOOP>
-				</div>
-			</IF>
-		</div>
-	</IF>
-
-
-
+            <IF NAME="show_names">
+                <div class="card-body">
+                <LOOP NAME="show_names">
+                    <span class="badge badge-pill badge-default">{{name}}</span>
+                </LOOP>
+                </div>
+            </IF>
+        </div>
+    </IF>
 </div>

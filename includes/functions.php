@@ -25,15 +25,15 @@ function kleeja_detecting_bots()
     global $SQL, $dbprefix, $config;
 
     // get information ..
-    $agent	= $SQL->escape($_SERVER['HTTP_USER_AGENT']);
-    $time	 = time();
+    $agent    = $SQL->escape($_SERVER['HTTP_USER_AGENT']);
+    $time     = time();
 
     //for stats
     if (strpos($agent, 'Google') !== false)
     {
         $update_query = [
-            'UPDATE'	=> "{$dbprefix}stats",
-            'SET'		  => "last_google=$time, google_num=google_num+1"
+            'UPDATE'       => "{$dbprefix}stats",
+            'SET'          => "last_google=$time, google_num=google_num+1"
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_google_lst_num', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         $SQL->build($update_query);
@@ -41,8 +41,8 @@ function kleeja_detecting_bots()
     elseif (strpos($agent, 'Bing') !== false)
     {
         $update_query = [
-            'UPDATE'	=> "{$dbprefix}stats",
-            'SET'		  => "last_bing=$time, bing_num=bing_num+1"
+            'UPDATE'       => "{$dbprefix}stats",
+            'SET'          => "last_bing=$time, bing_num=bing_num+1"
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_bing_lst_num', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         $SQL->build($update_query);
@@ -68,28 +68,42 @@ function kleeja_detecting_bots()
 */
 function get_ban()
 {
-    global $banss, $lang, $tpl, $text, $SQL;
+    global $banss, $lang, $SQL, $usrcp;
 
     //visitor ip now
-    $ip	= get_ip();
+    $ip        = get_ip();
+    $username  = $usrcp->name();
 
     //now .. loop for banned ips
-    if (is_array($banss) && ! empty($ip))
+    if (is_array($banss) && (! empty($ip) || ! empty($username)))
     {
-        foreach ($banss as $ip2)
+        foreach ($banss as $banned_item)
         {
-            $ip2 = trim($ip2);
+            $banned_item = trim($banned_item);
 
-            if (empty($ip2))
+            if (empty($banned_item))
             {
                 continue;
             }
 
-            //first .. replace all * with something good .
-            $replace_it = str_replace('*', '([0-9]{1,3})', $ip2);
-            $replace_it = str_replace('.', '\.', $replace_it);
 
-            if ($ip == $ip2 || @preg_match('/' . preg_quote($replace_it, '/') . '/i', $ip))
+            $is_banned = false;
+
+            //first .. replace all * with something good .
+
+            if (! empty($ip) && strpos($banned_item, '.') !== false)
+            {
+                $replace_it = str_replace('*', '([0-9]{1,3})', $banned_item);
+                $replace_it = str_replace('.', '\.', $replace_it);
+
+                $is_banned = $ip == $banned_item || @preg_match('/' . preg_quote($replace_it, '/') . '/i', $ip);
+            }
+            elseif (! empty($username) && $banned_item == $username)
+            {
+                $is_banned = true;
+            }
+
+            if ($is_banned)
             {
                 is_array($plugin_run_result = Plugins::getInstance()->run('banned_get_ban_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -131,13 +145,13 @@ function kleeja_plugin_exists($plugin_name)
     global $SQL, $dbprefix;
 
     $query = [
-        'SELECT'	=> 'p.plg_id',
-        'FROM'		 => "{$dbprefix}plugins p",
-        'WHERE'		=> "p.plg_name = '" . $SQL->escape($plugin_name) . "'",
+        'SELECT'       => 'p.plg_id',
+        'FROM'         => "{$dbprefix}plugins p",
+        'WHERE'        => "p.plg_name = '" . $SQL->escape($plugin_name) . "'",
     ];
 
-    $result	= $SQL->build($query);
-    $num    = $SQL->num_rows($result);
+    $result    = $SQL->build($query);
+    $num       = $SQL->num_rows($result);
 
     if ($num)
     {
@@ -202,7 +216,7 @@ function kleeja_get_page()
  */
 function _sm_mk_utf8($text)
 {
-    return '=?UTF-8?B?' . kleeja_base64_encode($text) . '?=';
+    return '=?UTF-8?B?' . base64_encode($text) . '?=';
 }
 
 /**
@@ -249,244 +263,6 @@ function send_mail($to, $body, $subject, $fromAddress, $fromName, $bcc = '')
 
     return $mail_sent;
 }
-
-
-/**
- * Get remote files
- * (c) punbb + Kleeja team
- * @param $url
- * @param  bool              $save_in
- * @param  int               $timeout
- * @param  bool              $head_only
- * @param  int               $max_redirects
- * @param  bool              $binary
- * @return bool|string|array
- */
-function fetch_remote_file($url, $save_in = false, $timeout = 20, $head_only = false, $max_redirects = 10, $binary = false)
-{
-    is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_fetch_remote_file_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-    // Quite unlikely that this will be allowed on a shared host, but it can't hurt
-    if (function_exists('ini_set'))
-    {
-        @ini_set('default_socket_timeout', $timeout);
-    }
-    $allow_url_fopen = function_exists('ini_get')
-                    ? strtolower(@ini_get('allow_url_fopen'))
-                    : strtolower(@get_cfg_var('allow_url_fopen'));
-
-    if (function_exists('curl_init'))
-    {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        @curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HEADER, $head_only);
-        curl_setopt($ch, CURLOPT_NOBODY, $head_only);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Kleeja)');
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
-
-        if ($binary)
-        {
-            curl_setopt($ch, CURLOPT_ENCODING, '');
-        }
-
-        //let's open new file to save it in.
-        if ($save_in)
-        {
-            $out = @fopen($save_in, 'w');
-            curl_setopt($ch, CURLOPT_FILE, $out);
-            @curl_exec($ch);
-            curl_close($ch);
-            fclose($out);
-        }
-
-        if ($head_only)
-        {
-            // Grab the page
-            $data          = @curl_exec($ch);
-            $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close();
-
-            if ($data !== false && $response_code == '200')
-            {
-                return explode("\r\n", str_replace("\r\n\r\n", "\r\n", trim($data)));
-            }
-        }
-        else
-        {
-            if (! $save_in)
-            {
-                $data = @curl_exec($ch);
-                curl_close();
-            }
-
-            return $save_in ? true : $data;
-        }
-    }
-    // fsockopen() is the second best thing
-    elseif (function_exists('fsockopen'))
-    {
-        $url_parsed = parse_url($url);
-        $host       = $url_parsed['host'];
-        $port       = empty($url_parsed['port']) || $url_parsed['port'] == 0 ? 80 : $url_parsed['port'];
-        $path       = $url_parsed['path'];
-
-        if (isset($url_parsed['query']) && $url_parsed['query'] != '')
-        {
-            $path .= '?' . $url_parsed['query'];
-        }
-
-        if (! $fp = @fsockopen($host, $port, $errno, $errstr, $timeout))
-        {
-            return false;
-        }
-
-        // Send a standard HTTP 1.0 request for the page
-        fwrite($fp, ($head_only ? 'HEAD' : 'GET') . " $path HTTP/1.0\r\n");
-        fwrite($fp, "Host: $host\r\n");
-        fwrite($fp, 'User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Kleeja)' . "\r\n");
-        fwrite($fp, 'Connection: Close' . "\r\n\r\n");
-
-        stream_set_timeout($fp, $timeout);
-        $stream_meta = stream_get_meta_data($fp);
-
-        $fp2 = null;
-
-        //let's open new file to save it in.
-        if ($save_in)
-        {
-            $fp2 = @fopen($save_in, 'w' . ($binary ? '' : ''));
-        }
-
-        // Fetch the response 1024 bytes at a time and watch out for a timeout
-        $in = false;
-        $h  = false;
-
-        while (! feof($fp) && ! $stream_meta['timed_out'])
-        {
-            $s = fgets($fp, 1024);
-
-            if ($save_in)
-            {
-                if ($s == "\r\n")
-                { //|| $s == "\n")
-                    $h = true;
-
-                    continue;
-                }
-
-                if ($h)
-                {
-                    @fwrite($fp2, $s);
-                }
-            }
-
-            $in .= $s;
-            $stream_meta = stream_get_meta_data($fp);
-        }
-
-        fclose($fp);
-
-        if ($save_in)
-        {
-            unset($in);
-            @fclose($fp2);
-            return true;
-        }
-
-        // Process 301/302 redirect
-        if ($in !== false && $max_redirects > 0 && preg_match('#^HTTP/1.[01] 30[12]#', $in))
-        {
-            $headers = explode("\r\n", trim($in));
-
-            foreach ($headers as $header)
-            {
-                if (substr($header, 0, 10) == 'Location: ')
-                {
-                    $response = fetch_remote_file(substr($header, 10), $save_in, $timeout, $head_only, $max_redirects - 1);
-
-                    if ($response != false)
-                    {
-                        $headers[] = $response;
-                    }
-                    return $headers;
-                }
-            }
-        }
-
-        // Ignore everything except a 200 response code
-        if ($in !== false && preg_match('#^HTTP/1.[01] 200 OK#', $in))
-        {
-            if ($head_only)
-            {
-                return explode("\r\n", trim($in));
-            }
-            else
-            {
-                $content_start = strpos($in, "\r\n\r\n");
-
-                if ($content_start !== false)
-                {
-                    return substr($in, $content_start + 4);
-                }
-            }
-        }
-        return $in;
-    }
-    // Last case scenario, we use file_get_contents provided allow_url_fopen is enabled (any non 200 response results in a failure)
-    elseif (in_array($allow_url_fopen, ['on', 'true', '1']))
-    {
-        // PHP5's version of file_get_contents() supports stream options
-        if (version_compare(PHP_VERSION, '5.0.0', '>='))
-        {
-            // Setup a stream context
-            $stream_context = stream_context_create(
-                [
-                    'http' => [
-                        'method'		      => $head_only ? 'HEAD' : 'GET',
-                        'user_agent'	   => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Kleeja)',
-                        'max_redirects'	=> $max_redirects + 1,	// PHP >=5.1.0 only
-                        'timeout'		     => $timeout	// PHP >=5.2.1 only
-                    ]
-                ]
-            );
-
-            $content = @file_get_contents($url, false, $stream_context);
-        }
-        else
-        {
-            $content = @file_get_contents($url);
-        }
-
-        // Did we get anything?
-        if ($content !== false)
-        {
-            // Gotta love the fact that $http_response_header just appears in the global scope (*cough* hack! *cough*)
-            if ($head_only)
-            {
-                return $http_response_header;
-            }
-
-            if ($save_in)
-            {
-                $fp2 = fopen($save_in, 'w' . ($binary ? 'b' : ''));
-                @fwrite($fp2, $content);
-                @fclose($fp2);
-                unset($content);
-                return true;
-            }
-
-            return $content;
-        }
-    }
-
-    return false;
-}
-
 
 /**
  * Delete cache
@@ -635,7 +411,7 @@ function get_mime_for_header($ext)
         'bcpio' => 'application/x-bcpio',
         'bin'   => 'application/octet-stream',
         'bmp'   => 'image/bmp', // this is not a good mime, but it work anyway
-        //"bmp"	=> "image/x-ms-bmp", # @see bugs.php.net/47359
+        //"bmp"    => "image/x-ms-bmp", # @see bugs.php.net/47359
         'c'       => 'text/plain',
         'cat'     => 'application/vnd.ms-pkiseccat',
         'cdf'     => 'application/x-cdf',
@@ -914,14 +690,14 @@ function get_config($name)
     }
 
     $query = [
-        'SELECT'	=> 'c.value',
-        'FROM'		 => $table,
-        'WHERE'		=> "c.name = '" . $SQL->escape($name) . "'" . $group_id_sql
+        'SELECT'       => 'c.value',
+        'FROM'         => $table,
+        'WHERE'        => "c.name = '" . $SQL->escape($name) . "'" . $group_id_sql
     ];
 
-    $result	= $SQL->build($query);
-    $v		    = $SQL->fetch($result);
-    $return	= $v['value'];
+    $result       = $SQL->build($query);
+    $v            = $SQL->fetch($result);
+    $return       = $v['value'];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     return $return;
@@ -955,10 +731,10 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
 
         foreach ($group_ids as $g_id)
         {
-            $insert_query	= [
-                'INSERT'	=> '`name`, `value`, `group_id`',
-                'INTO'		 => "{$dbprefix}groups_data",
-                'VALUES' => "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', " . $g_id,
+            $insert_query    = [
+                'INSERT'       => '`name`, `value`, `group_id`',
+                'INTO'         => "{$dbprefix}groups_data",
+                'VALUES'       => "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', " . $g_id,
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_add_config_func_groups_data', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -967,10 +743,10 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
         }
     }
 
-    $insert_query	= [
-        'INSERT'	=> '`name` ,`value` ,`option` ,`display_order`, `type`, `plg_id`, `dynamic`',
-        'INTO'		 => "{$dbprefix}config",
-        'VALUES'	=> "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', '" . $SQL->real_escape($html) . "','" . intval($order) . "','" . $SQL->escape($type) . "','" . intval($plg_id) . "','" . ($dynamic ? '1' : '0') . "'",
+    $insert_query    = [
+        'INSERT'       => '`name` ,`value` ,`option` ,`display_order`, `type`, `plg_id`, `dynamic`',
+        'INTO'         => "{$dbprefix}config",
+        'VALUES'       => "'" . $SQL->escape($name) . "','" . $SQL->escape($value) . "', '" . $SQL->real_escape($html) . "','" . intval($order) . "','" . $SQL->escape($type) . "','" . intval($plg_id) . "','" . ($dynamic ? '1' : '0') . "'",
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_add_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1018,9 +794,9 @@ function add_config_r($configs)
 
 function update_config($name, $value, $escape = true, $group = false)
 {
-    global $SQL, $dbprefix, $d_groups, $userinfo;
+    global $SQL, $dbprefix, $d_groups, $userinfo, $config;
 
-    $value = ($escape) ? $SQL->escape($value) : $value;
+    $value = $escape ? $SQL->escape($value) : $value;
     $table = "{$dbprefix}config";
 
     //what if this config is a group-configs related ?
@@ -1040,10 +816,10 @@ function update_config($name, $value, $escape = true, $group = false)
         }
     }
 
-    $update_query	= [
-        'UPDATE'	=> $table,
-        'SET'		  => "value='" . ($escape ? $SQL->escape($value) : $value) . "'",
-        'WHERE'		=> 'name = "' . $SQL->escape($name) . '"' . $group_id_sql
+    $update_query    = [
+        'UPDATE'       => $table,
+        'SET'          => "value='" . ($escape ? $SQL->escape($value) : $value) . "'",
+        'WHERE'        => 'name = "' . $SQL->escape($name) . '"' . $group_id_sql
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('update_sql_update_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1076,6 +852,8 @@ function delete_config($name)
         {
             delete_config($n);
         }
+
+        return;
     }
 
     global $dbprefix, $SQL, $d_groups, $userinfo;
@@ -1083,9 +861,9 @@ function delete_config($name)
     //
     // 'IN' doesnt work here with delete, i dont know why ?
     //
-    $delete_query	= [
-        'DELETE'	=> "{$dbprefix}config",
-        'WHERE'		=> "name  = '" . $SQL->escape($name) . "'"
+    $delete_query    = [
+        'DELETE'       => "{$dbprefix}config",
+        'WHERE'        => "name  = '" . $SQL->escape($name) . "'"
     ];
     is_array($plugin_run_result = Plugins::getInstance()->run('del_sql_delete_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -1093,9 +871,9 @@ function delete_config($name)
 
     if (array_key_exists($name, $d_groups[$userinfo['group_id']]['configs']))
     {
-        $delete_query	= [
-            'DELETE'	=> "{$dbprefix}groups_data",
-            'WHERE'		=> "name  = '" . $SQL->escape($name) . "'"
+        $delete_query    = [
+            'DELETE'       => "{$dbprefix}groups_data",
+            'WHERE'        => "name  = '" . $SQL->escape($name) . "'"
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('del_sql_delete_config_func2', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -1115,13 +893,13 @@ function delete_config($name)
 //
 function update_olang($name, $lang = 'en', $value)
 {
-    global $SQL, $dbprefix;
+    global $SQL, $dbprefix, $olang;
 
 
-    $update_query	= [
-        'UPDATE'	=> "{$dbprefix}lang",
-        'SET'		  => "trans='" . $SQL->escape($value) . "'",
-        'WHERE'		=> 'word = "' . $SQL->escape($name) . '", lang_id = "' . $SQL->escape($lang) . '"'
+    $update_query    = [
+        'UPDATE'       => "{$dbprefix}lang",
+        'SET'          => "trans='" . $SQL->escape($value) . "'",
+        'WHERE'        => 'word = "' . $SQL->escape($name) . '", lang_id = "' . $SQL->escape($lang) . '"'
     ];
     is_array($plugin_run_result = Plugins::getInstance()->run('update_sql_update_olang_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -1147,9 +925,9 @@ function add_olang($words = [], $lang = 'en', $plg_id = '0')
     foreach ($words as $w=> $t)
     {
         $insert_query = [
-            'INSERT'	=> 'word ,trans ,lang_id, plg_id',
-            'INTO'		 => "{$dbprefix}lang",
-            'VALUES'	=> "'" . $SQL->escape($w) . "','" . $SQL->real_escape($t) . "', '" . $SQL->escape($lang) . "','" . intval($plg_id) . "'",
+            'INSERT'       => 'word ,trans ,lang_id, plg_id',
+            'INTO'         => "{$dbprefix}lang",
+            'VALUES'       => "'" . $SQL->escape($w) . "','" . $SQL->real_escape($t) . "', '" . $SQL->escape($lang) . "','" . intval($plg_id) . "'",
         ];
         is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_add_olang_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         $SQL->build($insert_query);
@@ -1173,17 +951,20 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     if (is_array($words))
     {
-        foreach ($words as $w)
+        foreach ((array) $lang as $language)
         {
-            delete_olang($w, $lang);
+            foreach ($words as $w)
+            {
+                delete_olang($w, $language);
+            }
         }
 
         return true;
     }
 
-    $delete_query	= [
-        'DELETE'	=> "{$dbprefix}lang",
-        'WHERE'		=> "word = '" . $SQL->escape($words) . "' AND lang_id = '" . $SQL->escape($lang) . "'"
+    $delete_query    = [
+        'DELETE'       => "{$dbprefix}lang",
+        'WHERE'        => "word = '" . $SQL->escape($words) . "' AND lang_id = '" . $SQL->escape($lang) . "'"
     ];
 
     if (! empty($plg_id))
@@ -1224,21 +1005,21 @@ function klj_clean_old_files($from = 0)
 
     if ((time() - $stat_last_f_del) >= 86400)
     {
-        $totaldays	= (time() - ($config['del_f_day']*86400));
-        $not_today	= time() - 86400;
+        $totaldays    = (time() - ($config['del_f_day']*86400));
+        $not_today    = time() - 86400;
 
         //This feature will work only if id_form is not empty or direct !
         $query = [
-            'SELECT'	  => 'f.id, f.last_down, f.name, f.type, f.folder, f.time, f.size, f.id_form',
-            'FROM'		   => "{$dbprefix}files f",
-            'WHERE'		  => "f.last_down < $totaldays AND f.time < $not_today AND f.id > $from AND f.id_form <> '' AND f.id_form <> 'direct'",
-            'ORDER BY'	=> 'f.id ASC',
-            'LIMIT'		  => '20',
+            'SELECT'         => 'f.id, f.last_down, f.name, f.type, f.folder, f.time, f.size, f.id_form',
+            'FROM'           => "{$dbprefix}files f",
+            'WHERE'          => "f.last_down < $totaldays AND f.time < $not_today AND f.id > $from AND f.id_form <> '' AND f.id_form <> 'direct'",
+            'ORDER BY'       => 'f.id ASC',
+            'LIMIT'          => '20',
         ];
 
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_klj_clean_old_files_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        $result	= $SQL->build($query);
+        $result    = $SQL->build($query);
 
         $num_of_files_to_delete = $SQL->num_rows($result);
 
@@ -1246,8 +1027,8 @@ function klj_clean_old_files($from = 0)
         {
             //update $stat_last_f_del !!
             $update_query = [
-                'UPDATE'	=> "{$dbprefix}stats",
-                'SET'		  => "last_f_del ='" . time() . "'",
+                'UPDATE'       => "{$dbprefix}stats",
+                'SET'          => "last_f_del ='" . time() . "'",
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_lstf_del_date_kcof', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1333,10 +1114,10 @@ function klj_clean_old_files($from = 0)
 
         if (sizeof($ex_ids))
         {
-            $update_query	= [
-                'UPDATE'	=> "{$dbprefix}files",
-                'SET'		  => "last_down = '" . (time() + 2*86400) . "'",
-                'WHERE'		=> 'id IN (' . implode(',', $ex_ids) . ')'
+            $update_query    = [
+                'UPDATE'       => "{$dbprefix}files",
+                'SET'          => "last_down = '" . (time() + 2*86400) . "'",
+                'WHERE'        => 'id IN (' . implode(',', $ex_ids) . ')'
             ];
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_lstdown_old_files', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
             $SQL->build($update_query);
@@ -1344,15 +1125,15 @@ function klj_clean_old_files($from = 0)
 
         if (sizeof($ids))
         {
-            $query_del	= [
-                'DELETE'	=> "{$dbprefix}files",
-                'WHERE'	 => 'id IN (' . implode(',', $ids) . ')'
+            $query_del    = [
+                'DELETE'    => "{$dbprefix}files",
+                'WHERE'     => 'id IN (' . implode(',', $ids) . ')'
             ];
 
             //update number of stats
-            $update_query	= [
-                'UPDATE'	=> "{$dbprefix}stats",
-                'SET'		  => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+            $update_query    = [
+                'UPDATE'       => "{$dbprefix}stats",
+                'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_delf_old_files', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1377,21 +1158,21 @@ function klj_clean_old($table, $for = 'all')
     $days = time() - (3600 * 24 * intval($for));
 
     $query = [
-        'SELECT'	  => 'f.id, f.time',
-        'DELETE'		 => "`{$dbprefix}" . $table . '` f',
-        'ORDER BY'	=> 'f.id ASC',
-        'LIMIT'		  => '30',
+        'SELECT'         => 'f.id, f.time',
+        'FROM'         => "`{$dbprefix}" . $table . '` f',
+        'ORDER BY'       => 'f.id ASC',
+        'LIMIT'          => '30',
     ];
 
     if ($for != 'all')
     {
-        $query['WHERE']	= "f.time < $days";
+        $query['WHERE']    = "f.time < $days";
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_klj_clean_old_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    $result	       = $SQL->build($query);
-    $num_to_delete = $SQL->num_rows($result);
+    $result           = $SQL->build($query);
+    $num_to_delete    = $SQL->num_rows($result);
 
     if ($num_to_delete == 0)
     {
@@ -1409,9 +1190,9 @@ function klj_clean_old($table, $for = 'all')
 
     $SQL->freeresult($result);
 
-    $query_del	= [
-        'DELETE'	=> '`' . $dbprefix . $table . '`',
-        'WHERE'	 => 'id IN (' . implode(',', $ids) . ')'
+    $query_del    = [
+        'DELETE'    => '`' . $dbprefix . $table . '`',
+        'WHERE'     => 'id IN (' . implode(',', $ids) . ')'
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_delf_old_table', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -1503,7 +1284,7 @@ function kleeja_log($text)
     }
 
     file_put_contents(
-        PATH . 'cache/kleeja_log.log',
+        __DIR__ . '/../cache/kleeja_log.log',
         date_format(date_create(), 'Y-m-d h:i:s.ua') . ' | INFO | ' . $text . PHP_EOL,
         FILE_APPEND | LOCK_EX
     );
@@ -1518,15 +1299,15 @@ function kleeja_log($text)
  */
 function kleeja_set_range($range, $fileSize)
 {
-    $dash	 = strpos($range, '-');
-    $first	= trim(substr($range, 0, $dash));
-    $last	 = trim(substr($range, $dash+1));
+    $dash     = strpos($range, '-');
+    $first    = trim(substr($range, 0, $dash));
+    $last     = trim(substr($range, $dash+1));
 
     if (! $first)
     {
-        $suffix	= $last;
-        $last   = $fileSize - 1;
-        $first  = $fileSize - $suffix;
+        $suffix    = $last;
+        $last      = $fileSize - 1;
+        $first     = $fileSize - $suffix;
 
         if ($first < 0)
         {
@@ -1574,8 +1355,8 @@ function kleeja_buffered_range($file, $bytes, $buffer_size = 1024)
             $bytes_to_read = $bytes_left;
         }
 
-        $bytes_left	-= $bytes_to_read;
-        $contents	= fread($file, $bytes_to_read);
+        $bytes_left    -= $bytes_to_read;
+        $contents    = fread($file, $bytes_to_read);
         echo $contents;
         @flush();
         @ob_flush();
@@ -1603,12 +1384,12 @@ function user_can($acl_name, $group_id = 0)
 
 function ig($name)
 {
-    return isset($_GET[$name]) ? true : false;
+    return isset($_GET[$name]);
 }
 
 function ip($name)
 {
-    return isset($_POST[$name]) ? true : false;
+    return isset($_POST[$name]);
 }
 
 function g($name, $type = 'str', $default = '')
@@ -1642,7 +1423,17 @@ function p($name, $type = 'str', $default = '')
  */
 function add_to_serve_rules($rules, $unique_id = '')
 {
-    $current_serve_content = file_get_contents(PATH . 'serve.php');
+    if (! file_exists(PATH . 'plugins_rules.php'))
+    {
+        if (! is_writable(PATH))
+        {
+            chmod(PATH, K_DIR_CHMOD);
+        }
+
+        file_put_contents(PATH . 'plugins_rules.php', '<?php return [' . PHP_EOL . '];');
+    }
+
+    $current_serve_content = file_get_contents(PATH . 'plugins_rules.php');
 
     $rules = is_array($rules) ? implode(PHP_EOL, $rules) : $rules;
 
@@ -1651,29 +1442,19 @@ function add_to_serve_rules($rules, $unique_id = '')
         $rules = '#start_' . $unique_id . PHP_EOL . $rules . PHP_EOL . '#end_' . $unique_id;
     }
 
-    if (strpos($current_serve_content, '#end_kleeja_rewrites_rules#') !== false)
+    $current_serve_content = preg_replace(
+                        '/return\s{0,4}\[/',
+                        'return [' . PHP_EOL . $rules,
+                        $current_serve_content
+                    );
+
+
+    if (! is_writable(PATH . 'plugins_rules.php'))
     {
-        $current_serve_content = str_replace(
-                                '#end_kleeja_rewrites_rules#',
-                                '#end_kleeja_rewrites_rules#' . PHP_EOL . $rules,
-                                $current_serve_content
-                        );
-    }
-    else
-    {
-        $current_serve_content = preg_replace(
-                            '/\$rules\s{0,4}=\s{0,4}array\(/',
-                            '$rules = array(' . PHP_EOL . $rules,
-                            $current_serve_content
-                        );
+        chmod(PATH . 'plugins_rules.php', K_FILE_CHMOD);
     }
 
-    if (! is_writable(PATH . 'serve.php'))
-    {
-        chmod(PATH . 'serve.php', K_FILE_CHMOD);
-    }
-
-    file_put_contents(PATH . 'serve.php', $current_serve_content);
+    file_put_contents(PATH . 'plugins_rules.php', $current_serve_content);
 
     return true;
 }
@@ -1686,7 +1467,7 @@ function add_to_serve_rules($rules, $unique_id = '')
  */
 function remove_from_serve_rules($unique_id)
 {
-    $file = PATH . 'serve.php';
+    $file = PATH . 'plugins_rules.php';
 
     $current_serve_content = file_get_contents($file);
 
@@ -1701,9 +1482,9 @@ function remove_from_serve_rules($unique_id)
         return false;
     }
 
-    if (! is_writable(PATH . 'serve.php'))
+    if (! is_writable(PATH . 'plugins_rules.php'))
     {
-        chmod(PATH . 'serve.php', K_FILE_CHMOD);
+        chmod(PATH . 'plugins_rules.php', K_FILE_CHMOD);
     }
 
     file_put_contents($file, $new_serve_content);

@@ -4,7 +4,7 @@
 * @package Kleeja
 * @copyright (c) 2007 Kleeja.com
 * @license ./docs/license.txt
-* hi
+*
 */
 
 
@@ -13,7 +13,7 @@
  * @ignore
  */
 define('IN_KLEEJA', true);
-define ('IN_DOWNLOAD', true);
+define('IN_DOWNLOAD', true);
 require_once 'includes/common.php';
 
 
@@ -31,19 +31,19 @@ if (ig('id') || ig('filename'))
     is_array($plugin_run_result = Plugins::getInstance()->run('begin_download_id_filename', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $query = [
-        'SELECT'	=> 'f.id, f.real_filename, f.name, f.folder, f.size, f.time, f.uploads, f.type',
-        'FROM'		 => "{$dbprefix}files f",
-        'LIMIT'		=> '1',
+        'SELECT'       => 'f.id, f.real_filename, f.name, f.folder, f.size, f.time, f.uploads, f.type',
+        'FROM'         => "{$dbprefix}files f",
+        'LIMIT'        => '1',
     ];
 
     //if user system is default, we use users table
     if ((int) $config['user_system'] == 1)
     {
         $query['SELECT'] .= ', u.name AS fusername, u.id AS fuserid';
-        $query['JOINS']	=	[
+        $query['JOINS']    =    [
             [
-                'LEFT JOIN'	=> "{$dbprefix}users u",
-                'ON'		      => 'u.id=f.user'
+                'LEFT JOIN'       => "{$dbprefix}users u",
+                'ON'              => 'u.id=f.user'
             ]
         ];
     }
@@ -54,21 +54,21 @@ if (ig('id') || ig('filename'))
 
         if (ig('x'))
         {
-            $query['WHERE']	= "f.name='" . $filename_l . '.' . $SQL->escape(g('x')) . "'";
+            $query['WHERE']    = "f.name='" . $filename_l . '.' . $SQL->escape(g('x')) . "'";
         }
         else
         {
-            $query['WHERE']	= "f.name='" . $filename_l . "'";
+            $query['WHERE']    = "f.name='" . $filename_l . "'";
         }
     }
     else
     {
-        $id_l           = g('id', 'int');
-        $query['WHERE']	= 'f.id=' . $id_l;
+        $id_l              = g('id', 'int');
+        $query['WHERE']    = 'f.id=' . $id_l;
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_download_id_filename', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-    $result	= $SQL->build($query);
+    $result    = $SQL->build($query);
 
     if ($SQL->num_rows($result) != 0)
     {
@@ -86,19 +86,19 @@ if (ig('id') || ig('filename'))
         $uploads       = $file_info['uploads'];
 
 
-        $fname2 	   = str_replace('.', '-', htmlspecialchars($name));
-        $name 		    = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
-        $name		     = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
-        $fusername	 = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
-        $userfolder	= $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
+        $fname2           = str_replace('.', '-', htmlspecialchars($name));
+        $name             = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
+        $name             = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
+        $fusername        = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
+        $userfolder       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
 
         if (ig('filename'))
         {
-            $url_file	= $config['mod_writer'] ? $config['siteurl'] . 'downf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downf=' . $fname;
+            $url_file    = $config['mod_writer'] ? $config['siteurl'] . 'downf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downf=' . $fname;
         }
         else
         {
-            $url_file	= $config['mod_writer'] ? $config['siteurl'] . 'down-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?down=' . $file_info['id'];
+            $url_file    = $config['mod_writer'] ? $config['siteurl'] . 'down-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?down=' . $file_info['id'];
         }
 
         if (! empty($config['livexts']))
@@ -109,25 +109,25 @@ if (ig('id') || ig('filename'))
             {
                 if (ig('filename'))
                 {
-                    $url_filex	= $config['mod_writer'] ? $config['siteurl'] . 'downexf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downexf=' . $fname;
+                    $url_filex    = $config['mod_writer'] ? $config['siteurl'] . 'downexf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downexf=' . $fname;
                 }
                 else
                 {
-                    $url_filex	= $config['mod_writer'] ? $config['siteurl'] . 'downex-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?downex=' . $file_info['id'];
+                    $url_filex    = $config['mod_writer'] ? $config['siteurl'] . 'downex-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?downex=' . $file_info['id'];
                 }
 
                 redirect($url_filex, false);
             }
         }
 
-        $REPORT		  = ($config['mod_writer']) ?  $config['siteurl'] . 'report-' . $file_info['id'] . '.html' :  $config['siteurl'] . 'go.php?go=report&amp;id=' . $file_info['id'];
-        $seconds_w	= user_can('enter_acp') ? 0 : $config['sec_down'];
-        $time		    = kleeja_date($time);
-        $size		    = readable_size($size);
+        $REPORT          = ($config['mod_writer']) ?  $config['siteurl'] . 'report-' . $file_info['id'] . '.html' :  $config['siteurl'] . 'go.php?go=report&amp;id=' . $file_info['id'];
+        $seconds_w       = user_can('enter_acp') ? 0 : $config['sec_down'];
+        $time            = kleeja_date($time);
+        $size            = readable_size($size);
 
-        $file_ext_icon = file_exists('images/filetypes/' . $type . '.png') ? 'images/filetypes/' . $type . '.png' : 'images/filetypes/file.png';
-        $sty		         = 'download';
-        $title 		      =  $name . ' - ' . $lang['DOWNLAOD'];
+        $file_ext_icon       = file_exists('images/filetypes/' . $type . '.png') ? 'images/filetypes/' . $type . '.png' : 'images/filetypes/file.png';
+        $sty                 = 'download';
+        $title               =  $name . ' - ' . $lang['DOWNLAOD'];
     }
     else
     {
@@ -275,7 +275,7 @@ elseif (ig('down') || ig('downf') ||
     //is internet explore 8 ?
     $is_ie8 = is_browser('ie8');
     //is internet explore 6 ?
-    $is_ie6 = is_browser('ie6');
+    // $is_ie6 = is_browser('ie6');
 
     $livexts = explode(',', $config['livexts']);
 
@@ -320,7 +320,7 @@ elseif (ig('down') || ig('downf') ||
         $is_live = in_array($t, $livexts) ? true : false;
 
 
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
         //fix bug where a user can override files wait counter
         if (! $is_image && (ig('img') || ig('thmb')))
@@ -333,29 +333,32 @@ elseif (ig('down') || ig('downf') ||
         //check if the vistor is new in this page before updating kleeja counter
         if (! preg_match('/,' . $ii . ',/i', $usrcp->kleeja_get_cookie('oldvistor')) && ! isset($_SERVER['HTTP_RANGE']))
         {
-            //updates number of uploads ..
-            $update_query = [
-                'UPDATE' => "{$dbprefix}files",
-                'SET'    => 'uploads=uploads+1, last_down=' . time(),
-                'WHERE'  => $is_id_filename ? "name='" . $filename . "'" : 'id=' . $id,
-            ];
-
-            is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_no_uploads_down', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-            $SQL->build($update_query);
-
-            //
-            //Define as old vistor
-            //if this vistor has other views then add this view too
-            //old vistor just for 1 day
-            //
-            if ($usrcp->kleeja_get_cookie('oldvistor'))
+            if ($usrcp->group_id() != 1)
             {
-                $usrcp->kleeja_set_cookie('oldvistor', $usrcp->kleeja_get_cookie('oldvistor') . $ii . ',', time() + 86400);
-            }
-            else
-            {
-                //first time
-                $usrcp->kleeja_set_cookie('oldvistor', ',' . $ii . ',', time() + 86400);
+                //updates number of uploads ..
+                $update_query = [
+                    'UPDATE' => "{$dbprefix}files",
+                    'SET'    => 'uploads=uploads+1, last_down=' . time(),
+                    'WHERE'  => $is_id_filename ? "name='" . $filename . "'" : 'id=' . $id,
+                ];
+
+                is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_no_uploads_down', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                $SQL->build($update_query);
+
+                //
+                //Define as old vistor
+                //if this vistor has other views then add this view too
+                //old vistor just for 1 day
+                //
+                if ($usrcp->kleeja_get_cookie('oldvistor'))
+                {
+                    $usrcp->kleeja_set_cookie('oldvistor', $usrcp->kleeja_get_cookie('oldvistor') . $ii . ',', time() + 86400);
+                }
+                else
+                {
+                    //first time
+                    $usrcp->kleeja_set_cookie('oldvistor', ',' . $ii . ',', time() + 86400);
+                }
             }
         }
     }
@@ -414,12 +417,19 @@ elseif (ig('down') || ig('downf') ||
         }
     }
 
-    if (! ($size = @kleeja_filesize($path_file)))
+    if (! ($size = @filesize($path_file)))
     {
         $size = $d_size;
     }
 
     $name = empty($rn) ? $n : $rn;
+
+    $dots_in_name = substr_count($name, '.') - 1;
+
+    if ($dots_in_name > 0)
+    {
+        $name      =  preg_replace('/\./', '_', $name, $dots_in_name);
+    }
 
     if (is_browser('mozilla'))
     {
@@ -487,7 +497,12 @@ elseif (ig('down') || ig('downf') ||
     header('Pragma: public');
     header('Accept-Ranges: bytes');
     header('Content-Description: File Transfer');
-    header("Content-Type: $mime_type");
+
+    //dirty fix
+    if (! is_browser('chrome') && $ext != 'apk')
+    {
+        header("Content-Type: $mime_type");
+    }
     header('Date: ' . gmdate('D, d M Y H:i:s', empty($ftime) ? time() : $ftime) . ' GMT');
     //header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $ftime) . ' GMT');
     //header('Content-Encoding: none');
@@ -499,12 +514,8 @@ elseif (ig('down') || ig('downf') ||
 
     //if(!$is_image && !$is_live && $is_ie8)
     //{
-    //	header('X-Download-Options: noopen');
+    //    header('X-Download-Options: noopen');
     //}
-
-    //header(($is_ie6 ? 'Expires: -1' : 'Expires: Mon, 26 Jul 1997 05:00:00 GMT'));	
-    //(($is_ie8) ? '; authoritative=true; X-Content-Type-Options: nosniff;' : '')
-
 
     //add multipart download and resume support
     if (isset($_SERVER['HTTP_RANGE']) && $resuming_on)
@@ -524,6 +535,7 @@ elseif (ig('down') || ig('downf') ||
     }
     else
     {
+        header('HTTP/1.1 200 OK');
         $partial_length = $size;
         header("Content-Length: $partial_length");
     }

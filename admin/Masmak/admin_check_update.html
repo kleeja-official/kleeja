@@ -1,8 +1,8 @@
 
 <!-- Breadcrumbs -->
 <ol class="breadcrumb">
-	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-	<li class="breadcrumb-item active">{lang.R_CHECK_UPDATE}</li>
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item active">{lang.R_CHECK_UPDATE}</li>
 </ol>
 
 <div class="alert" id="updateInfo">
@@ -69,7 +69,9 @@ function checkVersion() {
         .done(function (data) {
             if(data.content) {
                 var info = data.content.split(":::");
-                $('#updateInfo').addClass(info[0] !=  0 ? 'alert-warning' : 'alert-info');
+                $('#updateInfo').addClass(
+                    info[0] !=  0 ? 'alert-warning' : 'alert-info'
+                );
                 $('#updateInfoStatus').html(info[1]);
                 <UNLESS NAME="showMessage">
                 if(info[0] == 2) {
@@ -128,9 +130,10 @@ function updateNow(step) {
             }
         })
         .fail(function(data) {
+            var tryAgainMsg = '{lang.ERROR_TRY_AGAIN}';
             $('#update'+step+' .update-status').html('<i class="fa fa-warning text-danger"></i>');
             $('#update'+step+' .update-message').removeClass('d-none').addClass('d-block').html(
-                (data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}'))
+                <IGNORE>(data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : tryAgainMsg))</IGNORE>
             );
     });
 }

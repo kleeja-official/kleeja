@@ -14,12 +14,12 @@ if (! defined('IN_ADMIN'))
 }
 
 //for style ..
-$stylee	     = 'admin_reports';
-$current_smt	= preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
-$action			   = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;page=' . (ig('page') ? g('page', 'int') : 1) . '&amp;smt=' . $current_smt;
-$msg_sent		  = ig('sent') ? g('sent', 'int') : false;
-$H_FORM_KEYS	= kleeja_add_form_key('adm_reports');
-$there_queue	= preg_match('!:del_[a-z0-9]{0,3}reports:!i', $config['queue']);
+$stylee               = 'admin_reports';
+$current_smt          = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$action               = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;page=' . (ig('page') ? g('page', 'int') : 1) . '&amp;smt=' . $current_smt;
+$msg_sent             = ig('sent') ? g('sent', 'int') : false;
+$H_FORM_KEYS          = kleeja_add_form_key('adm_reports');
+$there_queue          = preg_match('!:del_[a-z0-9]{0,3}reports:!i', $config['queue']);
 
 
 //
@@ -49,9 +49,9 @@ if ($current_smt == 'del_d30' || $current_smt == 'del_all')
 }
 
 $query = [
-    'SELECT'	  => '*',
-    'FROM'		   => "{$dbprefix}reports r",
-    'ORDER BY'	=> 'r.id DESC'
+    'SELECT'         => '*',
+    'FROM'           => "{$dbprefix}reports r",
+    'ORDER BY'       => 'r.id DESC'
 ];
 
 if ($current_smt == 'show_h24')
@@ -63,34 +63,34 @@ if ($current_smt == 'show_h24')
 $result = $SQL->build($query);
 
 //pagination
-$nums_rows		 = $SQL->num_rows($result);
-$currentPage	= ig('page') ? g('page', 'int') : 1;
-$Pager			    = new Pagination($perpage, $nums_rows, $currentPage);
-$start			    = $Pager->getStartRow();
+$nums_rows            = $SQL->num_rows($result);
+$currentPage          = ig('page') ? g('page', 'int') : 1;
+$Pager                = new Pagination($perpage, $nums_rows, $currentPage);
+$start                = $Pager->getStartRow();
 
 
-$no_results	= false;
-$del_nums	  = [];
+$no_results    = false;
+$del_nums      = [];
 
 if ($nums_rows > 0)
 {
-    $query['LIMIT']	=	"$start, $perpage";
-    $result         = $SQL->build($query);
+    $query['LIMIT']    =    "$start, $perpage";
+    $result            = $SQL->build($query);
 
     while ($row=$SQL->fetch_array($result))
     {
         //make new lovely arrays !!
-        $arr[]	= [
-            'id' 		     => $row['id'],
-            'name' 		   => $row['name'],
-            'mail' 		   => $row['mail'],
-            'url'  		   => $row['url'],
-            'text' 		   => $row['text'],
-            'human_time'=> kleeja_date($row['time']),
-            'time' 		   => kleeja_date($row['time'], false),
-            'ip'	 	     => $row['ip'],
-            'sent'		    => $row['id'] == $msg_sent,
-            'ip_finder'	=> 'http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=' . htmlspecialchars($row['ip']) . '&do_search=Search'
+        $arr[]    = [
+            'id'              => $row['id'],
+            'name'            => $row['name'],
+            'mail'            => $row['mail'],
+            'url'             => $row['url'],
+            'text'            => $row['text'],
+            'human_time'      => kleeja_date($row['time']),
+            'time'            => kleeja_date($row['time'], false),
+            'ip'              => $row['ip'],
+            'sent'            => $row['id'] == $msg_sent,
+            'ip_finder'       => 'http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=' . htmlspecialchars($row['ip']) . '&do_search=Search'
         ];
 
         $del[$row['id']] = p('del_' . $row['id']);
@@ -140,22 +140,22 @@ else
 //if deleted
 if (sizeof($del_nums))
 {
-    $query_del	= [
-        'DELETE'	=> "{$dbprefix}reports",
-        'WHERE'		=> "id IN('" . implode("', '", $del_nums) . "')"
+    $query_del    = [
+        'DELETE'       => "{$dbprefix}reports",
+        'WHERE'        => "id IN('" . implode("', '", $del_nums) . "')"
     ];
 
     $SQL->build($query_del);
 }
 
-$total_pages 	= $Pager->getTotalPages(); 
-$page_nums 		 = $Pager->print_nums(basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'), 'onclick="javascript:get_kleeja_link($(this).attr(\'href\'), \'#content\'); return false;"'); 
+$total_pages        = $Pager->getTotalPages(); 
+$page_nums          = $Pager->print_nums(basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'), 'onclick="javascript:get_kleeja_link($(this).attr(\'href\'), \'#content\'); return false;"'); 
 
 //after submit
 if (ip('submit'))
 {
-    $text	= ($SQL->affected() ? $lang['REPORTS_UPDATED'] : $lang['NO_UP_CHANGE_S']);
-    $text	.= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . $action . '\'); check_msg_and_reports();", 2000);</script>' . "\n";
+    $text    = ($SQL->affected() ? $lang['REPORTS_UPDATED'] : $lang['NO_UP_CHANGE_S']);
+    $text    .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . $action . '\'); check_msg_and_reports();", 2000);</script>' . "\n";
     kleeja_admin_info($text, true, '', true, $action);
 }
 

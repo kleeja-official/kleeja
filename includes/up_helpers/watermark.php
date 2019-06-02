@@ -24,7 +24,14 @@ if (! defined('IN_COMMON'))
  */
 function helper_watermark($name, $ext)
 {
+    $return = false;
+
     is_array($plugin_run_result = Plugins::getInstance()->run('helper_watermark_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+    if ($return)
+    {
+        return;
+    }
 
     //is this file really exsits ?
     if (! file_exists($name))
@@ -70,7 +77,7 @@ function helper_watermark($name, $ext)
     elseif (strpos($ext, 'gif') !== false)
     {
         return;
-    //		$src_img = @imagecreatefromgif($name);
+    //        $src_img = @imagecreatefromgif($name);
     }
     elseif (strpos($ext, 'bmp') !== false)
     {
@@ -145,10 +152,10 @@ function helper_watermark_imagick($name, $ext, $logo)
     //$watermark->readImage($);
 
     //how big are the images?
-    $iWidth	= $im->getImageWidth();
-    $iHeight= $im->getImageHeight();
-    $wWidth	= $watermark->getImageWidth();
-    $wHeight= $watermark->getImageHeight();
+    $iWidth    = $im->getImageWidth();
+    $iHeight   = $im->getImageHeight();
+    $wWidth    = $watermark->getImageWidth();
+    $wHeight   = $watermark->getImageHeight();
 
     if ($iHeight < $wHeight || $iWidth < $wWidth)
     {
@@ -169,12 +176,12 @@ function helper_watermark_imagick($name, $ext, $logo)
     if ($ext == 'gif')
     {
         $i = 0;
-        //$gif_new = new Imagick(); 
+        //$gif_new = new Imagick();
         foreach ($im as $frame)
         {
             $frame->compositeImage($watermark, imagick::COMPOSITE_OVER, $x, $y);
 
-            //	$gif_new->addImage($frame->getImage()); 
+            //    $gif_new->addImage($frame->getImage());
             if ($i >= 10)
             {
                 // more than 10 frames, quit it

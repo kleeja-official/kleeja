@@ -16,30 +16,30 @@ if (! defined('IN_ADMIN'))
 
 
 //style of
-$stylee			    = 'admin_start';
-$h_lst_files	 = basename(ADMIN_PATH) . '?cp=c_files&amp;last_visit=';
-$h_lst_imgs		 = basename(ADMIN_PATH) . '?cp=d_img_ctrl&amp;last_visit=';
-$current_smt	 = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
-$GET_FORM_KEY	= kleeja_add_form_key_get('adm_start_actions');
+$stylee                = 'admin_start';
+$h_lst_files           = basename(ADMIN_PATH) . '?cp=c_files&amp;last_visit=';
+$h_lst_imgs            = basename(ADMIN_PATH) . '?cp=d_img_ctrl&amp;last_visit=';
+$current_smt           = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$GET_FORM_KEY          = kleeja_add_form_key_get('adm_start_actions');
 
 //data
-$lst_reg			         = empty($stat_last_user) ? $lang['UNKNOWN'] : $stat_last_user;
-$files_number 		    = $stat_files + $stat_imgs;
-$files_sizes 		     = readable_size($stat_sizes);
-$users_number 		    = $stat_users;
-$last_del_fles 		   = (int) $config['del_f_day'] <= 0 ? $lang['CLOSED_FEATURE'] : kleeja_date($stat_last_f_del);
-$php_version 		     = isset($NO_PHPINFO) || ! function_exists('phpinfo') ? phpversion() : 'PHP ' . phpversion();
-$mysql_version 		   = 'MySQL ' . $SQL->mysql_version();
-$max_execution_time = function_exists('ini_get') ?  @ini_get('max_execution_time') : @get_cfg_var('max_execution_time');
-$upload_max_filesize= function_exists('ini_get') ?  @ini_get('upload_max_filesize') : @get_cfg_var('upload_max_filesize');
-$post_max_size 		   = function_exists('ini_get') ?  @ini_get('post_max_size') : @get_cfg_var('post_max_size');
-$memory_limit 		    = function_exists('ini_get') ?  @ini_get('memory_limit') : @get_cfg_var('memory_limit');
-$s_last_google		    = $stat_last_google == 0 ? '[ ? ]' : kleeja_date($stat_last_google);
-$s_google_num		     = $stat_google_num;
-$s_last_bing		      = $stat_last_bing == 0 ? '[ ? ]' : kleeja_date($stat_last_bing);
-$s_bing_num			      = $stat_bing_num;
-$usernamelang		     = sprintf($lang['KLEEJA_CP_W'], $username);
-$current_year		     = date('Y');
+$lst_reg                     = empty($stat_last_user) ? $lang['UNKNOWN'] : $stat_last_user;
+$files_number                = $stat_files + $stat_imgs;
+$files_sizes                 = readable_size($stat_sizes);
+$users_number                = $stat_users;
+$last_del_fles               = (int) $config['del_f_day'] <= 0 ? $lang['CLOSED_FEATURE'] : kleeja_date($stat_last_f_del);
+$php_version                 = isset($NO_PHPINFO) || ! function_exists('phpinfo') ? phpversion() : 'PHP ' . phpversion();
+$mysql_version               = $SQL->server_info();
+$max_execution_time          = function_exists('ini_get') ?  @ini_get('max_execution_time') : @get_cfg_var('max_execution_time');
+$upload_max_filesize         = function_exists('ini_get') ?  @ini_get('upload_max_filesize') : @get_cfg_var('upload_max_filesize');
+$post_max_size               = function_exists('ini_get') ?  @ini_get('post_max_size') : @get_cfg_var('post_max_size');
+$memory_limit                = function_exists('ini_get') ?  @ini_get('memory_limit') : @get_cfg_var('memory_limit');
+$s_last_google               = $stat_last_google == 0 ? '[ ? ]' : kleeja_date($stat_last_google);
+$s_google_num                = $stat_google_num;
+$s_last_bing                 = $stat_last_bing == 0 ? '[ ? ]' : kleeja_date($stat_last_bing);
+$s_bing_num                  = $stat_bing_num;
+$usernamelang                = sprintf($lang['KLEEJA_CP_W'], $username);
+$current_year                = date('Y');
 
 $startBoxes = [
     'notifications'    => ['title' => $lang['NOTIFICATIONS'], 'hidden' => (int) adm_is_start_box_hidden('notifications')],
@@ -53,12 +53,12 @@ $startBoxes = [
 $extra_adm_start_html = '';
 
 //size board by percent
-$per	 = $stat_sizes / ($config['total_size'] * 1048576);
-$per1	= round($per*100, 2);
-$per1	= $per1 >= 100 ? 100 : $per1;
+$per     = $stat_sizes / ($config['total_size'] * 1048576);
+$per1    = round($per*100, 2);
+$per1    = $per1 >= 100 ? 100 : $per1;
 
 //ppl must know about kleeja version!
-$kleeja_version	 = '<a href="' . basename(ADMIN_PATH) . '?cp=p_check_update" onclick="javascript:get_kleeja_link(this.href, \'#content\'); return false;" title="' . $lang['R_CHECK_UPDATE'] . '">' . KLEEJA_VERSION . '</a>';
+$kleeja_version     = '<a href="' . basename(ADMIN_PATH) . '?cp=p_check_update" onclick="javascript:get_kleeja_link(this.href, \'#content\'); return false;" title="' . $lang['R_CHECK_UPDATE'] . '">' . KLEEJA_VERSION . '</a>';
 
 //admin messages system
 $ADM_NOTIFICATIONS = [];
@@ -177,7 +177,7 @@ if (! empty($d_groups) && is_array($d_groups))
 // rev: let's say cache is not refreshed, so we will redirect alots of time,
 // so update_done will be good solution
 //
-if (empty($v['last_check']) || ((time() - $v['last_check']) > 3600 * 24 * 10 && $_SERVER['SERVER_NAME'] != 'localhost' && ! ig('update_done')))
+if ((empty($v['last_check']) || time() - $v['last_check'] > 3600 * 24 * 10) && ! ig('update_done'))
 {
     redirect(basename(ADMIN_PATH) . '?cp=p_check_update&amp;show_msg=1');
     $SQL->close();
@@ -244,8 +244,8 @@ $image_last_visit = filter_exists('i_lastvisit', 'filter_uid', 'lastvisit', $use
 
 
 //hurry, hurry section, get languages
-$hurry_lang_link	 = basename(ADMIN_PATH) . '?cp=g_users&smt=general&amp;smt=group_data&' . $GET_FORM_KEY . '&amp;lang_change=';
-$hurry_langs_list	= '';
+$hurry_lang_link     = basename(ADMIN_PATH) . '?cp=g_users&smt=general&amp;smt=group_data&' . $GET_FORM_KEY . '&amp;lang_change=';
+$hurry_langs_list    = '';
 
 if ($dh = @opendir(PATH . 'lang'))
 {
@@ -272,21 +272,21 @@ foreach ($d_groups as $id=>$ddt)
 }
 
 //hurry, hurry section, links
-$del_cache_link		= basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . kleeja_add_form_key_get('REPAIR_FORM_KEY');
+$del_cache_link        = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . kleeja_add_form_key_get('REPAIR_FORM_KEY');
 
 
 // get stats filter so we can draw a chart for the user
 $stats_chart = false;
 
 $cf_query = [
-    'SELECT'	  => 'f.filter_uid, f.filter_value, f.filter_time',
-    'FROM'		   => "{$dbprefix}filters f",
-    'WHERE'		  => "f.filter_type = 'stats_for_acp'",
-    'ORDER BY'	=> 'f.filter_time DESC',
+    'SELECT'         => 'f.filter_uid, f.filter_value, f.filter_time',
+    'FROM'           => "{$dbprefix}filters f",
+    'WHERE'          => "f.filter_type = 'stats_for_acp'",
+    'ORDER BY'       => 'f.filter_time DESC',
 ];
 
-$cf_result	= $SQL->build($cf_query);
-$cf_num	   = $SQL->num_rows($cf_result);
+$cf_result    = $SQL->build($cf_query);
+$cf_num       = $SQL->num_rows($cf_result);
 
 if ($cf_num > 3)
 {
@@ -347,9 +347,9 @@ if ($cf_num > 3)
     //clean old chart stats
     if ($cf_num > 10)
     {
-        $query_del	= [
-            'DELETE'	=> "{$dbprefix}filters",
-            'WHERE'		=> "filter_type = 'stats_for_acp' AND filter_time < " . (time() - (3600 * 24 * 10))
+        $query_del    = [
+            'DELETE'       => "{$dbprefix}filters",
+            'WHERE'        => "filter_type = 'stats_for_acp' AND filter_time < " . (time() - (3600 * 24 * 10))
         ];
         $SQL->build($query_del);
     }

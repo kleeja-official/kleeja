@@ -74,6 +74,11 @@ switch ($case):
 
         while ($row = $SQL->fetch($result))
         {
+            if (! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/init.php'))
+            {
+                continue;
+            }
+
             $installed_plugins[$row['plg_name']] = $row;
 
             $installed_plugins[$row['plg_name']]['extra_info'] = Plugins::getInstance()->installed_plugin_info($row['plg_name']);
@@ -84,29 +89,35 @@ switch ($case):
                 ? PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/icon.png'
                 : $STYLE_PATH_ADMIN . 'images/plugin.png';
 
-            foreach (['plugin_title', 'plugin_description'] as $localizedInfo)
+            $installed_plugins[$row['plg_name']]['has_settings_page'] = ! empty(
+                $installed_plugins[$row['plg_name']]['extra_info']['settings_page']
+                ) && ! preg_match('/^https?:\/\//', $installed_plugins[$row['plg_name']]['extra_info']['settings_page']);
+
+
+            foreach (['plugin_title', 'plugin_description'] as $localized_info)
             {
-                if (is_array($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo]))
+                if (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]) &&
+                    is_array($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]))
                 {
-                    if (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo][$config['language']]))
+                    if (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localized_info][$config['language']]))
                     {
-                        $installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo] =
-                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo][$config['language']], 100);
+                        $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
+                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info][$config['language']], 100);
                     }
-                    elseif (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo]['en']))
+                    elseif (! empty($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]['en']))
                     {
-                        $installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo] =
-                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo]['en'], 100);
+                        $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
+                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]['en'], 100);
                     }
                     else
                     {
-                        $installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo] =
-                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localizedInfo][0], 100);
+                        $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
+                            shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info][0], 100);
                     }
                 }
             }
         }
-        $SQL->free($result);
+        $SQL->freeresult($result);
 
         //get available plugins
         $dh                = opendir(PATH . KLEEJA_PLUGINS_FOLDER);
@@ -144,7 +155,7 @@ switch ($case):
         {
             $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
 
-            $store_catalog = fetch_remote_file($store_link);
+            $store_catalog = FetchFile::make($store_link)->get();
             $store_catalog = json_decode($store_catalog, true);
 
             if (json_last_error() == JSON_ERROR_NONE)
@@ -165,6 +176,20 @@ switch ($case):
                 continue;
             }
 
+            if (isset($plugin_info['preview']) && defined('DEV_STAGE'))
+            {
+                $plugin_file = $plugin_info['preview'];
+            }
+            elseif (isset($plugin_info['file']))
+            {
+                $plugin_file = $plugin_info['file'];
+            }
+            else
+            {
+                continue;
+            }
+
+
             if ($case == 'store' && (in_array($plugin_info['name'], $available_plugins_names) ||
                  ! empty($installed_plugins[$plugin_info['name']]))
                  ) {
@@ -175,7 +200,7 @@ switch ($case):
             elseif ($case == 'check' && (! empty($installed_plugins[$plugin_info['name']]) &&
                 version_compare(
                     strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']),
-                    strtolower($plugin_info['file']['version']),
+                    strtolower($plugin_file['version']),
                     '>='
                 ) || empty($installed_plugins[$plugin_info['name']]))
             ) {
@@ -185,7 +210,7 @@ switch ($case):
             $store_plugins[$plugin_info['name']] = [
                 'name'            => $plugin_info['name'],
                 'developer'       => $plugin_info['developer'],
-                'version'         => $plugin_info['file']['version'],
+                'version'         => $plugin_file['version'],
                 'title'           => ! empty($plugin_info['title'][$config['language']]) ? $plugin_info['title'][$config['language']] : $plugin_info['title']['en'],
                 'website'         => $plugin_info['website'],
                 'current_version' => ! empty($installed_plugins[$plugin_info['name']]) ? strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']) : '',
@@ -275,7 +300,7 @@ switch ($case):
 
         if (empty($plg_name))
         {
-            if (defined('DEBUG'))
+            if (defined('DEV_STAGE'))
             {
                 exit('empty($plg_name)');
             }
@@ -286,7 +311,7 @@ switch ($case):
         {
             if (! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php'))
             {
-                if (defined('DEBUG'))
+                if (defined('DEV_STAGE'))
                 {
                     exit('!file_exists($plg_name)');
                 }
@@ -306,7 +331,13 @@ switch ($case):
 
             $kleeja_plugin = [];
 
-            include PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php';
+            //don't show mysql errors
+            if (! defined('SQL_NO_ERRORS'))
+            {
+                define('SQL_NO_ERRORS', true);
+            }
+
+            @include PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php';
 
             $install_callback = $kleeja_plugin[$plg_name]['install'];
             $plugin_info      = $kleeja_plugin[$plg_name]['information'];
@@ -325,10 +356,13 @@ switch ($case):
             //'plugin_kleeja_version_min' => '1.8',
             // Max version of Kleeja that's required to run this plugin
             //'plugin_kleeja_version_max' => '3.8',
+            //3.1.0 < 3.1.0
 
-            if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
+            if (! empty($plugin_info['plugin_kleeja_version_min']))
             {
-                kleeja_admin_info(
+                if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
+                {
+                    kleeja_admin_info(
                     $lang['PACKAGE_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'],
                     true,
                     '',
@@ -336,10 +370,11 @@ switch ($case):
                     ADMIN_PATH . '?cp=' . basename(__FILE__, '.php')
                 );
 
-                exit;
+                    exit;
+                }
             }
 
-            if ($plugin_info['plugin_kleeja_version_max'] != '0')
+            if (! empty($plugin_info['plugin_kleeja_version_max']))
             {
                 if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_max'], '>'))
                 {
@@ -552,7 +587,7 @@ switch ($case):
         // plugins avilable in kleeja store
         $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
 
-        $catalog_plugins = fetch_remote_file($store_link);
+        $catalog_plugins = FetchFile::make($store_link)->get();
 
         if ($catalog_plugins)
         {
@@ -568,10 +603,24 @@ switch ($case):
                     continue;
                 }
 
+                if (isset($plugin_info['preview']) && defined('DEV_STAGE'))
+                {
+                    $plugin_file = $plugin_info['preview'];
+                }
+                elseif (isset($plugin_info['file']))
+                {
+                    $plugin_file = $plugin_info['file'];
+                }
+                else
+                {
+                    continue;
+                }
+
+
                 $store_plugins[$plugin_info['name']] = [
                     'name'           => $plugin_info['name'],
-                    'plg_version'    => $plugin_info['file']['version'],
-                    'url'            => $plugin_info['file']['url'],
+                    'plg_version'    => $plugin_file['version'],
+                    'url'            => $plugin_file['url'],
                     'kj_min_version' => $plugin_info['kleeja_version']['min'],
                     'kj_max_version' => $plugin_info['kleeja_version']['max'],
                 ];
@@ -587,7 +636,10 @@ switch ($case):
                     ) {
                     $plugin_name_link = $store_plugins[$plugin_name]['url'];
 
-                    $plugin_archive = fetch_remote_file($plugin_name_link, PATH . 'cache/' . $plugin_name . '.zip', 60, false, 10, true);
+                    $plugin_archive = FetchFile::make($plugin_name_link)
+                        ->setDestinationPath(PATH . 'cache/' . $plugin_name . '.zip')
+                        ->isBinaryFile(true)
+                        ->get();
 
                     if ($plugin_archive)
                     {

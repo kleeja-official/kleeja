@@ -60,16 +60,6 @@ class cache
 
     public function save($name, $data, $time = 86400)
     {
-        //
-        //We have problems if APC is enabled, so we disable our cache
-        //system if it's lodoed to prevent those problems, but we will
-        //try to fix it in the near future .. I hope that.
-        //
-        if (defined('APC_CACHE'))
-        {
-            //return;
-        }
-
         $name          =  preg_replace('![^a-z0-9_]!i', '_', $name);
         $data_for_save = '<?' . 'php' . "\n";
         $data_for_save .= '//Cache file, generated for Kleeja at ' . gmdate('d-m-Y h:i A') . "\n\n";
@@ -115,9 +105,9 @@ $cache = new cache;
 if (! ($config = $cache->get('data_config')))
 {
     $query = [
-        'SELECT'	=> 'c.name, c.value',
-        'FROM'		 => "{$dbprefix}config c",
-        'WHERE'		=> 'c.dynamic = 0',
+        'SELECT'       => 'c.name, c.value',
+        'FROM'         => "{$dbprefix}config c",
+        'WHERE'        => 'c.dynamic = 0',
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_config_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -141,9 +131,9 @@ if (! ($config = $cache->get('data_config')))
 if (! ($olang = $cache->get('data_lang' . $config['language'])))
 {
     $query = [
-        'SELECT'	=> 'l.word, l.trans',
-        'FROM'		 => "{$dbprefix}lang l",
-        'WHERE'		=> "l.lang_id='" . $SQL->escape($config['language']) . "'",
+        'SELECT'       => 'l.word, l.trans',
+        'FROM'         => "{$dbprefix}lang l",
+        'WHERE'        => "l.lang_id='" . $SQL->escape($config['language']) . "'",
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_lang_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -167,9 +157,9 @@ if (! ($olang = $cache->get('data_lang' . $config['language'])))
 if (! ($stats = $cache->get('data_stats')))
 {
     $query = [
-        'SELECT'	=> 's.files, s.imgs, s.sizes, s.users, s.last_file, s.last_f_del, s.last_google' .
+        'SELECT'    => 's.files, s.imgs, s.sizes, s.users, s.last_file, s.last_f_del, s.last_google' .
                         ', s.last_bing, s.google_num, s.bing_num, s.lastuser',
-        'FROM'		=> "{$dbprefix}stats s"
+        'FROM'        => "{$dbprefix}stats s"
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_stats_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -179,17 +169,17 @@ if (! ($stats = $cache->get('data_stats')))
     while ($row=$SQL->fetch_array($result))
     {
         $stats = [
-            'stat_files'		     => $row['files'],
-            'stat_imgs'			     => $row['imgs'],
-            'stat_sizes'		     => $row['sizes'],
-            'stat_users'		     => $row['users'],
-            'stat_last_file'	  => $row['last_file'],
-            'stat_last_f_del'	 => $row['last_f_del'],
-            'stat_last_google'	=> $row['last_google'],
-            'stat_last_bing'	  => $row['last_bing'],
-            'stat_google_num'	 => $row['google_num'],
-            'stat_bing_num'		  => $row['bing_num'],
-            'stat_last_user'	  => $row['lastuser']
+            'stat_files'                => $row['files'],
+            'stat_imgs'                 => $row['imgs'],
+            'stat_sizes'                => $row['sizes'],
+            'stat_users'                => $row['users'],
+            'stat_last_file'            => $row['last_file'],
+            'stat_last_f_del'           => $row['last_f_del'],
+            'stat_last_google'          => $row['last_google'],
+            'stat_last_bing'            => $row['last_bing'],
+            'stat_google_num'           => $row['google_num'],
+            'stat_bing_num'             => $row['bing_num'],
+            'stat_last_user'            => $row['lastuser']
         ];
 
         is_array($plugin_run_result = Plugins::getInstance()->run('while_fetch_stats_in_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -202,28 +192,28 @@ if (! ($stats = $cache->get('data_stats')))
 
     //also, save the data for the charts later
     $query = [
-        'SELECT'	=> 'f.filter_uid',
-        'FROM'		 => "{$dbprefix}filters f",
-        'WHERE'		=> "f.filter_type='stats_for_acp' AND f.filter_uid = '" . date('d-n-Y') . "'"
+        'SELECT'       => 'f.filter_uid',
+        'FROM'         => "{$dbprefix}filters f",
+        'WHERE'        => "f.filter_type='stats_for_acp' AND f.filter_uid = '" . date('d-n-Y') . "'"
     ];
 
-    $result	= $SQL->build($query);
+    $result    = $SQL->build($query);
 
     //if already there is stats for this day, just update it, if not insert a new one
     if ($SQL->num_rows($result))
     {
-        $f_query	= [
-            'UPDATE'	=> "{$dbprefix}filters",
-            'SET'		  => "filter_value='" . implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]) . "'",
-            'WHERE'		=> "filter_type='stats_for_acp' AND filter_uid = '" . date('d-n-Y') . "'"
+        $f_query    = [
+            'UPDATE'       => "{$dbprefix}filters",
+            'SET'          => "filter_value='" . implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]) . "'",
+            'WHERE'        => "filter_type='stats_for_acp' AND filter_uid = '" . date('d-n-Y') . "'"
         ];
     }
     else
     {
         $f_query = [
-            'INSERT'	=> 'filter_uid, filter_type ,filter_value ,filter_time',
-            'INTO'		 => "{$dbprefix}filters",
-            'VALUES'	=> "'" . date('d-n-Y') . "', 'stats_for_acp', '" . implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]) . "', " . time()
+            'INSERT'       => 'filter_uid, filter_type ,filter_value ,filter_time',
+            'INTO'         => "{$dbprefix}filters",
+            'VALUES'       => "'" . date('d-n-Y') . "', 'stats_for_acp', '" . implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]) . "', " . time()
         ];
     }
 
@@ -241,8 +231,8 @@ unset($stats);
 if (! ($banss = $cache->get('data_ban')))
 {
     $query = [
-        'SELECT'	=> 's.ban',
-        'FROM'		 => "{$dbprefix}stats s"
+        'SELECT'       => 's.ban',
+        'FROM'         => "{$dbprefix}stats s"
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_ban_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -278,8 +268,8 @@ if (! ($banss = $cache->get('data_ban')))
 if (! ($ruless = $cache->get('data_rules')))
 {
     $query = [
-        'SELECT'	=> 's.rules',
-        'FROM'		 => "{$dbprefix}stats s"
+        'SELECT'       => 's.rules',
+        'FROM'         => "{$dbprefix}stats s"
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_rules_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -299,8 +289,8 @@ if (! ($ruless = $cache->get('data_rules')))
 if (! ($extras = $cache->get('data_extra')))
 {
     $query = [
-        'SELECT'	=> 's.ex_header, s.ex_footer',
-        'FROM'		 => "{$dbprefix}stats s"
+        'SELECT'       => 's.ex_header, s.ex_footer',
+        'FROM'         => "{$dbprefix}stats s"
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_extra_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -328,9 +318,9 @@ if (! ($d_groups = $cache->get('data_groups')))
 
     //data
     $query = [
-        'SELECT'	  => 'g.*',
-        'FROM'		   => "{$dbprefix}groups g",
-        'ORDER_BY'	=> 'g.group_id ASC',
+        'SELECT'         => 'g.*',
+        'FROM'           => "{$dbprefix}groups g",
+        'ORDER_BY'       => 'g.group_id ASC',
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_groups_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -348,9 +338,9 @@ if (! ($d_groups = $cache->get('data_groups')))
 
     //configs
     $query = [
-        'SELECT'	  => 'g.group_id, g.name, g.value',
-        'FROM'		   => "{$dbprefix}groups_data g",
-        'ORDER_BY'	=> 'g.group_id ASC',
+        'SELECT'         => 'g.group_id, g.name, g.value',
+        'FROM'           => "{$dbprefix}groups_data g",
+        'ORDER_BY'       => 'g.group_id ASC',
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_groups_data_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -364,9 +354,9 @@ if (! ($d_groups = $cache->get('data_groups')))
 
     //acl
     $query2 = [
-        'SELECT'	  => 'g.group_id, g.acl_name, g.acl_can',
-        'FROM'		   => "{$dbprefix}groups_acl g",
-        'ORDER_BY'	=> 'g.group_id ASC',
+        'SELECT'         => 'g.group_id, g.acl_name, g.acl_can',
+        'FROM'           => "{$dbprefix}groups_acl g",
+        'ORDER_BY'       => 'g.group_id ASC',
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_groups_acls_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -380,9 +370,9 @@ if (! ($d_groups = $cache->get('data_groups')))
 
     //exts
     $query3 = [
-        'SELECT'	  => 'g.group_id, g.ext, g.size',
-        'FROM'		   => "{$dbprefix}groups_exts g",
-        'ORDER_BY'	=> 'g.group_id ASC',
+        'SELECT'         => 'g.group_id, g.ext, g.size',
+        'FROM'           => "{$dbprefix}groups_exts g",
+        'ORDER_BY'       => 'g.group_id ASC',
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_groups_exts_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook

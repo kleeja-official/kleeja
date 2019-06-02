@@ -13,29 +13,29 @@ var PATH_SPACER = 'style/images/spacer.gif';
 </script>
 </head>
 <body>
-	<div id="Header">
-		<div class="header">
-			<ul class="headerIcon">
-				<li><a onclick="window.open(this.href,'_blank');return false;" href="http://www.kleeja.com"><img src="style/images/kleeja.png" title="kleeja.com" alt="" /></a></li>
-				<li><a href="./"><img title="Start over" src="style/images/install_h.png" alt="" /></a></li>
-			</ul>
-			<div class="BoxLang">
-			{{if(((ig('step') && g('step') != 'language') && (strpos('index.php', $_SERVER['PHP_SELF'])=== false && ig('step'))) OR (ig('step') && g('step') == 'license' || g('step') == 'action_file') ):}}
-				<form action="?step={{echo g('step')}}&amp;change_lang=1" method="post">
-					<select name="lang" id="lang" class="Lang" onchange="submit()">
-					{{if($dh = opendir(PATH . 'lang')):}}
-						{{while (($file = readdir($dh)) !== false): if(strpos($file, '.') === false && $file != '..' && $file != '.'):}}
-						{{$current_icon=file_exists('style/images/'.$file.'_16.png') ? 'style/images/'.$file.'_16.png' : (file_exists('../lang/'.$file.'/icon_16.png') ? '../lang/'.$file.'/icon_16.png' : 'style/images/zz_flag.png');}}
-						<option value="{{echo $file}}" title="{{echo $current_icon}}" {{echo ig('lang') && $file==g('lang') || (!ig('lang') && $file=='en') ?'selected="selected"':''}}>{{echo $file}}</option>
-					{{endif; endwhile;closedir($dh);endif;}}
-					</select>
-					<input type="hidden" name="step_is" value="{{echo g('step')}}" />
-				</form>
-			{{endif;}}
-			</div>
-		</div>
-		<div class="divline"></div>
-	</div>
-	<div class="clr"></div>
-	<div class="wrapper">
-	<div class="clr"></div><br />
+    <div id="Header">
+        <div class="header">
+            <ul class="headerIcon">
+                <li><a onclick="window.open(this.href,'_blank');return false;" href="http://www.kleeja.com"><img src="style/images/kleeja.png" title="kleeja.com" alt="" /></a></li>
+                <li><a href="./"><img title="Start over" src="style/images/install_h.png" alt="" /></a></li>
+            </ul>
+            <div class="BoxLang">
+            {{if(((ig('step') && g('step') != 'language') && (strpos('index.php', $_SERVER['PHP_SELF'])=== false && ig('step'))) OR (ig('step') && g('step') == 'license' || g('step') == 'action_file') ):}}
+                <form action="?step={{echo g('step')}}&amp;change_lang=1" method="post">
+                    <select name="lang" id="lang" class="Lang" onchange="submit()">
+                    {{if($dh = opendir(PATH . 'lang')):}}
+                        {{while (($file = readdir($dh)) !== false): if(strpos($file, '.') === false && $file != '..' && $file != '.'):}}
+                        {{$current_icon=file_exists('style/images/'.$file.'_16.png') ? 'style/images/'.$file.'_16.png' : (file_exists('../lang/'.$file.'/icon_16.png') ? '../lang/'.$file.'/icon_16.png' : 'style/images/zz_flag.png');}}
+                        <option value="{{echo $file}}" title="{{echo $current_icon}}" {{echo ig('lang') && $file==g('lang') || (!ig('lang') && $file=='en') ?'selected="selected"':''}}>{{echo $file}}</option>
+                    {{endif; endwhile;closedir($dh);endif;}}
+                    </select>
+                    <input type="hidden" name="step_is" value="{{echo g('step')}}" />
+                </form>
+            {{endif;}}
+            </div>
+        </div>
+        <div class="divline"></div>
+    </div>
+    <div class="clr"></div>
+    <div class="wrapper">
+    <div class="clr"></div><br />

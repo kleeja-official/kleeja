@@ -20,12 +20,12 @@ $stylee = 'admin_search';
 $action = basename(ADMIN_PATH) . '?cp=h_search';
 
 //wut the default user system
-$default_user_system = (int) $config['user_system'] == 1 ? true : false;
+$default_user_system = (int) $config['user_system'] == 1;
 
-$H_FORM_KEYS	 = kleeja_add_form_key('adm_files_search');
-$H_FORM_KEYS2	= kleeja_add_form_key('adm_users_search');
+$H_FORM_KEYS     = kleeja_add_form_key('adm_files_search');
+$H_FORM_KEYS2    = kleeja_add_form_key('adm_users_search');
 
-$current_smt	= preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'files'));
+$current_smt    = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'files'));
 
 //filling the inputs automatically via GET
 $filled_ip = $filled_username = '';
@@ -50,33 +50,13 @@ if (ip('search_file'))
         kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=h_search', 1);
     }
 
-    //delete all searches greater than 10
-    $s_del = [
-        'SELECT'	  => 'filter_id',
-        'FROM'		   => "{$dbprefix}filters",
-        'WHERE'		  => "filter_type='file_search' AND filter_user=" . $userinfo['id'],
-        'ORDER BY'	=> 'filter_id DESC',
-        'LIMIT'		  => '5, 18446744073709551615'
+    //delete all searches greater than 3 days
+    $query_del    = [
+        'DELETE'       => "{$dbprefix}filters",
+        'WHERE'        => "filter_type='file_search' AND filter_user=" . $userinfo['id'] . " AND filter_time > " . (time() - 3600 * 24 * 3)
     ];
 
-    $result = $SQL->build($s_del);
-    $ids    = [];
-    while ($row=$SQL->fetch_array($result))
-    {
-        $ids[] = $row['filter_id'];
-    }
-
-    $SQL->free($result);
-
-    if ($ids != '')
-    {
-        $query_del	= [
-            'DELETE'	=> "{$dbprefix}filters",
-            'WHERE'		=> "filter_id IN('" . implode("', '", $ids) . "')"
-        ];
-
-        $SQL->build($query_del);
-    }
+    $SQL->build($query_del);
 
     //add as a file_search filter
     $s = array_map('htmlspecialchars', $_POST);
@@ -113,32 +93,14 @@ if (ip('search_user'))
         kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=h_search&smt=users', 1);
     }
 
-    //delete all searches greater than 10
-    $s_del = [
-        'SELECT'	  => 'filter_id',
-        'FROM'		   => "{$dbprefix}filters",
-        'WHERE'		  => "filter_type='user_search' AND filter_user=" . $userinfo['id'],
-        'ORDER BY'	=> 'filter_id DESC',
-        'LIMIT'		  => '5, 18446744073709551615'
+    //delete all searches greater than 3 days
+    $query_del    = [
+        'DELETE'       => "{$dbprefix}filters",
+        'WHERE'        => "filter_type='user_search' AND filter_user=" . $userinfo['id'] . " AND filter_time > " . (time() - 3600 * 24 * 3)
     ];
 
-    $result = $SQL->build($s_del);
-    $ids    = [];
-    while ($row=$SQL->fetch_array($result))
-    {
-        $ids[] = $row['filter_id'];
-    }
-    $SQL->free($result);
-
-    if ($ids != '')
-    {
-        $query_del	= [
-            'DELETE'	=> "{$dbprefix}filters",
-            'WHERE'		=> "filter_id IN('" . implode("', '", $ids) . "')"
-        ];
-
         $SQL->build($query_del);
-    }
+
 
     //add as a user_search filter
     $s = $_POST;

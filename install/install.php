@@ -30,7 +30,14 @@ include_once PATH . 'includes/functions_alternative.php';
 include_once PATH . 'includes/functions.php';
 
 
-include_once PATH . 'includes/mysqli.php';
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
 
 include_once 'includes/functions_install.php';
 
@@ -101,7 +108,7 @@ case 'f':
     $check_ok = true;
     $advices  = $ziparchive_lib  = false;
 
-    if(! class_exists( 'ZipArchive'))
+    if (! class_exists('ZipArchive'))
     {
         $ziparchive_lib = true;
     }
@@ -121,12 +128,11 @@ case 'c':
     if (ip('dbsubmit'))
     {
         //create config file, or export it to browser on failure
-        do_config_export(p('db_server'), p('db_user'), p('db_pass'), p('db_name'), p('db_prefix'));
+        do_config_export(p('db_server'), p('db_user'), p('db_pass'), p('db_name'), p('db_prefix'), p('db_type'));
     }
 
-
-    $no_config      = ! file_exists(PATH . 'config.php') || ig('force') ? false : true;
-    $writeable_path	= is_writable(PATH) ? true : false;
+    $no_config         = ! file_exists(PATH . 'config.php') || ig('force') ? false : true;
+    $writeable_path    = is_writable(PATH) ? true : false;
 
     echo gettpl('configs.html');
 
@@ -137,10 +143,15 @@ case 'check':
     $submit_disabled = $no_connection = $mysql_ver = false;
 
     //config.php
-    if (! empty($dbname) && ! empty($dbuser))
+    if (! empty($dbname))
     {
+        if (isset($dbtype) && $dbtype == 'sqlite')
+        {
+            @touch(PATH . $dbname);
+        }
+
         //connect .. for check
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 
         if (! $SQL->is_connected())
@@ -149,9 +160,12 @@ case 'check':
         }
         else
         {
-            if (! empty($SQL->mysql_version()) && version_compare($SQL->mysql_version(), MIN_MYSQL_VERSION, '<'))
+            if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli')
             {
-                $mysql_ver = $SQL->mysql_version();
+                if (! empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<'))
+                {
+                    $mysql_ver = $SQL->version();
+                }
             }
         }
     }
@@ -174,11 +188,9 @@ case 'data' :
 
     if (ip('datasubmit'))
     {
-
-
         //check data ...
         if (empty(p('sitename')) || empty(p('siteurl')) || empty(p('sitemail'))
-             || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')) )
+             || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')))
         {
             echo $lang['EMPTY_FIELDS'];
             echo $footer_inst;
@@ -204,23 +216,23 @@ case 'data' :
         }
 
         //connect .. for check
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
         include_once PATH . 'includes/usr.php';
         include_once PATH . 'includes/functions_alternative.php';
         $usrcp = new usrcp;
 
-        $user_salt			     = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
-        $user_pass 			    = $usrcp->kleeja_hash_password(p('password') . $user_salt);
-        $user_name 			    = $SQL->escape(p('username'));
-        $user_mail 			    = $SQL->escape(p('email'));
-        $config_sitename	 = $SQL->escape(p('sitename'));
-        $config_siteurl		 = $SQL->escape(p('siteurl'));
-        $config_sitemail	 = $SQL->escape(p('sitemail'));
-        $config_time_zone	= $SQL->escape(p('time_zone'));
-        //$config_style		= ip('style') ? $SQL->escape(p('style')) : '';
-        $config_urls_type	= in_array(p('urls_type'), ['id', 'filename', 'direct']) ? p('urls_type') : 'id';
-        $clean_name			    = $usrcp->cleanusername($SQL->escape($user_name));
+        $user_salt                 = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+        $user_pass                 = $usrcp->kleeja_hash_password(p('password') . $user_salt);
+        $user_name                 = $SQL->escape(p('username'));
+        $user_mail                 = $SQL->escape(p('email'));
+        $config_sitename           = $SQL->escape(p('sitename'));
+        $config_siteurl            = $SQL->escape(p('siteurl'));
+        $config_sitemail           = $SQL->escape(p('sitemail'));
+        $config_time_zone          = $SQL->escape(p('time_zone'));
+        //$config_style        = ip('style') ? $SQL->escape(p('style')) : '';
+        $config_urls_type          = in_array(p('urls_type'), ['id', 'filename', 'direct']) ? p('urls_type') : 'id';
+        $clean_name                = $usrcp->cleanusername($SQL->escape($user_name));
 
         /// ok .. we will get sqls now ..
         include 'includes/install_sqls.php';

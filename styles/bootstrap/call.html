@@ -1,69 +1,69 @@
 
 <div class="mt-3 mb-3">
-	<h2>{title}</h2>
+    <h2>{title}</h2>
 </div>
 
 
 
 <!-- error messages -->
 <IF NAME="ERRORS">
-	<div class="alert alert-danger">
-		<ul>
-			<LOOP NAME="ERRORS">
-				<li>{%value%}</li>
-			</LOOP>
-		</ul>
-	</div>
+    <div class="alert alert-danger">
+        <ul>
+            <LOOP NAME="ERRORS">
+                <li>{%value%}</li>
+            </LOOP>
+        </ul>
+    </div>
 </IF>
 
 
 <form action="{action}" method="post">
 
-	<IF NAME="NOT_USER">
+    <IF NAME="NOT_USER">
 
-		<div class="form-group">
-			<label for="cname">{lang.YOURNAME}</label>
-			<input type="text" class="form-control" id="cname"  name="cname" value="{t_cname}" >
-		</div>
+        <div class="form-group">
+            <label for="cname">{lang.YOURNAME}</label>
+            <input type="text" class="form-control" id="cname"  name="cname" value="{t_cname}" >
+        </div>
 
-		<div class="form-group">
-			<label for="cmail">{lang.EMAIL}</label>
-			<input type="email" class="form-control" id="cmail" name="cmail" value="{t_cmail}" style="direction:ltr">
-		</div>
+        <div class="form-group">
+            <label for="cmail">{lang.EMAIL}</label>
+            <input type="email" class="form-control" id="cmail" name="cmail" value="{t_cmail}" style="direction:ltr">
+        </div>
 
-	</IF>
-
-
-	<div class="form-group">
-		<label for="ctext">{lang.TEXT}</label>
-		<textarea class="form-control" id="ctext" name="ctext" rows="4">{t_ctext}</textarea>
-	</div>
+    </IF>
 
 
-	<IF NAME="config.enable_captcha==1">
-
-		<div class="form-group safe_code">
-			<label for="kleeja_code_answer" class=" control-label">{lang.VERTY_CODE}</label>
-			<div class="">
-				<img style="vertical-align:middle;"
-					 id="kleeja_img_captcha"
-					 src="{captcha_file_path}"
-					 alt="{lang.REFRESH_CAPTCHA}"
-					 title="{lang.REFRESH_CAPTCHA}"
-					 onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
-
-				<input type="text" name="kleeja_code_answer" class="form-control" style="max-width: 300px" autocomplete="false" id="kleeja_code_answer" aria-describedby="kleeja_code_answer_help"/>
-				<small id="helpBlock" id="kleeja_code_answer_help" class="form-text text-muted">{lang.NOTE_CODE}</small>
-			</div>
-		</div>
-
-	</IF>
+    <div class="form-group">
+        <label for="ctext">{lang.TEXT}</label>
+        <textarea class="form-control" id="ctext" name="ctext" rows="4">{t_ctext}</textarea>
+    </div>
 
 
+    <IF NAME="config.enable_captcha==1">
 
-	{H_FORM_KEYS}
+        <div class="form-group safe_code">
+            <label for="kleeja_code_answer" class=" control-label">{lang.VERTY_CODE}</label>
+            <div class="">
+                <img style="vertical-align:middle;"
+                     id="kleeja_img_captcha"
+                     src="{captcha_file_path}"
+                     alt="{lang.REFRESH_CAPTCHA}"
+                     title="{lang.REFRESH_CAPTCHA}"
+                     onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
 
-	<div class="form-group">
-		<input type="submit" name="submit" value="{lang.SEND}" class="btn btn-primary"/>
-	</div>
+                <input type="text" name="kleeja_code_answer" class="form-control" style="max-width: 300px" autocomplete="false" id="kleeja_code_answer" aria-describedby="kleeja_code_answer_help"/>
+                <small id="helpBlock" id="kleeja_code_answer_help" class="form-text text-muted">{lang.NOTE_CODE}</small>
+            </div>
+        </div>
+
+    </IF>
+
+
+
+    {H_FORM_KEYS}
+
+    <div class="form-group">
+        <input type="submit" name="submit" value="{lang.SEND}" class="btn btn-primary"/>
+    </div>
 </form>

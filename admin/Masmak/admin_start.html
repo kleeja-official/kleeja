@@ -3,21 +3,24 @@
 
 <script>
 function toggleStartBox(name, hide, current) {
-	$.ajax({
-		url: './?cp=r_repair&case=toggle_start_box&toggle=' + hide + '&_ajax_=1&name=' + name + '&{GET_FORM_KEY}',
+    $.ajax({
+        url: './?cp=r_repair&case=toggle_start_box&toggle=' + hide + '&_ajax_=1&name=' + name + '&{GET_FORM_KEY}',
         dataType: 'json',
-		cache: false})
-		.done(function (data) {
-			if(data.content){
+        cache: false})
+        .done(function (data) {
+            if(data.content){
                 $('#boxesErrors>span').html(data.content);
                 $('#boxesErrors').removeClass('d-none alert-danger').addClass('alert-info');
-				$('#'+name).css('display', hide ? 'none' : 'block');
-			} else {
-				this.fail();
-			}
-		})
-		.fail(function(data) {
-            $('#boxesErrors>span').html((data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : '{lang.ERROR_TRY_AGAIN}')));
+                $('#'+name).css('display', hide ? 'none' : 'block');
+            } else {
+                this.fail();
+            }
+        })
+        .fail(function(data) {
+            var tryAgainMsg = '{lang.ERROR_TRY_AGAIN}';
+            $('#boxesErrors>span').html(
+                <IGNORE>(data.content ? data.content : (data.responseJSON ? data.responseJSON.content  : tryAgainMsg))</IGNORE>
+                );
             $('#boxesErrors').removeClass('d-none alert-info').addClass('alert-danger');
                 var itemRemoveClass = current == 1 ? 'cb-disable' : 'cb-enable';
                 var itemAddClass = current == 0 ? 'cb-disable' : 'cb-enable';
@@ -31,69 +34,69 @@ function toggleStartBox(name, hide, current) {
 
 <!-- hello message -->
 <ol class="breadcrumb d-flex">
-	<li class="breadcrumb-item active">{usernamelang}</li>
-	<li class="ml-auto p-0">
-		<button type="button" class="btn btn-primary btn-sm px-1 py-0" data-toggle="modal" data-target="#customizationModal" title="{lang.CUSTOMIZATION}">
-			<i class="fa fa-fw fa-gears"></i>
-		</button>
-		<div class="modal" tabindex="-1" role="dialog" id="customizationModal">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">{lang.CUSTOMIZATION} - {lang.R_CPINDEX}</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="alert alert-info alert-dismissible m-3 p-0 text-center small  d-none" id="boxesErrors">
-							<span>...</span>
-							<button type="button" class="close py-0" data-dismiss="alert" aria-label="Close">
-								<span aria-hidden="true" class="small" style="cursor:pointer">&times;</span>
-							</button>
-						</div>
-						<LOOP NAME="startBoxes">
-						<div class="d-flex justify-content-between">
-							<div>{{title}}</div>
-							<div class="field switch" id="start_box_{%key%}">
-								<label onclick="toggleStartBox('{%key%}', 0, {{hidden}})" class="cb-enable<IF LOOP="hidden==0"> selected</IF>"><span>{lang.SHOW}</span></label>
-								<label onclick="toggleStartBox('{%key%}', 1, {{hidden}})" class="cb-disable<IF LOOP="hidden==1"> selected</IF>"><span>{lang.HIDE}</span></label>
-							</div>
-						</div>
-						</LOOP>
-					</div>
-				</div>
-			</div>
-		</div>
-	</li>
+    <li class="breadcrumb-item active">{usernamelang}</li>
+    <li class="ml-auto p-0">
+        <button type="button" class="btn btn-primary btn-sm px-1 py-0" data-toggle="modal" data-target="#customizationModal" title="{lang.CUSTOMIZATION}">
+            <i class="fa fa-fw fa-gears"></i>
+        </button>
+        <div class="modal" tabindex="-1" role="dialog" id="customizationModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{lang.CUSTOMIZATION} - {lang.R_CPINDEX}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info alert-dismissible m-3 p-0 text-center small  d-none" id="boxesErrors">
+                            <span>...</span>
+                            <button type="button" class="close py-0" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true" class="small" style="cursor:pointer">&times;</span>
+                            </button>
+                        </div>
+                        <LOOP NAME="startBoxes">
+                        <div class="d-flex justify-content-between">
+                            <div>{{title}}</div>
+                            <div class="field switch" id="start_box_{%key%}">
+                                <label onclick="toggleStartBox('{%key%}', 0, {{hidden}})" class="cb-enable<IF LOOP="hidden==0"> selected</IF>"><span>{lang.SHOW}</span></label>
+                                <label onclick="toggleStartBox('{%key%}', 1, {{hidden}})" class="cb-disable<IF LOOP="hidden==1"> selected</IF>"><span>{lang.HIDE}</span></label>
+                            </div>
+                        </div>
+                        </LOOP>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
 </ol>
 
 
 <IF NAME="ADM_NOTIFICATIONS">
 <!-- notifications -->
 <div class="card mb-3" id="notifications" style="display:(startBoxes.notifications.hidden?none:)">
-		<div class="card-header">
-			<i class="fa fa-bell-o"></i> {lang.NOTIFICATIONS}
-		</div>
-		<div class="list-group list-group-flush small">
-			<LOOP NAME="ADM_NOTIFICATIONS">
-			<div  class="list-group-item list-group-item-action">
-				<div class="media">
-					<IF LOOP="msg_type==error">
-						<span class="d-flex mr-3 rounded-circle fa fa fa-warning" style="font-size: 30px;"></span>
-					<ELSEIF LOOP="msg_type==info">
-						<span class="d-flex mr-3 rounded-circle fa fa-info-circle" style="font-size: 30px;"></span>
-					</IF>
-					<div class="media-body">
-						<strong>{{title}}</strong> <br>
-						{{msg}}
-						<!--<div class="text-muted smaller">Today at 5:43 PM - 5m ago</div>-->
-					</div>
-				</div>
-			</div>
-			</LOOP>
-		</div>
-	</div>
+        <div class="card-header">
+            <i class="fa fa-bell-o"></i> {lang.NOTIFICATIONS}
+        </div>
+        <div class="list-group list-group-flush small">
+            <LOOP NAME="ADM_NOTIFICATIONS">
+            <div  class="list-group-item list-group-item-action">
+                <div class="media">
+                    <IF LOOP="msg_type==error">
+                        <span class="d-flex mr-3 rounded-circle fa fa fa-warning" style="font-size: 30px;"></span>
+                    <ELSEIF LOOP="msg_type==info">
+                        <span class="d-flex mr-3 rounded-circle fa fa-info-circle" style="font-size: 30px;"></span>
+                    </IF>
+                    <div class="media-body">
+                        <strong>{{title}}</strong> <br>
+                        {{msg}}
+                        <!--<div class="text-muted smaller">Today at 5:43 PM - 5m ago</div>-->
+                    </div>
+                </div>
+            </div>
+            </LOOP>
+        </div>
+    </div>
 <!-- end notifications -->
 </IF>
 
@@ -101,171 +104,171 @@ function toggleStartBox(name, hide, current) {
 
 <!-- stats boxes -->
 <div class="card mb-3" id="statsBoxes" style="display:(startBoxes.statsBoxes.hidden?none:)">
-	<div class="card-header">
-		<i class="fa fa-bar-chart"></i> {lang.STATS_BOXES}
-	</div>
-	<div class="row p-1">
-		<div class="col-xl-3 col-sm-6 mb-3">
-			<div class="card text-white bg-primary o-hidden h-100">
-				<div class="card-body">
-					<div class="card-body-icon">
-						<i class="fa fa-fw fa-comments"></i>
-					</div>
-					<div class="mr-5">
-						{kbubbles.calls} {lang.R_CALLS}
-					</div>
-				</div>
-				<a href="./?cp=e_calls" class="card-footer  text-white clearfix small z-1">
-					<span class="float-left">{lang.VIEW}</span>
-					<span class="float-right"><i class="fa fa-angle-right"></i></span>
-				</a>
+    <div class="card-header">
+        <i class="fa fa-bar-chart"></i> {lang.STATS_BOXES}
+    </div>
+    <div class="row p-1">
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-primary o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-comments"></i>
+                    </div>
+                    <div class="mr-5">
+                        {kbubbles.calls} {lang.R_CALLS}
+                    </div>
+                </div>
+                <a href="./?cp=e_calls" class="card-footer  text-white clearfix small z-1">
+                    <span class="float-left">{lang.VIEW}</span>
+                    <span class="float-right"><i class="fa fa-angle-right"></i></span>
+                </a>
                 <a href="./?cp=e_calls&amp;smt=show_h24" class="card-footer  text-white clearfix small z-1">
                     <span class="float-left">{lang.SHOW_FROM_24H}</span>
                     <span class="float-right"><i class="fa fa-angle-right"></i></span>
                 </a>
-			</div>
-		</div>
-		<div class="col-xl-3 col-sm-6 mb-3">
-			<div class="card text-white bg-success o-hidden h-100">
-				<div class="card-body">
-					<div class="card-body-icon">
-						<i class="fa fa-fw fa-flag"></i>
-					</div>
-					<div class="mr-5">
-						{kbubbles.reports} {lang.R_REPORTS}
-					</div>
-				</div>
-				<a href="./?cp=f_reports" class="card-footer  text-white clearfix small z-1">
-					<span class="float-left">{lang.VIEW}</span>
-					<span class="float-right"><i class="fa fa-angle-right"></i></span>
-				</a>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-success o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-flag"></i>
+                    </div>
+                    <div class="mr-5">
+                        {kbubbles.reports} {lang.R_REPORTS}
+                    </div>
+                </div>
+                <a href="./?cp=f_reports" class="card-footer  text-white clearfix small z-1">
+                    <span class="float-left">{lang.VIEW}</span>
+                    <span class="float-right"><i class="fa fa-angle-right"></i></span>
+                </a>
                 <a href="./?cp=f_reports&amp;smt=show_h24" class="card-footer  text-white clearfix small z-1">
                     <span class="float-left">{lang.SHOW_FROM_24H}</span>
                     <span class="float-right"><i class="fa fa-angle-right"></i></span>
                 </a>
-			</div>
-		</div>
+            </div>
+        </div>
 
-		<div class="col-xl-3 col-sm-6 mb-3">
-			<div class="card text-white bg-danger o-hidden h-100">
-				<div class="card-body">
-					<div class="card-body-icon">
-						<i class="fa fa-fw fa-files-o"></i>
-					</div>
-					<div class="mr-5">
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-danger o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-files-o"></i>
+                    </div>
+                    <div class="mr-5">
                         <small>{lang.AFILES_NUM}</small>
                         <br>
                         {files_number} <small>({stat_files} {lang.FILE} + {stat_imgs} {lang.IMAGE})</small>
-					</div>
-				</div>
-				<a href="./?cp=c_files" class="card-footer  text-white clearfix small z-1">
-					<span class="float-left">{lang.R_FILES}</span>
-					<span class="float-right"><i class="fa fa-angle-right"></i></span>
-				</a>
+                    </div>
+                </div>
+                <a href="./?cp=c_files" class="card-footer  text-white clearfix small z-1">
+                    <span class="float-left">{lang.R_FILES}</span>
+                    <span class="float-right"><i class="fa fa-angle-right"></i></span>
+                </a>
                 <a href="./?cp=d_img_ctrl" class="card-footer  text-white clearfix small z-1">
                     <span class="float-left">{lang.R_IMG_CTRL}</span>
                     <span class="float-right"><i class="fa fa-angle-right"></i></span>
                 </a>
-			</div>
-		</div>
+            </div>
+        </div>
 
-		<div class="col-xl-3 col-sm-6 mb-3">
-			<div class="card text-white bg-info o-hidden h-100">
-				<div class="card-body">
-					<div class="card-body-icon">
-						<i class="fa fa-fw fa-users"></i>
-					</div>
-					<div class="mr-5">
-						{users_number} {lang.AUSERS_NUM}
-						<IF NAME="config.user_system==1">
-							<br><small>{lang.LAST_REG}: {lst_reg}</small>
-						</IF>
-					</div>
-				</div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-info o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-users"></i>
+                    </div>
+                    <div class="mr-5">
+                        {users_number} {lang.AUSERS_NUM}
+                        <IF NAME="config.user_system==1">
+                            <br><small>{lang.LAST_REG}: {lst_reg}</small>
+                        </IF>
+                    </div>
+                </div>
 
-				<a href="./?cp=g_users" class="card-footer text-white clearfix small z-1">
-					<span class="float-left">{lang.R_USERS}</span>
-					<span class="float-right"><i class="fa fa-angle-right"></i></span>
-				</a>
+                <a href="./?cp=g_users" class="card-footer text-white clearfix small z-1">
+                    <span class="float-left">{lang.R_USERS}</span>
+                    <span class="float-right"><i class="fa fa-angle-right"></i></span>
+                </a>
                 <a href="./?cp=h_search&smt=users" class="card-footer text-white clearfix small z-1">
-					<span class="float-left">{lang.SEARCH_USERS}</span>
-					<span class="float-right"><i class="fa fa-angle-right"></i></span>
-				</a>
-			</div>
-		</div>
-	</div>
+                    <span class="float-left">{lang.SEARCH_USERS}</span>
+                    <span class="float-right"><i class="fa fa-angle-right"></i></span>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- end stats boxes -->
 
 
 <!-- last visit actions -->
 <IF NAME="last_visit">
-	<div class="card mb-3" id="lastVisitActions"  style="display:(startBoxes.lastVisitActions.hidden?none:)">
-		<div class="card-header">
-			{lang.LAST_VISIT} ({last_visit})
-		</div>
-		<div class="card-body">
-			<div class="row">
-				<div class="col-sm-6">
-					<div class="card">
-						<div class="card-body">
-							<h3 class="card-title">{lang.FLS_LST_VST_SEARCH}:</h3>
+    <div class="card mb-3" id="lastVisitActions"  style="display:(startBoxes.lastVisitActions.hidden?none:)">
+        <div class="card-header">
+            {lang.LAST_VISIT} ({last_visit})
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">{lang.FLS_LST_VST_SEARCH}:</h3>
 
-							<IF NAME="files_last_visit"><a href="{h_lst_files}{files_last_visit}" class="btn btn-primary">{lang.LAST_VIEW}</a> &nbsp; {lang.OR} &nbsp;</IF>
-							<select class="show_since_time custom-select" tabindex="3" onchange="javascript:get_kleeja_link('{h_lst_files}' + (Math.round((new Date()).getTime() / 1000) - $(this).val()), '#content');">">
-								<option>{lang.TIME}...</option>
-								<option value="3600">{lang.HOUR}</option>
-								<option value="18000">{lang.5HOURS}</option>
-								<option value="864000">{lang.DAY}</option>
-								<option value="6048000">{lang.WEEK}</option>
-								<option value="25920000">{lang.MONTH}</option>
-								<option value="31536000">{lang.YEAR}</option>
-							</select>
+                            <IF NAME="files_last_visit"><a href="{h_lst_files}{files_last_visit}" class="btn btn-primary">{lang.LAST_VIEW}</a> &nbsp; {lang.OR} &nbsp;</IF>
+                            <select class="show_since_time custom-select" tabindex="3" onchange="javascript:get_kleeja_link('{h_lst_files}' + (Math.round((new Date()).getTime() / 1000) - $(this).val()), '#content');">">
+                                <option>{lang.TIME}...</option>
+                                <option value="3600">{lang.HOUR}</option>
+                                <option value="18000">{lang.5HOURS}</option>
+                                <option value="864000">{lang.DAY}</option>
+                                <option value="6048000">{lang.WEEK}</option>
+                                <option value="25920000">{lang.MONTH}</option>
+                                <option value="31536000">{lang.YEAR}</option>
+                            </select>
 
-						</div>
-					</div>
-					<br>
-				</div>
-				<div class="col-sm-6">
-					<div class="card">
-						<div class="card-body">
-							<h3 class="card-title">{lang.IMG_LST_VST_SEARCH}:</h3>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">{lang.IMG_LST_VST_SEARCH}:</h3>
 
-							<IF NAME="image_last_visit"><a href="{h_lst_imgs}{image_last_visit}" class="btn btn-primary">{lang.LAST_VIEW}</a> &nbsp; {lang.OR} &nbsp;</IF>
+                            <IF NAME="image_last_visit"><a href="{h_lst_imgs}{image_last_visit}" class="btn btn-primary">{lang.LAST_VIEW}</a> &nbsp; {lang.OR} &nbsp;</IF>
 
-							<select class="show_since_time custom-select" tabindex="3" onchange="javascript:get_kleeja_link('{h_lst_imgs}' + (Math.round((new Date()).getTime() / 1000) - $(this).val()), '#content');">">
-								<option>{lang.TIME}...</option>
-								<option value="3600">{lang.HOUR}</option>
-								<option value="18000">{lang.5HOURS}</option>
-								<option value="864000">{lang.DAY}</option>
-								<option value="6048000">{lang.WEEK}</option>
-								<option value="25920000">{lang.MONTH}</option>
-								<option value="31536000">{lang.YEAR}</option>
-							</select>
-						</div>
-					</div>
-				</div>
-			</div>
+                            <select class="show_since_time custom-select" tabindex="3" onchange="javascript:get_kleeja_link('{h_lst_imgs}' + (Math.round((new Date()).getTime() / 1000) - $(this).val()), '#content');">">
+                                <option>{lang.TIME}...</option>
+                                <option value="3600">{lang.HOUR}</option>
+                                <option value="18000">{lang.5HOURS}</option>
+                                <option value="864000">{lang.DAY}</option>
+                                <option value="6048000">{lang.WEEK}</option>
+                                <option value="25920000">{lang.MONTH}</option>
+                                <option value="31536000">{lang.YEAR}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
-		</div>
-	</div>
+        </div>
+    </div>
 </IF>
 <!-- end last visit actions -->
 
 <!-- stats_chart -->
 <IF NAME="stats_chart">
 <div class="card mb-3" id="statsChart" style="display:(startBoxes.statsChart.hidden?none:)">
-	<div class="card-header">
-		<i class="fa fa-area-chart"></i> {lang.STATS}
-	</div>
-	<div class="card-body">
-		<div id="chart_stats"></div>
-	</div>
+    <div class="card-header">
+        <i class="fa fa-area-chart"></i> {lang.STATS}
+    </div>
+    <div class="card-body">
+        <div id="chart_stats"></div>
+    </div>
 </div>
 
 <script type="text/javascript">
-	{stats_chart}
+    {stats_chart}
 </script>
 </IF>
 <!-- end stats_chart -->
@@ -273,55 +276,55 @@ function toggleStartBox(name, hide, current) {
 
 <!-- hurry hurry actions -->
 <div class="card mb-3" id="hurryActions" style="display:(startBoxes.hurryActions.hidden?none:)">
-	<div class="card-header">
-		{lang.HURRY_HURRY}
-	</div>
-	<ul class="list-group list-group-flush">
-		<li class="list-group-item d-lg-flex justify-content-between">
-			{lang.LANGUAGE}
-			<div>
-				<select	name="lang_change" class="custom-select" id="lang_change">
-					{hurry_langs_list}
-				</select>
-				&nbsp; {lang.FOR} &nbsp;
-				<select	 name="groups_list" class="custom-select" id="groups_list">
-					{hurry_groups_list}
-				</select>
-				<button class="btn btn-outline-primary mt-2" onclick="javascript:get_kleeja_link('{hurry_lang_link}' + $('#lang_change').val() + '&qg=' + $('#groups_list').val()); return false;"><span>{lang.CHANGE}</span></button>
-			</div>
+    <div class="card-header">
+        {lang.HURRY_HURRY}
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item d-lg-flex justify-content-between">
+            {lang.LANGUAGE}
+            <div>
+                <select    name="lang_change" class="custom-select" id="lang_change">
+                    {hurry_langs_list}
+                </select>
+                &nbsp; {lang.FOR} &nbsp;
+                <select     name="groups_list" class="custom-select" id="groups_list">
+                    {hurry_groups_list}
+                </select>
+                <button class="btn btn-outline-primary mt-2" onclick="javascript:get_kleeja_link('{hurry_lang_link}' + $('#lang_change').val() + '&qg=' + $('#groups_list').val()); return false;"><span>{lang.CHANGE}</span></button>
+            </div>
 
-		</li>
-		<li class="list-group-item d-lg-flex justify-content-between">
-			{lang.R_REPAIR}
-			<button class="btn btn-outline-primary" onclick="javascript:get_kleeja_link('{del_cache_link}'); return false;"><span>{lang.DEL_CACHE}</span></button>
-		</li>
-	</ul>
+        </li>
+        <li class="list-group-item d-lg-flex justify-content-between">
+            {lang.R_REPAIR}
+            <button class="btn btn-outline-primary" onclick="javascript:get_kleeja_link('{del_cache_link}'); return false;"><span>{lang.DEL_CACHE}</span></button>
+        </li>
+    </ul>
 </div>
 <!-- hurry hurry actions -->
 
 
 <!-- extra stats -->
 <div class="card" id="extraStats" style="display:(startBoxes.extraStats.hidden?none:)">
-	<div class="card-header">{lang.OTHER_INFO}</div>
-	<ul class="list-group list-group-flush">
-		<li class="list-group-item d-flex justify-content-between">
-			{lang.LSTDELST}
-			<span>{last_del_fles}</span>
-		</li>
-		<li class="list-group-item">
-			{lang.AFILES_SIZE_SPACE}
-			<br>
-			<div class="progress" style="width: 100%">
-				<div class="progress-bar" role="progressbar" aria-valuenow="{per1}" aria-valuemin="0" aria-valuemax="100">{per1}%</div>
-			</div>
-		</li>
+    <div class="card-header">{lang.OTHER_INFO}</div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">
+            {lang.LSTDELST}
+            <span>{last_del_fles}</span>
+        </li>
+        <li class="list-group-item">
+            {lang.AFILES_SIZE_SPACE}
+            <br>
+            <div class="progress" style="width: 100%">
+                <div class="progress-bar" role="progressbar" aria-valuenow="{per1}" aria-valuemin="0" aria-valuemax="100">{per1}%</div>
+            </div>
+        </li>
 
-		<li class="list-group-item d-flex justify-content-between">
-			{lang.KLEEJA_VERSION}
-			<span>{kleeja_version}</span>
-		</li>
+        <li class="list-group-item d-flex justify-content-between">
+            {lang.KLEEJA_VERSION}
+            <span>{kleeja_version}</span>
+        </li>
 
-	</ul>
+    </ul>
 </div>
 <!-- end extra stats -->
 
@@ -329,155 +332,155 @@ function toggleStartBox(name, hide, current) {
 
 <ELSEIF NAME="current_smt == other">
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item active">{lang.OTHER_INFO}</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item active">{lang.OTHER_INFO}</li>
+    </ol>
 
 
-	<div class="card">
-		<ul class="list-group list-group-flush">
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.PHP_VER}
-				<span>{php_version}</span>
-			</li>
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.MYSQL_VER}
+    <div class="card">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+                {lang.PHP_VER}
+                <span>{php_version}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                {lang.MYSQL_VER}
 
-				<span>{mysql_version}</span>
-			</li>
+                <span>{mysql_version}</span>
+            </li>
 
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.KLEEJA_VERSION}
-				<span>{kleeja_version}</span>
-			</li>
+            <li class="list-group-item d-flex justify-content-between">
+                {lang.KLEEJA_VERSION}
+                <span>{kleeja_version}</span>
+            </li>
 
-		</ul>
-	</div>
-
-
-	<hr>
-
-	<div class="card">
-		<ul class="list-group list-group-flush">
-			<li class="list-group-item d-flex justify-content-between">
-				max_execution_time
-				<span>{max_execution_time}</span>
-			</li>
-			<li class="list-group-item d-flex justify-content-between">
-				upload_max_filesize
-				<span>{upload_max_filesize}</span>
-			</li>
-			<li class="list-group-item d-flex justify-content-between">
-				post_max_size
-				<span>{post_max_size}</span>
-			</li>
-			<li class="list-group-item d-flex justify-content-between">
-				memory_limit
-				<span>{memory_limit}</span>
-			</li>
-		</ul>
-	</div>
-
-	<hr>
+        </ul>
+    </div>
 
 
-	<!-- search engines stats -->
-	<div class="card">
-		<div class="card-header">
-			{lang.SEARCH_STAT} / <b>Google</b>
-		</div>
-		<ul class="list-group list-group-flush">
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.LAST_GOOGLE}
-				<span>{s_last_google}</span>
-			</li>
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.GOOGLE_NUM}
-				<span>{s_google_num}</span>
-			</li>
-		</ul>
-	</div>
-	<br>
+    <hr>
 
-	<div class="card">
-		<div class="card-header">
-			{lang.SEARCH_STAT} / <b>Bing</b>
-		</div>
-		<ul class="list-group list-group-flush">
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.LAST_BING}
-				<span>{s_last_bing}</span>
-			</li>
-			<li class="list-group-item d-flex justify-content-between">
-				{lang.BING_NUM}
-				<span>{s_bing_num}</span>
-			</li>
-		</ul>
-	</div>
-	<!-- end search engines stats -->
+    <div class="card">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+                max_execution_time
+                <span>{max_execution_time}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                upload_max_filesize
+                <span>{upload_max_filesize}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                post_max_size
+                <span>{post_max_size}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                memory_limit
+                <span>{memory_limit}</span>
+            </li>
+        </ul>
+    </div>
+
+    <hr>
+
+
+    <!-- search engines stats -->
+    <div class="card">
+        <div class="card-header">
+            {lang.SEARCH_STAT} / <b>Google</b>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+                {lang.LAST_GOOGLE}
+                <span>{s_last_google}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                {lang.GOOGLE_NUM}
+                <span>{s_google_num}</span>
+            </li>
+        </ul>
+    </div>
+    <br>
+
+    <div class="card">
+        <div class="card-header">
+            {lang.SEARCH_STAT} / <b>Bing</b>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+                {lang.LAST_BING}
+                <span>{s_last_bing}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                {lang.BING_NUM}
+                <span>{s_bing_num}</span>
+            </li>
+        </ul>
+    </div>
+    <!-- end search engines stats -->
 
 
 
 
 <ELSEIF NAME="current_smt == team">
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item active">{lang.KLEEJA_TEAM}</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item active">{lang.KLEEJA_TEAM}</li>
+    </ol>
 
-	<ul class="list-group" id="gtresults">
-		<li class="list-group-item list-group-item-action d-flex justify-content-between" style="display: none !important" id="ghTemplate">
-			<div class="d-flex w-40 justify-content-between">
-				<img src="%avatarUrl%" alt="" class="img-thumbnail mx-2 rounded" style="width: 48px; height: 48px"> <a href="%htmlUrl%" target="_tab"><h5 class="mb-1">%login%</h5></a>
-			</div>
-			<small><a href="https://github.com/awssat/kleeja/graphs/contributors" target="_blank">%contributions% <i class="fa fa-fw fa-code"></i></a></small>
-		</li>
-	</ul>
+    <ul class="list-group" id="gtresults">
+        <li class="list-group-item list-group-item-action d-flex justify-content-between" style="display: none !important" id="ghTemplate">
+            <div class="d-flex w-40 justify-content-between">
+                <img src="%avatarUrl%" alt="" class="img-thumbnail mx-2 rounded" style="width: 48px; height: 48px"> <a href="%htmlUrl%" target="_tab"><h5 class="mb-1">%login%</h5></a>
+            </div>
+            <small><a href="https://github.com/awssat/kleeja/graphs/contributors" target="_blank">%contributions% <i class="fa fa-fw fa-code"></i></a></small>
+        </li>
+    </ul>
 
 
 
-	<IF NAME="translator_copyrights">
-		<hr>
-		<small>{translator_copyrights}</small>
-	</IF>
+    <IF NAME="translator_copyrights">
+        <hr>
+        <small>{translator_copyrights}</small>
+    </IF>
 
-	<hr>
-	<p style="direction: ltr">
+    <hr>
+    <p style="direction: ltr">
 <small>You can support Kleeja by reporting or fixing a bug, designing a style, building a plugin (see <a href="https://github.com/awssat/kleeja" target="_tab">github.com/awssat/kleeja</a>)</small>
-	</p>
+    </p>
 
-	<br>
-	<br>
-	<hr>
-	<div class="text-muted text-center">Kleeja proudly made in Buraydah City  <br> ❤ Trusted since 2007  <br><small>{kleeja_version}</small></div>
+    <br>
+    <br>
+    <hr>
+    <div class="text-muted text-center">Kleeja proudly made in Buraydah City  <br> ❤ Trusted since 2007  <br><small>{kleeja_version}</small></div>
 <script type="text/javascript">
-	setTimeout(function() {
-		$.ajax({
-			url: "https://api.github.com/repos/awssat/kleeja/contributors",
-			dataType: 'json'})
-			.done(function (data) {
-				var template = $('#ghTemplate')[0].outerHTML;
-				$.each(data, function (i, item) {
-					$("#gtresults").append(template.replace('%id%', item['id']).replace('%login%', item['login']).replace(
-						'ghTemplate',
-						'gt' + item['id']).replace('%avatarUrl%', item['avatar_url']).replace('%contributions%', item[
-						'contributions']).replace('%htmlUrl%', item['html_url']));
-					$('#gt' + item['id']).removeAttr('style');
-				});
-			});
-	}, 400);
+    setTimeout(function() {
+        $.ajax({
+            url: "https://api.github.com/repos/awssat/kleeja/contributors",
+            dataType: 'json'})
+            .done(function (data) {
+                var template = $('#ghTemplate')[0].outerHTML;
+                $.each(data, function (i, item) {
+                    $("#gtresults").append(template.replace('%id%', item['id']).replace('%login%', item['login']).replace(
+                        'ghTemplate',
+                        'gt' + item['id']).replace('%avatarUrl%', item['avatar_url']).replace('%contributions%', item[
+                        'contributions']).replace('%htmlUrl%', item['html_url']));
+                    $('#gt' + item['id']).removeAttr('style');
+                });
+            });
+    }, 400);
 </script>
 
 
 
 <ELSEIF NAME="current_smt == kj_tweets">
 
-		<a style="margin: 5px;" class="twitter-timeline" data-lang="en" data-dnt="true" data-theme="light" data-link-color="#E95F28" href="https://twitter.com/kleeja?ref_src=twsrc%5Etfw">Tweets by kleeja</a>
-		<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <a style="margin: 5px;" class="twitter-timeline" data-lang="en" data-dnt="true" data-theme="light" data-link-color="#E95F28" href="https://twitter.com/kleeja?ref_src=twsrc%5Etfw">Tweets by kleeja</a>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 </IF>
 

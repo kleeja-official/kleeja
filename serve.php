@@ -37,12 +37,15 @@ $rules = [
     '^fileuser[_-]([0-9]+)-([0-9]+).html$'                   => ['file' => 'ucp.php', 'args' => 'go=fileuser&id=$1&page=$2'],
     // #for future plugins
     '^go-(.*).html$' => ['file' => 'go.php', 'args' => 'go=$1'],
-
-    //---------> 
-    //don't remove the next line ever.
-    //end_kleeja_rewrites_rules#
-    //<---------
 ];
+
+
+if (file_exists('plugins_rules.php'))
+{
+    $plugins_rules = include_once 'plugins_rules.php';
+    $rules         = array_merge($rules, $plugins_rules);
+}
+
 
 $request_uri = trim(strtok($_SERVER['REQUEST_URI'], '?'), '/');
 

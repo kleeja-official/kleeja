@@ -24,6 +24,7 @@ class kleeja_style
     /**
      * Function to load a template file.
      * @param $template_name
+     * @param null|mixed $style_path
      */
     protected function _load_template($template_name, $style_path = null)
     {
@@ -118,16 +119,29 @@ class kleeja_style
 
     /**
      * Function to parse the Template Tags
+     * @param mixed $html
+     * @param mixed $template_name
      */
     protected function _parse($html, $template_name = '')
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('style_parse_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
+
+        $html = preg_replace_callback('/<IGNORE>(.*?)<\/IGNORE>/is', function($m) {
+            return '<STRREV>' . strrev($m[1]) . '</STRREV>';
+        }, $html);
         $html = preg_replace(['#<([\?%])=?.*?\1>#s', '#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s', '#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'], '', $html);
-        $html = preg_replace_callback('/\(([{A-Z0-9_\.}\s!=<>]+)\?(.*):(.*)\)/iU', ['kleeja_style', '_iif_callback'], $html);
+        $html = preg_replace_callback('/\(([{A-Z0-9_\.}\s!=<>]+)\?(.*):(.*)\)/iU', function($m) {
+            return '<IF NAME="' . $m[1] . '">' . $m[2] . '<ELSE>' . $m[3] . '</IF>';
+        }, $html);
         $html = preg_replace_callback('/<(IF|ELSEIF|UNLESS) (.+)>/iU', ['kleeja_style', '_if_callback'], $html);
-        $html = preg_replace_callback('/<LOOP\s+NAME\s*=\s*(\"|)+([a-z0-9_\.]{1,})+(\"|)\s*>/i', ['kleeja_style', '_loop_callback'], $html);
+        $html = preg_replace_callback('/<LOOP\s+NAME\s*=\s*(\"|)+([a-z0-9_\.]{1,})+(\"|)\s*>/i', function($m) {
+            return '<?php foreach($this->vars["' . (strpos($m[2], '.') !== false ? str_replace('.', '"]["', $m[2]) : $m[2]) . '"] as $key=>$value){ ?>';
+        }, $html);
         $html = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_vars_callback'], $html);
+        $html = preg_replace_callback('/<STRREV>(.*?)<\/STRREV>/is', function($m) {
+            return strrev($m[1]);
+        }, $html);
 
         $rep =
         [
@@ -145,19 +159,6 @@ class kleeja_style
         return preg_replace(array_keys($rep), array_values($rep), $html);
     }
 
-
-    /**
-     * loop tag
-     * @param $matches
-     * @return string
-     */
-    protected function _loop_callback($matches)
-    {
-        $var = strpos($matches[2], '.') !== false ? str_replace('.', '"]["', $matches[2]) : $matches[2];
-        return '<?php foreach($this->vars["' . $var . '"] as $key=>$value){ ?>';
-    }
-
-
     /**
      * if tag
      * @param $matches
@@ -168,11 +169,18 @@ class kleeja_style
         $atts      = call_user_func(['kleeja_style', '_get_attributes'], $matches[0]);
         $condition = '';
 
-        foreach (['NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || '] as $attribute=>$separator)
+        foreach ([
+                'NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || ', 'ISSET' => ' isset', 'EMPTY' => ' empty'
+                    ] as $attribute=>$separator)
         {
-            if (! empty($atts[$attribute]))
+            if (isset($atts[$attribute]))
             {
-                $condition .= $separator . $this->parse_condition($atts[$attribute], ! empty($atts['LOOP']));
+                $haveParentheses = in_array($attribute, ['ISSET', 'EMPTY']);
+
+                $condition .= $separator . ($haveParentheses ? '(' : '') .
+                                $this->parse_condition($atts[$attribute], ! empty($atts['LOOP'])) .
+                                ($haveParentheses ? ')' : '')
+                    ;
             }
         }
 
@@ -181,21 +189,15 @@ class kleeja_style
               : (strtoupper($matches[1]) == 'UNLESS' ? '<?php if(!(' . $condition . ')){ ?>' : '<?php }elseif(' . $condition . '){ ?>');
     }
 
-
-    /**
-     * iif tag, if else /if
-     * @param $matches
-     * @return string
-     */
-    protected function _iif_callback($matches)
-    {
-        return '<IF NAME="' . $matches[1] . '">' . $matches[2] . '<ELSE>' . $matches[3] . '</IF>';
-    }
-
     protected function parse_condition($condition, $is_loop)
     {
         $char = [' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>'];
         $reps = ['==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>'];
+
+        if(trim($condition) == '')
+        {
+            return '';
+        }
 
         $con = str_replace('$this->vars', '[----this-vars----]', $condition);
 
@@ -253,8 +255,14 @@ class kleeja_style
             preg_match(kleeja_style::reg('var'), $matches, $matches);
         }
 
-        $var = ! empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '';
-        return (! empty($matches[1]) && trim($matches[1]) == '{{') ? '$value[\'' . $var . '\']' : '$this->vars[\'' . $var . '\']';
+        $var = trim(! empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '');
+
+        if(empty($var))
+        {
+            return '';
+        }
+
+        return ! empty($matches[1]) && trim($matches[1]) == '{{' ? '$value[\'' . $var . '\']' : '$this->vars[\'' . $var . '\']';
     }
 
     /**
@@ -276,7 +284,7 @@ class kleeja_style
     protected function reg($var)
     {
         $vars = get_class_vars(__CLASS__);
-        return ($vars['reg'][$var]);
+        return $vars['reg'][$var];
     }
 
 
@@ -287,7 +295,7 @@ class kleeja_style
      */
     protected function _get_attributes($tag)
     {
-        preg_match_all('/([a-z]+)="(.+)"/iU', $tag, $attribute);
+        preg_match_all('/([a-z]+)="(.+)?"/iU', $tag, $attribute);
 
         $attributes = [];
 
@@ -295,14 +303,7 @@ class kleeja_style
         {
             $att = strtoupper($attribute[1][$i]);
 
-            if (preg_match('/NAME|LOOP/', $att))
-            {
-                $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback'], $attribute[2][$i]);
-            }
-            else
-            {
-                $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback_att'], $attribute[2][$i]);
-            }
+            $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback'], $attribute[2][$i]);
         }
         return $attributes;
     }
@@ -356,11 +357,11 @@ class kleeja_style
         $eval_on = false;
         eval('$eval_on = true;');
 
-        $parsed_html = trim($this->_parse($html));
+        $parsed_html = trim($this->_parse(stripcslashes($html)));
 
         ob_start();
 
-        if($eval_on)
+        if ($eval_on)
         {
             eval(' ?' . '>' . $parsed_html . '<' . '?php ');
         }
@@ -380,6 +381,7 @@ class kleeja_style
     /**
      * change name of template to be valid
      * @param $name
+     * @param  null|mixed $style_path
      * @return mixed
      */
     protected function re_name_tpl($name, $style_path = null)

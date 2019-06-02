@@ -1,59 +1,59 @@
 
 
 <div class="mt-3 mb-3">
-	<h2>{title}</h2>
-	<p class="text-muted">{lang.E_GET_LOSTPASS}</p>
+    <h2>{title}</h2>
+    <p class="text-muted">{lang.E_GET_LOSTPASS}</p>
 </div>
 
 
 
 <!-- error messages -->
 <IF NAME="ERRORS">
-	<div class="alert alert-danger">
-		<ul>
-			<LOOP NAME="ERRORS">
-				<li>{%value%}</li>
-			</LOOP>
-		</ul>
-	</div>
+    <div class="alert alert-danger">
+        <ul>
+            <LOOP NAME="ERRORS">
+                <li>{%value%}</li>
+            </LOOP>
+        </ul>
+    </div>
 </IF>
 
 
 
 <form action="{action}" method="post">
 
-	<div class="form-group">
-		<label for="rmail">{lang.EMAIL}</label>
-		<input type="email" class="form-control" id="rmail"  name="rmail" value="{t_rmail}" style="direction:ltr;">
-	</div>
+    <div class="form-group">
+        <label for="rmail">{lang.EMAIL}</label>
+        <input type="email" class="form-control" id="rmail"  name="rmail" value="{t_rmail}" style="direction:ltr;">
+    </div>
 
 
-	<!-- verification code -->
-	<IF NAME="config.enable_captcha==1">
+    <!-- verification code -->
+    <IF NAME="config.enable_captcha==1">
 
-		<div class="form-group safe_code">
-			<label for="kleeja_code_answer" class=" control-label">{lang.VERTY_CODE}</label>
-			<div class="">
-				<img style="vertical-align:middle;"
-					 id="kleeja_img_captcha"
-					 src="{captcha_file_path}"
-					 alt="{lang.REFRESH_CAPTCHA}"
-					 title="{lang.REFRESH_CAPTCHA}"
-					 onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
+        <div class="form-group safe_code">
+            <label for="kleeja_code_answer" class=" control-label">{lang.VERTY_CODE}</label>
+            <div class="">
+                <img style="vertical-align:middle;"
+                     id="kleeja_img_captcha"
+                     src="{captcha_file_path}"
+                     alt="{lang.REFRESH_CAPTCHA}"
+                     title="{lang.REFRESH_CAPTCHA}"
+                     onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
 
-				<input type="text" name="kleeja_code_answer" class="form-control" style="max-width: 300px" autocomplete="false" id="kleeja_code_answer" aria-describedby="kleeja_code_answer_help"/>
-				<small id="helpBlock" id="kleeja_code_answer_help" class="form-text text-muted">{lang.NOTE_CODE}</small>
-			</div>
-		</div>
+                <input type="text" name="kleeja_code_answer" class="form-control" style="max-width: 300px" autocomplete="false" id="kleeja_code_answer" aria-describedby="kleeja_code_answer_help"/>
+                <small id="helpBlock" id="kleeja_code_answer_help" class="form-text text-muted">{lang.NOTE_CODE}</small>
+            </div>
+        </div>
 
-	</IF>
-	
+    </IF>
+    
 
-	{H_FORM_KEYS}
+    {H_FORM_KEYS}
 
-	<div class="form-group mt-3">
-		<input type="submit" name="submit" value="{lang.GET_LOSTPASS}" class="btn btn-primary"/>
-	</div>
+    <div class="form-group mt-3">
+        <input type="submit" name="submit" value="{lang.GET_LOSTPASS}" class="btn btn-primary"/>
+    </div>
 
 </form>
 

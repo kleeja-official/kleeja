@@ -2,71 +2,81 @@
 <div class="clr"></div>
 
 {{if(!$GLOBALS['no_config']):}}
-<form method="post" action="{{echo './install.php?step=c&amp;' . getlang(1)}}"  onsubmit="javascript:return formCheck(this, Array('db_server','db_user' ,'db_name'));">
-	<h2><img src="style/images/klj_info.png" class="img" alt="!" />{{echo $lang['DB_INFO']}}</h2>
-	<table class="TableConf" dir="{{echo $lang['DIR']}}">
-		<tr>
-			<td class="TdConf">{{echo $lang['DB_SERVER']}}</td>
-			<td class="TdInput"><input name="db_server" type="text" value="localhost" class="InputConf" /></td>
-		</tr>
-		<tr>
-			<td class="TdConf">{{echo $lang['DB_NAME']}}</td>
-			<td class="TdInput"><input name="db_name" type="text" class="InputConf" /></td>
-		</tr>
-		<tr>
-			<td class="TdConf">{{echo $lang['DB_USER']}}</td>
-			<td class="TdInput"><input name="db_user" type="text" class="InputConf" /></td>
-		</tr>
-		<tr>
-			<td class="TdConf">{{echo $lang['DB_PASSWORD']}}</td>
-			<td class="TdInput"><input name="db_pass" type="text" class="InputConf" /></td>
-		</tr>
-		<tr>
-			<td class="TdConf">{{echo $lang['DB_PREFIX']}}</td>
-			<td class="TdInput"><input name="db_prefix" type="text" value="klj_" class="InputConf" /></td>
-		</tr>
-	</table>
-	<div class="clr"></div>
+<form method="post" action="{{echo './install.php?step=c&amp;' . getlang(1)}}">
+    <h2><img src="style/images/klj_info.png" class="img" alt="!" />{{echo $lang['DB_INFO']}}</h2>
+    <table class="TableConf" dir="{{echo $lang['DIR']}}">
+        <tr>
+            <td class="TdConf">{{echo $lang['DB_TYPE']}}</td>
+            <td class="TdInput">
+                <select name="db_type" id="db_type" style="text-align:left;direction:ltr">
+                    <option value="mysql" selected>{{echo $lang['DB_TYPE_MYSQL']}}</option>
+                    <option value="sqlite">{{echo $lang['DB_TYPE_SQLITE']}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="TdConf">{{echo $lang['DB_SERVER']}}</td>
+            <td class="TdInput"><input name="db_server" id="db_server" type="text" value="localhost" class="InputConf" /></td>
+        </tr>
+        <tr>
+            <td class="TdConf">{{echo $lang['DB_NAME']}}</td>
+            <td class="TdInput"><input name="db_name" id="db_name" type="text" value="kleeja" class="InputConf" /></td>
+        </tr>
+        <tr>
+            <td class="TdConf">{{echo $lang['DB_USER']}}</td>
+            <td class="TdInput"><input name="db_user" id="db_user" type="text" class="InputConf" /></td>
+        </tr>
+        <tr>
+            <td class="TdConf">{{echo $lang['DB_PASSWORD']}}</td>
+            <td class="TdInput"><input name="db_pass" id="db_pass" type="text" class="InputConf" /></td>
+        </tr>
+        <tr>
+            <td class="TdConf">{{echo $lang['DB_PREFIX']}}</td>
+            <td class="TdInput"><input name="db_prefix" id="db_prefix" type="text" value="klj_" class="InputConf" />
+            </td>
+        </tr>
+    </table>
+    <div class="clr"></div>
 
-	{{if(!$GLOBALS['writeable_path']):}}
-	<div class="notice">
-		<p class="justify"><img src="style/images/inst_notes.png" class="img" alt=" " />{{echo $lang['DB_INFO_NW']}}</p>
-	</div>
-	{{endif;}}
+    {{if(!$GLOBALS['writeable_path']):}}
+    <div class="notice">
+        <p class="justify"><img src="style/images/inst_notes.png" class="img" alt=" " />{{echo $lang['DB_INFO_NW']}}</p>
+    </div>
+    {{endif;}}
 
-	<div class="hr"></div>
-	<center>
-		<button onclick="window.location.href='./install.php?step=f&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
-		<button name="dbsubmit" type="submit" class="btn"><span>{{echo $GLOBALS['writeable_path'] ? $lang['INST_NEXT'] : $lang['INST_EXPORT']}} &raquo;</span></button>
-	</center>
+    <div class="hr"></div>
+    <center>
+        <button onclick="window.location.href='./install.php?step=f&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+        <button name="dbsubmit" type="submit" class="btn"><span>{{echo $GLOBALS['writeable_path'] ? $lang['INST_NEXT'] : $lang['INST_EXPORT']}} &raquo;</span></button>
+    </center>
 
 </form>
 
-	{{if(!$GLOBALS['writeable_path']):}}
-		<div class="clr"></div><br />
-		<img src="style/images/up_c.png" alt="Upload Config" />
-		<div class="clr"></div><br />
-		<h2 class="h2">{{echo $lang['INST_SUBMIT_CONFIGOK']}}</h2>
-		<div class="hr"></div>
-		<form method="post" action="{{echo './install.php?step=c&amp;' . getlang(1)}}">
-			<center>
-				<button onclick="window.location.href='./install.php?step=f&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
-				<button type="submit" name="agres" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
-			</center>
-		</form>
-	{{endif;}}
+    {{if(!$GLOBALS['writeable_path']):}}
+        <div class="clr"></div><br />
+        <img src="style/images/up_c.png" alt="Upload Config" />
+        <div class="clr"></div><br />
+        <h2 class="h2">{{echo $lang['INST_SUBMIT_CONFIGOK']}}</h2>
+        <div class="hr"></div>
+        <form method="post" action="{{echo './install.php?step=c&amp;' . getlang(1)}}">
+            <center>
+                <button onclick="window.location.href='./install.php?step=f&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+                <button type="submit" name="agres" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
+            </center>
+        </form>
+    {{endif;}}
 
-	{{else:}}
-		<div class="clr"></div><br />
-		<img src="style/images/check_conf.png" alt=" " />
-		<div class="clr"></div><br />
-		<h2 class="h2">{{echo $lang['CONFIG_EXISTS']}}</h2>
-		<div class="hr"></div>
-		<form method="post" action="{{echo $_SERVER['PHP_SELF'] . '?step=check&amp;' . getlang(1)}}">
-			<button onclick="window.location.href='./install.php?step=f&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
-			<button type="submit" name="agres" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
-		</form>
-	{{endif;}}
+    {{else:}}
+        <div class="clr"></div><br />
+        <img src="style/images/check_conf.png" alt=" " />
+        <div class="clr"></div><br />
+        <h2 class="h2">{{echo $lang['CONFIG_EXISTS']}}</h2>
+        <div class="hr"></div>
+        <form method="post" action="{{echo $_SERVER['PHP_SELF'] . '?step=check&amp;' . getlang(1)}}">
+            <button onclick="window.location.href='./install.php?step=f&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+            <button type="submit" name="agres" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
+        </form>
+    {{endif;}}
 
 <div class="clr"></div>
 </div></div><div class="BoxBottomImg"></div></div>

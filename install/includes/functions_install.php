@@ -12,7 +12,7 @@
 require PATH . 'includes/version.php';
 
 //set mysql to show no errors
-define('MYSQL_NO_ERRORS', true);
+define('SQL_NO_ERRORS', true);
 define('EVAL_IS_ON', is_eval_is_on());
 
 
@@ -46,8 +46,8 @@ function getlang ($link = false)
 
     if (ig('lang'))
     {
-        $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
-        $ln	  = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
+        $lang    = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
+        $ln      = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
     }
 
     return $link ? 'lang=' . $ln : $ln;
@@ -114,25 +114,40 @@ function kleeja_eval($code)
 * @param mixed $nm
 * @param mixed $prf
 */
-function do_config_export($srv, $usr, $pass, $nm, $prf)
+function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
 {
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
-    $data	.= '$dbserver		= \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
-    $data	.= '$dbuser			= \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
-    $data	.= '$dbpass			= \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
-    $data	.= '$dbname			= \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
-    $data .= '$dbprefix		= \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
+    $data .= '//for more information about this file, visit: ' . "\n";
+    $data .= '//https://github.com/kleeja-official/kleeja/wiki/config.php-file' . "\n\n";
 
-    if (file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
+    if(!empty($type) && $type != 'mysql')
     {
-        return true;
+        if ($type == 'sqlite' && strpos($nm, '.') === false)
+        {
+            $nm = $nm . '.db';
+        }
+
+        $data    .= '$dbtype   = \'' . str_replace("'", "\'", $type) . "'; //database type \n";
+    }
+    $data    .= '$dbserver = \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
+    $data    .= '$dbuser   = \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
+    $data    .= '$dbpass   = \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
+    $data    .= '$dbname   = \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
+    $data    .= '$dbprefix = \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
+
+
+    if (is_writable(PATH))
+    {
+        if (@file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
+        {
+            return true;
+        }
     }
 
     if (defined('CLI') && CLI)
     {
         return true;
     }
-
 
     header('Content-Type: text/x-delimtext; name="config.php"');
     header('Content-disposition: attachment; filename=config.php');
@@ -161,14 +176,19 @@ function inst_get_config($name)
 
     if (empty($SQL))
     {
-        global $dbserver, $dbuser, $dbpass, $dbname;
+        global $dbserver, $dbuser, $dbpass, $dbname, $dbtype;
 
-        if (! isset($dbserver))
+        if (! isset($dbname))
         {
             return false;
         }
 
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+        if(isset($dbtype) && $dbtype == 'sqlite')
+        {
+            @touch(PATH . $dbname);
+        }
+
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
     }
 
     if (empty($SQL))
@@ -176,8 +196,8 @@ function inst_get_config($name)
         return false;
     }
 
-    $sql    = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
-    $result	= $SQL->query($sql);
+    $sql       = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
+    $result    = $SQL->query($sql);
 
     if ($SQL->num_rows($result) == 0)
     {
@@ -207,8 +227,8 @@ function get_cookies_settings()
     }
 
 
-    $cookie_secure	= isset($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] == 'on' ? true : false;
-    $cookie_name	  = 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(md5(mt_rand()), 16, 35)), 0, 5));
+    $cookie_secure    = isset($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] == 'on' ? true : false;
+    $cookie_name      = 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(md5(mt_rand()), 16, 35)), 0, 5));
 
     $name = (! empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
 
@@ -243,10 +263,10 @@ function get_cookies_settings()
     }
 
     return [
-        'server_name'	  => $server_name,
-        'cookie_secure'	=> $cookie_secure,
-        'cookie_name'	  => $cookie_name,
-        'cookie_domain'	=> $cookie_domain,
-        'cookie_path'	  => str_replace('/install', '', $script_path),
+        'server_name'      => $server_name,
+        'cookie_secure'    => $cookie_secure,
+        'cookie_name'      => $cookie_name,
+        'cookie_domain'    => $cookie_domain,
+        'cookie_path'      => str_replace('/install', '', $script_path),
     ];
 }

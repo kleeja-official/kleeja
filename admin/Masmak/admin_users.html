@@ -3,129 +3,129 @@
 <IF NAME="current_smt == general">
 
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item">{lang.R_GROUPS}</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item">{lang.R_GROUPS}</li>
+    </ol>
 
 
-	<IF NAME="user_not_normal"><ELSE>
-		<a href="#" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#group_add_new">
-			<i class="fa fa-plus-circle"></i> {lang.ADD_NEW_GROUP}
-		</a>
-	</IF>
+    <IF NAME="user_not_normal"><ELSE>
+        <a href="#" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#group_add_new">
+            <i class="fa fa-plus-circle"></i> {lang.ADD_NEW_GROUP}
+        </a>
+    </IF>
 
-	<div class="clearfix"></div>
+    <div class="clearfix"></div>
 
 
-	<br>
+    <br>
 
-	<!-- if not normal user system, tell him -->
-	<IF NAME="user_not_normal">
-		<div class="alert alert-info">
-			{lang.USERS_NOT_NORMAL_SYS}
-		</div>
-		<br>
-	</IF>
+    <!-- if not normal user system, tell him -->
+    <IF NAME="user_not_normal">
+        <div class="alert alert-info">
+            {lang.USERS_NOT_NORMAL_SYS}
+        </div>
+        <br>
+    </IF>
 
 
 <!-- start data table -->
 <UNLESS NAME="no_results">
-	<h3>{lang.ESSENTIAL_GROUPS}</h3>
+    <h4>{lang.ESSENTIAL_GROUPS}</h4>
 
 
-	<!-- start essential groups -->
-	<div class="row">
+    <!-- start essential groups -->
+    <div class="row mt-3">
 
-		<LOOP NAME="e_groups">
+        <LOOP NAME="e_groups">
 
-		<div class="col-xl-4 col-sm-6 mb-4">
-			<div class="card text-white bg-{{style.background}} o-hidden h-100">
-				<div class="card-body">
-					<div class="card-body-icon">
-						<i class="fa fa-fw {{style.icon}}"></i>
-					</div>
-					<div class="mr-5">
-						{{name}}
-						<UNLESS NAME="user_not_normal">
-							<IF LOOP="is_default">
-								<i class="fa fa-check" title="{lang.GROUP_IS_DEFAULT}" data-toggle="tooltip"></i>
-							</IF>
-						</UNLESS>
-					</div>
-				</div>
-				<a href="{action}&amp;smt=group_data&amp;qg={{id}}"  class="card-footer bg-white  clearfix small z-1" title="{lang.EDIT_DATA}">
-					<i class="fa fa-edit"></i> {lang.EDIT_DATA}
-				</a>
-				<a href="{action}&amp;smt=group_acl&amp;qg={{id}}"  class="card-footer  bg-white clearfix small z-1" title="{lang.EDIT_ACL}">
-					<i class="fa fa-tasks"></i> {lang.EDIT_ACL}
-				</a>
-				<a href="{action}&amp;smt=group_exts&amp;qg={{id}}"  class="card-footer  bg-white clearfix small z-1" title="{lang.R_EXTS}">
-					<i class="fa fa-file-code-o"></i> {lang.R_EXTS}
-				</a>
+        <div class="col-xl-4 col-sm-6 mb-4">
+            <div class="card text-white bg-{{style.background}} o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw {{style.icon}}"></i>
+                    </div>
+                    <div class="mr-5">
+                        {{name}}
+                        <UNLESS NAME="user_not_normal">
+                            <IF LOOP="is_default">
+                                <i class="fa fa-check" title="{lang.GROUP_IS_DEFAULT}" data-toggle="tooltip"></i>
+                            </IF>
+                        </UNLESS>
+                    </div>
+                </div>
+                <a href="{action}&amp;smt=group_data&amp;qg={{id}}"  class="card-footer bg-white  clearfix small z-1" title="{lang.EDIT_DATA}">
+                    <i class="fa fa-edit"></i> {lang.EDIT_DATA}
+                </a>
+                <a href="{action}&amp;smt=group_acl&amp;qg={{id}}"  class="card-footer  bg-white clearfix small z-1" title="{lang.EDIT_ACL}">
+                    <i class="fa fa-tasks"></i> {lang.EDIT_ACL}
+                </a>
+                <a href="{action}&amp;smt=group_exts&amp;qg={{id}}"  class="card-footer  bg-white clearfix small z-1" title="{lang.R_EXTS}">
+                    <i class="fa fa-file-code-o"></i> {lang.R_EXTS}
+                </a>
 
-				<IF LOOP="id != 2">
-						<a class="card-footer  bg-white clearfix small z-1" href="{action}&amp;smt=show_group&amp;qg={{id}}" title="{lang.USERS}">
-							<i class="fa fa-users"></i> {lang.USERS}
-					</a>
-				</IF>
+                <IF LOOP="id != 2">
+                        <a class="card-footer  bg-white clearfix small z-1" href="{action}&amp;smt=show_group&amp;qg={{id}}" title="{lang.USERS}">
+                            <i class="fa fa-users"></i> {lang.USERS}
+                    </a>
+                </IF>
 
-			</div>
-		</div>
+            </div>
+        </div>
 
-		</LOOP>
+        </LOOP>
 
-	</div>
+    </div>
 
 
 <IF NAME="c_groups">
-	<br>
-	<hr>
-	<br>
+    <br>
+    <hr>
+    <br>
 
 
-<h3>{lang.CUSTOM_GROUPS}</h3>
+<h4>{lang.CUSTOM_GROUPS}</h4>
 
-<div class="row">
+<div class="row mt-3">
 
-	<LOOP NAME="c_groups">
+    <LOOP NAME="c_groups">
 
-		<div class="col-xl-4 col-sm-6 mb-4">
-			<div class="card text-white o-hidden h-100" style="background-color: #a85053; border-color: #a85053;">
-				<div class="card-body">
-					<div class="card-body-icon">
-						<i class="fa fa-fw fa-user-plus"></i>
-					</div>
-					<div class="mr-5">
-						{{name}}
-						<IF NAME="user_not_normal"><ELSE><IF LOOP="is_default">
-							<i class="fa fa-check" title="{lang.GROUP_IS_DEFAULT}" data-toggle="tooltip"></i>
-						</IF></IF>
-					</div>
-				</div>
-				<a href="{action}&amp;smt=group_data&amp;qg={{id}}"  class="card-footer bg-white clearfix small z-1" title="{lang.EDIT_DATA}">
-					<i class="fa fa-edit"></i> {lang.EDIT_DATA}
-				</a>
-				<a href="{action}&amp;smt=group_acl&amp;qg={{id}}"  class="card-footer  bg-white clearfix small z-1" title="{lang.EDIT_ACL}">
-					<i class="fa fa-tasks"></i> {lang.EDIT_ACL}
-				</a>
-				<a href="{action}&amp;smt=group_exts&amp;qg={{id}}"  class="card-footer bg-white clearfix small z-1" title="{lang.R_EXTS}">
-					<i class="fa fa-file-code-o"></i> {lang.R_EXTS}
-				</a>
+        <div class="col-xl-4 col-sm-6 mb-4">
+            <div class="card text-white o-hidden h-100" style="background-color: #a85053; border-color: #a85053;">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-user-plus"></i>
+                    </div>
+                    <div class="mr-5">
+                        {{name}}
+                        <IF NAME="user_not_normal"><ELSE><IF LOOP="is_default">
+                            <i class="fa fa-check" title="{lang.GROUP_IS_DEFAULT}" data-toggle="tooltip"></i>
+                        </IF></IF>
+                    </div>
+                </div>
+                <a href="{action}&amp;smt=group_data&amp;qg={{id}}"  class="card-footer bg-white clearfix small z-1" title="{lang.EDIT_DATA}">
+                    <i class="fa fa-edit"></i> {lang.EDIT_DATA}
+                </a>
+                <a href="{action}&amp;smt=group_acl&amp;qg={{id}}"  class="card-footer  bg-white clearfix small z-1" title="{lang.EDIT_ACL}">
+                    <i class="fa fa-tasks"></i> {lang.EDIT_ACL}
+                </a>
+                <a href="{action}&amp;smt=group_exts&amp;qg={{id}}"  class="card-footer bg-white clearfix small z-1" title="{lang.R_EXTS}">
+                    <i class="fa fa-file-code-o"></i> {lang.R_EXTS}
+                </a>
 
-				<a class="card-footer bg-white clearfix small z-1" href="{action}&amp;smt=show_group&amp;qg={{id}}" title="{lang.USERS}">
-					<i class="fa fa-users"></i> {lang.USERS}
-				</a>
+                <a class="card-footer bg-white clearfix small z-1" href="{action}&amp;smt=show_group&amp;qg={{id}}" title="{lang.USERS}">
+                    <i class="fa fa-users"></i> {lang.USERS}
+                </a>
 
-				<a href="#" class="card-footer bg-white clearfix small z-1"  data-toggle="modal" data-target="#delete_group_{{id}}" title="{lang.DELETE}">
-					<i class="fa fa-remove"></i>  {lang.DELETE}
-				</a>
+                <a href="#" class="card-footer bg-white clearfix small z-1"  data-toggle="modal" data-target="#delete_group_{{id}}" title="{lang.DELETE}">
+                    <i class="fa fa-remove"></i>  {lang.DELETE}
+                </a>
 
-			</div>
-		</div>
+            </div>
+        </div>
 
-	</LOOP>
+    </LOOP>
 </div>
 
 
@@ -139,85 +139,89 @@
 <!-- new group modal -->
 <div id="group_add_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewGroup" aria-hidden="true">
 
-	<form method="post" action="{action}" id="add_group_form">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="addNewGroup">{lang.ADD_NEW_GROUP}</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
+    <form method="post" action="{action}" id="add_group_form">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addNewGroup">{lang.ADD_NEW_GROUP}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
 
-				<div class="form-group">
-					<label for="gname">{lang.GROUP_NAME}</label>
-					<input type="text" class="form-control" id="gname" name="gname">
-				</div>
+                <div class="form-group">
+                    <label for="gname">{lang.GROUP_NAME}</label>
+                    <input type="text" class="form-control" id="gname" name="gname">
+                </div>
 
-				<div class="form-group">
-					<label for="cfrom">{lang.COPY_FROM}</label>
-					<select class="form-control" id="cfrom" name="cfrom">
-						<option value="-1">{lang.DEFAULT_GROUP}</option>
-						<LOOP NAME="e_groups"><IF LOOP="id == 2"><ELSE><option value="{{id}}">{{name}}</option></IF></LOOP>
-						<LOOP NAME="c_groups"><option value="{{id}}">{{name}}</option></LOOP>
-					</select>
-				</div>
+                <div class="form-group">
+                    <label for="cfrom">{lang.COPY_FROM}</label>
+                    <select class="form-control" id="cfrom" name="cfrom">
+                        <option value="-1">{lang.DEFAULT_GROUP}</option>
+                        <LOOP NAME="e_groups"><IF LOOP="id == 2"><ELSE><option value="{{id}}">{{name}}</option></IF></LOOP>
+                        <IF NAME="c_groups">
+                        <LOOP NAME="c_groups"><option value="{{id}}">{{name}}</option></LOOP>
+                        </IF>
+                    </select>
+                </div>
 
-				{H_FORM_KEYS3}
+                {H_FORM_KEYS3}
 
-			</div>
-			<div class="modal-footer">
-				<input type="submit" name="newgroup" class="btn btn-primary" value="{lang.SUBMIT}">
-			</div>
-		</div>
-	</div>
-	</form>
-	</div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" name="newgroup" class="btn btn-primary" value="{lang.SUBMIT}">
+            </div>
+        </div>
+    </div>
+    </form>
+    </div>
 <!-- end new group modal -->
 
 
 <!-- end delete group modal -->
+<IF NAME="c_groups">
 <LOOP NAME="c_groups">
 
-	<div id="delete_group_{{id}}"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delAGroup" aria-hidden="true">
+    <div id="delete_group_{{id}}"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delAGroup" aria-hidden="true">
 
-		<form method="post" action="{action}" id="del_group_form{{id}}">
+        <form method="post" action="{action}" id="del_group_form{{id}}">
 
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="delAGroup">{lang.DELETE_GROUP} : {{name}}</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="delAGroup">{lang.DELETE_GROUP} : {{name}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
 
-						<input type="hidden" name="dgroup" id="dgroup" value="{{id}}"  />
-
-
-						<div class="form-group">
-							<label for="tgroup">{lang.G_USERS_MOVE_TO}</label>
-							<select class="form-control" id="tgroup" name="tgroup">
-								<IF LOOP="is_default"><ELSE><option value="-1">{lang.DEFAULT_GROUP}</option></IF>
-								<LOOP NAME="e_groups"><IF LOOP="id == 2"><ELSE><option value="{{id}}">{{name}}</option></IF></LOOP>
-								<LOOP NAME="c_groups"><option value="{{id}}">{{name}}</option></LOOP>
-							</select>
-						</div>
+                        <input type="hidden" name="dgroup" id="dgroup" value="{{id}}"  />
 
 
-						{H_FORM_KEYS4}
+                        <div class="form-group">
+                            <label for="tgroup">{lang.G_USERS_MOVE_TO}</label>
+                            <select class="form-control" id="tgroup" name="tgroup">
+                                <IF LOOP="is_default"><ELSE><option value="-1">{lang.DEFAULT_GROUP}</option></IF>
+                                <LOOP NAME="e_groups"><IF LOOP="id == 2"><ELSE><option value="{{id}}">{{name}}</option></IF></LOOP>
+                                <LOOP NAME="c_groups"><option value="{{id}}">{{name}}</option></LOOP>
+                            </select>
+                        </div>
 
-					</div>
-					<div class="modal-footer">
-						<input type="submit" name="delgroup" class="btn btn-primary" value="{lang.SUBMIT}">
-					</div>
-				</div>
-			</div>
-		</form>
-	</div>
+
+                        {H_FORM_KEYS4}
+
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" name="delgroup" class="btn btn-primary" value="{lang.SUBMIT}">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </LOOP>
+</IF>
 <!-- end delete group modal -->
 
 <!-- ********** -->
@@ -232,68 +236,68 @@
 <ELSEIF NAME="show_results">
 
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
-		<IF NAME="is_search"><li class="breadcrumb-item active"><IF NAME="current_smt == show_group">{group_name}<ELSE>{lang.SEARCH_USERS}</IF> ( {nums_rows} )</li></IF>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
+        <IF NAME="is_search"><li class="breadcrumb-item active"><IF NAME="current_smt == show_group">{group_name}<ELSE>{lang.SEARCH_USERS}</IF> ( {nums_rows} )</li></IF>
+    </ol>
 
 
 
 <!-- if not normal user system, tell him -->
 <IF NAME="user_not_normal">
-	<div class="alert alert-info">
-		{lang.USERS_NOT_NORMAL_SYS}
-	</div>
-	<br>
+    <div class="alert alert-info">
+        {lang.USERS_NOT_NORMAL_SYS}
+    </div>
+    <br>
 </IF>
 
 
-<IF NAME="GE_INFO">
-	<script type="text/javascript">
-		setTimeout(function() {
-			$('.infoexts').fadeOut('fast');
-		}, 5000);
-	</script>
-	<div class="alert alert-info infoexts">
-		{GE_INFO}
-	</div>
+<IF ISSET="GE_INFO">
+    <script type="text/javascript">
+        setTimeout(function() {
+            $('.infoexts').fadeOut('fast');
+        }, 5000);
+    </script>
+    <div class="alert alert-info infoexts">
+        {GE_INFO}
+    </div>
 </IF>
 
 <br>
 
 
 <IF NAME="arr">
-	<ul class="list-group">
-	<LOOP NAME="arr">
+    <ul class="list-group">
+    <LOOP NAME="arr">
 
-		<li class="list-group-item d-flex justify-content-between">
-			<div class="col col-md-auto">
-				<h3>{{name}} <IF LOOP="founder==1"><i class="fa fa-star text-warning" title="{lang.FOUNDER}" data-toggle="tooltip" style="font-size: medium;vertical-align: top;"></i></IF></h3>
+        <li class="list-group-item d-flex justify-content-between">
+            <div class="col col-md-auto">
+                <h3>{{name}} <IF LOOP="founder==1"><i class="fa fa-star text-warning" title="{lang.FOUNDER}" data-toggle="tooltip" style="font-size: medium;vertical-align: top;"></i></IF></h3>
 
-				<small class="text-muted">
-				<i class="fa fa-users"></i> {lang.GROUP}: {{group}}    &nbsp; <i class="fa fa-clock-o"></i> {lang.LAST_VISIT}: {{last_visit}}
-				</small>
-			</div>
-			<div class="col col-md-auto">
-				<div class="btn-group btn-group-sm" role="group" aria-label="...">
+                <small class="text-muted">
+                <i class="fa fa-users"></i> {lang.GROUP}: {{group}}    &nbsp; <i class="fa fa-clock-o"></i> {lang.LAST_VISIT}: {{last_visit}}
+                </small>
+            </div>
+            <div class="col col-md-auto">
+                <div class="btn-group btn-group-sm" role="group" aria-label="...">
 
-					<a target="_blank" href="{{userfile_link}}" title="{lang.BROSWERF}" class="btn btn-secondary"><i class="fa fa-folder-open-o" title="{lang.BROSWERF}"></i> {lang.BROSWERF}</a>
-					<a href="{{delusrfile_link}}&amp;{GET_FORM_KEY}" class="btn btn-secondary" onclick="javascript:return confirm_form();" title="{lang.ADMIN_DELETE_FILES}"><i class="fa fa-trash" title="{lang.ADMIN_DELETE_FILES}"></i> {lang.ADMIN_DELETE_FILES}</a>
-					<IF LOOP="delusr_link">
-						<a href="{{delusr_link}}&amp;{GET_FORM_KEY}"  class="btn btn-secondary" onclick="javascript:return confirm_form();" title="{lang.DELETE}"><i class="fa fa-remove" title="{lang.DELETE}"></i> {lang.DELETE}</a>
-					</IF>
-					<a href="{{editusr_link}}" title="{lang.EDIT}" class="btn btn-secondary"><i class="fa fa-edit" title="{lang.EDIT}"></i> {lang.EDIT}</a>
-				</div>
-			</div>
-		</li>
+                    <a target="_blank" href="{{userfile_link}}" title="{lang.BROSWERF}" class="btn btn-secondary"><i class="fa fa-folder-open-o" title="{lang.BROSWERF}"></i> {lang.BROSWERF}</a>
+                    <a href="{{delusrfile_link}}&amp;{GET_FORM_KEY}" class="btn btn-secondary" onclick="javascript:return confirm_form();" title="{lang.ADMIN_DELETE_FILES}"><i class="fa fa-trash" title="{lang.ADMIN_DELETE_FILES}"></i> {lang.ADMIN_DELETE_FILES}</a>
+                    <IF LOOP="delusr_link">
+                        <a href="{{delusr_link}}&amp;{GET_FORM_KEY}"  class="btn btn-secondary" onclick="javascript:return confirm_form();" title="{lang.DELETE}"><i class="fa fa-remove" title="{lang.DELETE}"></i> {lang.DELETE}</a>
+                    </IF>
+                    <a href="{{editusr_link}}" title="{lang.EDIT}" class="btn btn-secondary"><i class="fa fa-edit" title="{lang.EDIT}"></i> {lang.EDIT}</a>
+                </div>
+            </div>
+        </li>
 
 
-	</LOOP>
-	</ul>
-	<ELSE>
-		<div class="alert alert-info">{lang.NOTHING}</div>
+    </LOOP>
+    </ul>
+    <ELSE>
+        <div class="alert alert-info">{lang.NOTHING}</div>
 </IF>
 
 
@@ -313,54 +317,54 @@
 
 <ELSEIF NAME="current_smt == new_u">
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
-		<li class="breadcrumb-item active">{lang.NEW_USER} </li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
+        <li class="breadcrumb-item active">{lang.NEW_USER} </li>
+    </ol>
 
 
 <IF NAME="errs">
-	<div class="alert alert-danger">
-		{errs}
-	</div>
+    <div class="alert alert-danger">
+        {errs}
+    </div>
 </IF>
 
 <form method="post" action="{action}" id="add_user_form">
 
 
 
-	<div class="form-group">
-		<label for="lname">{lang.USERNAME}</label>
-		<input type="text" class="form-control" id="lname" name="lname"  value="{uname}" >
-	</div>
+    <div class="form-group">
+        <label for="lname">{lang.USERNAME}</label>
+        <input type="text" class="form-control" id="lname" name="lname"  value="{uname}" >
+    </div>
 
-	<div class="form-group">
-		<label for="lmail">{lang.EMAIL}</label>
-		<input type="email" class="form-control" id="lmail" name="lmail"  value="{umail}" >
-	</div>
-
-
-	<div class="form-group">
-		<label for="lpass">{lang.PASSWORD}</label>
-		<input type="password" class="form-control" id="lpass" name="lpass"  value="" autocomplete="false" >
-	</div>
-
-	<div class="form-group">
-		<label for="lgroup">{lang.GROUP}</label>
-		<select class="form-control" id="lgroup" name="lgroup">
-			<LOOP NAME="u_groups">
-				<option value="{{id}}"<IF LOOP="selected"> selected="selected"</IF>>{{name}} <IF LOOP="default">({lang.DEFAULT_GROUP})</IF></option>
-			</LOOP>
-		</select>
-	</div>
+    <div class="form-group">
+        <label for="lmail">{lang.EMAIL}</label>
+        <input type="email" class="form-control" id="lmail" name="lmail"  value="{umail}" >
+    </div>
 
 
+    <div class="form-group">
+        <label for="lpass">{lang.PASSWORD}</label>
+        <input type="password" class="form-control" id="lpass" name="lpass"  value="" autocomplete="false" >
+    </div>
 
-	<br>
+    <div class="form-group">
+        <label for="lgroup">{lang.GROUP}</label>
+        <select class="form-control" id="lgroup" name="lgroup">
+            <LOOP NAME="u_groups">
+                <option value="{{id}}"<IF LOOP="selected"> selected="selected"</IF>>{{name}} <IF LOOP="default">({lang.DEFAULT_GROUP})</IF></option>
+            </LOOP>
+        </select>
+    </div>
 
-	<input type="submit" name="newuser" value="{lang.SUBMIT}" class="btn btn-primary" />
+
+
+    <br>
+
+    <input type="submit" name="newuser" value="{lang.SUBMIT}" class="btn btn-primary" />
 
 
 {H_FORM_KEYS2}
@@ -378,72 +382,72 @@
 <ELSEIF NAME="current_smt == edit_user">
 
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
-		<li class="breadcrumb-item active">{lang.EDIT} ({title_name})</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
+        <li class="breadcrumb-item active">{lang.EDIT} ({title_name})</li>
+    </ol>
 
 
-	<IF NAME="errs">
-		<div class="alert alert-danger">
-			{errs}
-		</div>
-	</IF>
+    <IF NAME="errs">
+        <div class="alert alert-danger">
+            {errs}
+        </div>
+    </IF>
 
 
 <form method="post" action="{action}&amp;uid={userid}&amp;qg={u_qg}&amp;page={u_page}" id="edit_user_form">
 
 
-	<div class="form-group">
-		<label for="l_name">{lang.USERNAME}</label>
-		<input type="text" class="form-control" id="l_name" name="l_name"  value="{u_name}">
-	</div>
+    <div class="form-group">
+        <label for="l_name">{lang.USERNAME}</label>
+        <input type="text" class="form-control" id="l_name" name="l_name"  value="{u_name}">
+    </div>
 
-	<div class="form-group">
-		<label for="l_mail">{lang.EMAIL}</label>
-		<input type="email" class="form-control" id="l_mail" name="l_mail"  value="{u_mail}">
-	</div>
+    <div class="form-group">
+        <label for="l_mail">{lang.EMAIL}</label>
+        <input type="email" class="form-control" id="l_mail" name="l_mail"  value="{u_mail}">
+    </div>
 
-	<div class="form-group">
-		<label for="l_pass">{lang.PASS_ON_CHANGE}</label>
-		<input type="password" class="form-control" id="l_pass" name="l_pass"  value="">
-	</div>
-
-
-
-	<div class="form-group">
-		<label for="l_show_filecp">{lang.SHOW_MY_FILECP}</label>
-		<select class="form-control" id="l_show_filecp" name="l_show_filecp">
-			<option value="1"<IF NAME="u_show_filecp"> selected="selected"</IF>>{lang.YES}</option>
-			<option value="0"<IF NAME="u_show_filecp"><ELSE> selected="selected"</IF>>{lang.NO}</option>
-		</select>
-	</div>
+    <div class="form-group">
+        <label for="l_pass">{lang.PASS_ON_CHANGE}</label>
+        <input type="password" class="form-control" id="l_pass" name="l_pass"  value="">
+    </div>
 
 
 
-	<div class="form-group">
-		<label for="l_group">{lang.GROUP}</label>
-		<select class="form-control" id="l_group" name="l_group">
-			<LOOP NAME="u_groups">
-				<IF LOOP="id == 2"><ELSE>
-					<option value="{{id}}"<IF LOOP="selected"> selected="selected"</IF>>{{name}} <IF LOOP="default">({lang.DEFAULT_GROUP})</IF></option>
-				</IF>
-			</LOOP>
-		</select>
-	</div>
+    <div class="form-group">
+        <label for="l_show_filecp">{lang.SHOW_MY_FILECP}</label>
+        <select class="form-control" id="l_show_filecp" name="l_show_filecp">
+            <option value="1"<IF NAME="u_show_filecp"> selected="selected"</IF>>{lang.YES}</option>
+            <option value="0"<IF NAME="u_show_filecp"><ELSE> selected="selected"</IF>>{lang.NO}</option>
+        </select>
+    </div>
 
 
-	<IF NAME="im_founder">
-	<div class="form-group">
-		<label for="l_founder">{lang.FOUNDER}</label>
-		<select class="form-control" id="l_founder" name="l_founder">
-			<option value="1"<IF NAME="u_founder"> selected="selected"</IF>>{lang.YES}</option>
-			<option value="0"<IF NAME="u_founder"><ELSE> selected="selected"</IF>>{lang.NO}</option>
-		</select>
-	</div>
-	</IF>
+
+    <div class="form-group">
+        <label for="l_group">{lang.GROUP}</label>
+        <select class="form-control" id="l_group" name="l_group">
+            <LOOP NAME="u_groups">
+                <IF LOOP="id == 2"><ELSE>
+                    <option value="{{id}}"<IF LOOP="selected"> selected="selected"</IF>>{{name}} <IF LOOP="default">({lang.DEFAULT_GROUP})</IF></option>
+                </IF>
+            </LOOP>
+        </select>
+    </div>
+
+
+    <IF NAME="im_founder">
+    <div class="form-group">
+        <label for="l_founder">{lang.FOUNDER}</label>
+        <select class="form-control" id="l_founder" name="l_founder">
+            <option value="1"<IF NAME="u_founder"> selected="selected"</IF>>{lang.YES}</option>
+            <option value="0"<IF NAME="u_founder"><ELSE> selected="selected"</IF>>{lang.NO}</option>
+        </select>
+    </div>
+    </IF>
 
 
 
@@ -471,39 +475,39 @@
 
 <ELSEIF NAME="current_smt == group_acl">
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
-		<li class="breadcrumb-item active">{lang.EDIT_ACL} ({group_name})</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
+        <li class="breadcrumb-item active">{lang.EDIT_ACL} ({group_name})</li>
+    </ol>
 
 
 <form method="post" action="{action}" id="edit_acl_form">
 
-	<ul class="list-group">
+    <ul class="list-group">
 
-	<LOOP NAME="acls">
-		<li class="list-group-item d-flex  justify-content-between">
-			<div class="col col-md-auto">
-				{{acl_title}}
-			</div>
-			<div class="col col-md-auto">
-				<p class="field switch">
-					<label class="cb-enable<IF LOOP="acl_can == 1"> selected</IF>"><span>{lang.HE_CAN}</span></label>
-					<label class="cb-disable<IF LOOP="acl_can == 0"> selected</IF>"><span>{lang.HE_CAN_NOT}</span></label>
+    <LOOP NAME="acls">
+        <li class="list-group-item d-flex  justify-content-between">
+            <div class="col col-md-auto">
+                {{acl_title}}
+            </div>
+            <div class="col col-md-auto">
+                <p class="field switch">
+                    <label class="cb-enable<IF LOOP="acl_can == 1"> selected</IF>"><span>{lang.HE_CAN}</span></label>
+                    <label class="cb-disable<IF LOOP="acl_can == 0"> selected</IF>"><span>{lang.HE_CAN_NOT}</span></label>
 
-					<input type="checkbox"  id="acls_{{acl_name}}" class="checkbox" name="{{acl_name}}" <IF LOOP="acl_can == 1">checked="checked"</IF> />
-				</p>
-			</div>
-		</li>
-	</LOOP>
+                    <input type="checkbox"  id="acls_{{acl_name}}" class="checkbox" name="{{acl_name}}" <IF LOOP="acl_can == 1">checked="checked"</IF> />
+                </p>
+            </div>
+        </li>
+    </LOOP>
 
-	</ul>
+    </ul>
 
 
-	<br>
-	<input type="submit" name="editacl" value="{lang.SUBMIT}" class="btn btn-primary" />
+    <br>
+    <input type="submit" name="editacl" value="{lang.SUBMIT}" class="btn btn-primary" />
 
 
 {H_FORM_KEYS5}
@@ -522,179 +526,179 @@
 <ELSEIF NAME="current_smt == group_exts">
 
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
-		<li class="breadcrumb-item active">{lang.R_EXTS} ({group_name})</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
+        <li class="breadcrumb-item active">{lang.R_EXTS} ({group_name})</li>
+    </ol>
 
-	<a href="#" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#new_ext_form">
-		<i class="fa fa-plus-circle"></i> {lang.ADD_NEW_EXT}
-	</a>
+    <a href="#" class="btn btn-primary pull-(lang.DIR==ltr?right:left)" data-toggle="modal" data-target="#new_ext_form">
+        <i class="fa fa-plus-circle"></i> {lang.ADD_NEW_EXT}
+    </a>
 
 
-	<div class="clearfix"></div>
+    <div class="clearfix"></div>
 
 <IF NAME="GE_INFO">
-	<script type="text/javascript">
-		setTimeout(function() {
-			$('.infoexts').fadeOut('fast');
-		}, 5000);
-	</script>
-	<div class="infoexts">
-	<IF NAME="DELETED_EXT">
-		<IF NAME="DELETED_EXT == 2">
-		<div class="alert alert-info">{lang.EXT_DELETED}</div>
-		<ELSE>
-		<div class="alert alert-danger">{lang.DATA_CHANGED_NO}</div>
-		</IF>
-	</IF>
-	<IF NAME="ADDED_EXT">
-		<IF NAME="ADDED_EXT == 2">
-		<div class="alert alert-info">{lang.NEW_EXT_ADD}</div>
-		<ELSE>
-		<div class="alert alert-danger">{lang.DATA_CHANGED_NO}</div>
-		</IF>
-	</IF>
-	</div>
+    <script type="text/javascript">
+        setTimeout(function() {
+            $('.infoexts').fadeOut('fast');
+        }, 5000);
+    </script>
+    <div class="infoexts">
+    <IF NAME="DELETED_EXT">
+        <IF NAME="DELETED_EXT == 2">
+        <div class="alert alert-info">{lang.EXT_DELETED}</div>
+        <ELSE>
+        <div class="alert alert-danger">{lang.DATA_CHANGED_NO}</div>
+        </IF>
+    </IF>
+    <IF NAME="ADDED_EXT">
+        <IF NAME="ADDED_EXT == 2">
+        <div class="alert alert-info">{lang.NEW_EXT_ADD}</div>
+        <ELSE>
+        <div class="alert alert-danger">{lang.DATA_CHANGED_NO}</div>
+        </IF>
+    </IF>
+    </div>
 </IF>
 
 
-	<br>
+    <br>
 
 
 <form method="post" action="{action}" id="edit_exts_form">
 
-	<table class="table table-striped">
-		<tr>
-			<th style="width: 20px">#</th>
-			<th>{lang.EXT}</th>
-			<th>{lang.SIZE}</th>
-			<th style="width: 100px">{lang.DELETE}</th>
-		</tr>
+    <table class="table table-striped">
+        <tr>
+            <th style="width: 20px">#</th>
+            <th>{lang.EXT}</th>
+            <th>{lang.SIZE}</th>
+            <th style="width: 100px">{lang.DELETE}</th>
+        </tr>
 
-	<LOOP NAME="exts">
-		<tr>
-			<td><img src="{{ext_icon}}"></td>
-			<td><b>{{ext_name}}</b></td>
-			<td>
-				<div class="input-group">
-					<input type="text" name="size[{{ext_id}}]" value="{{ext_size}}" size="6" class="form-control" style="float:left;">
-					<span class="input-group-addon hidden-sm-down">{lang.KILOBYTE}</span>
-				</div>
+    <LOOP NAME="exts">
+        <tr>
+            <td><img src="{{ext_icon}}"></td>
+            <td><b>{{ext_name}}</b></td>
+            <td>
+                <div class="input-group">
+                    <input type="text" name="size[{{ext_id}}]" value="{{ext_size}}" size="6" class="form-control" style="float:left;">
+                    <span class="input-group-addon hidden-sm-down">{lang.KILOBYTE}</span>
+                </div>
 
-			</td>
-			<td>
-				<a href="{action}&del={{ext_id}}&{GET_FORM_KEY}" onclick="return confirm_from();"
-				   title="{lang.DELETE}" data-toggle="tooltip" class="btn btn-danger">
-					<span class="fa fa-trash"></span>
-				</a>
-			</td>
-		</tr>
+            </td>
+            <td>
+                <a href="{action}&del={{ext_id}}&{GET_FORM_KEY}" onclick="return confirm_from();"
+                   title="{lang.DELETE}" data-toggle="tooltip" class="btn btn-danger">
+                    <span class="fa fa-trash"></span>
+                </a>
+            </td>
+        </tr>
 
-	</LOOP>
-	</table>
+    </LOOP>
+    </table>
 
 
-	<input type="submit" name="editexts" value="{lang.SUBMIT}" class="btn btn-primary" />
+    <input type="submit" name="editexts" value="{lang.SUBMIT}" class="btn btn-primary" />
 
-	<br>
+    <br>
 
 
 {H_FORM_KEYS7}
 </form>
 
-	<br>
+    <br>
 <div class="card">
-	{lang.E_EXTS} <a href="#converter_form" data-toggle="modal" data-target="#converter_modal">{lang.BCONVERTER}</a>
+    {lang.E_EXTS} <a href="#converter_form" data-toggle="modal" data-target="#converter_modal">{lang.BCONVERTER}</a>
 </div>
 
 
 <!-- add new ext -->
-	<div id="new_ext_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewExt" aria-hidden="true">
+    <div id="new_ext_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewExt" aria-hidden="true">
 
-		<form method="post" action="{action}" id="add_new_ext--change--">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="addNewExt">{lang.ADD_NEW_EXT}</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
+        <form method="post" action="{action}" id="add_new_ext--change--">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addNewExt">{lang.ADD_NEW_EXT}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
 
-						<div class="form-group">
-							<label for="gname">{lang.ADD_NEW_EXT_EXP}</label>
-							<input type="text" class="form-control" id="extisnew" name="extisnew">
-						</div>
+                        <div class="form-group">
+                            <label for="gname">{lang.ADD_NEW_EXT_EXP}</label>
+                            <input type="text" class="form-control" id="extisnew" name="extisnew">
+                        </div>
 
 
-						{H_FORM_KEYS7}
+                        {H_FORM_KEYS7}
 
-					</div>
-					<div class="modal-footer">
-						<input type="submit" name="newext" class="btn btn-primary" value="{lang.SUBMIT}">
-					</div>
-				</div>
-			</div>
-		</form>
-	</div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" name="newext" class="btn btn-primary" value="{lang.SUBMIT}">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 <!-- end add new ext -->
 
 
 
 <!-- converter -->
-	<div id="converter_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="converterBox" aria-hidden="true">
+    <div id="converter_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="converterBox" aria-hidden="true">
 
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="converterBox">{lang.BCONVERTER}</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-							<form>
-							<table class="table table-striped text-center">
-								<tr class="first">
-									<td>Byte</td>
-									<td>Kilobyte</td>
-									<td>Megabyte</td>
-									<td>Gigabyte</td>
-								</tr>
-								<tr>
-									<td><input type="text" size="10" name="byte" value="0" class="form-control" /></td>
-									<td><input type="text" size="10" name="kb" value="0" class="form-control" /></td>
-									<td><input type="text" size="10" name="mb" value="0" class="form-control" /></td>
-									<td><input type="text" size="10" name="gb" value="0" class="form-control" /></td>
-								</tr>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="converterBox">{lang.BCONVERTER}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                            <form>
+                            <table class="table table-striped text-center">
+                                <tr class="first">
+                                    <td>Byte</td>
+                                    <td>Kilobyte</td>
+                                    <td>Megabyte</td>
+                                    <td>Gigabyte</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" size="10" name="byte" value="0" class="form-control" /></td>
+                                    <td><input type="text" size="10" name="kb" value="0" class="form-control" /></td>
+                                    <td><input type="text" size="10" name="mb" value="0" class="form-control" /></td>
+                                    <td><input type="text" size="10" name="gb" value="0" class="form-control" /></td>
+                                </tr>
 
-								<tr>
-									<td style="border-width:0px">
-										<button type="button" name="B2" class="btn btn-primary" onClick="convert(this.form)"><span
-												class="bc">  &gt;  </span></button>
-									</td>
-									<td style="border-width:0px">
-										<button type="button" name="B22" class="btn btn-primary" onClick="convertkb(this.form)"><span class="bc">  &lt; &gt;  </span>
-										</button>
-									</td>
-									<td style="border-width:0px">
-										<button type="button" name="B23" class="btn btn-primary" onClick="convertmb(this.form)"><span class="bc">  &lt; &gt;  </span>
-									</td>
-									<td style="border-width:0px">
-										<button type="button" name="B24" class="btn btn-primary" onClick="convertgb(this.form)"><span class="bc">  &lt;  </span>
-									</td>
-								</tr>
-							</table>
-						</form>
-					</div>
+                                <tr>
+                                    <td style="border-width:0px">
+                                        <button type="button" name="B2" class="btn btn-primary" onClick="convert(this.form)"><span
+                                                class="bc">  &gt;  </span></button>
+                                    </td>
+                                    <td style="border-width:0px">
+                                        <button type="button" name="B22" class="btn btn-primary" onClick="convertkb(this.form)"><span class="bc">  &lt; &gt;  </span>
+                                        </button>
+                                    </td>
+                                    <td style="border-width:0px">
+                                        <button type="button" name="B23" class="btn btn-primary" onClick="convertmb(this.form)"><span class="bc">  &lt; &gt;  </span>
+                                    </td>
+                                    <td style="border-width:0px">
+                                        <button type="button" name="B24" class="btn btn-primary" onClick="convertgb(this.form)"><span class="bc">  &lt;  </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
 
-				</div>
-			</div>
-	</div>
+                </div>
+            </div>
+    </div>
 <!-- end converter -->
 
 
@@ -702,33 +706,33 @@
 <script type="text/javascript">
 /*Created by: Uncle Jim :: http://jdstiles.com/javamain.html */
 
-	function convert(f)
-	{
-	  f.kb.value=Math.round(f.byte.value/1024*100000)/100000
-	  f.mb.value=Math.round(f.byte.value/1048576*100000)/100000
-	  f.gb.value=Math.round(f.byte.value/1073741824*100000)/100000
-	}
+    function convert(f)
+    {
+      f.kb.value=Math.round(f.byte.value/1024*100000)/100000
+      f.mb.value=Math.round(f.byte.value/1048576*100000)/100000
+      f.gb.value=Math.round(f.byte.value/1073741824*100000)/100000
+    }
 
-	function convertkb(f)
-	{
-	  f.byte.value=Math.round(f.kb.value*1024*100000)/100000
-	  f.mb.value=Math.round(f.kb.value/1024*100000)/100000
-	  f.gb.value=Math.round(f.kb.value/1048576*100000)/100000
-	}
+    function convertkb(f)
+    {
+      f.byte.value=Math.round(f.kb.value*1024*100000)/100000
+      f.mb.value=Math.round(f.kb.value/1024*100000)/100000
+      f.gb.value=Math.round(f.kb.value/1048576*100000)/100000
+    }
 
-	function convertmb(f)
-	{
-	  f.byte.value=Math.round(f.mb.value*1048576*100000)/100000
-	  f.kb.value=Math.round(f.mb.value*1024*100000)/100000
-	  f.gb.value=Math.round(f.mb.value/1024*100000)/100000
-	}
+    function convertmb(f)
+    {
+      f.byte.value=Math.round(f.mb.value*1048576*100000)/100000
+      f.kb.value=Math.round(f.mb.value*1024*100000)/100000
+      f.gb.value=Math.round(f.mb.value/1024*100000)/100000
+    }
 
-	function convertgb(f)
-	{
-	  f.byte.value=Math.round(f.gb.value*1073741824*100000)/100000
-	  f.kb.value=Math.round(f.gb.value*1048576*100000)/100000
-	  f.mb.value=Math.round(f.gb.value*1024*100000)/100000
-	}
+    function convertgb(f)
+    {
+      f.byte.value=Math.round(f.gb.value*1073741824*100000)/100000
+      f.kb.value=Math.round(f.gb.value*1048576*100000)/100000
+      f.mb.value=Math.round(f.gb.value*1024*100000)/100000
+    }
 </script>
 
 
@@ -742,43 +746,43 @@
 
 <ELSEIF NAME="current_smt == group_data">
 
-	<!-- Breadcrumbs -->
-	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-		<li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
-		<li class="breadcrumb-item active">{lang.EDIT_DATA} ({group_name})</li>
-	</ol>
+    <!-- Breadcrumbs -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+        <li class="breadcrumb-item"><a href="{cp_users_url}&amp;smt=general">{lang.R_GROUPS}</a></li>
+        <li class="breadcrumb-item active">{lang.EDIT_DATA} ({group_name})</li>
+    </ol>
 
 
 
 <form method="post" action="{action}" id="edit_data_form">
 <UNLESS NAME="user_not_normal">
 
-	<div class="form-group">
-		<label for="group_name">{lang.GROUP_NAME}</label>
-		<IF NAME="gdata.group_is_essential">
-			<p class="form-control-static"><b>{group_name}</b></p>
-			<ELSE>
-		<input type="text" class="form-control" id="group_name" name="group_name" value="{gdata.group_name}">
-		</IF>
-	</div>
+    <div class="form-group">
+        <label for="group_name">{lang.GROUP_NAME}</label>
+        <IF NAME="gdata.group_is_essential">
+            <p class="form-control-static"><b>{group_name}</b></p>
+            <ELSE>
+        <input type="text" class="form-control" id="group_name" name="group_name" value="{gdata.group_name}">
+        </IF>
+    </div>
 
 
-	<fieldset class="form-group">
-		<legend class="col-form-legend">{lang.GROUP_IS_DEFAULT}</legend>
-		<div class="form-check">
-			<label class="form-check-label">
-				<input type="radio" class="form-check-input" name="group_is_default" id="group_is_default1" value="1" <IF NAME="gdata.group_is_default == 1">checked="checked"</IF>>
-				{lang.YES}
-			</label>
-		</div>
-		<div class="form-check">
-			<label class="form-check-label">
-				<input type="radio" class="form-check-input" name="group_is_default" id="group_is_default0" value="0" <IF NAME="gdata.group_is_default == 0">checked="checked"</IF>>
-				{lang.NO}
-			</label>
-		</div>
-	</fieldset>
+    <fieldset class="form-group">
+        <legend class="col-form-legend">{lang.GROUP_IS_DEFAULT}</legend>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="group_is_default" id="group_is_default1" value="1" <IF NAME="gdata.group_is_default == 1">checked="checked"</IF>>
+                {lang.YES}
+            </label>
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="group_is_default" id="group_is_default0" value="0" <IF NAME="gdata.group_is_default == 0">checked="checked"</IF>>
+                {lang.NO}
+            </label>
+        </div>
+    </fieldset>
 
 
 <hr>
@@ -786,11 +790,11 @@
 </UNLESS>
 
 <LOOP NAME="data">
-	{{option}}
+    {{option}}
 </LOOP>
 
 
-	<br>
+    <br>
 
 <input type="submit" name="editdata" value="{lang.SUBMIT}" class="btn btn-primary" />
 

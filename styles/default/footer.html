@@ -1,44 +1,45 @@
-	<div class="clr"></div>
+    <div class="clr"></div>
 
-	<!-- Extras Footer -->
-	(extras.footer?<div class="dot"></div><div class="extras_footer">{extras.footer}</div><div class="dot"></div>:)
-	<!-- @end-extras-footer -->
-	
-	</div><!-- @end-wrapper -->
+    <!-- Extras Footer -->
+    (extras.footer?<div class="dot"></div><div class="extras_footer">{extras.footer}</div><div class="dot"></div>:)
+    <!-- @end-extras-footer -->
+
+    </div><!-- @end-wrapper -->
 </div><!-- @end-main -->
 
 <!-- begin footer -->
 <div class="FooterLine clr"></div>
 <div id="footer">
     <div class="footer_inner">
-		<div class="left">	
-		<!--
-			Powered by kleeja, 
-			Kleeja is Free PHP software, designed to help webmasters by
-			give their Users ability to upload files yo thier servers. 
-			www.Kleeja.com
-		 -->
+        <div class="left">
+        <!--
+            Powered by kleeja,
+            Kleeja is Free PHP software, designed to help webmasters by
+            give their Users ability to upload files yo thier servers.
+            www.Kleeja.com
+         -->
         </div>
-		<div class="right">
-			<!-- Copyrights-->
-			<div class="Copyrights">
-				{lang.COPYRIGHTS_X} &copy; <a href="{config.siteurl}">{config.sitename}</a>
-			</div><!-- @end-Copyrights -->
-		</div>
+        <div class="right">
+            <!-- Copyrights-->
+            <div class="Copyrights">
+                {lang.COPYRIGHTS_X} &copy; <a href="{config.siteurl}">{config.sitename}</a>
+            </div><!-- @end-Copyrights -->
+        </div>
 
-		<div class="clr"></div>
+        <div class="clr"></div>
 
-		<!-- button panel --><div class="bu-panel">{admin_page}</div><!-- @end-button-panel -->
-		<!-- footer stats -->(page_stats?<div class="footer_stats">{page_stats}</div>:)<!-- @end-footer-stats -->
-		<!-- google analytics -->(googleanalytics?<div class="footer_stats">{googleanalytics}</div>:)<!-- @end-google-analytics -->
-		
-	</div>
+        <!-- button panel --><div class="bu-panel">{admin_page}</div><!-- @end-button-panel -->
+        <!-- footer stats -->(page_stats?<div class="footer_stats">{page_stats}</div>:)<!-- @end-footer-stats -->
+        <!-- google analytics -->(googleanalytics?<div class="footer_stats">{googleanalytics}</div>:)<!-- @end-google-analytics -->
+
+    </div>
 </div>
 <!-- @end-footer -->
 
-<div style="font-size:12px;display:block !important;background:#ECECEC !important;margin:5px; padding:2px 3px; position:fixed;bottom:0;left:1%;z-index:99999;text-align:center;">
+<div
+    style="padding:1px;font-size:11px;display:block !important;background:#f7f7f7 !important; color:#888 !important; margin:3px; position:fixed;bottom:0;left:1%;z-index:99999;text-align:center;">
     Powered by
-    <a style="display:inline  !important;color:#666 !important;" href="https://www.kleeja.com/" onclick="window.open(this.href,'_blank');return false;"
+    <a style="display:inline !important;color:#888 !important;" href="https://www.kleeja.com/" onclick="window.open(this.href,'_blank');return false;"
         title="Kleeja">Kleeja</a>
 </div>
 
@@ -58,17 +59,15 @@ $(document).ready(function(){
             }
         });
 
-       <IF NAME="config.www_url == 0">
         if(numfiles == 0){
             alert('{lang.NO_FILE_SELECTED}');
             return false;
         }
-       </IF>
-       
+
         $('#loadbox').css('display', 'block');
         $('#uploader').css('display', 'none');
 
-	});
+    });
 
 
     $("#uploader input:file").change(function (){

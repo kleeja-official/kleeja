@@ -32,11 +32,11 @@ switch (g('go'))
     case 'login' :
 
         //page info
-        $stylee				       = 'login';
-        $titlee				       = $lang['LOGIN'];
-        $action				       = 'ucp.php?go=login' . (ig('return') ? '&amp;return=' . g('return') : '');
-        $forget_pass_link	= ! empty($forgetpass_script_path) && (int) $config['user_system'] != 1 ? $forgetpass_script_path : 'ucp.php?go=get_pass';
-        $H_FORM_KEYS		    = kleeja_add_form_key('login');
+        $stylee                       = 'login';
+        $titlee                       = $lang['LOGIN'];
+        $action                       = 'ucp.php?go=login' . (ig('return') ? '&amp;return=' . g('return') : '');
+        $forget_pass_link             = 'ucp.php?go=get_pass';
+        $H_FORM_KEYS                  = kleeja_add_form_key('login');
         //no error yet
         $ERRORS = false;
 
@@ -51,13 +51,13 @@ switch (g('go'))
         {
             is_array($plugin_run_result = Plugins::getInstance()->run('login_logon_before', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-            $errorpage = true;
-            $text	     = $lang['LOGINED_BEFORE'] . ' ..<br /> <a href="' . $config['siteurl'] . ($config['mod_writer'] ?  'logout.html' : 'ucp.php?go=logout') . '">' . $lang['LOGOUT'] . '</a>';
+            $errorpage    = true;
+            $text         = $lang['LOGINED_BEFORE'] . ' ..<br /> <a href="' . $config['siteurl'] . ($config['mod_writer'] ?  'logout.html' : 'ucp.php?go=logout') . '">' . $lang['LOGOUT'] . '</a>';
             kleeja_info($text);
         }
         elseif (ip('submit'))
         {
-            $ERRORS	= [];
+            $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('login_after_submit', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -118,10 +118,10 @@ switch (g('go'))
         case 'register' :
 
         //page info
-        $stylee	     = 'register';
-        $titlee	     = $lang['REGISTER'];
-        $action	     = 'ucp.php?go=register';
-        $H_FORM_KEYS = kleeja_add_form_key('register');
+        $stylee         = 'register';
+        $titlee         = $lang['REGISTER'];
+        $action         = 'ucp.php?go=register';
+        $H_FORM_KEYS    = kleeja_add_form_key('register');
         //no error yet
         $ERRORS = false;
 
@@ -132,32 +132,8 @@ switch (g('go'))
         }
         elseif ($config['user_system'] != '1')
         {
+            $goto_forum_link = '...';
             is_array($plugin_run_result = Plugins::getInstance()->run('register_not_default_sys', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-            if (! empty($register_script_path))
-            {
-                $goto_forum_link = $register_script_path;
-            }
-            else
-            {
-                if (isset($script_path))
-                {
-                    $goto_forum_link = ($config['user_system'] == 'api') ? dirname($script_path) : $script_path;
-
-                    if ($config['user_system'] == 'phpbb' || ($config['user_system'] == 'api' && strpos($script_path, 'phpbb') !== false))
-                    {
-                        $goto_forum_link .= '/ucp.php?mode=register';
-                    }
-                    elseif ($config['user_system'] == 'vb' || ($config['user_system'] == 'api' && strpos($script_path, 'vb') !== false))
-                    {
-                        $goto_forum_link .= '/register.php';
-                    }
-                }
-                else
-                {
-                    $goto_forum_link = '...';
-                }
-            }
 
             kleeja_info('<a href="' . $goto_forum_link . '" title="' . $lang['REGISTER'] . '" target="_blank">' . $lang['REGISTER'] . '</a>', $lang['REGISTER']);
         }
@@ -231,17 +207,17 @@ switch (g('go'))
             //no errors, lets do process
             if (empty($ERRORS))
             {
-                $name		      = (string) $SQL->escape(trim(p('lname')));
-                $user_salt		 = (string) substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
-                $pass		      = (string) $usrcp->kleeja_hash_password($SQL->escape(trim(p('lpass'))) . $user_salt);
-                $mail		      = (string) strtolower(trim($SQL->escape(p('lmail'))));
-                $session_id		= (string) session_id();
-                $clean_name		= (string) $usrcp->cleanusername($name);
+                $name              = (string) $SQL->escape(trim(p('lname')));
+                $user_salt         = (string) substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+                $pass              = (string) $usrcp->kleeja_hash_password($SQL->escape(trim(p('lpass'))) . $user_salt);
+                $mail              = (string) strtolower(trim($SQL->escape(p('lmail'))));
+                $session_id        = (string) constant('KJ_SESSION');
+                $clean_name        = (string) $usrcp->cleanusername($name);
 
-                $insert_query	= [
-                    'INSERT'	=> 'name ,password, password_salt ,mail, register_time, session_id, clean_name, group_id',
-                    'INTO'		 => "{$dbprefix}users",
-                    'VALUES'	=> "'$name', '$pass', '$user_salt', '$mail', " . time() . ", '$session_id','$clean_name', " . $config['default_group']
+                $insert_query    = [
+                    'INSERT'       => 'name ,password, password_salt ,mail, register_time, session_id, clean_name, group_id',
+                    'INTO'         => "{$dbprefix}users",
+                    'VALUES'       => "'$name', '$pass', '$user_salt', '$mail', " . time() . ", '$session_id','$clean_name', " . $config['default_group']
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_insert_new_user_register', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -252,9 +228,9 @@ switch (g('go'))
                     $text         = $lang['REGISTER_SUCCESFUL'] . ' <br /> <a href="' . $config['siteurl'] . '">' . $lang['HOME'] . '</a>';
 
                     //update number of stats
-                    $update_query	= [
-                        'UPDATE'	=> "{$dbprefix}stats",
-                        'SET'		  => "users=users+1, lastuser='$name'",
+                    $update_query    = [
+                        'UPDATE'       => "{$dbprefix}stats",
+                        'SET'          => "users=users+1, lastuser='$name'",
                     ];
 
                     is_array($plugin_run_result = Plugins::getInstance()->run('ok_added_users_register', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -302,13 +278,13 @@ switch (g('go'))
 
          is_array($plugin_run_result = Plugins::getInstance()->run('begin_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        $stylee	     = 'fileuser';
-        $H_FORM_KEYS = kleeja_add_form_key('fileuser');
+        $stylee         = 'fileuser';
+        $H_FORM_KEYS    = kleeja_add_form_key('fileuser');
 
-        $user_id_get	 = ig('id') ? g('id', 'int') : false;
-        $user_id		    = (! $user_id_get && $usrcp->id()) ? $usrcp->id() : $user_id_get;
-        $user_himself	= $usrcp->id() == $user_id;
-        $action			    = $config['siteurl'] . 'ucp.php?go=fileuser' . (ig('page') ? '&amp;page=' . g('page', 'int') : '');
+        $user_id_get           = ig('id') ? g('id', 'int') : false;
+        $user_id               = ! $user_id_get && $usrcp->id() ? $usrcp->id() : $user_id_get;
+        $user_himself          = $usrcp->id() == $user_id;
+        $action                = $config['siteurl'] . 'ucp.php?go=fileuser' . (ig('page') ? '&amp;page=' . g('page', 'int') : '');
 
         //no logon before
         if (! $usrcp->name() && ! ig('id'))
@@ -316,19 +292,19 @@ switch (g('go'))
             kleeja_err($lang['USER_PLACE'], $lang['PLACE_NO_YOU'], true, 'index.php');
         }
 
-            //Not allowed to browse files's folders of other users
+        //Not allowed to browse files's folders of other users
         if (! user_can('access_fileusers') && ! $user_himself)
         {
             is_array($plugin_run_result = Plugins::getInstance()->run('user_cannot_access_fileusers', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
             kleeja_info($lang['HV_NOT_PRVLG_ACCESS'], $lang['HV_NOT_PRVLG_ACCESS']);
         }
 
-            //Not allowed to access this page ?
-            if (! user_can('access_fileuser') && $user_himself)
-            {
-                is_array($plugin_run_result = Plugins::getInstance()->run('user_cannot_access_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-                kleeja_info($lang['HV_NOT_PRVLG_ACCESS'], $lang['HV_NOT_PRVLG_ACCESS']);
-            }
+        //Not allowed to access this page ?
+        if (! user_can('access_fileuser') && $user_himself)
+        {
+            is_array($plugin_run_result = Plugins::getInstance()->run('user_cannot_access_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+            kleeja_info($lang['HV_NOT_PRVLG_ACCESS'], $lang['HV_NOT_PRVLG_ACCESS']);
+        }
 
         //fileuser is closed ?
         if ((int) $config['enable_userfile'] != 1 && ! user_can('enter_acp'))
@@ -336,11 +312,11 @@ switch (g('go'))
             kleeja_info($lang['USERFILE_CLOSED'], $lang['CLOSED_FEATURE']);
         }
 
-            //get user options and name
-            $data_user = $config['user_system'] == 1 ? $usrcp->get_data('name, show_my_filecp', $user_id) : ['name' => $usrcp->usernamebyid($user_id), 'show_my_filecp' => '1'];
+        //get user options and name
+        $data_user = $config['user_system'] == 1 ? $usrcp->get_data('name, show_my_filecp', $user_id) : ['name' => $usrcp->usernamebyid($user_id), 'show_my_filecp' => '1'];
 
-            //if there is no username, then there is no user at all
-        if (! $data_user['name'])
+        //if there is no username, then there is no user at all
+        if (empty($data_user['name']))
         {
             kleeja_err($lang['NOT_EXSIT_USER'], $lang['PLACE_NO_YOU']);
         }
@@ -351,30 +327,30 @@ switch (g('go'))
             kleeja_info($lang['USERFILE_CLOSED'], $lang['CLOSED_FEATURE']);
         }
 
-        $query	= [
-            'SELECT'	  => 'f.id, f.name, f.real_filename, f.folder, f.type, f.uploads, f.time, f.size',
-            'FROM'		   => "{$dbprefix}files f",
-            'WHERE'		  => 'f.user=' . $user_id,
-            'ORDER BY'	=> 'f.id DESC'
+        $query    = [
+            'SELECT'         => 'f.id, f.name, f.real_filename, f.folder, f.type, f.uploads, f.time, f.size',
+            'FROM'           => "{$dbprefix}files f",
+            'WHERE'          => 'f.user=' . $user_id,
+            'ORDER BY'       => 'f.id DESC'
         ];
 
         //pager
-        $perpage		   = 16;
-        $result_p		  = $SQL->build($query);
-        $nums_rows		 = $SQL->num_rows($result_p);
-        $currentPage	= ig('page') ? g('page', 'int') : 1;
-        $Pager			    = new Pagination($perpage, $nums_rows, $currentPage);
-        $start			    = $Pager->getStartRow();
+        $perpage              = 16;
+        $result_p             = $SQL->build($query);
+        $nums_rows            = $SQL->num_rows($result_p);
+        $currentPage          = ig('page') ? g('page', 'int') : 1;
+        $Pager                = new Pagination($perpage, $nums_rows, $currentPage);
+        $start                = $Pager->getStartRow();
 
-        $your_fileuser	= $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $usrcp->id() . '.html' : 'ucp.php?go=fileuser&amp;id=' . $usrcp->id());
-        $total_pages	  = $Pager->getTotalPages();
-        $linkgoto		    = $config['siteurl'] . (
+        $your_fileuser       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $usrcp->id() . '.html' : 'ucp.php?go=fileuser&amp;id=' . $usrcp->id());
+        $total_pages         = $Pager->getTotalPages();
+        $linkgoto            = $config['siteurl'] . (
                                     $config['mod_writer']
                                     ?  'fileuser-' . $user_id . ($currentPage > 1  && $currentPage <= $total_pages ? '-' . $currentPage : '') . '.html'
-                                    : 'ucp.php?go=fileuser' . ( ig('id') ? ( g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id') ) : null  )
+                                    : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null)
                             );
 
-        $page_nums		= $Pager->print_nums(str_replace('.html', '', $linkgoto));
+        $page_nums        = $Pager->print_nums(str_replace('.html', '', $linkgoto));
 
         $no_results = true;
 
@@ -382,10 +358,11 @@ switch (g('go'))
         {
             $data_user['name'] = $usrcp->usernamebyid($user_id);
         }
+
         $user_name = ! $data_user['name'] ? false : $data_user['name'];
 
         //set page title
-        $titlee	= $lang['FILEUSER'] . ': ' . $user_name;
+        $titlee    = $lang['FILEUSER'] . ': ' . $user_name;
         //there is result ? show them
         if ($nums_rows != 0)
         {
@@ -398,7 +375,7 @@ switch (g('go'))
 
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_files_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-            $result	= $SQL->build($query);
+            $result    = $SQL->build($query);
 
             $i      = ($currentPage * $perpage) - $perpage;
             $tdnumi = $num = $files_num = $imgs_num = 0;
@@ -420,18 +397,18 @@ switch (g('go'))
                 $file_name = $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
 
                 //make new lovely arrays !!
-                $arr[] 	= [
-                    'id'		      => $row['id'],
-                    'name_file'	=> shorten_text($file_name, 25),
-                    'file_type'	=> $row['type'],
-                    'uploads'	  => $row['uploads'],
-                    'tdnum'		   => $tdnumi == 0 ? '<ul>': '',
-                    'tdnum2'	   => $tdnumi == 4 ? '</ul>' : '',
-                    'href'		    => $url,
-                    'size'		    => readable_size($row['size']),
-                    'time'		    => ! empty($row['time']) ? kleeja_date($row['time']) : '...',
-                    'thumb_link'=> $is_image ? $url_thumb : $url_fileuser,
-                    'is_image'	 => $is_image,
+                $arr[]     = [
+                    'id'              => $row['id'],
+                    'name_file'       => shorten_text($file_name, 25),
+                    'file_type'       => $row['type'],
+                    'uploads'         => $row['uploads'],
+                    'tdnum'           => $tdnumi == 0 ? '<ul>': '',
+                    'tdnum2'          => $tdnumi == 4 ? '</ul>' : '',
+                    'href'            => $url,
+                    'size'            => readable_size($row['size']),
+                    'time'            => ! empty($row['time']) ? kleeja_date($row['time']) : '...',
+                    'thumb_link'      => $is_image ? $url_thumb : $url_fileuser,
+                    'is_image'        => $is_image,
                 ];
 
                 $tdnumi = $tdnumi == 2 ? 0 : $tdnumi+1;
@@ -449,12 +426,12 @@ switch (g('go'))
                     if ($_POST['del_' . $row['id']])
                     {
                         //delete from folder ..
-                        @kleeja_unlink($row['folder'] . '/' . $row['name'] );
+                        @kleeja_unlink($row['folder'] . '/' . $row['name']);
 
                         //delete thumb
-                        if (file_exists($row['folder'] . '/thumbs/' . $row['name'] ))
+                        if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                         {
-                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name'] );
+                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
                         }
 
                         $ids[] = $row['id'];
@@ -479,12 +456,12 @@ switch (g('go'))
                     //delete all files
                     foreach ($arr as $row)
                     {
-                        @kleeja_unlink($row['folder'] . '/' . $row['name'] );
+                        @kleeja_unlink($row['folder'] . '/' . $row['name']);
 
                         //delete thumb
-                        if (file_exists($row['folder'] . '/thumbs/' . $row['name'] ))
+                        if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                         {
-                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name'] );
+                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
                         }
 
                         $ids[] = $row['id'];
@@ -515,8 +492,8 @@ switch (g('go'))
                 if (isset($ids) && ! empty($ids))
                 {
                     $query_del = [
-                        'DELETE'	=> "{$dbprefix}files",
-                        'WHERE'		=> 'id IN (' . implode(',', $ids) . ')'
+                        'DELETE'       => "{$dbprefix}files",
+                        'WHERE'        => 'id IN (' . implode(',', $ids) . ')'
                     ];
 
                     is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -525,9 +502,9 @@ switch (g('go'))
                     if (($files_num <= $stat_files) && ($imgs_num <= $stat_imgs))
                     {
                         //update number of stats
-                        $update_query	= [
-                            'UPDATE'	=> "{$dbprefix}stats",
-                            'SET'		  => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                        $update_query    = [
+                            'UPDATE'       => "{$dbprefix}stats",
+                            'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
                         ];
 
                         $SQL->build($update_query);
@@ -549,8 +526,8 @@ switch (g('go'))
                 if (isset($ids) && ! empty($ids))
                 {
                     $query_del = [
-                        'DELETE'	=> "{$dbprefix}files",
-                        'WHERE'		=> 'id IN (' . implode(',', $ids) . ')'
+                        'DELETE'       => "{$dbprefix}files",
+                        'WHERE'        => 'id IN (' . implode(',', $ids) . ')'
                     ];
 
                     is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -559,9 +536,9 @@ switch (g('go'))
                     if (($files_num <= $stat_files) && ($imgs_num <= $stat_imgs))
                     {
                         //update number of stats
-                        $update_query	= [
-                            'UPDATE'	=> "{$dbprefix}stats",
-                            'SET'		  => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                        $update_query    = [
+                            'UPDATE'       => "{$dbprefix}stats",
+                            'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
                         ];
 
                         $SQL->build($update_query);
@@ -598,42 +575,19 @@ switch (g('go'))
             kleeja_info($lang['USER_PLACE'], $lang['PLACE_NO_YOU']);
         }
 
-        $stylee		= 'profile';
-        $titlee		= $lang['PROFILE'];
-        $action		= 'ucp.php?go=profile';
-        $name		  = $usrcp->name();
-        $mail		  = $usrcp->mail();
+        $stylee        = 'profile';
+        $titlee        = $lang['PROFILE'];
+        $action        = 'ucp.php?go=profile';
+        $name          = $usrcp->name();
+        $mail          = $usrcp->mail();
         extract($usrcp->get_data('show_my_filecp, password_salt'));
-        $data_forum		= (int) $config['user_system'] == 1 ? true : false;
-        $link_avater	= sprintf($lang['EDIT_U_AVATER_LINK'], '<a target="_blank" href="http://www.gravatar.com/">', '</a>');
-        $H_FORM_KEYS = kleeja_add_form_key('profile');
+        $data_forum        = (int) $config['user_system'] == 1;
+        $link_avater       = sprintf($lang['EDIT_U_AVATER_LINK'], '<a target="_blank" href="http://www.gravatar.com/">', '</a>');
+        $H_FORM_KEYS       = kleeja_add_form_key('profile');
         //no error yet
         $ERRORS = false;
 
-        if (! empty($profile_script_path))
-        {
-            $goto_forum_link = $profile_script_path;
-        }
-        else
-        {
-            if (isset($script_path))
-            {
-                $goto_forum_link = ($config['user_system'] == 'api') ? dirname($script_path) : $script_path;
-
-                if ($config['user_system'] == 'phpbb' || ($config['user_system'] == 'api' && strpos(strtolower($script_path), 'phpbb') !== false))
-                {
-                    $goto_forum_link .= '/ucp.php?i=164';
-                }
-                elseif ($config['user_system'] == 'vb' || ($config['user_system'] == 'api' && strpos(strtolower($script_path), 'vb') !== false))
-                {
-                    $goto_forum_link .= '/profile.php?do=editprofile';
-                }
-            }
-            else
-            {
-                $goto_forum_link = '...';
-            }
-        }
+        $goto_forum_link = '...';
 
         //_post
         $t_pppass_old = p('pppass_old');
@@ -641,14 +595,14 @@ switch (g('go'))
         $t_ppass_new  = p('ppass_new');
         $t_ppass_new2 = p('ppass_new2');
 
-            is_array($plugin_run_result = Plugins::getInstance()->run('no_submit_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+        is_array($plugin_run_result = Plugins::getInstance()->run('no_submit_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         //
         // after submit
         //
         if (ip('submit_data'))
         {
-            $ERRORS	= [];
+            $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -701,17 +655,17 @@ switch (g('go'))
             //no errors , do it
             if (empty($ERRORS))
             {
-                $user_salt 	= substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
-                $mail		     = $new_mail ? "mail='" . $SQL->escape(strtolower(trim(p('pmail')))) . "'" : '';
-                $showmyfile	= p('show_my_filecp', 'int') != $show_my_filecp ?  ($mail == '' ? '': ',') . "show_my_filecp='" . p('show_my_filecp', 'int') . "'" : '';
-                $pass		     = ! empty(p('ppass_new')) ? ($showmyfile != ''  || $mail != '' ? ',' : '') . "password='" . $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt) .
+                $user_salt        = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+                $mail             = $new_mail ? "mail='" . $SQL->escape(strtolower(trim(p('pmail')))) . "'" : '';
+                $showmyfile       = p('show_my_filecp', 'int') != $show_my_filecp ?  ($mail == '' ? '': ',') . "show_my_filecp='" . p('show_my_filecp', 'int') . "'" : '';
+                $pass             = ! empty(p('ppass_new')) ? ($showmyfile != ''  || $mail != '' ? ',' : '') . "password='" . $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt) .
                                 "', password_salt='" . $user_salt . "'" : '';
-                $id			= (int) $usrcp->id();
+                $id            = (int) $usrcp->id();
 
-                $update_query	= [
-                    'UPDATE'	=> "{$dbprefix}users",
-                    'SET'		  => $mail . $showmyfile . $pass,
-                    'WHERE'		=> 'id=' . $id,
+                $update_query    = [
+                    'UPDATE'       => "{$dbprefix}users",
+                    'SET'          => $mail . $showmyfile . $pass,
+                    'WHERE'        => 'id=' . $id,
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_data_in_profile', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -742,15 +696,18 @@ switch (g('go'))
         //if not default system, let's give him a link for integrated script
         if ((int) $config['user_system'] != 1)
         {
-            $text = '<a href="' . (! empty($forgetpass_script_path) ? $forgetpass_script_path : $script_path) . '">' . $lang['LOST_PASS_FORUM'] . '</a>';
+            $forgetpass_link = '...';
+            is_array($plugin_run_result = Plugins::getInstance()->run('get_pass_resetpass_link', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+            $text = '<a href="' . $forgetpass_link . '">' . $lang['LOST_PASS_FORUM'] . '</a>';
             kleeja_info($text, $lang['PLACE_NO_YOU']);
         }
 
         //page info
-        $stylee		    = 'get_pass';
-        $titlee		    = $lang['GET_LOSTPASS'];
-        $action		    = 'ucp.php?go=get_pass';
-        $H_FORM_KEYS = kleeja_add_form_key('get_pass');
+        $stylee            = 'get_pass';
+        $titlee            = $lang['GET_LOSTPASS'];
+        $action            = 'ucp.php?go=get_pass';
+        $H_FORM_KEYS       = kleeja_add_form_key('get_pass');
         //no error yet
         $ERRORS = false;
 
@@ -778,9 +735,9 @@ switch (g('go'))
                 $npass = $npass['new_password'];
                 //password now will be same as new password
                 $update_query = [
-                    'UPDATE'=> "{$dbprefix}users",
-                    'SET'	  => "password = '" . $npass . "', new_password = '', hash_key = ''",
-                    'WHERE'	=> 'id=' . $u_id,
+                    'UPDATE'   => "{$dbprefix}users",
+                    'SET'      => "password = '" . $npass . "', new_password = '', hash_key = ''",
+                    'WHERE'    => 'id=' . $u_id,
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_newpass_activation', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -816,7 +773,7 @@ switch (g('go'))
         }
         else
         { // submit
-            $ERRORS	= [];
+            $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
             //check for form key
@@ -849,14 +806,14 @@ switch (g('go'))
             //no errors, lets do it
             if (empty($ERRORS))
             {
-                $query	= [
-                    'SELECT'=> 'u.*',
-                    'FROM'	 => "{$dbprefix}users u",
-                    'WHERE'	=> "u.mail='" . $SQL->escape(strtolower(trim(p('rmail')))) . "'"
+                $query    = [
+                    'SELECT'   => 'u.*',
+                    'FROM'     => "{$dbprefix}users u",
+                    'WHERE'    => "u.mail='" . $SQL->escape(strtolower(trim(p('rmail')))) . "'"
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_mail_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-                $result	=	$SQL->build($query);
+                $result    =    $SQL->build($query);
 
                 $row = $SQL->fetch_array($result);
 
@@ -869,17 +826,17 @@ switch (g('go'))
                     $newpass .= substr($chars, (mt_rand() % strlen($chars)), 1);
                 }
 
-                $hash_key        = md5($newpass . time());
-                $pass		          = (string) $usrcp->kleeja_hash_password($SQL->escape($newpass) . $row['password_salt']);
-                $to		            = $row['mail'];
-                $subject	        = $lang['GET_LOSTPASS'] . ':' . $config['sitename'];
-                $activation_link = $config['siteurl'] . 'ucp.php?go=get_pass&activation_key=' . urlencode($hash_key) . '&uid=' . $row['id'];
-                $message	        = "\n " . $lang['WELCOME'] . ' ' . $row['name'] . "\r\n " . sprintf($lang['GET_LOSTPASS_MSG'], $activation_link, $newpass) . "\r\n\r\n kleeja.com";
+                $hash_key              = md5($newpass . time());
+                $pass                  = (string) $usrcp->kleeja_hash_password($SQL->escape($newpass) . $row['password_salt']);
+                $to                    = $row['mail'];
+                $subject               = $lang['GET_LOSTPASS'] . ':' . $config['sitename'];
+                $activation_link       = $config['siteurl'] . 'ucp.php?go=get_pass&activation_key=' . urlencode($hash_key) . '&uid=' . $row['id'];
+                $message               = "\n " . $lang['WELCOME'] . ' ' . $row['name'] . "\r\n " . sprintf($lang['GET_LOSTPASS_MSG'], $activation_link, $newpass) . "\r\n\r\n kleeja.com";
 
-                $update_query	= [
-                    'UPDATE'=> "{$dbprefix}users",
-                    'SET'	  => "new_password = '" . $SQL->escape($pass) . "', hash_key = '" . $hash_key . "'",
-                    'WHERE'	=> 'id=' . $row['id'],
+                $update_query    = [
+                    'UPDATE'   => "{$dbprefix}users",
+                    'SET'      => "new_password = '" . $SQL->escape($pass) . "', hash_key = '" . $hash_key . "'",
+                    'WHERE'    => 'id=' . $row['id'],
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_newpass_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -896,7 +853,7 @@ switch (g('go'))
                 }
                 else
                 {
-                    $text	= $lang['OK_SEND_NEWPASS'] . '<br /><a href="' . $config['siteurl'] . ($config['mod_writer'] ?  'login.html' : 'ucp.php?go=login') . '">' . $lang['LOGIN'] . '</a>';
+                    $text    = $lang['OK_SEND_NEWPASS'] . '<br /><a href="' . $config['siteurl'] . ($config['mod_writer'] ?  'login.html' : 'ucp.php?go=login') . '">' . $lang['LOGIN'] . '</a>';
                     kleeja_info($text);
                 }
 

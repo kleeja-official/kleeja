@@ -50,8 +50,8 @@ function kleeja_admin_err($msg, $navigation = true, $title='', $exit = true, $re
     }
 
     // assign {text} in err template
-    $text		    = $msg . ($redirect != false ? redirect($redirect, false, false, $rs, true) : '');
-    $SHOW_LIST	= $navigation;
+    $text            = $msg . ($redirect != false ? redirect($redirect, false, false, $rs, true) : '');
+    $SHOW_LIST       = $navigation;
 
     //header
     echo $tpl->display('admin_header');
@@ -106,10 +106,10 @@ function insert_filter($type, $value, $time = false, $user = false, $status = ''
     $time = ! $time ? time() : $time;
     $uid  = $uid ? $uid : uniqid();
 
-    $insert_query	= [
-        'INSERT'	=> 'filter_uid, filter_type ,filter_value ,filter_time ,filter_user, filter_status',
-        'INTO'		 => "{$dbprefix}filters",
-        'VALUES'	=> "'" . $uid . "', '" . $SQL->escape($type) . "','" . $SQL->escape($value) . "', " . intval($time) . ',' . intval($user) . ",'" . $SQL->escape($status) . "'"
+    $insert_query    = [
+        'INSERT'       => 'filter_uid, filter_type ,filter_value ,filter_time ,filter_user, filter_status',
+        'INTO'         => "{$dbprefix}filters",
+        'VALUES'       => "'" . $uid . "', '" . $SQL->escape($type) . "','" . $SQL->escape($value) . "', " . intval($time) . ',' . intval($user) . ",'" . $SQL->escape($status) . "'"
     ];
     is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_insert_filter_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -189,7 +189,7 @@ function get_filter($item, $filter_type = false, $just_value = false, $get_by = 
     $result = $SQL->build($query);
     $v      = $SQL->fetch($result);
 
-    $SQL->free($result);
+    $SQL->freeresult($result);
 
     if ($just_value)
     {
@@ -242,28 +242,55 @@ function build_search_query($search)
         return '';
     }
 
-    global $SQL;
+    global $SQL, $dbprefix, $config;
 
-    $search['filename'] = ! isset($search['filename']) ? '' : $search['filename'];
-    $search['username'] = ! isset($search['username']) ? '' : $search['username'];
-    $search['than']		   = ! isset($search['than']) ? '' : $search['than'];
-    $search['size']		   = ! isset($search['size']) ? '' : $search['size'];
-    $search['ups']		    = ! isset($search['ups']) ? '' : $search['ups'];
-    $search['uthan']	   = ! isset($search['uthan']) ? '' : $search['uthan'];
-    $search['rep']		    = ! isset($search['rep']) ? '' : $search['rep'];
-    $search['rthan']	   = ! isset($search['rthan']) ? '' : $search['rthan'];
-    $search['lastdown'] = ! isset($search['lastdown']) ? '' : $search['lastdown'];
-    $search['ext']		    = ! isset($search['ext']) ? '' : $search['ext'];
-    $search['user_ip']	 = ! isset($search['user_ip']) ? '' : $search['user_ip'];
+    $search['filename']       = ! isset($search['filename']) ? '' : $search['filename'];
+    $search['username']       = ! isset($search['username']) ? '' : $search['username'];
+    $search['than']           = ! isset($search['than']) ? '' : $search['than'];
+    $search['size']           = ! isset($search['size']) ? '' : $search['size'];
+    $search['ups']            = ! isset($search['ups']) ? '' : $search['ups'];
+    $search['uthan']          = ! isset($search['uthan']) ? '' : $search['uthan'];
+    $search['rep']            = ! isset($search['rep']) ? '' : $search['rep'];
+    $search['rthan']          = ! isset($search['rthan']) ? '' : $search['rthan'];
+    $search['lastdown']       = ! isset($search['lastdown']) ? '' : $search['lastdown'];
+    $search['ext']            = ! isset($search['ext']) ? '' : $search['ext'];
+    $search['user_ip']        = ! isset($search['user_ip']) ? '' : $search['user_ip'];
 
-    $file_namee	= $search['filename'] != '' ? 'AND (f.real_filename LIKE \'%' . $SQL->escape($search['filename']) . '%\' OR f.name LIKE \'%' . $SQL->escape($search['filename']) . '%\')' : '';
-    $usernamee	 = $search['username'] != '' ? 'AND u.name LIKE \'%' . $SQL->escape($search['username']) . '%\'' : '';
-    $size_than	 = ' f.size ' . ($search['than']!=1 ? '<=' : '>=') . (intval($search['size']) * 1024) . ' ';
-    $ups_than	  = $search['ups']      != '' ? 'AND f.uploads ' . ($search['uthan']!=1 ? '<' : '>') . intval($search['ups']) . ' ' : '';
-    $rep_than	  = $search['rep']      != '' ? 'AND f.report ' . ($search['rthan']!=1 ? '<' : '>') . intval($search['rep']) . ' ' : '';
-    $lstd_than	 = $search['lastdown'] != '' ? 'AND f.last_down =' . (time()-(intval($search['lastdown']) * (24 * 60 * 60))) . ' ' : '';
-    $exte		     = $search['ext']      != '' ? "AND f.type IN ('" . implode("', '", @explode(',', $SQL->escape($search['ext']))) . "')" : '';
-    $ipp		      = $search['user_ip']  != '' ? 'AND f.user_ip LIKE \'%' . $SQL->escape($search['user_ip']) . '%\' ' : '';
+    //if searched by a username
+    $usernamee = '';
+    if (! empty($search['username']) && (int) $config['user_system'] == 1)
+    {
+        $query = [
+            'SELECT'       => 'u.id',
+            'FROM'         => "{$dbprefix}users u",
+            'WHERE'        => "u.name LIKE '%" . $SQL->escape($search['username']) . "%'"
+        ];
+
+        is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_usersids_in_build_search_query', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+        $result = $SQL->build($query);
+
+        while ($row=$SQL->fetch_array($result))
+        {
+            $usernamee .= ($usernamee != '' ? ' OR ' : '') . 'f.user=' . $row['id'];
+        }
+
+        $SQL->freeresult($result);
+
+        if(! empty($usernamee))
+        {
+            $usernamee = 'AND (' . $usernamee . ')';
+        }
+    }
+
+    //build query
+    $file_namee       = $search['filename'] != '' ? 'AND (f.real_filename LIKE \'%' . $SQL->escape($search['filename']) . '%\' OR f.name LIKE \'%' . $SQL->escape($search['filename']) . '%\')' : '';
+    $size_than        = ' f.size ' . ($search['than'] != 1 ? '<=' : '>=') . (intval($search['size']) * 1024) . ' ';
+    $ups_than         = $search['ups']      != '' ? 'AND f.uploads ' . ($search['uthan']!=1 ? '<' : '>') . intval($search['ups']) . ' ' : '';
+    $rep_than         = $search['rep']      != '' ? 'AND f.report ' . ($search['rthan']!=1 ? '<' : '>') . intval($search['rep']) . ' ' : '';
+    $lstd_than        = $search['lastdown'] != '' ? 'AND f.last_down =' . (time()-(intval($search['lastdown']) * (24 * 60 * 60))) . ' ' : '';
+    $exte             = $search['ext']      != '' ? "AND f.type IN ('" . implode("', '", @explode(',', $SQL->escape($search['ext']))) . "')" : '';
+    $ipp              = $search['user_ip']  != '' ? 'AND f.user_ip LIKE \'%' . $SQL->escape($search['user_ip']) . '%\' ' : '';
+
 
     return "$size_than $file_namee $ups_than $exte $rep_than $usernamee $lstd_than $exte $ipp";
 }
@@ -278,30 +305,30 @@ function sync_total_files($files = true, $start = false)
 {
     global $SQL, $dbprefix;
 
-    $query	= [
-        'SELECT'	=> 'MIN(f.id) as min_file_id, MAX(f.id) as max_file_id',
-        'FROM'		 => "{$dbprefix}files f",
+    $query    = [
+        'SELECT'       => 'MIN(f.id) as min_file_id, MAX(f.id) as max_file_id',
+        'FROM'         => "{$dbprefix}files f",
     ];
 
     //!files == images
     $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
     $query['WHERE'] = 'f.type' . ($files  ? ' NOT' : '') . " IN ('" . implode("', '", $img_types) . "')";
 
-    $result	= $SQL->build($query);
-    $v		    = $SQL->fetch($result);
+    $result       = $SQL->build($query);
+    $v            = $SQL->fetch($result);
     $SQL->freeresult($result);
 
     //if no data, turn them to number
     $min_id = (int) $v['min_file_id'];
-    //	$max_id = (int) $v['max_file_id'];
+    //    $max_id = (int) $v['max_file_id'];
 
     //every time batch
     $batch_size = 1500;
 
     //no start? start = min
-    $first_loop = ! $start ? true : false;
-    $start	     = ! $start ? $min_id : $start;
-    $end	       = $start + $batch_size;
+    $first_loop    = ! $start ? true : false;
+    $start         = ! $start ? $min_id : $start;
+    $end           = $start + $batch_size;
 
     //now lets get this step's files number
     unset($v, $result);
@@ -309,8 +336,8 @@ function sync_total_files($files = true, $start = false)
     $query['SELECT'] = 'COUNT(f.id) as num_files';
     $query['WHERE'] .= ' AND f.id BETWEEN ' . $start . ' AND ' . $end;
 
-    $result	= $SQL->build($query);
-    $v		    = $SQL->fetch($result);
+    $result       = $SQL->build($query);
+    $v            = $SQL->fetch($result);
     $SQL->freeresult($result);
 
     $this_step_count = $v['num_files'];
@@ -323,7 +350,7 @@ function sync_total_files($files = true, $start = false)
     //update stats table
 
     $update_query = [
-        'UPDATE'	=> "{$dbprefix}stats"
+        'UPDATE'    => "{$dbprefix}stats"
     ];
 
     //make it zero, firstly
@@ -350,12 +377,12 @@ function get_actual_stats($name)
     global $dbprefix, $SQL;
 
     $query = [
-        'SELECT'	=> 's.' . $name,
-        'FROM'		 => "{$dbprefix}stats s"
+        'SELECT'       => 's.' . $name,
+        'FROM'         => "{$dbprefix}stats s"
     ];
 
-    $result	= $SQL->build($query);
-    $v		    = $SQL->fetch($result);
+    $result       = $SQL->build($query);
+    $v            = $SQL->fetch($result);
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_actual_stats_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 

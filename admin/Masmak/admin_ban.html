@@ -2,33 +2,94 @@
 
 <!-- Breadcrumbs -->
 <ol class="breadcrumb">
-	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-	<li class="breadcrumb-item active">{lang.R_BAN}</li>
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item active">{lang.R_BAN}</li>
 </ol>
 
 <div class="card">
-	<div class="card-body">
-	{lang.BAN_EXP1}
-		<br>
-		{lang.BAN_EXP2}
-	</div>
+    <div class="card-body">
+    {lang.BAN_EXP1}
+    </div>
 </div>
 
-<br>
-
-<form method="post" action="{action}" id="ban_form">
-
-	<div class="form-group">
-	<!-- textarea -->
-	<textarea name="ban_text" class="form-control" rows="2" cols="20" style="width:99%; height: 100px;direction:ltr;">{ban}</textarea>
-	</div>
-
-	<br>
-
-	<input type="submit" name="submit" value="{lang.UPDATE_BAN}" class="btn btn-primary">
+<div class="d-flex justify-content-end my-2">
+    <a class="btn btn-primary btn-sm" href="#" data-toggle="modal" data-target="#new_item_form">
+        <i class="fa fa-plus"></i> {lang.NEW}
+    </a>
+</div>
 
 
-{H_FORM_KEYS}
-</form>
+<IF NAME="show_message">
+<div class="alert alert-info alert-dismissible fade show small my-2" role="alert">
+    {show_message}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true" class="small" style="cursor:pointer">&times;</span>
+    </button>
+</div>
+<script>
+    setTimeout(function() {
+        $('.alert-dismissible').fadeOut();
+    }, 5000);
+</script>
+</IF>
+
+
+<div class="table-responsive-sm">
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">{lang.IP} / {lang.USERNAME}</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <LOOP NAME="banned_items">
+        <tr>
+            <th scope="row">{{id}}</th>
+            <td>{{content}}</td>
+            <td class="d-flex justify-content-end">
+                 <a class="btn btn-outline-danger btn-sm" href="{delete_item}{{del_key}}" title="{lang.DELETE}" onclick="javascript:return confirm_form();">
+                    <i class="fa fa-remove" title="{lang.DELETE}"></i>
+                </a>
+           </td>
+        </tr>
+        </LOOP>
+    </tbody>
+</table>
+</div>
+
+
+<!-- new banned item modal -->
+<div id="new_item_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewBannedItem"
+    aria-hidden="true">
+
+    <form method="post" action="{new_item_action}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNewBannedItem">{lang.IP} / {lang.USERNAME}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-control">
+                        <input type="text" class="form-control" id="k" name="k" placeholder="{lang.IP} {lang.OR} {lang.USERNAME}" value="">
+                    </label>
+                    <small>
+                        {lang.BAN_EXP2}
+                    </small>
+                    {H_FORM_KEYS}
+                </div>
+                <div class="modal-footer">
+
+                    <input type="submit" name="submit" class="btn btn-primary" value="{lang.SUBMIT}">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- end new banned item modal -->
 
 

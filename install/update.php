@@ -28,13 +28,20 @@ include_once PATH . 'includes/plugins.php';
 include_once PATH . 'includes/functions.php';
 include_once PATH . 'includes/functions_alternative.php';
 
-include_once PATH . 'includes/mysqli.php';
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
 
 include_once 'includes/functions_install.php';
 include_once 'includes/update_schema.php';
 
 
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 //
 // fix missing db_version
@@ -137,6 +144,7 @@ case 'update_now':
     }
 
 
+    delete_cache('', true);
     echo gettpl('update_end.html');
 
 break;

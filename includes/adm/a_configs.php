@@ -15,28 +15,28 @@ if (! defined('IN_ADMIN'))
 
 
 //for style ..
-$stylee 		   = 'admin_configs';
-$current_smt	= preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$stylee            = 'admin_configs';
+$current_smt       = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
 //words
-$action 		  = basename(ADMIN_PATH) . '?cp=options&amp;smt=' . $current_smt;
-$n_submit 		= $lang['UPDATE_CONFIG'];
-$options		  = '';
-//$current_type	= ig('type') ? g('type') : 'general';
-$CONFIGEXTEND	= false;
-$H_FORM_KEYS	 = kleeja_add_form_key('adm_configs');
+$action           = basename(ADMIN_PATH) . '?cp=options&amp;smt=' . $current_smt;
+$n_submit         = $lang['UPDATE_CONFIG'];
+$options          = '';
+//$current_type    = ig('type') ? g('type') : 'general';
+$CONFIGEXTEND    = false;
+$H_FORM_KEYS     = kleeja_add_form_key('adm_configs');
 
 //secondary menu
-$query	= [
-    'SELECT' => 'DISTINCT(c.type), c.display_order, p.plg_disabled, c.plg_id',
-    'FROM'		 => "{$dbprefix}config c",
-    'JOINS'  => [
+$query    = [
+    'SELECT'       => 'DISTINCT(c.type), c.display_order, p.plg_disabled, c.plg_id',
+    'FROM'         => "{$dbprefix}config c",
+    'JOINS'        => [
         [
             'LEFT JOIN' => "{$dbprefix}plugins p",
             'ON'        => 'p.plg_id=c.plg_id'
         ]
     ],
-    'WHERE'		  => "c.option <> '' AND c.type <> 'groups'",
-    'ORDER BY' => 'c.display_order'
+    'WHERE'          => "c.option <> '' AND c.type <> 'groups'",
+    'ORDER BY'       => 'c.display_order'
 ];
 
 $result = $SQL->build($query);
@@ -73,20 +73,20 @@ if (ip('submit'))
 
 
 //general varaibles
-//$action		= basename(ADMIN_PATH) . '?cp=options&amp;type=' .$current_type;
-$STAMP_IMG_URL     = file_exists(PATH . 'images/watermark.gif') ? PATH . 'images/watermark.gif' : PATH . 'images/watermark.png';
-$stylfiles	        = $lngfiles	        = $authtypes         =  $time_zones         = '';
-$optionss	         = [];
-$n_googleanalytics = '<a href="http://www.google.com/analytics">Google Analytics</a>';
+//$action        = basename(ADMIN_PATH) . '?cp=options&amp;type=' .$current_type;
+$STAMP_IMG_URL        = file_exists(PATH . 'images/watermark.gif') ? PATH . 'images/watermark.gif' : PATH . 'images/watermark.png';
+$stylfiles            = $lngfiles            = $authtypes         =  $time_zones         = '';
+$optionss             = [];
+$n_googleanalytics    = '<a href="http://www.google.com/analytics">Google Analytics</a>';
 
-$query	= [
-    'SELECT'	  => '*',
-    'FROM'		   => "{$dbprefix}config",
-    'ORDER BY'	=> 'display_order, type ASC'
+$query    = [
+    'SELECT'         => '*',
+    'FROM'           => "{$dbprefix}config",
+    'ORDER BY'       => 'display_order, type ASC'
 ];
 
-$CONFIGEXTEND	    = $SQL->escape($current_smt);
-$CONFIGEXTENDLANG = $go_menu[$current_smt]['name'];
+$CONFIGEXTEND        = $SQL->escape($current_smt);
+$CONFIGEXTENDLANG    = $go_menu[$current_smt]['name'];
 
 if ($current_smt != 'all')
 {
@@ -151,29 +151,9 @@ while ($row=$SQL->fetch_array($result))
             @closedir($dh);
         }
     }
-    elseif ($row['name'] == 'user_system')
+    elseif (in_array($row['name'], ['user_system', 'www_url']))
     {
-        //get auth types
-        //fix previous choices in old kleeja
-        if (in_array($con['user_system'], ['2', '3', '4']))
-        {
-            $con['user_system'] = str_replace(['2', '3', '4'], ['phpbb', 'vb', 'mysmartbb'], $con['user_system']);
-        }
-
-        $authtypes .= '<option value="1"' . ($con['user_system']=='1' ? ' selected="selected"' : '') . '>' . $lang['NORMAL'] . '</option>' . "\n";
-
-        if ($dh = @opendir(PATH . 'includes/auth_integration'))
-        {
-            while (($file = readdir($dh)) !== false)
-            {
-                if (strpos($file, '.php') !== false)
-                {
-                    $file = trim(str_replace('.php', '', $file));
-                    $authtypes .= '<option value="' . $file . '"' . ($con['user_system'] == $file ? ' selected="selected"' : '') . '>' . $file . '</option>' . "\n";
-                }
-            }
-            @closedir($dh);
-        }
+        continue;
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('while_fetch_adm_config', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -182,12 +162,12 @@ while ($row=$SQL->fetch_array($result))
     if (! empty($row['option']))
     {
         $optionss[$row['name']] = [
-            'option'		 => '<div class="form-group">' . "\n" .
+            'option'         => '<div class="form-group">' . "\n" .
                                 '<label for="' . $row['name'] . '">' . (! empty($lang[strtoupper($row['name'])]) ? $lang[strtoupper($row['name'])] : $olang[strtoupper($row['name'])]) . '</label>' . "\n" .
                                 '<div class="box">' . (empty($row['option']) ? '' : $tpl->admindisplayoption($row['option'])) . '</div>' . "\n" .
                                 '</div>' . "\n" . '<div class="clear"></div>',
-            'type'			       => $row['type'],
-            'display_order' => $row['display_order'],
+            'type'                   => $row['type'],
+            'display_order'          => $row['display_order'],
         ];
     }
 
@@ -235,13 +215,20 @@ while ($row=$SQL->fetch_array($result))
                 if (! file_exists(PATH . '.htaccess') && file_exists(PATH . 'htaccess.txt') && function_exists('rename'))
                 {
                     rename(PATH . 'htaccess.txt', PATH . '.htaccess');
+
+                    if (! file_exists(PATH . '.htaccess'))
+                    {
+                        chmod(PATH . '.htaccess', K_FILE_CHMOD);
+                    }
+
+                    //re-do after chmod
+                    rename(PATH . 'htaccess.txt', PATH . '.htaccess');
                 }
             }
         }
         elseif ($row['name'] == 'language')
         {
             $got_lang = preg_replace('[^a-zA-Z0-9]', '', $new[$row['name']]);
-
 
             //all groups
             foreach ($d_groups as $group_id => $group_info)
@@ -255,9 +242,9 @@ while ($row=$SQL->fetch_array($result))
         is_array($plugin_run_result = Plugins::getInstance()->run('after_submit_adm_config', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         $update_query = [
-            'UPDATE'	=> "{$dbprefix}config",
-            'SET'		  => "value='" . $SQL->escape($new[$row['name']]) . "'",
-            'WHERE'		=> "name='" . $row['name'] . "'"
+            'UPDATE'       => "{$dbprefix}config",
+            'SET'          => "value='" . $SQL->escape($new[$row['name']]) . "'",
+            'WHERE'        => "name='" . $row['name'] . "'"
         ];
 
         if ($current_smt != 'all')
@@ -313,13 +300,13 @@ if (ip('submit'))
     /*
     if (empty(p('sitename')) || empty(p('siteurl')) || empty(p('foldername')) || empty(p('filesnum')))
     {
-        $text	= $lang['EMPTY_FIELDS'];
-        $stylee	= "admin_err";
+        $text    = $lang['EMPTY_FIELDS'];
+        $stylee    = "admin_err";
     }
     elseif (!is_numeric(p('filesnum')) || !is_numeric(p('sec_down')))
     {
-        $text	= $lang['NUMFIELD_S'];
-        $stylee	= "admin_err";
+        $text    = $lang['NUMFIELD_S'];
+        $stylee    = "admin_err";
     }
     else
     {

@@ -20,19 +20,19 @@ $files_acp_perpage = defined('ACP_FILES_PER_PAGE') ? ACP_FILES_PER_PAGE : 20;
 
 
 //display
-$stylee		= 'admin_files';
+$stylee        = 'admin_files';
 
-$url_or		     = isset($_REQUEST['order_by']) ? '&amp;order_by=' . htmlspecialchars($_REQUEST['order_by']) . (isset($_REQUEST['order_way']) ? '&amp;order_by=1' : '') : '';
-$url_or2	     = isset($_REQUEST['order_by']) ? '&amp;order_by=' . htmlspecialchars($_REQUEST['order_by'])  : '';
-$url_lst	     = isset($_REQUEST['last_visit']) ? '&amp;last_visit=' . htmlspecialchars($_REQUEST['last_visit']) : '';
-$url_sea	     = ig('search_id') ? '&amp;search_id=' . g('search_id') : '';
-$url_pg		     = ig('page') ? '&amp;page=' . g('page', 'int') : '';
-$page_action	 = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or . $url_sea . $url_lst;
-$ord_action		 = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_pg . $url_sea . $url_lst;
-$page2_action	= basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or2 . $url_sea . $url_lst;
-$action			    = $page_action . $url_pg;
-$is_search		  = $affected   = false;
-$H_FORM_KEYS	 = kleeja_add_form_key('adm_files');
+$url_or                = isset($_REQUEST['order_by']) ? '&amp;order_by=' . htmlspecialchars($_REQUEST['order_by']) . (isset($_REQUEST['order_way']) ? '&amp;order_by=1' : '') : '';
+$url_or2               = isset($_REQUEST['order_by']) ? '&amp;order_by=' . htmlspecialchars($_REQUEST['order_by'])  : '';
+$url_lst               = isset($_REQUEST['last_visit']) ? '&amp;last_visit=' . htmlspecialchars($_REQUEST['last_visit']) : '';
+$url_sea               = ig('search_id') ? '&amp;search_id=' . g('search_id') : '';
+$url_pg                = ig('page') ? '&amp;page=' . g('page', 'int') : '';
+$page_action           = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or . $url_sea . $url_lst;
+$ord_action            = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_pg . $url_sea . $url_lst;
+$page2_action          = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or2 . $url_sea . $url_lst;
+$action                = $page_action . $url_pg;
+$is_search             = $affected      = false;
+$H_FORM_KEYS           = kleeja_add_form_key('adm_files');
 
 //
 // Check form key
@@ -64,10 +64,10 @@ if (ip('submit'))
     //TODO use IN(...)
     foreach ($del as $key => $id)
     {
-        $query	= [
-            'SELECT'	 => 'f.id, f.name, f.folder, f.size, f.type',
-            'FROM'			 => "{$dbprefix}files f",
-            'WHERE'			=> 'f.id = ' . intval($id),
+        $query    = [
+            'SELECT'           => 'f.id, f.name, f.folder, f.size, f.type',
+            'FROM'             => "{$dbprefix}files f",
+            'WHERE'            => 'f.id = ' . intval($id),
         ];
 
         $result = $SQL->build($query);
@@ -75,11 +75,11 @@ if (ip('submit'))
         while ($row=$SQL->fetch_array($result))
         {
             //delete from folder ..
-            @kleeja_unlink (PATH . $row['folder'] . '/' . $row['name']);
+            @kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
             //delete thumb
-            if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name'] ))
+            if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
             {
-                @kleeja_unlink (PATH . $row['folder'] . '/thumbs/' . $row['name'] );
+                @kleeja_unlink(PATH . $row['folder'] . '/thumbs/' . $row['name']);
             }
 
             $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
@@ -107,16 +107,16 @@ if (ip('submit'))
     if (isset($ids) && sizeof($ids))
     {
         $query_del = [
-            'DELETE'	=> "{$dbprefix}files",
-            'WHERE'	 => '`id` IN (' . implode(',', $ids) . ')'
+            'DELETE'    => "{$dbprefix}files",
+            'WHERE'     => '`id` IN (' . implode(',', $ids) . ')'
         ];
 
         $SQL->build($query_del);
 
         //update number of stats
-        $update_query	= [
-            'UPDATE'	=> "{$dbprefix}stats",
-            'SET'		  => "sizes=sizes-$sizes, files=files-$files_num, imgs=imgs-$imgs_num",
+        $update_query    = [
+            'UPDATE'       => "{$dbprefix}stats",
+            'SET'          => "sizes=sizes-$sizes, files=files-$files_num, imgs=imgs-$imgs_num",
         ];
 
         $SQL->build($update_query);
@@ -131,19 +131,19 @@ if (ip('submit'))
     //show msg now
     $text = ($affected && (isset($ids) && sizeof($ids)) ? $lang['FILES_UPDATED'] : $lang['NO_UP_CHANGE_S']) .
                 '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . str_replace('&amp;', '&', $action) . '\');", 2000);</script>' . "\n";
-    $stylee	= 'admin_info';
+    $stylee    = 'admin_info';
 }
 else
 {
 
 //
-    //Delete all user files [only one user]			
+//Delete all user files [only one user]
 //
     if (ig('deletefiles'))
     {
-        $query	= [
-            'SELECT'	=> 'f.id, f.size, f.name, f.folder',
-            'FROM'		 => "{$dbprefix}files f",
+        $query    = [
+            'SELECT'       => 'f.id, f.size, f.name, f.folder',
+            'FROM'         => "{$dbprefix}files f",
         ];
 
         //get search filter
@@ -168,12 +168,12 @@ else
         while ($row=$SQL->fetch_array($result))
         {
             //delete from folder ..
-            @kleeja_unlink (PATH . $row['folder'] . '/' . $row['name']);
+            @kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
 
             //delete thumb
             if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
             {
-                @kleeja_unlink (PATH . $row['folder'] . '/thumbs/' . $row['name']);
+                @kleeja_unlink(PATH . $row['folder'] . '/thumbs/' . $row['name']);
             }
 
             $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
@@ -200,9 +200,9 @@ else
         else
         {
             //update number of stats
-            $update_query	= [
-                'UPDATE'	=> "{$dbprefix}stats",
-                'SET'		  => "sizes=sizes-$sizes, files=files-$files_num, imgs=imgs-$imgs_num",
+            $update_query    = [
+                'UPDATE'       => "{$dbprefix}stats",
+                'SET'          => "sizes=sizes-$sizes, files=files-$files_num, imgs=imgs-$imgs_num",
             ];
 
             $SQL->build($update_query);
@@ -213,9 +213,9 @@ else
             }
 
             //delete all files in just one query
-            $query_del	= [
-                'DELETE'	=> "{$dbprefix}files",
-                'WHERE'	 => '`id` IN (' . implode(',', $ids) . ')'
+            $query_del    = [
+                'DELETE'    => "{$dbprefix}files",
+                'WHERE'     => '`id` IN (' . implode(',', $ids) . ')'
             ];
 
             $SQL->build($query_del);
@@ -228,19 +228,19 @@ else
     //begin default files page
 //
 
-    $query	= [
-        'SELECT'	  => 'COUNT(f.id) AS total_files',
-        'FROM'		   => "{$dbprefix}files f",
-        'ORDER BY'	=> 'f.id '
+    $query    = [
+        'SELECT'         => 'COUNT(f.id) AS total_files',
+        'FROM'           => "{$dbprefix}files f",
+        'ORDER BY'       => 'f.id '
     ];
 
     //if user system is default, we use users table
     if ((int) $config['user_system'] == 1)
     {
-        $query['JOINS']	=	[
+        $query['JOINS']    =    [
             [
-                'LEFT JOIN'	=> "{$dbprefix}users u",
-                'ON'		      => 'u.id=f.user'
+                'LEFT JOIN'       => "{$dbprefix}users u",
+                'ON'              => 'u.id=f.user'
             ]
         ];
     }
@@ -250,15 +250,15 @@ else
     //posts search ..
     if (ig('search_id'))
     {
-        //get search filter 
-        $filter         = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
-        $deletelink     = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&deletefiles=' . g('search_id');
-        $is_search	     = true;
-        $query['WHERE'] = build_search_query(unserialize(htmlspecialchars_decode($filter['filter_value'])));
+        //get search filter
+        $filter            = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
+        $deletelink        = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&deletefiles=' . g('search_id');
+        $is_search         = true;
+        $query['WHERE']    = build_search_query(unserialize(htmlspecialchars_decode($filter['filter_value'])));
     }
     elseif (isset($_REQUEST['last_visit']))
     {
-        $query['WHERE']	= 'f.time > ' . intval($_REQUEST['last_visit']);
+        $query['WHERE']    = 'f.time > ' . intval($_REQUEST['last_visit']);
     }
 
     //to-be-deleted
@@ -277,7 +277,7 @@ else
     {
         //display files or display pics and files only in search
         $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
-        $query['WHERE'] = $query['WHERE'] . (empty($query['WHERE']) ? '' : ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
+        $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
     }
     else
     {
@@ -303,10 +303,10 @@ else
     }
 
 
-    //pager 
-    $currentPage= ig('page') ? g('page', 'int') : 1;
-    $Pager		    = new Pagination($files_acp_perpage, $nums_rows, $currentPage);
-    $start		    = $Pager->getStartRow();
+    //pager
+    $currentPage      = ig('page') ? g('page', 'int') : 1;
+    $Pager            = new Pagination($files_acp_perpage, $nums_rows, $currentPage);
+    $start            = $Pager->getStartRow();
 
     $no_results = false;
 
@@ -315,11 +315,11 @@ else
 
     if ($nums_rows > 0)
     {
-        $query['SELECT'] = 'f.*' . ((int) $config['user_system'] == 1 ? ', u.name AS username' : '');
-        $query['LIMIT']	 = "$start, $files_acp_perpage";
-        $result          = $SQL->build($query);
-        $sizes           = false;
-        $num             = 0;
+        $query['SELECT']    = 'f.*' . ((int) $config['user_system'] == 1 ? ', u.name AS username' : '');
+        $query['LIMIT']     = "$start, $files_acp_perpage";
+        $result             = $SQL->build($query);
+        $sizes              = false;
+        $num                = 0;
         //if Kleeja integtared we dont want make alot of queries
         $ids_and_names = [];
 
@@ -352,23 +352,23 @@ else
             $file_name = $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
 
             //make new lovely arrays !!
-            $arr[]	= [
-                'id'		  => $row['id'],
-                'name'		=> '<a title="' . $file_name . '" href="' . $url . '" target="blank">' .
+            $arr[]    = [
+                'id'          => $row['id'],
+                'name'        => '<a title="' . $file_name . '" href="' . $url . '" target="blank">' .
                     shorten_text($file_name, 25) . '</a>',
-                'fullname'	     => $file_name,
-                'size'		        => readable_size($row['size']),
-                'ups'		         => $row['uploads'],
-                'direct'	       => $row['id_form'] == 'direct' ? true : false,
-                'time_human'    => kleeja_date($row['time']),
-                'time'		        => kleeja_date($row['time'], false),
-                'type'		        => $row['type'],
-                'typeicon'	     => file_exists(PATH . 'images/filetypes/' . $row['type'] . '.png') ? PATH . 'images/filetypes/' . $row['type'] . '.png' : PATH . 'images/filetypes/file.png',
-                'folder'	       => $row['folder'],
-                'report'	       => $row['report'] > 4 ? '<span style="color:red;font-weight:bold">' . $row['report'] . '</span>':$row['report'],
-                'user'		        => $row['user'] == '-1' ? $lang['GUST'] :  '<a href="' . $userfile . '" target="_blank">' . $row['username'] . '</a>',
-                'ip'		          => '<a href="http://www.ripe.net/whois?form_type=simple&amp;full_query_string=&amp;searchtext=' . $row['user_ip'] . '&amp;do_search=Search" target="_new">' . $row['user_ip'] . '</a>',
-                'showfilesbyip' => basename(ADMIN_PATH) . '?cp=h_search&amp;s_input=1&amp;s_value=' . $row['user_ip']
+                'fullname'            => $file_name,
+                'size'                => readable_size($row['size']),
+                'ups'                 => $row['uploads'],
+                'direct'              => $row['id_form'] == 'direct' ? true : false,
+                'time_human'          => kleeja_date($row['time']),
+                'time'                => kleeja_date($row['time'], false),
+                'type'                => $row['type'],
+                'typeicon'            => file_exists(PATH . 'images/filetypes/' . $row['type'] . '.png') ? PATH . 'images/filetypes/' . $row['type'] . '.png' : PATH . 'images/filetypes/file.png',
+                'folder'              => $row['folder'],
+                'report'              => $row['report'] > 4 ? '<span style="color:red;font-weight:bold">' . $row['report'] . '</span>':$row['report'],
+                'user'                => $row['user'] == '-1' ? $lang['GUST'] :  '<a href="' . $userfile . '" target="_blank">' . $row['username'] . '</a>',
+                'ip'                  => '<a href="http://www.ripe.net/whois?form_type=simple&amp;full_query_string=&amp;searchtext=' . $row['user_ip'] . '&amp;do_search=Search" target="_new">' . $row['user_ip'] . '</a>',
+                'showfilesbyip'       => basename(ADMIN_PATH) . '?cp=h_search&amp;s_input=1&amp;s_value=' . $row['user_ip']
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('arr_files_admin', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -400,7 +400,7 @@ else
 
 
     //some vars
-    $total_pages  = $Pager->getTotalPages();
-    $page_nums    = $Pager->print_nums($page_action);
-    $current_page	= $Pager->getCurrentPage();
+    $total_pages     = $Pager->getTotalPages();
+    $page_nums       = $Pager->print_nums($page_action);
+    $current_page    = $Pager->getCurrentPage();
 }

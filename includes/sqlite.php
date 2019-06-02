@@ -16,13 +16,13 @@ if (! defined('IN_COMMON'))
 
 if (! defined('SQL_LAYER')):
 
-define('SQL_LAYER', 'mysqli');
+define('SQL_LAYER', 'sqlite');
 
 class KleejaDatabase
 {
-    /** @var mysqli */
+    /** @var SQLITE3 */
     private $connect_id               = null;
-    /** @var mysqli_result */
+    /** @var SQLite3Result */
     private $result                   = null;
     public $dbprefix                  = '';
     private $dbname                   = '';
@@ -32,56 +32,47 @@ class KleejaDatabase
     private $show_errors              = true;
 
 
+
     /**
      * connect
      *
-     * @param string $host
-     * @param string $db_username
-     * @param string $db_password
-     * @param string $db_name
-     * @param string $dbprefix
+     * @param string $location    path of sqlite database
+     * @param string $db_username not needed
+     * @param string $db_password not needed
+     * @param string $db_name     not needed
+     * @param string $dbprefix    tables prefix
      */
-    public function __construct($host, $db_username, $db_password, $db_name, $dbprefix)
+    public function __construct($location, $db_username, $db_password, $db_name, $dbprefix)
     {
-        $port  = 3306;
-
-        if (strpos($host, ':') !== false)
+        try
         {
-            $host = substr($host, 0, strpos($host, ':'));
-            $port = (int) substr($host, strpos($host, ':')+1);
+            $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
+        }
+        catch (Exception $e)
+        {
+            //...
         }
 
         $this->dbprefix        = $dbprefix;
         $this->dbname          = $db_name;
 
-        $this->connect_id = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
-
         //no error
-        if (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS'))
+        if (defined('SQL_NO_ERRORS'))
         {
             $this->show_errors = false;
         }
-
 
         if (! $this->connect_id)
         {
             //loggin -> no database -> close connection
             $this->close();
-            $this->error_msg('We can not connect to the server ...');
+            $this->error_msg('We can not connect to the sqlite database, check location or existence of the SQLite dirver ...');
             return false;
         }
 
         //connecting
         kleeja_log('[Connected] : ' . kleeja_get_page());
 
-
-        if (! defined('DISABLE_MYSQL_UTF8'))
-        {
-            if (mysqli_set_charset($this->connect_id, 'utf8'))
-            {
-                kleeja_log('[Set to UTF8] : --> ');
-            }
-        }
 
         return $this->connect_id;
     }
@@ -93,7 +84,7 @@ class KleejaDatabase
 
     public function is_connected()
     {
-        return ! (is_resource($this->connect_id) || empty($this->connect_id));
+        return ! (is_null($this->connect_id) || empty($this->connect_id));
     }
 
     // close the connection
@@ -107,13 +98,13 @@ class KleejaDatabase
         // Commit any remaining transactions
         if ($this->in_transaction)
         {
-            mysqli_commit($this->connect_id);
+            $this->query('COMMIT;');
         }
 
         //loggin -> close connection
         kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-        if(! is_resource($this->connect_id))
+        if (! is_resource($this->connect_id))
         {
             return true;
         }
@@ -124,33 +115,27 @@ class KleejaDatabase
     // encoding functions
     public function set_utf8()
     {
-        $this->set_names('utf8');
+        //$this->set_names('utf8');
     }
 
     public function set_names($charset)
     {
-        @mysqli_set_charset($this->connect_id, $charset);
     }
 
     public function client_encoding()
     {
-        return mysqli_character_set_name($this->connect_id);
     }
 
     public function version()
     {
-        $vr = $this->query('SELECT VERSION() AS v');
-        $vs = $this->fetch_array($vr);
-        $vs = $vs['v'];
-        return preg_replace('/^([^-]+).*$/', '\\1', $vs);
+        return SQLite3::version();
     }
-
 
     /**
      * execute a query
      *
-     * @param string $query
-     * @param boolean $transaction
+     * @param  string  $query
+     * @param  boolean $transaction
      * @return bool
      */
     public function query($query, $transaction = false)
@@ -166,23 +151,40 @@ class KleejaDatabase
         //
         unset($this->result);
 
+        if (strpos($query, 'CREATE TABLE') !== false || strpos($query, 'ALTER DATABASE') !== false)
+        {
+            $sqlite_types = [
+                '/AUTO_INCREMENT/i'                                                                                                                                                 => '',
+                '/VARCHAR\s?(\\([0-9]+\\))?/i'                                                                                                                                      => 'TEXT',
+                '/COLLATE\s+([a-z0-9_]+)/i'                                                                                                                                         => '',
+                '/(TINY|SMALL|MEDIUM|BIG)?INT\s?(\([0-9]+\))?\s?(UNSIGNED)?/i'                                                                                                      => 'INTEGER ',
+                '/(TINY|MEDIUM|LONG)?TEXT/i'                                                                                                                                        => 'TEXT',
+                '/KEY\s`?([a-z0-9_]+)`?\s\(`?([a-z0-9_]+)`?(\([0-9]+\))?\)\s?,?/i'                                                                                                  => '',
+                '/\)(\s{0,4}ENGINE=([a-z0-9_]+))?(\s{0,4}DEFAULT)?(\s{0,4}CHARSET=([a-z0-9_]+))?(\s{0,4}COLLATE=([a-z0-9_]+))?(\s{0,4}AUTOINCREMENT)?(\s{0,4}=\s?1)?(\s{0,4};)?/i'  => ')',
+                '/,\s+\)/'                                                                                                                                                          => ')',
+                '/INTEGER\s{0,4}NOT\s{0,4}NULL/i'                                                                                                                                   => 'INTEGER',
+            ];
+
+            //todo extract keys and add as CREATE INDEX index_name ON table (column);
+
+            foreach ($sqlite_types as $old_type => $new_type)
+            {
+                $query = preg_replace($old_type, $new_type, $query);
+            }
+        }
+
         if (! empty($query))
         {
-            //debug .. //////////////
+            //debug
             $srartum_sql = get_microtime();
-            ////////////////
 
             if ($transaction && ! $this->in_transaction)
             {
-                if (! mysqli_autocommit($this->connect_id, false))
-                {
-                    return false;
-                }
-
+                $this->query('BEGIN;');
                 $this->in_transaction = true;
             }
 
-            $this->result = mysqli_query($this->connect_id, $query);
+            $this->result = @$this->connect_id->query($query);
 
             //debug .. //////////////
             $this->debugr[$this->query_num+1] = [$query, sprintf('%.5f', get_microtime() - $srartum_sql)];
@@ -202,7 +204,7 @@ class KleejaDatabase
         {
             if ($this->in_transaction)
             {
-                $this->result = mysqli_commit($this->connect_id);
+                $this->result = $this->connect_id->query('COMMIT;');
             }
         }
 
@@ -213,9 +215,9 @@ class KleejaDatabase
             {
                 $this->in_transaction = false;
 
-                if (! mysqli_commit($this->connect_id))
+                if (! $this->connect_id->query('COMMIT;'))
                 {
-                    mysqli_rollback($this->connect_id);
+                    $this->connect_id->query('ROLLBACK;');
                     return false;
                 }
             }
@@ -227,7 +229,7 @@ class KleejaDatabase
         {
             if ($this->in_transaction)
             {
-                mysqli_rollback($this->connect_id);
+                $this->connect_id->query('ROLLBACK;');
                 $this->in_transaction = false;
             }
             return false;
@@ -237,7 +239,7 @@ class KleejaDatabase
     /**
      * build structured query ['SELECT' => ..., 'FROM' => ..., ...]
      *
-     * @param array $query
+     * @param  array  $query
      * @return string
      */
     public function build($query)
@@ -252,7 +254,7 @@ class KleejaDatabase
             {
                 foreach ($query['JOINS'] as $cur_join)
                 {
-                    $sql .= ' ' . key($cur_join) . ' ' . @current($cur_join) . ' ON ' . $cur_join['ON'];
+                    $sql .= ' ' . key($cur_join) . ' ' . current($cur_join) . ' ON ' . $cur_join['ON'];
                 }
             }
 
@@ -294,11 +296,6 @@ class KleejaDatabase
         }
         elseif (isset($query['UPDATE']))
         {
-            if (isset($query['PARAMS']['LOW_PRIORITY']))
-            {
-                $query['UPDATE'] = 'LOW_PRIORITY ' . $query['UPDATE'];
-            }
-
             $sql = 'UPDATE ' . $query['UPDATE'] . ' SET ' . $query['SET'];
 
             if (! empty($query['WHERE']))
@@ -333,7 +330,7 @@ class KleejaDatabase
     /**
      * free the memmory from the last results
      *
-     * @param  integer $query_id optional
+     * @param  SQLite3Result $query_id optional
      * @return bool
      */
     public function freeresult($query_id = 0)
@@ -345,7 +342,7 @@ class KleejaDatabase
 
         if ($query_id)
         {
-            mysqli_free_result($query_id);
+            $query_id->finalize();
             return true;
         }
         else
@@ -354,11 +351,10 @@ class KleejaDatabase
         }
     }
 
-
     /**
      * fetch results (alias of fetch_array)
      *
-     * @param mysqli_result $query_id
+     * @param  SQLite3Result $query_id
      * @return array
      */
     public function fetch($query_id = 0)
@@ -369,7 +365,7 @@ class KleejaDatabase
     /**
      * fetch results
      *
-     * @param  mysqli_result $query_id
+     * @param  SQLite3Result $query_id
      * @return array
      */
     public function fetch_array($query_id = 0)
@@ -379,13 +375,18 @@ class KleejaDatabase
             $query_id = $this->result;
         }
 
-        return $query_id ? mysqli_fetch_array($query_id, MYSQLI_ASSOC) : false;
+        if ($query_id && $query_id->numColumns() > 0)
+        {
+            return $query_id->fetchArray(SQLITE3_ASSOC);
+        }
+
+        return false;
     }
 
     /**
      * return number of rows of result (not efficient)
      *
-     * @param mysqli_result $query_id
+     * @param  SQLite3Result $query_id
      * @return int
      */
     public function num_rows($query_id = 0)
@@ -395,9 +396,15 @@ class KleejaDatabase
             $query_id = $this->result;
         }
 
-        return $query_id ? mysqli_num_rows($query_id) : false;
-    }
 
+
+        if ($query_id && $results = $query_id->numColumns())
+        {
+            return $results;
+        }
+
+        return false;
+    }
 
     /**
      * return the id of latest inserted record
@@ -406,36 +413,31 @@ class KleejaDatabase
      */
     public function insert_id()
     {
-        return $this->is_connected() ? mysqli_insert_id($this->connect_id) : false;
+        return $this->is_connected() ? $this->connect_id->lastInsertRowID() : false;
     }
 
     /**
      * extra escape
      *
-     * @param string $msg
+     * @param  string $msg
      * @return string
      */
     public function escape($msg)
     {
         $msg = htmlspecialchars($msg, ENT_QUOTES);
-        //$msg = (!get_magic_quotes_gpc()) ? addslashes ($msg) : $msg;
         $msg = $this->real_escape($msg);
         return $msg;
     }
 
     /**
      * escape
-     * @param  string $msg
+     * @param  string     $msg
      * @return int|string
      */
+
     public function real_escape($msg)
     {
-        if (! $this->is_connected())
-        {
-            return false;
-        }
-
-        return mysqli_real_escape_string($this->connect_id, $msg);
+        return SQLite3::escapeString($msg);
     }
 
     /**
@@ -445,7 +447,7 @@ class KleejaDatabase
      */
     public function affected()
     {
-        return $this->is_connected() ? mysqli_affected_rows($this->connect_id) : false;
+        return $this->is_connected() ? $this->connect_id->changes() : false;
     }
 
     /**
@@ -455,25 +457,25 @@ class KleejaDatabase
      */
     public function server_info()
     {
-        return 'MySQLi ' . $this->version();
+        return 'SQLite3 ' . $this->version();
     }
 
     /**
      * present error messages
      *
-     * @param string $msg
+     * @param  string $msg
      * @return void
      */
     private function error_msg($msg)
     {
         if (! $this->show_errors)
         {
-            kleeja_log('MySQL: ' . $msg);
+            kleeja_log('SQLite3: ' . $msg);
             return false;
         }
 
         [$error_no, $error_msg] = $this->get_error();
-        $error_sql = @current($this->debugr[$this->query_num+1]);
+        $error_sql              = @current($this->debugr[$this->query_num+1]);
 
         //some ppl want hide their table names
         if (! defined('DEV_STAGE'))
@@ -499,7 +501,7 @@ class KleejaDatabase
         //is this error related to updating?
         $updating_related = false;
 
-        if (strpos($error_msg, 'Unknown column') !== false)
+        if (strpos($error_msg, 'Unknown column') !== false || strpos($error_msg, 'no such table') !== false)
         {
             $updating_related = true;
         }
@@ -547,13 +549,13 @@ class KleejaDatabase
      */
     public function get_error()
     {
-        if ($this->is_connected())
+        if ($this->connect_id)
         {
-            return [@mysqli_errno($this->connect_id), @mysqli_error($this->connect_id)];
+            return [$this->connect_id->lastErrorCode(), $this->connect_id->lastErrorMsg()];
         }
         else
         {
-            return [@mysqli_connect_errno(), @mysqli_connect_error()];
+            return [0, 'uknown-error-not-connected'];
         }
     }
 }

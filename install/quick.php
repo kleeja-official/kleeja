@@ -25,7 +25,15 @@ include_once PATH . 'includes/plugins.php';
 include_once PATH . 'includes/functions_display.php';
 include_once PATH . 'includes/functions_alternative.php';
 include_once PATH . 'includes/functions.php';
-include_once PATH . 'includes/mysqli.php';
+
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
 
 include_once 'includes/functions_install.php';
 
@@ -49,16 +57,20 @@ else
     exit('`config.php` was missing! so we created one for you, kindly edit the file with database information.');
 }
 
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 if (! $SQL->is_connected())
 {
     exit('Can not connect to database, please make sure the data in `config.php` is correct!');
 }
 
-if (! empty($SQL->mysql_version()) && version_compare($SQL->mysql_version(), MIN_MYSQL_VERSION, '<'))
+
+if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli')
 {
-    exit('The required MySQL version is `' . MIN_MYSQL_VERSION . '` and yours is `' . $SQL->mysql_version() . '`!');
+    if (! empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<'))
+    {
+        exit('The required MySQL version is `' . MIN_MYSQL_VERSION . '` and yours is `' . $SQL->version() . '`!');
+    }
 }
 
 foreach (['cache', 'uploads', 'uploads/thumbs'] as $folder)
@@ -76,14 +88,14 @@ foreach (['cache', 'uploads', 'uploads/thumbs'] as $folder)
 
 
 //install
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
 
 include_once PATH . 'includes/usr.php';
 include_once PATH . 'includes/functions_alternative.php';
 
 $usrcp                     = new usrcp;
 $password                  = ! empty($cli_options['password']) ? $cli_options['password'] : mt_rand();
-$user_salt                 = substr(kleeja_base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+$user_salt                 = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
 $user_pass                 = $usrcp->kleeja_hash_password($password . $user_salt);
 $user_name                 = $clean_name = 'admin';
 $user_mail                 = $config_sitemail = 'admin@example.com';

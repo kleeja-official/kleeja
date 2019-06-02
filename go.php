@@ -31,8 +31,8 @@ switch ($current_go_case)
     case 'exts' :
     case 'guide' :
 
-        $stylee	= 'guide';
-        $titlee	= $lang['GUIDE'];
+        $stylee    = 'guide';
+        $titlee    = $lang['GUIDE'];
 
         $tgroups   = $ttgroups   = [];
         $tgroups   = array_keys($d_groups);
@@ -50,15 +50,15 @@ switch ($current_go_case)
             foreach ($d_groups[$gid]['exts'] as $ext=>$size)
             {
                 $ttgroups[] = [
-                    'ext'	      => $ext,
-                    'size'	     => readable_size($size),
-                    'group'	    => $gid,
-                    'group_name'=> str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'], 
+                    'ext'          => $ext,
+                    'size'         => readable_size($size),
+                    'group'        => $gid,
+                    'group_name'   => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'], 
                                         [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
                                         $d_groups[$gid]['data']['group_name']),
-                    'most_firstrow'=> $same_group == 0 ? true : false,
-                    'firstrow'     => $same_group ==0 or $same_group != $gid ? true : false,
-                    'rando'	       => $rando,
+                    'most_firstrow'   => $same_group == 0 ? true : false,
+                    'firstrow'        => $same_group ==0 or $same_group != $gid ? true : false,
+                    'rando'           => $rando,
                 ];
                 $same_group = $gid;
             }
@@ -81,32 +81,32 @@ switch ($current_go_case)
         }
 
         //page info
-        $stylee	     = 'report';
-        $titlee	     = $lang['REPORT'];
-        $id_d	       = ig('id') ? g('id', 'int') : (ip('rid') ? p('rid', 'int') : 0);
-        $url_id	     = (int) $config['mod_writer'] == 1 ? $config['siteurl'] . 'download' . $id_d . '.html' : $config['siteurl'] . 'do.php?id=' . $id_d;
-        $action	     = $config['siteurl'] . 'go.php?go=report';
-        $H_FORM_KEYS	= kleeja_add_form_key('report');
-        $NOT_USER		  = ! $usrcp->name() ? true : false; 
-        $s_url			    = p('surl');
+        $stylee               = 'report';
+        $titlee               = $lang['REPORT'];
+        $id_d                 = ig('id') ? g('id', 'int') : (ip('rid') ? p('rid', 'int') : 0);
+        $url_id               = (int) $config['mod_writer'] == 1 ? $config['siteurl'] . 'download' . $id_d . '.html' : $config['siteurl'] . 'do.php?id=' . $id_d;
+        $action               = $config['siteurl'] . 'go.php?go=report';
+        $H_FORM_KEYS          = kleeja_add_form_key('report');
+        $NOT_USER             = ! $usrcp->name() ? true : false; 
+        $s_url                = p('surl');
 
         //Does this file exists ?
         if (ig('id') || ip('rid'))
         {
             $query = [
-                'SELECT'	=> 'f.real_filename, f.name',
-                'FROM'		 => "{$dbprefix}files f",
-                'WHERE'		=> 'id=' . $id_d
+                'SELECT'       => 'f.real_filename, f.name',
+                'FROM'         => "{$dbprefix}files f",
+                'WHERE'        => 'id=' . $id_d
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_report_go_id', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-            $result	= $SQL->build($query);
+            $result    = $SQL->build($query);
 
             if ($SQL->num_rows($result))
             {
-                $row               = $SQL->fetch_array($result);
-                $filename_for_show	= $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
+                $row                  = $SQL->fetch_array($result);
+                $filename_for_show    = $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
             }
             else
             {
@@ -131,7 +131,7 @@ switch ($current_go_case)
         }
         else
         {
-            $ERRORS	= [];
+            $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_report_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -143,7 +143,7 @@ switch ($current_go_case)
 
             if (! kleeja_check_captcha())
             {
-                $ERRORS['captcha']	= $lang['WRONG_VERTY_CODE'];
+                $ERRORS['captcha']    = $lang['WRONG_VERTY_CODE'];
             }
 
             if ((empty(p('rname')) && $NOT_USER))
@@ -154,7 +154,7 @@ switch ($current_go_case)
 
             if (ip('surl') && trim(p('surl')) == '')
             {
-                $ERRORS['surl']	=  $lang['EMPTY_FIELDS'] . ' : [ ' . $lang['URL_F_FILE'] . ' ]';
+                $ERRORS['surl']    =  $lang['EMPTY_FIELDS'] . ' : [ ' . $lang['URL_F_FILE'] . ' ]';
             }
 
             if (ip('rmail') &&  ! preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", trim(strtolower(p('rmail')))) && $NOT_USER)
@@ -177,19 +177,19 @@ switch ($current_go_case)
             //no error , lets do process
             if (empty($ERRORS))
             {
-                $name	 = $NOT_USER ? (string) $SQL->escape(p('rname')) : $usrcp->name();
-                $text	 = (string) $SQL->escape(p('rtext'));
-                $mail	 = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('rmail')))) : $usrcp->mail();
-                $url	  = (string) ip('rid') ? $SQL->escape($url_id) : $SQL->real_escape(p('surl'));
-                $time 	= (int) time();
-                $rid	  = ip('rid') ? 0 : p('rid', 'int');
-                $ip		  =  get_ip();
+                $name        = $NOT_USER ? (string) $SQL->escape(p('rname')) : $usrcp->name();
+                $text        = (string) $SQL->escape(p('rtext'));
+                $mail        = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('rmail')))) : $usrcp->mail();
+                $url         = (string) ip('rid') ? $SQL->escape($url_id) : $SQL->real_escape(p('surl'));
+                $time        = (int) time();
+                $rid         = ip('rid') ? 0 : p('rid', 'int');
+                $ip          =  get_ip();
 
 
-                $insert_query	= [
-                    'INSERT'	=> 'name ,mail ,url ,text ,time ,ip',
-                    'INTO'		 => "{$dbprefix}reports",
-                    'VALUES'	=> "'$name', '$mail', '$url', '$text', $time, '$ip'"
+                $insert_query    = [
+                    'INSERT'       => 'name ,mail ,url ,text ,time ,ip',
+                    'INTO'         => "{$dbprefix}reports",
+                    'VALUES'       => "'$name', '$mail', '$url', '$text', $time, '$ip'"
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_insert_new_report', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -197,10 +197,10 @@ switch ($current_go_case)
                 $SQL->build($insert_query);
 
                 //update number of reports
-                $update_query	= [
-                    'UPDATE'	=> "{$dbprefix}files",
-                    'SET'		  => 'report=report+1',
-                    'WHERE'		=> 'id=' . $rid,
+                $update_query    = [
+                    'UPDATE'       => "{$dbprefix}files",
+                    'SET'          => 'report=report+1',
+                    'WHERE'        => 'id=' . $rid,
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_update_no_file_report', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -225,9 +225,9 @@ switch ($current_go_case)
     //
     case 'rules' :
 
-        $stylee	  = 'rules';
-        $titlee	  = $lang['RULES'];
-        $contents = strlen($ruless) > 3 ? stripslashes($ruless) : $lang['NO_RULES_NOW'];
+        $stylee      = 'rules';
+        $titlee      = $lang['RULES'];
+        $contents    = strlen($ruless) > 3 ? stripslashes($ruless) : $lang['NO_RULES_NOW'];
 
         is_array($plugin_run_result = Plugins::getInstance()->run('rules_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -246,11 +246,11 @@ switch ($current_go_case)
         }
 
         //page info
-        $stylee	     = 'call';
-        $titlee	     = $lang['CALL'];
-        $action	     = './go.php?go=call';
-        $H_FORM_KEYS = kleeja_add_form_key('call');
-        $NOT_USER    = ! $usrcp->name() ? true : false; 
+        $stylee         = 'call';
+        $titlee         = $lang['CALL'];
+        $action         = './go.php?go=call';
+        $H_FORM_KEYS    = kleeja_add_form_key('call');
+        $NOT_USER       = ! $usrcp->name() ? true : false; 
         //no error yet 
         $ERRORS = false;
 
@@ -264,7 +264,7 @@ switch ($current_go_case)
         if (ip('submit'))
         {
             //after sumit
-            $ERRORS	= [];
+            $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_call_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -280,9 +280,9 @@ switch ($current_go_case)
                 $ERRORS['captcha'] = $lang['WRONG_VERTY_CODE'];
             }
 
-            if ((empty(p('cname')) && $NOT_USER)  || empty(p('ctext')) )
+            if ((empty(p('cname')) && $NOT_USER)  || empty(p('ctext')))
             {
-                $ERRORS['cname']	= $lang['EMPTY_FIELDS'] . ' : ' . (empty(p('cname')) && $NOT_USER ? ' [ ' . $lang['YOURNAME'] . ' ] ' : '')
+                $ERRORS['cname']    = $lang['EMPTY_FIELDS'] . ' : ' . (empty(p('cname')) && $NOT_USER ? ' [ ' . $lang['YOURNAME'] . ' ] ' : '')
                                 . (empty(p('ctext')) ? '  [ ' . $lang['TEXT'] . ' ] ': '');
             }
 
@@ -306,16 +306,16 @@ switch ($current_go_case)
             //no errors ,lets do process
             if (empty($ERRORS))
             {
-                $name	 = $NOT_USER ? (string) $SQL->escape(p('cname')) : $usrcp->name();
-                $text	 = (string) $SQL->escape(p('ctext'));
-                $mail	 = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('cmail')))) : $usrcp->mail();
-                $timee	= (int) time();
-                $ip		  =  get_ip();
+                $name        = $NOT_USER ? (string) $SQL->escape(p('cname')) : $usrcp->name();
+                $text        = (string) $SQL->escape(p('ctext'));
+                $mail        = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('cmail')))) : $usrcp->mail();
+                $timee       = (int) time();
+                $ip          =  get_ip();
 
-                $insert_query	= [
-                    'INSERT'	=> 'name ,text ,mail ,time ,ip',
-                    'INTO'		 => "`{$dbprefix}call`",
-                    'VALUES'	=> "'$name', '$text', '$mail', $timee, '$ip'"
+                $insert_query    = [
+                    'INSERT'       => 'name ,text ,mail ,time ,ip',
+                    'INTO'         => "`{$dbprefix}call`",
+                    'VALUES'       => "'$name', '$text', '$mail', $timee, '$ip'"
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_insert_new_call', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -349,7 +349,7 @@ switch ($current_go_case)
         //f2b3a82060a22a80283ed961d080b79f
         //aa92468375a456de21d7ca05ef945212
         //
-        $cd	= preg_replace('/[^0-9a-z]/i', '', $SQL->escape(g('cd'))); // may.. will protect
+        $cd    = preg_replace('/[^0-9a-z]/i', '', $SQL->escape(g('cd'))); // may.. will protect
 
         if (empty($cd))
         {
@@ -360,16 +360,16 @@ switch ($current_go_case)
             //to check
             if (ig('sure') && g('sure') == 'ok')
             {
-                $query	= [
-                    'SELECT'=> 'f.id, f.name, f.folder, f.size, f.type',
-                    'FROM'	 => "{$dbprefix}files f",
-                    'WHERE'	=> "f.code_del='" . $cd . "'",
-                    'LIMIT'	=> '1',
+                $query    = [
+                    'SELECT'   => 'f.id, f.name, f.folder, f.size, f.type',
+                    'FROM'     => "{$dbprefix}files f",
+                    'WHERE'    => "f.code_del='" . $cd . "'",
+                    'LIMIT'    => '1',
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_file_with_code_del', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-                $result	= $SQL->build($query);
+                $result    = $SQL->build($query);
 
                 if ($SQL->num_rows($result) != 0)
                 {
@@ -384,9 +384,9 @@ switch ($current_go_case)
 
                         $is_img = in_array($row['type'], ['png','gif','jpg','jpeg','tif','tiff', 'bmp']) ? true : false;
 
-                        $query_del	= [
-                            'DELETE' => "{$dbprefix}files",
-                            'WHERE'	 => 'id=' . $row['id']
+                        $query_del    = [
+                            'DELETE'    => "{$dbprefix}files",
+                            'WHERE'     => 'id=' . $row['id']
                         ];
 
                         is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_file_with_code_del', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -396,9 +396,9 @@ switch ($current_go_case)
                         if ($SQL->affected())
                         {
                             //update number of stats
-                            $update_query	= [
-                                'UPDATE'	=> "{$dbprefix}stats",
-                                'SET'		  => ($is_img ? 'imgs=imgs-1':'files=files-1') . ',sizes=sizes-' . $row['size'],
+                            $update_query    = [
+                                'UPDATE'       => "{$dbprefix}stats",
+                                'SET'          => ($is_img ? 'imgs=imgs-1':'files=files-1') . ',sizes=sizes-' . $row['size'],
                             ];
 
                             $SQL->build($update_query);
@@ -419,16 +419,16 @@ switch ($current_go_case)
             {
                 //fix for IE+
                 $extra_codes = '<script type="text/javascript">
-						function confirm_from()
-						{
-							if(confirm(\'' . $lang['ARE_YOU_SURE_DO_THIS'] . '\')){
-								window.location = "go.php?go=del&sure=ok&cd=' . $cd . '";
-							}else{
-								window.location = "index.php";
-							}
-						}
-						window.onload=confirm_from;
-					</script>';
+                        function confirm_from()
+                        {
+                            if(confirm(\'' . $lang['ARE_YOU_SURE_DO_THIS'] . '\')){
+                                window.location = "go.php?go=del&sure=ok&cd=' . $cd . '";
+                            }else{
+                                window.location = "index.php";
+                            }
+                        }
+                        window.onload=confirm_from;
+                    </script>';
                 kleeja_info($lang['ARE_YOU_SURE_DO_THIS'], '', true, false, 0, $extra_codes);
             }
         }//else
@@ -456,8 +456,8 @@ switch ($current_go_case)
         //stats of most online users
         if (empty($config['most_user_online_ever']) || trim($config['most_user_online_ever']) == '')
         {
-            $most_online	= 1;// 1 == you 
-            $on_muoe		   = time();
+            $most_online       = 1;// 1 == you 
+            $on_muoe           = time();
         }
         else
         {
@@ -465,15 +465,15 @@ switch ($current_go_case)
         }
 
         //ok .. go on
-        $titlee		  = $lang['STATS'];
-        $stylee		  = 'stats';
-        $files_st	 = $stat_files;
-        $imgs_st	  = $stat_imgs;
-        $users_st	 = $stat_users;
-        $sizes_st	 = readable_size($stat_sizes);
-        $lst_dl_st	= (int) $config['del_f_day'] <= 0 ? false : kleeja_date($stat_last_f_del);
-        $lst_reg	  = empty($stat_last_user) ? $lang['UNKNOWN'] : $stat_last_user;
-        $on_muoe	  = kleeja_date($on_muoe);
+        $titlee          = $lang['STATS'];
+        $stylee          = 'stats';
+        $files_st        = $stat_files;
+        $imgs_st         = $stat_imgs;
+        $users_st        = $stat_users;
+        $sizes_st        = readable_size($stat_sizes);
+        $lst_dl_st       = (int) $config['del_f_day'] <= 0 ? false : kleeja_date($stat_last_f_del);
+        $lst_reg         = empty($stat_last_user) ? $lang['UNKNOWN'] : $stat_last_user;
+        $on_muoe         = kleeja_date($on_muoe);
 
         is_array($plugin_run_result = Plugins::getInstance()->run('stats_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
