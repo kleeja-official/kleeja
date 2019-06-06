@@ -79,6 +79,11 @@ switch ($case):
                 continue;
             }
 
+            if($case == 'check' && $row['plg_disabled'] == 1)
+            {
+                continue;
+            }
+
             $installed_plugins[$row['plg_name']] = $row;
 
             $installed_plugins[$row['plg_name']]['extra_info'] = Plugins::getInstance()->installed_plugin_info($row['plg_name']);
