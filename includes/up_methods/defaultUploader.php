@@ -324,7 +324,7 @@ class defaultUploader implements KleejaUploader
 
     /**
      * here happens the magic, call this on upload submit
-     * @param int $uploadType upload from files input or links
+     * @return void
      */
     public function upload()
     {

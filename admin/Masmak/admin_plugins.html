@@ -171,8 +171,9 @@
             <div class="media-body d-flex justify-content-between">
                 <div>
                     <h5 class="mt-0 mb-2">{{title}}</h5>
-                    <div style="direction: ltr;">
-                        <IF NAME="case == check">{{current_version}} → </IF>{{version}}
+                    <div>
+                        <small>{{description}}</small>
+                        <div style="direction: ltr;"><IF NAME="case == check">{{current_version}} → </IF>{{version}}</div>
                     </div>
                 </div>
 

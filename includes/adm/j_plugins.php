@@ -217,6 +217,7 @@ switch ($case):
                 'developer'       => $plugin_info['developer'],
                 'version'         => $plugin_file['version'],
                 'title'           => ! empty($plugin_info['title'][$config['language']]) ? $plugin_info['title'][$config['language']] : $plugin_info['title']['en'],
+                'description'     => ! empty($plugin_info['description'][$config['language']]) ? $plugin_info['description'][$config['language']] : $plugin_info['description']['en'],
                 'website'         => $plugin_info['website'],
                 'current_version' => ! empty($installed_plugins[$plugin_info['name']]) ? strtolower($installed_plugins[$plugin_info['name']]['extra_info']['plugin_version']) : '',
                 'kj_min_version'  => $plugin_info['kleeja_version']['min'],

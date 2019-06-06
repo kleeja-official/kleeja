@@ -955,7 +955,7 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
         {
             foreach ($words as $w)
             {
-                delete_olang($w, $language);
+                delete_olang($w, $language, $plg_id);
             }
         }
 
