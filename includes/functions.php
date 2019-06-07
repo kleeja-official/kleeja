@@ -951,12 +951,9 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     if (is_array($words))
     {
-        foreach ((array) $lang as $language)
+        foreach ($words as $w)
         {
-            foreach ($words as $w)
-            {
-                delete_olang($w, $language, $plg_id);
-            }
+            delete_olang($w, $lang, $plg_id);
         }
 
         return true;
@@ -964,15 +961,32 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     $delete_query    = [
         'DELETE'       => "{$dbprefix}lang",
-        'WHERE'        => "word = '" . $SQL->escape($words) . "' AND lang_id = '" . $SQL->escape($lang) . "'"
+        'WHERE'        => empty($words) ? '' : "word = '" . $SQL->escape($words) . "'"
     ];
+
+
+    if (! empty($lang))
+    {
+        $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
+        if(is_array($lang))
+        {
+            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $SQL->escape($lang)) . "')";
+        }
+
+        $delete_query['WHERE'] .=  (empty($delete_query['WHERE']) ? '' : ' AND ') . $lang_sql;
+    }
 
     if (! empty($plg_id))
     {
-        $delete_query['WHERE'] = 'plg_id = ' . intval($plg_id);
+        $delete_query['WHERE'] .= (empty($delete_query['WHERE']) ? '' : ' AND ') . 'plg_id = ' . intval($plg_id);
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('del_sql_delete_olang_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+    if(empty($delete_query['WHERE']))
+    {
+        return false;
+    }
 
     $SQL->build($delete_query);
 
