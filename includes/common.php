@@ -129,7 +129,7 @@ if (! is_bot() && ! isset($_SESSION))
 
 
 //no enough data
-if (empty($dbname) || empty($dbuser))
+if ((empty($dbname) || empty($dbuser)) && ($dbtype !== 'sqlite'))
 {
     header('Location: ./install/index.php');
 
@@ -399,7 +399,8 @@ register_shutdown_function(function() {
     session_write_close();
 
     $err = error_get_last();
-    if(is_array($err) && ! empty($err['type']) && in_array($err['type'], [E_ERROR, E_PARSE]))
+
+    if (is_array($err) && ! empty($err['type']) && in_array($err['type'], [E_ERROR, E_PARSE]))
     {
         kleeja_log('[FATAL] ' . basename($err['file']) . ':' . $err['line'] . ' ' . $err['message']);
     }
