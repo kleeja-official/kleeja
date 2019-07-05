@@ -128,7 +128,7 @@ class KleejaDatabase
 
     public function version()
     {
-        return SQLite3::version();
+        return SQLite3::version()['versionString'];
     }
 
     /**
@@ -475,7 +475,7 @@ class KleejaDatabase
         }
 
         list($error_no, $error_msg) = $this->get_error();
-        $error_sql              = @current($this->debugr[$this->query_num+1]);
+        $error_sql                  = @current($this->debugr[$this->query_num+1]);
 
         //some ppl want hide their table names
         if (! defined('DEV_STAGE'))
