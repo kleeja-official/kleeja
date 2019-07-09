@@ -33,7 +33,7 @@ if (@extension_loaded('apc'))
 //path
 if (! defined('PATH'))
 {
-    define('PATH', str_replace('/includes', '', __DIR__) . '/');
+    define('PATH', str_replace(DIRECTORY_SEPARATOR . 'includes', '', __DIR__) . '/');
 }
 
 //no config

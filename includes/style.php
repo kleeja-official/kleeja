@@ -66,6 +66,8 @@ class kleeja_style
 
         $is_admin_template = false;
 
+        $style_path = str_replace(DIRECTORY_SEPARATOR, '/', $style_path);
+
         //admin template always begin with admin_
         if (substr($template_name, 0, 6) == 'admin_')
         {
