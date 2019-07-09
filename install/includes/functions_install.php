@@ -267,6 +267,6 @@ function get_cookies_settings()
         'cookie_secure'    => $cookie_secure,
         'cookie_name'      => $cookie_name,
         'cookie_domain'    => $cookie_domain,
-        'cookie_path'      => str_replace(DIRECTORY_SEPARATOR . 'install', '', $script_path),
+        'cookie_path'      => str_replace('/install', '', $script_path),
     ];
 }
