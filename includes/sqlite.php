@@ -46,7 +46,14 @@ class KleejaDatabase
     {
         try
         {
-            $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
+            if (class_exists('SQLite3'))
+            {
+                $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
+            }
+            else
+            {
+                $this->error_msg('SQLite3 extension is not installed in your server!');
+            }
         }
         catch (Exception $e)
         {

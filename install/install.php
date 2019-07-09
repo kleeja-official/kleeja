@@ -133,6 +133,7 @@ case 'c':
 
     $no_config         = ! file_exists(PATH . 'config.php') || ig('force') ? false : true;
     $writeable_path    = is_writable(PATH) ? true : false;
+    $sqlite3_exists = class_exists('SQLite3');
 
     echo gettpl('configs.html');
 
