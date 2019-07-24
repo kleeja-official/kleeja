@@ -122,9 +122,22 @@ function is_bot($bots = ['googlebot', 'bing' ,'msnbot'])
 $starttm = get_microtime();
 
 
-if (! is_bot() && ! isset($_SESSION))
+if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
 {
-    session_start();
+    if(function_exists('ini_set'))
+    {
+        ini_set('session.use_cookies', 1);
+        ini_set('session.lazy_write', 1);
+        ini_set('session.cache_expire', 0);
+        ini_set('session.cache_limiter', '');
+        ini_set('session.use_only_cookies', 1);
+    }
+
+
+    if(! session_start())
+    {
+        big_error('Session Error!', 'There is a problem with PHP session. We can not start it.');
+    }
 }
 
 
