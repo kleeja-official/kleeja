@@ -147,15 +147,15 @@ class kleeja_style
 
         $rep =
         [
-            '/<\/(LOOP|IF|END|IS_BROWSER|UNLESS)>/i'                     => '<?php } ?>',
-            '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*>/iU'                   => '<?php echo $this->display("\\2"); ?>',
-            '/<IS_BROWSER\s*=\s*"([a-z0-9,]+)"\s*>/iU'                   => '<?php if(is_browser("\\1")){ ?>',
-            '/<IS_BROWSER\s*\!=\s*"([a-z0-9,]+)"\s*>/iU'                 => '<?php if(!is_browser("\\1")){ ?>',
-            '/(<ELSE>|<ELSE\s?\/>)/i'                                    => '<?php }else{ ?>',
-            '/<ODD\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/ODD\>/is'  => "<?php if(intval(\$value['\\1'])%2){?> \\2 <?php } ?>",
-            '/<EVEN\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/EVEN>/is' => "<?php if(intval(\$value['\\1'])% 2 == 0){?> \\2 <?php } ?>",
-            '/<RAND\s*=\s*"(.*?)\"\s*,\s*"(.*?)"\s*>/is'                 => "<?php \$KLEEJA_tpl_rand_is=(!isset(\$KLEEJA_tpl_rand_is) || \$KLEEJA_tpl_rand_is==0)?1:0; print((\$KLEEJA_tpl_rand_is==1) ?'\\1':'\\2'); ?>",
-            '/\{%(key|value)%\}/i'                                       => '<?php echo $\\1; ?>',
+            '/<\/(LOOP|IF|END|IS_BROWSER|UNLESS)>/i'                                           => '<?php } ?>',
+            '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*(PATH=\s*=*\s*"(.+)")?>/iU'                   => '<?php echo $this->display("\\2",  empty("\\4") ? null : "\\4"); ?>',
+            '/<IS_BROWSER\s*=\s*"([a-z0-9,]+)"\s*>/iU'                                         => '<?php if(is_browser("\\1")){ ?>',
+            '/<IS_BROWSER\s*\!=\s*"([a-z0-9,]+)"\s*>/iU'                                       => '<?php if(!is_browser("\\1")){ ?>',
+            '/(<ELSE>|<ELSE\s?\/>)/i'                                                          => '<?php }else{ ?>',
+            '/<ODD\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/ODD\>/is'                        => "<?php if(intval(\$value['\\1'])%2){?> \\2 <?php } ?>",
+            '/<EVEN\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/EVEN>/is'                       => "<?php if(intval(\$value['\\1'])% 2 == 0){?> \\2 <?php } ?>",
+            '/<RAND\s*=\s*"(.*?)\"\s*,\s*"(.*?)"\s*>/is'                                       => "<?php \$KLEEJA_tpl_rand_is=(!isset(\$KLEEJA_tpl_rand_is) || \$KLEEJA_tpl_rand_is==0)?1:0; print((\$KLEEJA_tpl_rand_is==1) ?'\\1':'\\2'); ?>",
+            '/\{%(key|value)%\}/i'                                                             => '<?php echo $\\1; ?>',
         ];
 
         return preg_replace(array_keys($rep), array_values($rep), $html);
@@ -172,8 +172,8 @@ class kleeja_style
         $condition = '';
 
         foreach ([
-                'NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || ', 'ISSET' => ' isset', 'EMPTY' => ' empty'
-                    ] as $attribute=>$separator)
+            'NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || ', 'ISSET' => ' isset', 'EMPTY' => ' empty'
+        ] as $attribute=>$separator)
         {
             if (isset($atts[$attribute]))
             {
@@ -196,7 +196,7 @@ class kleeja_style
         $char = [' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>'];
         $reps = ['==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>'];
 
-        if(trim($condition) == '')
+        if (trim($condition) == '')
         {
             return '';
         }
@@ -259,7 +259,7 @@ class kleeja_style
 
         $var = trim(! empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '');
 
-        if(empty($var))
+        if (empty($var))
         {
             return '';
         }
