@@ -238,7 +238,7 @@ class kleeja_style
 
         if (strpos($matches[0], '{lang')  !== false || strpos($matches[0], '{olang') !== false)
         {
-            return '<?=isset(' . $variable . ') ? ' . $variable . ' : \'' . $matches[0] . '\'?>';
+            return '<?=' . $variable . ' ?? \'' . $matches[0] . '\'?>';
         }
 
         return '<?=' . $variable . '?>';
