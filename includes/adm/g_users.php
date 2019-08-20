@@ -1188,6 +1188,7 @@ case 'edit_user':
     ];
 
     $result = $SQL->build($query);
+
     if (! $SQL->num_rows($result))
     {
         kleeja_admin_err($lang['NOT_EXSIT_USER'], true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
@@ -1237,6 +1238,12 @@ break;
 //new user adding form
 case 'new_u':
 
+    if ($user_not_normal)
+    {
+        kleeja_admin_err($lang['USERS_NOT_NORMAL_SYS']);
+
+        exit;
+    }
     //preparing the template
     $errs     = isset($errs) ? $errs : false;
     $uname    = p('lname');
