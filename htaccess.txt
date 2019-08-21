@@ -1,10 +1,11 @@
 #start Kleeja rules
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    #If you are using subfolder thwn use /kleeja/ instead of / in the next line
     RewriteBase /
     RewriteRule ^index\.php$ - [L]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule . /serve.php [L]
+    RewriteRule . serve.php [L]
 </IfModule>
-#end Kleeja rules 
+#end Kleeja rules
