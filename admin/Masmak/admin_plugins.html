@@ -158,9 +158,11 @@
 
     <IF NAME="store_plugins_count gt 1" NAME="case == check">
     <div class="d-flex justify-content-end my-3">
+        <IF NAME="store_plugins_count">
         <button id="updateAllBtn" type="button" onclick="updateAll()" class="btn btn-primary px-5">
             <i class="fa fa-flash"></i> {lang.UPDATE_ALL}
         </button>
+       </IF>
     </div>
     </IF>
 
