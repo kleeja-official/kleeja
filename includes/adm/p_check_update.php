@@ -152,9 +152,9 @@ elseif ($current_smt == 'update1')
     {
         // downloaded the last package to cache folder
         FetchFile::make(KLEEJA_LATEST_PACKAGE_LINK . $new_version)
-                    ->setDestinationPath(PATH . "cache/kleeja-{$new_version}.zip")
-                    ->isBinaryFile(true)
-                    ->get();
+            ->setDestinationPath(PATH . "cache/kleeja-{$new_version}.zip")
+            ->isBinaryFile(true)
+            ->get();
 
         if (file_exists(PATH . "cache/kleeja-{$new_version}.zip"))
         {
@@ -358,7 +358,10 @@ elseif ($current_smt == 'update3')
             {
                 foreach ($available_db_updates as $db_update_version)
                 {
-                    $SQL->show_errors = false;
+                    if (! defined('SQL_NO_ERRORS'))
+                    {
+                        define('SQL_NO_ERRORS', true);
+                    }
 
                     if (isset($update_schema[$db_update_version]['sql'])
                         && sizeof($update_schema[$db_update_version]['sql']) > 0)

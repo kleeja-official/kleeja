@@ -113,7 +113,7 @@ class KleejaDatabase
         //loggin -> close connection
         kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-        if(! is_resource($this->connect_id))
+        if (! is_resource($this->connect_id))
         {
             return true;
         }
@@ -149,8 +149,8 @@ class KleejaDatabase
     /**
      * execute a query
      *
-     * @param string $query
-     * @param boolean $transaction
+     * @param  string  $query
+     * @param  boolean $transaction
      * @return bool
      */
     public function query($query, $transaction = false)
@@ -237,7 +237,7 @@ class KleejaDatabase
     /**
      * build structured query ['SELECT' => ..., 'FROM' => ..., ...]
      *
-     * @param array $query
+     * @param  array  $query
      * @return string
      */
     public function build($query)
@@ -358,7 +358,7 @@ class KleejaDatabase
     /**
      * fetch results (alias of fetch_array)
      *
-     * @param mysqli_result $query_id
+     * @param  mysqli_result $query_id
      * @return array
      */
     public function fetch($query_id = 0)
@@ -385,7 +385,7 @@ class KleejaDatabase
     /**
      * return number of rows of result (not efficient)
      *
-     * @param mysqli_result $query_id
+     * @param  mysqli_result $query_id
      * @return int
      */
     public function num_rows($query_id = 0)
@@ -412,7 +412,7 @@ class KleejaDatabase
     /**
      * extra escape
      *
-     * @param string $msg
+     * @param  string $msg
      * @return string
      */
     public function escape($msg)
@@ -425,7 +425,7 @@ class KleejaDatabase
 
     /**
      * escape
-     * @param  string $msg
+     * @param  string     $msg
      * @return int|string
      */
     public function real_escape($msg)
@@ -461,19 +461,19 @@ class KleejaDatabase
     /**
      * present error messages
      *
-     * @param string $msg
+     * @param  string $msg
      * @return void
      */
     private function error_msg($msg)
     {
-        if (! $this->show_errors)
+        if (! $this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')))
         {
             kleeja_log('MySQL: ' . $msg);
             return false;
         }
 
         list($error_no, $error_msg) = $this->get_error();
-        $error_sql = @current($this->debugr[$this->query_num+1]);
+        $error_sql                  = @current($this->debugr[$this->query_num+1]);
 
         //some ppl want hide their table names
         if (! defined('DEV_STAGE'))

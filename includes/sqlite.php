@@ -475,7 +475,7 @@ class KleejaDatabase
      */
     private function error_msg($msg)
     {
-        if (! $this->show_errors)
+        if (! $this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')))
         {
             kleeja_log('SQLite3: ' . $msg);
             return false;
