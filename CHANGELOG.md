@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+## 3.1.5
+* fix hiding error msgs when updating kleeja
+* hide update all buttun , when empty update's list
+* fix rewrite urls
+* new user page is only for kleeja user system
+* access style path parmiter from kleeja style (for developers)
+* session fixes
+
+## 3.1.4
+* fixes compatibility issues on PHP 7.0 
+* adds description to plugins store page.
+* fixes issues during plugins update if plugin is disabled.
 
 ## 3.1.0
 - add the ability to auto-update kleeja from admin panel with one click!
