@@ -398,7 +398,7 @@ class usrcp
         global $config;
         is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_get_cookie_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        return isset($_COOKIE[$config['cookie_name'] . '_' . $name]) ? $_COOKIE[$config['cookie_name'] . '_' . $name] : false;
+        return $_COOKIE[$config['cookie_name'] . '_' . $name] ?? false;
     }
 
     //check if user is admin or not
