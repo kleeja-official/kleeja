@@ -597,7 +597,8 @@ function get_mime_for_header($ext)
         'jar'     => 'application/java-archive',
         'jad'     => 'text/vnd.sun.j2me.app-descriptor',
         'apk'     => 'application/vnd.android.package-archive',
-        'mkv'     => 'video/x-matroska' ,
+        'mkv'     => 'video/x-matroska',
+        'm3u'     => 'text/plain',
         //add more mime here
     ];
 
