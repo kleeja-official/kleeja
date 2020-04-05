@@ -3,10 +3,6 @@
 The powerful and easiest way to run File Upload/sharing Service on your website.
 Trusted by thousands of webmasters since 2007.
 
-**Not maintained or supported currently:** If you want to be the main developer of this script please dm me at twitter: @aphpdev
-**لايتم صيانتها أو دعمها حاليا:** رجاءاً اذا اردت أن تصبح المطور الرئيسي لهذا السكربت قم بالتواصل معي عبر تويتر
-
-
 <p align="center">
 <img src="https://raw.githubusercontent.com/kleeja-official/website/master/screenshot1.png" width="650" height="auto" alt="github php files uploading">
 </p>
