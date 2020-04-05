@@ -54,7 +54,7 @@
         </a>
 
         <div class="collapse navbar-collapse" id="TopMenuNavbar">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav">
                 <LOOP NAME="top_menu">
                     <IF LOOP="show">
                         <li class="nav-item"><a href="{{url}}" class="nav-link(go_current=={{name}}? active:)">{{title}}</a></li>
@@ -74,7 +74,7 @@
         </span>
 
         <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav">
                 <LOOP NAME="side_menu">
                     <IF LOOP="show">
                         <li class="nav-item"><a href="{{url}}" class="nav-link(go_current=={{name}}? active:)">{{title}}</a></li>
