@@ -21,4 +21,5 @@ Trusted by thousands of webmasters since 2007.
 | 📚 [How-To/documentations](https://github.com/kleeja-official/kleeja/wiki) | 
 | ⏰ [ChangeLog](https://github.com/kleeja-official/kleeja/blob/master/CHANGELOG.md) |
 | 🐞 [Report an issue/bug](https://github.com/kleeja-official/kleeja/issues) |
+| 🗣 [Chat Support - Discord](https://discord.gg/Mp3XVKP) |
 
