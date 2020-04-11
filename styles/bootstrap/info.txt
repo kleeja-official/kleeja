@@ -13,7 +13,7 @@ desc:ar = أحد الستايلات الافتراضية مع النسخة, تط
 
 
 #Style copyright
-copyright = 2017 Kleeja.com
+copyright = 2017 Kleeja.net
 
 #Version of style
 version = 1.0

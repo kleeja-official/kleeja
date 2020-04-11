@@ -2,7 +2,7 @@
 /**
 *
 * @package install
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
@@ -218,7 +218,7 @@ CREATE TABLE `{$dbprefix}filters` (
 
 $install_sqls['stats_insert']   = "INSERT INTO `{$dbprefix}stats`  VALUES (0,0,1,0,0," . time() . ",0,0,0,0,'',0,0,0,0,'','','','')";
 $install_sqls['users_insert']   = "INSERT INTO `{$dbprefix}users` (`id`,`name`,`group_id`,`password`,`password_salt`,`mail`,`founder`,`clean_name`) VALUES (1,'" . $user_name . "', 1, '" . $user_pass . "','" . $user_salt . "', '" . $user_mail . "', 1,'" . $clean_name . "')";
-$install_sqls['TeamMsg_insert'] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" . $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) . "', '" . $SQL->escape($lang['KLEEJA_TEAM_MSG_TEXT']) . "','info@kleeja.com', " . time() . ", '127.0.0.1')";
+$install_sqls['TeamMsg_insert'] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" . $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) . "', '" . $SQL->escape($lang['KLEEJA_TEAM_MSG_TEXT']) . "','info@kleeja.net', " . time() . ", '127.0.0.1')";
 $install_sqls['groups_insert']  = "INSERT INTO `{$dbprefix}groups` (`group_id`, `group_name`, `group_is_default`, `group_is_essential`) VALUES
 (1, '{lang.ADMINS}', 0, 1),
 (2, '{lang.GUESTS}', 0, 1),

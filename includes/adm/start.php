@@ -2,7 +2,7 @@
 /**
 *
 * @package adm
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
@@ -91,7 +91,7 @@ if (version_compare(strtolower(KLEEJA_VERSION), strtolower($v['version_number'])
     $ADM_NOTIFICATIONS['up_ver_klj']  = [
         'id'      => 'up_ver_klj',//this not so important row
         'msg_type'=> 'error', 'title'=> $lang['R_CHECK_UPDATE'],
-        'msg'     => sprintf($lang['UPDATE_NOW_S'], KLEEJA_VERSION, $v['version_number']) . '<br />' . '<a href="http://kleeja.com/" target="_blank">kleeja.com</a>'
+        'msg'     => sprintf($lang['UPDATE_NOW_S'], KLEEJA_VERSION, $v['version_number']) . '<br />' . '<a href="https://kleeja.net/" target="_blank">kleeja.net</a>'
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('admin_update_now', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook

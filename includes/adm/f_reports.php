@@ -2,7 +2,7 @@
 /**
 *
 * @package adm
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
@@ -112,7 +112,7 @@ if ($nums_rows > 0)
                 $to      = $row['mail'];
                 $subject = $lang['REPLY_REPORT'] . ':' . $config['sitename'];
                 $message = "\n " . $lang['WELCOME'] . ' ' . $row['name'] . "\r\n " . $lang['U_REPORT_ON'] . ' ' . $config['sitename'] . "\r\n " . 
-                            $lang['BY_EMAIL'] . ' : ' . $row['mail'] . "\r\n" . $lang['ADMIN_REPLIED'] . ": \r\n" . $sen[$row['id']] . "\r\n\r\n kleeja.com";
+                            $lang['BY_EMAIL'] . ' : ' . $row['mail'] . "\r\n" . $lang['ADMIN_REPLIED'] . ": \r\n" . $sen[$row['id']] . "\r\n\r\n kleeja.net";
 
                 $send =  send_mail($to, $message, $subject, $config['sitemail'], $config['sitename']);
 

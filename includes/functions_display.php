@@ -2,7 +2,7 @@
 /**
 *
 * @package Kleeja
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
@@ -349,7 +349,7 @@ function big_error($error_title, $msg_text, $error = true)
     echo '<div class="' . ($error ? 'error' : 'info') . '">' . "\n";
     echo "\n\t\t<h2>Kleeja " . ($error ? 'error' : 'information message') . ': </h2><br />' . "\n";
     echo "\n\t\t<strong> [ " . $error_title . ' ] </strong><br /><br />' . "\n\t\t" . $msg_text . "\n\t";
-    echo "\n\t\t" . '<br /><br /><small>Visit <a href="http://www.kleeja.com/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
+    echo "\n\t\t" . '<br /><br /><small>Visit <a href="https://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
     echo '</div>' . "\n";
     echo '</body>' . "\n";
     echo '</html>';

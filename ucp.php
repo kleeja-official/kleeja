@@ -2,7 +2,7 @@
 /**
 *
 * @package Kleeja
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
@@ -831,7 +831,7 @@ switch (g('go'))
                 $to                    = $row['mail'];
                 $subject               = $lang['GET_LOSTPASS'] . ':' . $config['sitename'];
                 $activation_link       = $config['siteurl'] . 'ucp.php?go=get_pass&activation_key=' . urlencode($hash_key) . '&uid=' . $row['id'];
-                $message               = "\n " . $lang['WELCOME'] . ' ' . $row['name'] . "\r\n " . sprintf($lang['GET_LOSTPASS_MSG'], $activation_link, $newpass) . "\r\n\r\n kleeja.com";
+                $message               = "\n " . $lang['WELCOME'] . ' ' . $row['name'] . "\r\n " . sprintf($lang['GET_LOSTPASS_MSG'], $activation_link, $newpass) . "\r\n\r\n kleeja.net";
 
                 $update_query    = [
                     'UPDATE'   => "{$dbprefix}users",

@@ -96,18 +96,18 @@ return [
 
     'INST_PHP_LESSMIN'             => 'You need PHP %1$s or above to install Kleeja, your current version is %2$s',
     'INST_MYSQL_LESSMIN'           => 'You need MySQL %1$s or above to install Kleeja, your current version is %2$s',
-    'IS_IT_OFFICIAL'               => 'Did you get your copy from Kleeja.com (Kleeja official site) ?',
+    'IS_IT_OFFICIAL'               => 'Did you get your copy from Kleeja.net (Kleeja official site) ?',
     'IS_IT_OFFICIAL_DESC'          => 'We receive a lot of complaints and questions about the cause of some bugs and issues which occur in kleeja and probably we can\'t figure out what the problem is . After we have checked we have found that there are some unofficially copies released from untrusted publishers .<span class="sure"> So are you sure of this copy is downloaded from kleeja official site ?</span>',
     'INST_WHAT_IS_KLEEJA_T'        => 'What is Kleeja ?',
 
     'INST_WHAT_IS_KLEEJA'        => 'Keeja is a free, features rich, files and images upload system. Kleeja is developed to help webmasters to provide a decent files hosting service on their sites . Kleeja comes with a simple source code and powerful User system , also with easy template system so you can easily customize your styles ',
 
     'INST_SPECIAL_KLEEJA'            => 'Some Kleeja features .. !',
-    'INST_WHAT_IS_KLEEJA_ONE'        => 'Kleeja has a simple and powerful user system which can be easily integrated with many boards . Kleeja provide simple admin control panel that enables you to control over everything in your site . Also you can customize Kleeja\'s style and install a lot of add-ons  ....  <a target="_blank" href="https://kleeja.com">more details in Kleeja site </a>',
+    'INST_WHAT_IS_KLEEJA_ONE'        => 'Kleeja has a simple and powerful user system which can be easily integrated with many boards . Kleeja provide simple admin control panel that enables you to control over everything in your site . Also you can customize Kleeja\'s style and install a lot of add-ons  ....  <a target="_blank" href="https://kleeja.net">more details in Kleeja site </a>',
     'YES'                            => 'Yes',
     'NO'                             => 'No',
 
     'KLEEJA_TEAM_MSG_NAME'        => 'Kleeja Development Team',
-    'KLEEJA_TEAM_MSG_TEXT'        => "Thank you for choosing Kleeja to empower your website,\n We really hope you enjoy the unique experience that Kleeja offers to you.\nDon't forget to visit http://kleeja.com for future updates, to report bugs/issues kindly visit our <a href=\"https://github.com/kleeja-official/kleeja/issues\">Issues page</a>",
+    'KLEEJA_TEAM_MSG_TEXT'        => "Thank you for choosing Kleeja to empower your website,\n We really hope you enjoy the unique experience that Kleeja offers to you.\nDon't forget to visit https://kleeja.net for future updates, to report bugs/issues kindly visit our <a href=\"https://github.com/kleeja-official/kleeja/issues\">Issues page</a>",
 
 ];

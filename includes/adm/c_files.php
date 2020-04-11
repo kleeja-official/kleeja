@@ -2,7 +2,7 @@
 /**
 *
 * @package adm
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */

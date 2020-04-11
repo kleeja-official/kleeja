@@ -2,7 +2,7 @@
 /**
 *
 * @package Kleeja
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
@@ -86,7 +86,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
             echo '.error {color: #333;background:#ffebe8;float:left;width:73%;text-align:left;margin-top:10px;border: 1px solid #dd3c10; padding: 10px;font-family:tahoma,arial;font-size: 12px;}' . "\n";
             echo "</style>\n</head>\n<body>\n\t" . '<div class="error">' . "\n\n\t\t<h2>Kleeja error  : </h2><br />" . "\n";
             echo "\n\t\t<strong> [ " . $error_number . ':' . basename($error_file) . ':' . $error_line . ' ] </strong><br /><br />' . "\n\t\t" . $error_string . "\n\t";
-            echo "\n\t\t" . '<br /><br /><small>Visit <a href="http://www.kleeja.com/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
+            echo "\n\t\t" . '<br /><br /><small>Visit <a href="http://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
             echo "</div>\n</body>\n</html>";
             global $SQL;
 

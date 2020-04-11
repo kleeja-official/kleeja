@@ -2,7 +2,7 @@
 /**
 *
 * @package Kleeja_up_helpers
-* @copyright (c) 2007-2012 Kleeja.com
+* @copyright (c) 2007-2012 Kleeja.net
 * @license ./docs/license.txt
 *
 */

@@ -2,8 +2,8 @@
 /**
  *
  * @package Kleeja
- * @copyright (c) 2007 Kleeja.com
- * @license http://www.kleeja.com/license
+ * @copyright (c) 2007 Kleeja.net
+ * @license http://www.kleeja.net/license
  *
  */
 

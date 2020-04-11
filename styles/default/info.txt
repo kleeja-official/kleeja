@@ -13,7 +13,7 @@ desc:ar = الستايل الافتراضي مع النسخة, وهذا مايق
 
 
 #Style copyright
-copyright = 2009-2017 Kleeja.com
+copyright = 2009-2017 Kleeja.net
 
 #Version of style
 version = 2.0
