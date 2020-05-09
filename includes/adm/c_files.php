@@ -17,6 +17,7 @@ if (! defined('IN_ADMIN'))
 
 //number of images per page
 $files_acp_perpage = defined('ACP_FILES_PER_PAGE') ? ACP_FILES_PER_PAGE : 20;
+$current_smt       = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', ''));
 
 
 //display
@@ -30,7 +31,7 @@ $url_pg                = ig('page') ? '&amp;page=' . g('page', 'int') : '';
 $page_action           = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or . $url_sea . $url_lst;
 $ord_action            = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_pg . $url_sea . $url_lst;
 $page2_action          = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or2 . $url_sea . $url_lst;
-$action                = $page_action . $url_pg;
+$action                = $page_action . $url_pg . ($current_smt == 'delete_by_extension' ? '&smt=delete_by_extension' : '');
 $is_search             = $affected      = false;
 $H_FORM_KEYS           = kleeja_add_form_key('adm_files');
 
@@ -133,11 +134,11 @@ if (ip('submit'))
                 '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . str_replace('&amp;', '&', $action) . '\');", 2000);</script>' . "\n";
     $stylee    = 'admin_info';
 }
-else
+elseif ($current_smt == '')
 {
 
 //
-//Delete all user files [only one user]
+    //Delete all user files [only one user]
 //
     if (ig('deletefiles'))
     {
@@ -404,3 +405,90 @@ else
     $page_nums       = $Pager->print_nums($page_action);
     $current_page    = $Pager->getCurrentPage();
 }
+elseif ($current_smt == 'delete_by_extension')
+{
+    if (ig('fetch_ext_files'))
+    {
+        $query                = [
+            'SELECT' => 'id',
+            'FROM'   => $dbprefix . 'files',
+            'WHERE'  => 'type = \'' . g('fetch_ext_files') . '\''
+        ];
+
+        $SQL->build($query);
+
+        echo $SQL->num_rows();
+
+        exit;
+    }
+
+    if (ip('delete_files'))
+    {
+        $ext = p('selected_extnsion');
+
+        $query = [
+            'SELECT' => 'id, name, type, size',
+            'FROM'   => $dbprefix . 'files',
+            'WHERE'  => 'type = \'' . $ext . '\''
+        ];
+
+        $SQL->build($query);
+        $deleted_files = [];
+        $fileSizes     = 0;
+
+        if ($SQL->num_rows())
+        {
+            while ($file = $SQL->fetch())
+            {
+                $fileLocation = PATH . 'uploads/' . $file['name'];
+                $thumbFileLocation = PATH . 'uploads/thumbs/' . $file['name'];
+
+                if (is_file($fileLocation))
+                {
+                    kleeja_unlink($fileLocation);
+                }
+                if (is_file($thumbFileLocation))
+                {
+                    kleeja_unlink($thumbFileLocation);
+                }
+                $fileSizes += $file['size'];
+                $deleted_files[] = $file['id'];
+            }
+
+            if (($deletedFileCount = count($deleted_files)) <= 1)
+            {
+                $SQL->query("delete from {$dbprefix}files where id = '$deleted_files[0]'");
+            }
+            else
+            {
+                $SQL->query("delete from {$dbprefix}files where id in (" . implode(',', $deleted_files) . ')');
+            }
+
+            $update_stats = "update {$dbprefix}stats set " . (in_array($ext, ['png','gif','jpg','jpeg', 'bmp']) ? 'imgs = imgs-' . $deletedFileCount : 'files = files-' . $deletedFileCount)
+            . ", sizes = sizes-{$fileSizes}";
+
+
+            $SQL->query($update_stats);
+        }
+
+        kleeja_admin_info($lang['ADMIN_DELETE_FILE_OK'], true, '', true, $action);
+    }
+
+    $available_extensions = [];
+    $query                = [
+        'SELECT' => 'DISTINCT type',
+        'FROM'   => $dbprefix . 'files'
+    ];
+
+    $SQL->build($query);
+
+    while ($ext = $SQL->fetch())
+    {
+        $available_extensions[] = $ext;
+    }
+
+    $no_results = count($available_extensions) == 0;
+}
+$go_menu = [
+    'delete_by_extension' => ['name'=> $lang['DEL_BY_EXT'], 'link'=> basename(ADMIN_PATH) . '?cp=c_files&amp;smt=delete_by_extension', 'goto'=>'delete_by_extension', 'current'=> $current_smt == 'delete_by_extension'],
+];
