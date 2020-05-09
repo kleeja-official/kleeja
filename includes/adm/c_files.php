@@ -407,6 +407,13 @@ elseif ($current_smt == '')
 }
 elseif ($current_smt == 'delete_by_extension')
 {
+    if (intval($userinfo['founder']) !== 1)
+    {
+        kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
+
+        exit;
+    }
+
     if (ig('fetch_ext_files'))
     {
         $query                = [
@@ -440,13 +447,14 @@ elseif ($current_smt == 'delete_by_extension')
         {
             while ($file = $SQL->fetch())
             {
-                $fileLocation = PATH . 'uploads/' . $file['name'];
+                $fileLocation      = PATH . 'uploads/' . $file['name'];
                 $thumbFileLocation = PATH . 'uploads/thumbs/' . $file['name'];
 
                 if (is_file($fileLocation))
                 {
                     kleeja_unlink($fileLocation);
                 }
+
                 if (is_file($thumbFileLocation))
                 {
                     kleeja_unlink($thumbFileLocation);
@@ -472,6 +480,8 @@ elseif ($current_smt == 'delete_by_extension')
         }
 
         kleeja_admin_info($lang['ADMIN_DELETE_FILE_OK'], true, '', true, $action);
+
+        exit;
     }
 
     $available_extensions = [];
@@ -489,6 +499,10 @@ elseif ($current_smt == 'delete_by_extension')
 
     $no_results = count($available_extensions) == 0;
 }
-$go_menu = [
-    'delete_by_extension' => ['name'=> $lang['DEL_BY_EXT'], 'link'=> basename(ADMIN_PATH) . '?cp=c_files&amp;smt=delete_by_extension', 'goto'=>'delete_by_extension', 'current'=> $current_smt == 'delete_by_extension'],
-];
+
+if (intval($userinfo['founder']) == 1)
+{
+    $go_menu = [
+        'delete_by_extension' => ['name'=> $lang['DEL_BY_EXT'], 'link'=> basename(ADMIN_PATH) . '?cp=c_files&amp;smt=delete_by_extension', 'goto'=>'delete_by_extension', 'current'=> $current_smt == 'delete_by_extension'],
+    ];
+}
