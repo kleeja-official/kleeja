@@ -136,7 +136,10 @@ if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
 
     if(! session_start())
     {
-        big_error('Session Error!', 'There is a problem with PHP session. We can not start it.');
+        // big_error is not defined yet, and the file *function_display.php* is not included yet
+        kleeja_show_error('', 'Session Error!', 'There is a problem with PHP session. We can not start it.');
+
+        exit;
     }
 }
 
