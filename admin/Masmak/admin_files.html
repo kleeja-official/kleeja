@@ -115,6 +115,7 @@
                                 </LOOP>
                             </select>
                         </div>
+                        <p id="file_count_viewer"></p>
                         <button id="delete_button" style="display: none;" name="delete_files" type="submit"
                             class="btn btn-danger">{lang.DELETE}</button>
                     </form>
@@ -124,6 +125,7 @@
         <script>
             let selected_extnsions = document.getElementById('selected_extnsions');
             let delete_button = document.getElementById('delete_button');
+            let file_count_viewer = document.getElementById('file_count_viewer');
             if (selected_extnsions && delete_button) {
                 selected_extnsions.onchange = () => {
                     if (selected_extnsions.value.trim() != '') {
@@ -135,7 +137,7 @@
                                     delete_button.style.display = 'none';
                                 }
                                 else {
-                                    alert(("{lang.X_FILE_WITH_EXT}").replace('(x)', this.responseText))
+                                    file_count_viewer.innerHTML = ("{lang.X_FILE_WITH_EXT}").replace('(x)', this.responseText)
                                     delete_button.style.display = '';
                                 }
                             }
@@ -146,6 +148,7 @@
                     }
                     else {
                         delete_button.style.display = 'none';
+                        file_count_viewer.innerHTML = ''
                     }
                 }
             }
