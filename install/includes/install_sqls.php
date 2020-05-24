@@ -100,6 +100,7 @@ CREATE TABLE `{$dbprefix}files` (
   `last_down` int(11) unsigned NOT NULL DEFAULT '0',
   `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
   `real_filename` VARCHAR( 350 ) collate utf8_bin NOT NULL DEFAULT '',
+  `about` LONGTEXT collate utf8_bin DEFAULT '' ,
   `size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `uploads` int(11) unsigned NOT NULL DEFAULT '0',
   `time` int(11) unsigned NOT NULL DEFAULT '0',
