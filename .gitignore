@@ -15,7 +15,7 @@ uploads/thumbs/*
 !uploads/thumbs/.htaccess
 styles/*
 !styles/bootstrap/*
-!styles/default/*
+!/styles/bootstrap/js/script.js
 !styles/index.html
 .DS_Store
 */.DS_Store

@@ -64,6 +64,26 @@
 
 </div>
 
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between p-1">
+            {lang.ABOUT_FILE}
+            <IF NAME="isFileOwnerOfFounder">
+                <a href="javascript: void(0)" id="about_edit_save" class="btn btn-primary btn-sm py-0">{lang.EDIT}</a>
+            </IF>
+        </div>
+    </div>
+    <div class="list-group list-group-flush">
+        <div class="card">
+            <div id="about_holder" class="card-body">
+                <p id="about_content">{about_file}</p>
+                <div class="form-group" >
+                    <textarea class="form-control" id="edit_textarea" style="display: none;" rows="3"></textarea>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -83,6 +103,33 @@ function ti()
     {
         document.getElementById('loadingImage').src = '{STYLE_PATH}images/download.png';
         document.getElementById("url").innerHTML = '<p class="download"><a href="{url_file}" target="_blank" class="btn btn-outline-primary btn-lg">{lang.CLICK_DOWN}<\/a><br /><span class="badge badge-default">{size}<\/span><\/p>';
+    }
+}
+
+let about_edit_save = document.getElementById('about_edit_save');
+let about_content = document.getElementById('about_content');
+let edit_textarea = document.getElementById('edit_textarea');
+
+about_edit_save.onclick = () => {
+    switch (about_edit_save.textContent) {
+        case '{lang.SAVE}':
+            about_content.innerHTML = edit_textarea.value == '' ? '{lang.FILE_NO_INFO}' : edit_textarea.value;
+            about_content.style.display = '';
+            edit_textarea.style.display = 'none';
+            about_edit_save.innerHTML = '{lang.EDIT}';
+            ajaxRemote('POST', 'http://kleeja.me.to/do.php?id={id}', 'change_file_about=1&about=' + edit_textarea.value, (request) => {})
+            
+            break;
+
+        case '{lang.EDIT}':
+            edit_textarea.value = about_content.textContent == '{lang.FILE_NO_INFO}' ? '' : about_content.textContent;
+            about_content.style.display = 'none';
+            edit_textarea.style.display = '';
+            about_edit_save.innerHTML = '{lang.SAVE}'
+            break;
+    
+        default:
+            break;
     }
 }
 //-->

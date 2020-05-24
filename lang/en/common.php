@@ -282,4 +282,7 @@ return [
     'EMAIL_CHANGE_REQ_PASS'             => 'In order to change your email address, It\'s required to type your current password.',
     'DRAG_AND_DROP'                     => 'Drop a file inside&hellip;',
     'OR_MANUAL_SELECT'                  => 'Or click here to <em>Select</em> a file manually..',
+    'ABOUT_FILE'                        => 'File Information',
+    'FILE_NO_INFO'                      => 'No Information found about this file',
+    'SAVE'                              => 'Save',
 ];
