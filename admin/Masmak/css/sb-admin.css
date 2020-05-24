@@ -349,3 +349,7 @@ footer.sticky-footer {
 @media (min-width: 992px) {
   body.sidenav-toggled footer.sticky-footer {
     width: calc(100% - 55px); } }
+
+.admin-card:hover {
+      box-shadow: 0 0 6px rgb(89, 157, 196);
+  }
