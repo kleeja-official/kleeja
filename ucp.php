@@ -335,7 +335,7 @@ switch (g('go'))
         ];
 
         //pager
-        $perpage              = 16;
+        $perpage              = 2;
         $result_p             = $SQL->build($query);
         $nums_rows            = $SQL->num_rows($result_p);
         $currentPage          = ig('page') ? g('page', 'int') : 1;
@@ -346,7 +346,7 @@ switch (g('go'))
         $total_pages         = $Pager->getTotalPages();
         $linkgoto            = $config['siteurl'] . (
                                     $config['mod_writer']
-                                    ?  'fileuser-' . $user_id . ($currentPage > 1  && $currentPage <= $total_pages ? '-' . $currentPage : '') . '.html'
+                                    ?  'fileuser-' . $user_id  . '.html'
                                     : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null)
                             );
 
