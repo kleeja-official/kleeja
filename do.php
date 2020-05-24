@@ -92,7 +92,7 @@ if (ig('id') || ig('filename'))
         $name                 = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
         $fusername            = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
         $userfolder           = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
-        $isFileOwnerOfFounder = $fusername == $usrcp->name() || $usrcp->get_data('founder')['founder'] == 1;
+        $isFileOwnerOfFounder = $fusername == $usrcp->name() && $usrcp->name() || $usrcp->get_data('founder')['founder'] == 1;
 
         if (ip('change_file_about') &&  $isFileOwnerOfFounder)
         {
