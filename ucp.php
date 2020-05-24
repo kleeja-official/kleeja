@@ -335,7 +335,7 @@ switch (g('go'))
         ];
 
         //pager
-        $perpage              = 2;
+        $perpage              = 16;
         $result_p             = $SQL->build($query);
         $nums_rows            = $SQL->num_rows($result_p);
         $currentPage          = ig('page') ? g('page', 'int') : 1;
