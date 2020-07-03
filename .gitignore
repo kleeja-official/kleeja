@@ -32,3 +32,4 @@ Project_Default.xml
 .vscode/launch.json
 .htaccess
 .php_cs.cache
+kleeja.db
