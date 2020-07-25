@@ -9,12 +9,12 @@ uploads/*
 !uploads/.htaccess
 !uploads/php.ini
 !uploads/thumbs
-uploads/thumbs/*
+uploads/thumbs/
 !uploads/thumbs/index.html
 !uploads/thumbs/php.ini
 !uploads/thumbs/.htaccess
 styles/*
-!styles/bootstrap/*
+!styles/bootstrap/
 !/styles/bootstrap/js/script.js
 !styles/index.html
 .DS_Store
