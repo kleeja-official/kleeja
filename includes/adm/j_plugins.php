@@ -79,7 +79,7 @@ switch ($case):
                 continue;
             }
 
-            if($case == 'check' && $row['plg_disabled'] == 1)
+            if ($case == 'check' && $row['plg_disabled'] == 1)
             {
                 continue;
             }
