@@ -136,6 +136,7 @@
     let progressHolder = document.getElementById('progressHolder');
     let loadbox = document.getElementById('loadbox');
     let fileCount = {config.filesnum};
+    let uploaded = 0, uploadSpeed = 0, lastUploadTime = 0;
 
     uploadForm.onsubmit = e => {
         e.preventDefault();
@@ -154,9 +155,14 @@
         xhttp.open("POST", "{action}", true);
 
         xhttp.upload.onprogress = e => {
+            let endUploadTime = Date.now();
+            uploadSpeed = ((e.loaded - uploaded) * 1000) / ((endUploadTime - lastUploadTime) * 1024);
             const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
             uploadProgress.style.width = percent.toFixed(2) + '%';
             uploadProgress.textContent = percent.toFixed(2) + '%';
+            uploaded = e.loaded;
+            lastUploadTime = endUploadTime;
+            console.log(uploadSpeed);
         };
 
         xhttp.onreadystatechange = function () {
@@ -176,5 +182,6 @@
         xhttp.send(formd);
         return false;
     }
+    
 
 </script>
