@@ -1,85 +1,85 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="{dir}">
-<!-- Powered by kleeja || URL www.kleeja.com -->
+<!-- Powered by kleeja || URL www.kleeja.net -->
 <head>
-	<title>{title}(title? - :){config.sitename}</title>
-	<meta http-equiv="Content-Type" content="text/html;charset={charset}" />
-	<meta http-equiv="Content-Language" content="{lang.LANG_SMALL_NAME}" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="copyrights" content="Powered by Kleeja || kleeja.com" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- metatags.info/all_meta_tags -->
-	<link rel="shortcut icon" href="images/favicon.ico" />
-	<link rel="icon" type="image/gif" href="images/favicon.gif" />
-	<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
-	<link rel="apple-touch-startup-image" href="images/iPhone.png" />
-	<link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/stylesheet.css" />
+    <title>{title}(title? - :){config.sitename}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset={charset}" />
+    <meta http-equiv="Content-Language" content="{lang.LANG_SMALL_NAME}" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="copyrights" content="Powered by Kleeja || kleeja.net" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- metatags.info/all_meta_tags -->
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="icon" type="image/gif" href="images/favicon.gif" />
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+    <link rel="apple-touch-startup-image" href="images/iPhone.png" />
+    <link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/stylesheet.css" />
 
-	<link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/color.css" />
-	<IF NAME="lang.DIR==ltr"><link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/ltr.css" /></IF>
-
-
-
-	<script type="text/javascript">
-	<!--
-	var number_of_uploads={config.filesnum};
-	var LANG_PAST_URL_HERE = "{lang.PAST_URL_HERE}";
-	var LANG_MORE_F_FILES = "{lang.MORE_F_FILES}";
-	var STYLE_PATH  = "{STYLE_PATH}";
-	-->
-	</script>
+    <link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/color.css" />
+    <IF NAME="lang.DIR==ltr"><link rel="stylesheet" type="text/css" media="all" href="{STYLE_PATH}css/ltr.css" /></IF>
 
 
-	<!-- Extra code -->
-	{EXTRA_CODE_META}
+
+    <script type="text/javascript">
+    <!--
+    var number_of_uploads={config.filesnum};
+    var LANG_PAST_URL_HERE = "{lang.PAST_URL_HERE}";
+    var LANG_MORE_F_FILES = "{lang.MORE_F_FILES}";
+    var STYLE_PATH  = "{STYLE_PATH}";
+    -->
+    </script>
+
+
+    <!-- Extra code -->
+    {EXTRA_CODE_META}
 </head>
 <body<IF NAME="go_current == login"> onload="document.login_form.lname.focus();"</IF>>
 <!-- begin Main -->
 <div id="main">
 
-	<!--begin Header-->
-	<div id="header" class="clearfix">
-		<h1><a title="{config.sitename}" href="{config.siteurl}" class="logo">{config.sitename}</a></h1>
-	</div>
-	<!-- @end-Header -->
+    <!--begin Header-->
+    <div id="header" class="clearfix">
+        <h1><a title="{config.sitename}" href="{config.siteurl}" class="logo">{config.sitename}</a></h1>
+    </div>
+    <!-- @end-Header -->
 
-	<div class="clr"></div>
+    <div class="clr"></div>
 
-	<!-- begin Top Navigation -->
-	<div class="top_nav">
-		<ul class="menu">
-		<LOOP NAME="top_menu"><IF LOOP="show">
-		<li><a href="{{url}}" (go_current=={{name}}?class="current":)>{{title}}</a></li>
-		</IF></LOOP>
-		</ul>
-	</div><!-- @end-Top-Navigation -->
+    <!-- begin Top Navigation -->
+    <div class="top_nav">
+        <ul class="menu">
+        <LOOP NAME="top_menu"><IF LOOP="show">
+        <li><a href="{{url}}" (go_current=={{name}}?class="current":)>{{title}}</a></li>
+        </IF></LOOP>
+        </ul>
+    </div><!-- @end-Top-Navigation -->
 
-	<div class="clr"></div>
+    <div class="clr"></div>
 
-	<!-- begin wrapper -->
-	<div id="wrapper" class="clearfix">
+    <!-- begin wrapper -->
+    <div id="wrapper" class="clearfix">
 
-	<IF NAME="extras.header">
-	<!-- begin extras header -->
-	<div class="dot"></div>
-		<div class="extras_header">{extras.header}</div>
-	<div class="dot"></div>
-	<!-- @end-extras-header -->
-	</IF>
+    <IF NAME="extras.header">
+    <!-- begin extras header -->
+    <div class="dot"></div>
+        <div class="extras_header">{extras.header}</div>
+    <div class="dot"></div>
+    <!-- @end-extras-header -->
+    </IF>
 
-	<div class="clr"></div>
+    <div class="clr"></div>
 
-	<!-- begin menu right -->
-	<div id="sidebar">  
-		<div id="sidebar_box">
-		<IS_BROWSER!="mobile"> 
-			<img src="{user_avatar}" alt="{username}" title="{username}" height="90" width="100" />
-		</IS_BROWSER>
-			<ul class="menu">
-				<LOOP NAME="side_menu"><IF LOOP="show">
-				<li><a href="{{url}}" (go_current=={{name}}?class="current":)><IS_BROWSER!="mobile"><img src="{STYLE_PATH}images/{{name}}.png" style="float:right;" class="pngfix" alt="{lang.LOGIN}" style="vertical-align:middle;" /></IS_BROWSER>{{title}} <IF LOOP="name==logout">[ {username} ]</IF></a></li>
-				</IF></LOOP>
-			</ul>
-		</div>
-		<div class="dot clr"></div>
-	</div><!-- @end-menu-right -->
+    <!-- begin menu right -->
+    <div id="sidebar">  
+        <div id="sidebar_box">
+        <IS_BROWSER!="mobile"> 
+            <img src="{user_avatar}" alt="{username}" title="{username}" height="90" width="100" />
+        </IS_BROWSER>
+            <ul class="menu">
+                <LOOP NAME="side_menu"><IF LOOP="show">
+                <li><a href="{{url}}" (go_current=={{name}}?class="current":)><IS_BROWSER!="mobile"><img src="{STYLE_PATH}images/{{name}}.png" style="float:right;" class="pngfix" alt="{lang.LOGIN}" style="vertical-align:middle;" /></IS_BROWSER>{{title}} <IF LOOP="name==logout">[ {username} ]</IF></a></li>
+                </IF></LOOP>
+            </ul>
+        </div>
+        <div class="dot clr"></div>
+    </div><!-- @end-menu-right -->

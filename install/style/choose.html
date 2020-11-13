@@ -1,24 +1,24 @@
 <div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner">
-	<div class="clr"></div>
-	
-	{{if(!$GLOBALS['php_ver']):}}
-	<div class="Failure">
-		<img src="style/images/official_no.png" class="img" alt="?" /><br /><br />
-		<h2>{{echo sprintf($lang['INST_PHP_LESSMIN'], MIN_PHP_VERSION, PHP_VERSION)}}</h2>
-	</div>
-	{{else:}}
-		{{if($GLOBALS['install_or_no']):}}
-			<div class="InstallUpdate" onclick="window.location.href='./install.php?step=license&amp;{{echo getlang(1)}}';">
-				<img src="style/images/Installer.png" alt="Install Kleeja" /><br />
-				<h2>{{echo $lang['INST_INSTALL_CLEAN_VER']}}</h2>
-			</div>
-		{{else:}}
-			<div class="InstallUpdate" onclick="window.location.href='./update.php?{{echo getlang(1)}}';">	
-				<img src="style/images/update.png" alt="update Kleeja" /><br />
-				<h2>{{echo $lang['INST_UPDATE_P_VER']}}</h2>
-			</div>
-		{{endif;}}
-	{{endif;}}
+    <div class="clr"></div>
+    
+    {{if(!$GLOBALS['php_ver']):}}
+    <div class="Failure">
+        <img src="style/images/official_no.png" class="img" alt="?" /><br /><br />
+        <h2>{{echo sprintf($lang['INST_PHP_LESSMIN'], MIN_PHP_VERSION, PHP_VERSION)}}</h2>
+    </div>
+    {{else:}}
+        {{if($GLOBALS['install_or_no']):}}
+            <div class="InstallUpdate" onclick="window.location.href='./install.php?step=license&amp;{{echo getlang(1)}}';">
+                <img src="style/images/Installer.png" alt="Install Kleeja" /><br />
+                <h2>{{echo $lang['INST_INSTALL_CLEAN_VER']}}</h2>
+            </div>
+        {{else:}}
+            <div class="InstallUpdate" onclick="window.location.href='./update.php?{{echo getlang(1)}}';">    
+                <img src="style/images/update.png" alt="update Kleeja" /><br />
+                <h2>{{echo $lang['INST_UPDATE_P_VER']}}</h2>
+            </div>
+        {{endif;}}
+    {{endif;}}
 
-	<div class="clr"></div>			
+    <div class="clr"></div>            
 </div></div><div class="BoxBottomImg"></div></div>

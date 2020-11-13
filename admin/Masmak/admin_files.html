@@ -1,8 +1,8 @@
 
 <!-- Breadcrumbs -->
 <ol class="breadcrumb">
-	<li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-	<li class="breadcrumb-item active">{lang.R_FILES} (<span>{current_page}/{total_pages}</span>)</li>
+    <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
+    <li class="breadcrumb-item active">{lang.R_FILES} (<span>{current_page}/{total_pages}</span>)</li>
 </ol>
 
 <IF NAME="is_search">
@@ -14,7 +14,7 @@
 
 
 <form method="post" name="filesform" action="{action}" id="files_form">
-	
+    
     <IF NAME="no_results">
         <div class="alert alert-info">
         {lang.NO_RESULT_USE_SYNC}
@@ -72,7 +72,7 @@
     <input type="submit" class="btn btn-outline-primary" name="submit" value="{lang.DEL_SELECTED}">
 </div>
 
-	
+    
 <!-- pagination -->
 {page_nums}
 

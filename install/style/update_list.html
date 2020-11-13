@@ -1,28 +1,28 @@
 <div class="BoxInner"><div class="BoxTopImg"></div><div class="BoxBody"><div class="inner">
-	<div class="clr"></div>
-	
-	<img src="style/images/update.png" alt="update" /><br />
-	{{if (sizeof($GLOBALS['upfiles'])):}}
-	<p style="text-align:center;">{{echo $lang['INST_CHOOSE_UPDATE_FILE']}}</p>
-	<form  action="{{echo './update.php?step=action_file&amp;' . getlang(1)}}" method="post">
-		<select class="SelectVersion" name="action_file_do" dir="ltr">
-			{{foreach($GLOBALS['upfiles'] as $k=>$v):}}
-				<option value="{{echo $v}}">{{echo $v}}</option>
-			{{endforeach}}
-		</select>
-	<div class="hr"></div>
-		<button onclick="window.location.href='./index.php?step=choose&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
-		<button name="submitlfile" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
-	</form>
-	{{else:}}
-	<div align="center">
-		<p style="text-align:center;color:green;font-size:20px;">
-			{{echo $lang['INST_UPDATE_CUR_VER_IS_UP']}}
-			<br />
-			<div style="color:red; direction: ltr">[ {{echo array_search($GLOBALS['config']['db_version'], $GLOBALS['order_update_files'])}} :: {{echo $GLOBALS['config']['db_version']}} ]</div>
-		</p>
-	</div>
-	{{endif;}}
-	
-	<div class="clr"></div>			
+    <div class="clr"></div>
+    
+    <img src="style/images/update.png" alt="update" /><br />
+    {{if (sizeof($GLOBALS['upfiles'])):}}
+    <p style="text-align:center;">{{echo $lang['INST_CHOOSE_UPDATE_FILE']}}</p>
+    <form  action="{{echo './update.php?step=action_file&amp;' . getlang(1)}}" method="post">
+        <select class="SelectVersion" name="action_file_do" dir="ltr">
+            {{foreach($GLOBALS['upfiles'] as $k=>$v):}}
+                <option value="{{echo $v}}">{{echo $v}}</option>
+            {{endforeach}}
+        </select>
+    <div class="hr"></div>
+        <button onclick="window.location.href='./index.php?step=choose&amp;{{echo getlang(1)}}';return false;" name="previous" type="submit" class="btn"><span>&laquo;  {{echo $lang['INST_PREVIOUS']}}</span></button>
+        <button name="submitlfile" type="submit" class="btn"><span>{{echo $lang['INST_NEXT']}} &raquo;</span></button>
+    </form>
+    {{else:}}
+    <div align="center">
+        <p style="text-align:center;color:green;font-size:20px;">
+            {{echo $lang['INST_UPDATE_CUR_VER_IS_UP']}}
+            <br />
+            <div style="color:red; direction: ltr">[ {{echo array_search($GLOBALS['config']['db_version'], $GLOBALS['order_update_files'])}} :: {{echo $GLOBALS['config']['db_version']}} ]</div>
+        </p>
+    </div>
+    {{endif;}}
+    
+    <div class="clr"></div>            
 </div></div><div class="BoxBottomImg"></div></div>

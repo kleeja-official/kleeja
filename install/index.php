@@ -2,7 +2,7 @@
 /**
 *
 * @package install
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
@@ -17,8 +17,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 define('IN_COMMON', true);
 
 //path to this file from Kleeja root folder
-$_path = '../';
-define('PATH', $_path);
+define('PATH', '../');
 
 
 //before anything check PHP version compatibility
@@ -42,14 +41,22 @@ if (! function_exists('mysqli_connect'))
 
 
 
-if(file_exists($_path . 'config.php'))
+if (file_exists(PATH . 'config.php'))
 {
-	include_once ($_path . 'config.php');
+    include_once PATH . 'config.php';
 }
 
-include_once $_path . 'includes/functions.php';
+include_once PATH . 'includes/functions.php';
 
-include_once $_path . 'includes/mysqli.php';
+if (isset($dbtype) && $dbtype == 'sqlite')
+{
+    include PATH . 'includes/sqlite.php';
+}
+else
+{
+    include PATH . 'includes/mysqli.php';
+}
+
 
 include_once 'includes/functions_install.php';
 
@@ -58,9 +65,9 @@ include_once 'includes/functions_install.php';
 /**
 * print header
 */
-if (!ip('lang'))
+if (! ip('lang'))
 {
-	echo gettpl('header.html');
+    echo gettpl('header.html');
 }
 
 
@@ -72,53 +79,57 @@ switch (g('step', 'str'))
 default:
 case 'language':
 
-	if(ig('ln') && g('ln', 'str', '') !== '')
-	{
-//	    header('Location: ./?step=official&lang=' . g('ln'));
-		echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' . g('ln') . '">';
-		exit;
-	}
+    if (ig('ln'))
+    {
+        echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' . g('ln', 'str', 'en') . '">';
 
-	echo gettpl('lang.html');
+        exit;
+    }
+
+    echo gettpl('lang.html');
 
 break;
+
 case 'what_is_kleeja':
 
-	echo gettpl('what_is_kleeja.html');
+    echo gettpl('what_is_kleeja.html');
 
 break;
+
 case 'official':
 
-	echo gettpl('official.html');
+    echo gettpl('official.html');
 
 break;
+
 case 'choose' :
 
-	$install_or_no	= $php_ver = true;
+    $install_or_no    = $php_ver = true;
 
-	//check version of PHP 
-	if (! function_exists('version_compare')
+    //check version of PHP
+    if (! function_exists('version_compare')
         || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
-	{
-		$php_ver = false;
-	}
+    {
+        $php_ver = false;
+    }
 
-	if(file_exists($_path . 'config.php'))
-	{
-		include_once $_path . 'config.php';
-		if(!empty($dbuser) && !empty($dbname))
-		{
-			$d = inst_get_config('language');
+    if (file_exists(PATH . 'config.php'))
+    {
+        include_once PATH . 'config.php';
 
-			if(!empty($d))
-			{
-				$install_or_no = false;
-			}
-		}
-	}
+        if (! empty($dbuser) && ! empty($dbname))
+        {
+            $d = inst_get_config('language');
 
-	echo gettpl('choose.html');
-	
+            if (! empty($d))
+            {
+                $install_or_no = false;
+            }
+        }
+    }
+
+    echo gettpl('choose.html');
+
 break;
 }
 
@@ -127,5 +138,3 @@ break;
 * print footer
 */
 echo gettpl('footer.html');
-
-

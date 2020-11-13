@@ -2,48 +2,38 @@
 /**
  *
  * @package Kleeja
- * @copyright (c) 2007 Kleeja.com
+ * @copyright (c) 2007 Kleeja.net
  * @license ./docs/license.txt
  *
  */
 
 
-#no direct access
-if (!defined('IN_COMMON'))
+//no direct access
+if (! defined('IN_COMMON'))
 {
     exit;
 }
 
 class kleeja_style
 {
-    protected $vars; #Reference to $GLOBALS
-    protected $loop = array();
-    protected $reg = array('var' => '/([{]{1,2})+([A-Z0-9_\.]+)[}]{1,2}/i');
-    public $caching = true; #save templates as caches to not compiled a lot of times
-
-    /**
-    * check if caching is not enabled and empty style cache files
-    */
-    public function __wakeup()
-    {
-        if(! $this->caching)
-        {
-            delete_cache(null, true);
-        }
-    }
+    protected $vars; //Reference to $GLOBALS
+    protected $loop = [];
+    protected $reg  = ['var' => '/([{]{1,2})+([A-Z0-9_\.]+)[}]{1,2}/i'];
+    public $caching = true; //save templates as caches to not compiled a lot of times
 
     /**
      * Function to load a template file.
      * @param $template_name
+     * @param null|mixed $style_path
      */
     protected function _load_template($template_name, $style_path = null)
     {
         global $config, $THIS_STYLE_PATH_ABS, $STYLE_PATH_ADMIN_ABS, $DEFAULT_PATH_ADMIN_ABS;
 
 
-        if (!($template_path = $this->template_exists($template_name, $style_path)))
+        if (! ($template_path = $this->template_exists($template_name, $style_path)))
         {
-            big_error('No Template !', 'Requested "' . $template_path . '" template doesnt exists or an empty !! ');
+            big_error('No Template !', 'Requested <b>"' . $template_name . '"</b> template doesnt exist!');
         }
 
         $html = file_get_contents($template_path);
@@ -76,15 +66,17 @@ class kleeja_style
 
         $is_admin_template = false;
 
+        $style_path = str_replace(DIRECTORY_SEPARATOR, '/', $style_path);
+
         //admin template always begin with admin_
         if (substr($template_name, 0, 6) == 'admin_')
         {
-            $current_style_path = !empty($style_path) ? $style_path : $STYLE_PATH_ADMIN_ABS;
-            $is_admin_template = true;
+            $current_style_path = ! empty($style_path) ? $style_path : $STYLE_PATH_ADMIN_ABS;
+            $is_admin_template  = true;
         }
         else
         {
-            $current_style_path = !empty($style_path) ? $style_path : $THIS_STYLE_PATH_ABS;
+            $current_style_path = ! empty($style_path) ? $style_path : $THIS_STYLE_PATH_ABS;
         }
 
 
@@ -95,29 +87,31 @@ class kleeja_style
         $is_tpl_exist = file_exists($template_path);
 
 
-        if (!$is_tpl_exist)
+        if (! $is_tpl_exist)
         {
             if (trim($config['style_depend_on']) != '')
             {
                 $template_path_alternative = str_replace('/' . $config['style'] . '/', '/' . $config['style_depend_on'] . '/', $template_path);
+
                 if (file_exists($template_path_alternative))
                 {
                     $template_path = $template_path_alternative;
-                    $is_tpl_exist = true;
+                    $is_tpl_exist  = true;
                 }
             }
-            else if ($is_admin_template)
+            elseif ($is_admin_template)
             {
                 $template_path = $DEFAULT_PATH_ADMIN_ABS . $template_name . '.html';
-                $is_tpl_exist = true;
+                $is_tpl_exist  = true;
             }
-            else if ($config['style'] != 'default' && !$is_admin_template)
+            elseif ($config['style'] != 'default' && ! $is_admin_template)
             {
                 $template_path_alternative = str_replace('/' . $config['style'] . '/', '/default/', $template_path);
+
                 if (file_exists($template_path_alternative))
                 {
                     $template_path = $template_path_alternative;
-                    $is_tpl_exist = true;
+                    $is_tpl_exist  = true;
                 }
             }
         }
@@ -127,45 +121,45 @@ class kleeja_style
 
     /**
      * Function to parse the Template Tags
+     * @param mixed $html
+     * @param mixed $template_name
      */
     protected function _parse($html, $template_name = '')
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('style_parse_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        $html = preg_replace(array('#<([\?%])=?.*?\1>#s', '#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s', '#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'), '', $html);
-        $html = preg_replace_callback('/\(([{A-Z0-9_\.}\s!=<>]+)\?(.*):(.*)\)/iU', array('kleeja_style', '_iif_callback'), $html);
-        $html = preg_replace_callback('/<(IF|ELSEIF|UNLESS) (.+)>/iU', array('kleeja_style', '_if_callback'), $html);
-        $html = preg_replace_callback('/<LOOP\s+NAME\s*=\s*(\"|)+([a-z0-9_\.]{1,})+(\"|)\s*>/i', array('kleeja_style', '_loop_callback'), $html);
-        $html = preg_replace_callback(kleeja_style::reg('var'), array('kleeja_style', '_vars_callback'), $html);
 
-        $rep = array
-        (
-            '/<\/(LOOP|IF|END|IS_BROWSER|UNLESS)>/i' => "<?php } ?>",
-            '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*>/iU' => '<?php echo $this->display("\\2"); ?>',
-            '/<IS_BROWSER\s*=\s*"([a-z0-9,]+)"\s*>/iU' => '<?php if(is_browser("\\1")){ ?>',
-            '/<IS_BROWSER\s*\!=\s*"([a-z0-9,]+)"\s*>/iU' => '<?php if(!is_browser("\\1")){ ?>',
-            '/(<ELSE>|<ELSE\s?\/>)/i' => '<?php }else{ ?>',
-            '/<ODD\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/ODD\>/is' => "<?php if(intval(\$value['\\1'])%2){?> \\2 <?php } ?>",
-            '/<EVEN\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/EVEN>/is' => "<?php if(intval(\$value['\\1'])% 2 == 0){?> \\2 <?php } ?>",
-            '/<RAND\s*=\s*"(.*?)\"\s*,\s*"(.*?)"\s*>/is' => "<?php \$KLEEJA_tpl_rand_is=(!isset(\$KLEEJA_tpl_rand_is) || \$KLEEJA_tpl_rand_is==0)?1:0; print((\$KLEEJA_tpl_rand_is==1) ?'\\1':'\\2'); ?>",
-            '/\{%(key|value)%\}/i' => '<?php echo $\\1; ?>',
-        );
+        $html = preg_replace_callback('/<IGNORE>(.*?)<\/IGNORE>/is', function($m) {
+            return '<STRREV>' . strrev($m[1]) . '</STRREV>';
+        }, $html);
+        $html = preg_replace(['#<([\?%])=?.*?\1>#s', '#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s', '#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'], '', $html);
+        $html = preg_replace_callback('/\(([{A-Z0-9_\.}\s!=<>]+)\?(.*):(.*)\)/iU', function($m) {
+            return '<IF NAME="' . $m[1] . '">' . $m[2] . '<ELSE>' . $m[3] . '</IF>';
+        }, $html);
+        $html = preg_replace_callback('/<(IF|ELSEIF|UNLESS) (.+)>/iU', ['kleeja_style', '_if_callback'], $html);
+        $html = preg_replace_callback('/<LOOP\s+NAME\s*=\s*(\"|)+([a-z0-9_\.]{1,})+(\"|)\s*>/i', function($m) {
+            return '<?php foreach($this->vars["' . (strpos($m[2], '.') !== false ? str_replace('.', '"]["', $m[2]) : $m[2]) . '"] as $key=>$value){ ?>';
+        }, $html);
+        $html = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_vars_callback'], $html);
+        $html = preg_replace_callback('/<STRREV>(.*?)<\/STRREV>/is', function($m) {
+            return strrev($m[1]);
+        }, $html);
 
-       return preg_replace(array_keys($rep), array_values($rep), $html);
+        $rep =
+        [
+            '/<\/(LOOP|IF|END|IS_BROWSER|UNLESS)>/i'                                           => '<?php } ?>',
+            '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*(PATH=\s*=*\s*"(.+)")?>/iU'                   => '<?php echo $this->display("\\2",  empty("\\4") ? null : "\\4"); ?>',
+            '/<IS_BROWSER\s*=\s*"([a-z0-9,]+)"\s*>/iU'                                         => '<?php if(is_browser("\\1")){ ?>',
+            '/<IS_BROWSER\s*\!=\s*"([a-z0-9,]+)"\s*>/iU'                                       => '<?php if(!is_browser("\\1")){ ?>',
+            '/(<ELSE>|<ELSE\s?\/>)/i'                                                          => '<?php }else{ ?>',
+            '/<ODD\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/ODD\>/is'                        => "<?php if(intval(\$value['\\1'])%2){?> \\2 <?php } ?>",
+            '/<EVEN\s*=\s*"([a-zA-Z0-9_\-\+\.\/]+)"\s*>(.*?)<\/EVEN>/is'                       => "<?php if(intval(\$value['\\1'])% 2 == 0){?> \\2 <?php } ?>",
+            '/<RAND\s*=\s*"(.*?)\"\s*,\s*"(.*?)"\s*>/is'                                       => "<?php \$KLEEJA_tpl_rand_is=(!isset(\$KLEEJA_tpl_rand_is) || \$KLEEJA_tpl_rand_is==0)?1:0; print((\$KLEEJA_tpl_rand_is==1) ?'\\1':'\\2'); ?>",
+            '/\{%(key|value)%\}/i'                                                             => '<?php echo $\\1; ?>',
+        ];
+
+        return preg_replace(array_keys($rep), array_values($rep), $html);
     }
-
-
-    /**
-     * loop tag
-     * @param $matches
-     * @return string
-     */
-    protected function _loop_callback($matches)
-    {
-        $var = strpos($matches[2], '.') !== false ? str_replace('.', '"]["', $matches[2]) : $matches[2];
-        return '<?php foreach($this->vars["' . $var . '"] as $key=>$value){ ?>';
-    }
-
 
     /**
      * if tag
@@ -174,49 +168,62 @@ class kleeja_style
      */
     protected function _if_callback($matches)
     {
-        $char = array(' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>');
-        $reps = array('==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>');
-        $atts = call_user_func(array('kleeja_style', '_get_attributes'), $matches[0]);
-        $con = trim(!empty($atts['NAME']) ? $atts['NAME'] : (empty($atts['LOOP']) ? '' : $atts['LOOP']));
+        $atts      = call_user_func(['kleeja_style', '_get_attributes'], $matches[0]);
+        $condition = '';
 
-        $con = str_replace('$this->vars', '[----this-vars----]', $con);
+        foreach ([
+            'NAME' => '', 'LOOP' => '', 'AND' => ' && ', 'OR' => ' || ', 'ISSET' => ' isset', 'EMPTY' => ' empty'
+        ] as $attribute=>$separator)
+        {
+            if (isset($atts[$attribute]))
+            {
+                $haveParentheses = in_array($attribute, ['ISSET', 'EMPTY']);
+
+                $condition .= $separator . ($haveParentheses ? '(' : '') .
+                                $this->parse_condition($atts[$attribute], ! empty($atts['LOOP'])) .
+                                ($haveParentheses ? ')' : '')
+                    ;
+            }
+        }
+
+        return strtoupper($matches[1]) == 'IF'
+              ? '<?php if(' . $condition . '){ ?>'
+              : (strtoupper($matches[1]) == 'UNLESS' ? '<?php if(!(' . $condition . ')){ ?>' : '<?php }elseif(' . $condition . '){ ?>');
+    }
+
+    protected function parse_condition($condition, $is_loop)
+    {
+        $char = [' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>'];
+        $reps = ['==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>'];
+
+        if (trim($condition) == '')
+        {
+            return '';
+        }
+
+        $con = str_replace('$this->vars', '[----this-vars----]', $condition);
 
         if (preg_match('/(.*)(' . implode('|', $char) . ')(.*)/i', $con, $arr))
         {
             $arr[1] = trim($arr[1]);
-            $var1 = $arr[1][0] != '$' ? call_user_func(array('kleeja_style', '_var_callback'), (!empty($atts['NAME']) ? '{' . $arr[1] . '}' : '{{' . $arr[1] . '}}')) : $arr[1];
-            $opr = str_replace($char, $reps, $arr[2]);
-            $var2 = trim($arr[3]);
+            $var1   = $arr[1][0] != '$' ? call_user_func(['kleeja_style', '_var_callback'], (! $is_loop ? '{' . $arr[1] . '}' : '{{' . $arr[1] . '}}')) : $arr[1];
+            $opr    = str_replace($char, $reps, $arr[2]);
+            $var2   = trim($arr[3]);
 
-            #check for type
-            if ($var2[0] != '$' && !preg_match('/[0-9]/', $var2))
+            //check for type
+            if ($var2[0] != '$' && ! preg_match('/[0-9]/', $var2))
             {
                 $var2 = '"' . str_replace('"', '\"', $var2) . '"';
             }
 
-            $con = "$var1$opr$var2";
+            $con = "$var1 $opr $var2";
         }
         elseif ($con[0] !== '$' && strpos($con, '(') === false)
         {
-            $con = call_user_func(array('kleeja_style', '_var_callback'), (!empty($atts['NAME']) ? '{' . $con . '}' : '{{' . $con . '}}'));
+            $con = call_user_func(['kleeja_style', '_var_callback'], (! $is_loop ? '{' . $con . '}' : '{{' . $con . '}}'));
         }
 
-        $con = str_replace( '[----this-vars----]', '$this->vars', $con);
-
-        return strtoupper($matches[1]) == 'IF'
-              ? '<?php if(' . $con . '){ ?>'
-              : (strtoupper($matches[1]) == 'UNLESS' ? '<?php if(!(' . $con . ')){ ?>' : '<?php }elseif(' . $con . '){ ?>');
-    }
-
-
-    /**
-     * iif tag, if else /if
-     * @param $matches
-     * @return string
-     */
-    protected function _iif_callback($matches)
-    {
-        return '<IF NAME="' . $matches[1] . '">' . $matches[2] . '<ELSE>' . $matches[3] . '</IF>';
+        return str_replace('[----this-vars----]', '$this->vars', $con);
     }
 
 
@@ -227,11 +234,11 @@ class kleeja_style
      */
     protected function _vars_callback($matches)
     {
-        $variable = call_user_func(array('kleeja_style', '_var_callback'), $matches);
+        $variable = call_user_func(['kleeja_style', '_var_callback'], $matches);
 
-        if(strpos($matches[0], '{lang')  !== false || strpos($matches[0], '{olang') !== false)
+        if (strpos($matches[0], '{lang')  !== false || strpos($matches[0], '{olang') !== false)
         {
-            return '<?=isset(' . $variable . ') ? ' . $variable . ' : \'' . $matches[0] . '\'?>';
+            return '<?=' . $variable . ' ?? \'' . $matches[0] . '\'?>';
         }
 
         return '<?=' . $variable . '?>';
@@ -245,13 +252,19 @@ class kleeja_style
      */
     protected function _var_callback($matches)
     {
-        if (!is_array($matches))
+        if (! is_array($matches))
         {
             preg_match(kleeja_style::reg('var'), $matches, $matches);
         }
 
-        $var = !empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '';
-        return (!empty($matches[1]) && trim($matches[1]) == '{{') ? '$value[\'' . $var . '\']' : '$this->vars[\'' . $var . '\']';
+        $var = trim(! empty($matches[2]) ? str_replace('.', '\'][\'', $matches[2]) : '');
+
+        if (empty($var))
+        {
+            return '';
+        }
+
+        return ! empty($matches[1]) && trim($matches[1]) == '{{' ? '$value[\'' . $var . '\']' : '$this->vars[\'' . $var . '\']';
     }
 
     /**
@@ -273,7 +286,7 @@ class kleeja_style
     protected function reg($var)
     {
         $vars = get_class_vars(__CLASS__);
-        return ($vars['reg'][$var]);
+        return $vars['reg'][$var];
     }
 
 
@@ -284,22 +297,15 @@ class kleeja_style
      */
     protected function _get_attributes($tag)
     {
-        preg_match_all('/([a-z]+)="(.+)"/iU', $tag, $attribute);
+        preg_match_all('/([a-z]+)="(.+)?"/iU', $tag, $attribute);
 
-        $attributes = array();
+        $attributes = [];
 
         for ($i = 0; $i < count($attribute[1]); $i++)
         {
             $att = strtoupper($attribute[1][$i]);
 
-            if (preg_match('/NAME|LOOP/', $att))
-            {
-                $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), array('kleeja_style', '_var_callback'), $attribute[2][$i]);
-            }
-            else
-            {
-                $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), array('kleeja_style', '_var_callback_att'), $attribute[2][$i]);
-            }
+            $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback'], $attribute[2][$i]);
         }
         return $attributes;
     }
@@ -318,7 +324,7 @@ class kleeja_style
     /**
      * load parser and return page content
      * @param $template_name
-     * @param null $style_path optional, good for plugins
+     * @param  null         $style_path optional, good for plugins
      * @return mixed|string
      */
     public function display($template_name, $style_path = null)
@@ -328,13 +334,13 @@ class kleeja_style
         $this->vars = &$GLOBALS;
 
         //is there ?
-        if (!file_exists(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php') || !$this->caching)
+        if (! file_exists(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php') || ! $this->caching)
         {
             $this->_load_template($template_name, $style_path);
         }
 
         ob_start();
-        include(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php');
+        include PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php';
         $page = ob_get_contents();
         ob_end_clean();
 
@@ -350,8 +356,24 @@ class kleeja_style
     {
         $this->vars = &$GLOBALS;
 
+        $eval_on = false;
+        eval('$eval_on = true;');
+
+        $parsed_html = trim($this->_parse(stripcslashes($html)));
+
         ob_start();
-        eval(' ?' . '>' . trim($this->_parse($html)) . '<' . '?php ');
+
+        if ($eval_on)
+        {
+            eval(' ?' . '>' . $parsed_html . '<' . '?php ');
+        }
+        else
+        {
+            $path  = PATH . 'cache/tpl_' . md5($parsed_html) . '.php';
+            file_put_contents($path, $parsed_html);
+            include_once $path;
+        }
+
         $page = ob_get_contents();
         ob_end_clean();
 
@@ -361,11 +383,12 @@ class kleeja_style
     /**
      * change name of template to be valid
      * @param $name
+     * @param  null|mixed $style_path
      * @return mixed
      */
     protected function re_name_tpl($name, $style_path = null)
     {
-        return preg_replace("/[^a-z0-9-_]/", "-", strtolower($name)) .
-            (!empty($style_path) ? md5($style_path) : '');
+        return preg_replace('/[^a-z0-9-_]/', '-', strtolower($name)) .
+            (! empty($style_path) ? md5($style_path) : '');
     }
 }

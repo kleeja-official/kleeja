@@ -2,146 +2,158 @@
 /**
 *
 * @package install
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
 
-/*
-* Requirements of Kleeja
-*/
-define('MIN_PHP_VERSION', '7.0');
-define('MIN_MYSQL_VERSION', '4.2.2');
-//version of latest changes at db
-define ('LAST_DB_VERSION' , '9');
-//set no errors
-define('MYSQL_NO_ERRORS', true);
+
+// get version info and min requirement values
+require PATH . 'includes/version.php';
+
+//set mysql to show no errors
+define('SQL_NO_ERRORS', true);
+define('EVAL_IS_ON', is_eval_is_on());
 
 
 // Detect choosing another lang while installing
-if(ig('change_lang'))
+if (ig('change_lang') && ip('lang'))
 {
-	if (ip('lang'))
-	{
-		header('Location: ' . $_SERVER['PHP_SELF'] . '?step=' . p('step_is') . '&lang=' . p('lang'));
-	}
+    header('Location: ' . $_SERVER['PHP_SELF'] . '?step=' . p('step_is') . '&lang=' . p('lang'));
 }
 
+
 // Including current language
-$lang = require $_path . 'lang/' . getlang() . '/common.php';
-$lang = array_merge($lang, require $_path . 'lang/' . getlang() . '/install.php');
+$lang = require PATH . 'lang/' . getlang() . '/common.php';
+$lang = array_merge($lang, require PATH . 'lang/' . getlang() . '/install.php');
 
 
-$IN_DEV = false;
 // Exceptions for development
-if(file_exists($_path . '.svn/entries') || file_exists('dev.txt'))
+if (file_exists(PATH . '.git'))
 {
-	define('DEV_STAGE', true);
-	$IN_DEV = true;
+    define('DEV_STAGE', true);
 }
 
 
 /**
  * Return current language of installing wizard
- * @param bool $link
+ * @param  bool         $link
  * @return mixed|string
  */
 function getlang ($link = false)
 {
-	global $_path;
+    $ln    = 'en';
 
-	if (ig('lang'))
-	{
-		$lang = preg_replace('/[^a-z0-9]/i', '', g('lang',  'str', 'en'));
+    if (ig('lang'))
+    {
+        $lang    = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
+        $ln      = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
+    }
 
-		$ln	= file_exists($_path . 'lang/' . $lang . '/install.php') ? $lang : 'en';
-	}
-	else
-	{
-		$ln	= 'en';
-	}
-
-	return $link ? 'lang=' . $ln : $ln;
+    return $link ? 'lang=' . $ln : $ln;
 }
 
 function getjquerylink()
 {
-	global $_path;
+    if (file_exists(PATH . 'admin/Masmak/js/jquery.min.js'))
+    {
+        return PATH . 'admin/Masmak/js/jquery.min.js';
+    }
 
-	if(file_exists($_path . 'admin/Masmak/js/jquery.min.js'))
-	{
-		return $_path . 'admin/Masmak/js/jquery.min.js';
-	}
-	else
-	{
-		return 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js';
-	}
+    return 'http://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js';
 }
 
 /**
 * Parsing installing templates
+* @param mixed $tplname
 */
 function gettpl($tplname)
 {
-	global $lang, $_path;
+    global $lang;
 
-	$tpl = preg_replace('/{{([^}]+)}}/', '<?php \\1 ?>', file_get_contents('style/' . $tplname));
-	ob_start();
-	eval('?> ' . $tpl . '<?php ');
-	$stpl = ob_get_contents();
-	ob_end_clean();
+    $tpl = preg_replace('/{{([^}]+)}}/', '<?php \\1 ?>', file_get_contents('style/' . $tplname));
 
-	return $stpl;
+    ob_start();
+
+    if (EVAL_IS_ON)
+    {
+        eval('?> ' . $tpl . '<?php ');
+    }
+    else
+    {
+        include_once kleeja_eval($tpl);
+    }
+
+    $stpl = ob_get_contents();
+    ob_end_clean();
+
+    return $stpl;
 }
+
+function is_eval_is_on()
+{
+    $eval_on = false;
+    eval('$eval_on = true;');
+
+    return $eval_on;
+}
+
+function kleeja_eval($code)
+{
+    $path  = PATH . 'cache/' . md5($code) . '.php';
+    file_put_contents($path, $code);
+    return $path;
+}
+
 
 /**
 * Export config
+* @param mixed $srv
+* @param mixed $usr
+* @param mixed $pass
+* @param mixed $nm
+* @param mixed $prf
 */
-function do_config_export($srv, $usr, $pass, $nm, $prf, $fpath = '')
+function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
 {
-		global $_path;
-
-		if(!in_array($type, array('mysql', 'mysqli')))
-		{
-			$type = 'mysql';
-		}
-
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
-		//$data	.= '$db_type		= \'' . $type . "'; //mysqli or mysql \n";
-		$data	.= '$dbserver		= \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
-		$data	.= '$dbuser			= \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
-		$data	.= '$dbpass			= \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
-		$data	.= '$dbname			= \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
-    $data .= '$dbprefix		= \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
-		//$data	.= '$adminpath		= \'admin.php\';// if you renamed your acp file , please fill the new name here \n';
-		//$data	.= "\n\n\n";
-		//$data	.= "//for integration with script  must change user systen from admin cp  \n";
-		//$data	.= '$script_path	= \'' . str_replace("'", "\'", $fpath) . "'; // path of script (./forums)  \n";
-		//$data	.= "\n\n";
-		//$data	.= '?'.'>';
+    $data .= '//for more information about this file, visit: ' . "\n";
+    $data .= '//https://github.com/kleeja-official/kleeja/wiki/config.php-file' . "\n\n";
 
-		$written = false;
-		if (is_writable($_path))
-		{
-			$fh = @fopen($_path . 'config.php', 'wb');
-			if ($fh)
-			{
-				fwrite($fh, $data);
-				fclose($fh);
+    if(!empty($type) && $type != 'mysql')
+    {
+        if ($type == 'sqlite' && strpos($nm, '.') === false)
+        {
+            $nm = $nm . '.db';
+        }
 
-				$written = true;
-			}
-		}
+        $data    .= '$dbtype   = \'' . str_replace("'", "\'", $type) . "'; //database type \n";
+    }
+    $data    .= '$dbserver = \'' . str_replace("'", "\'", $srv) . "'; //database server \n";
+    $data    .= '$dbuser   = \'' . str_replace("'", "\'", $usr) . "' ; // database user \n";
+    $data    .= '$dbpass   = \'' . str_replace("'", "\'", $pass) . "'; // database password \n";
+    $data    .= '$dbname   = \'' . str_replace("'", "\'", $nm) . "'; // database name \n";
+    $data    .= '$dbprefix = \'' . str_replace("'", "\'", $prf) . "'; // if you use prefix for tables , fill it \n";
 
-		if(!$written)
-		{
-			header('Content-Type: text/x-delimtext; name="config.php"');
-			header('Content-disposition: attachment; filename=config.php');
-			echo $data;
-			exit;
-		}
 
-		return true;
+    if (is_writable(PATH))
+    {
+        if (@file_put_contents(PATH . 'config.php', $data, LOCK_EX) !== false)
+        {
+            return true;
+        }
+    }
+
+    if (defined('CLI') && CLI)
+    {
+        return true;
+    }
+
+    header('Content-Type: text/x-delimtext; name="config.php"');
+    header('Content-disposition: attachment; filename=config.php');
+    echo $data;
+
+    exit;
 }
 
 
@@ -150,44 +162,52 @@ function do_config_export($srv, $usr, $pass, $nm, $prf, $fpath = '')
 */
 function get_microtime()
 {
-	list($usec, $sec) = explode(' ', microtime());
-	return ((float) $usec + (float) $sec);
+    list($usec, $sec) = explode(' ', microtime());
+    return ((float) $usec + (float) $sec);
 }
 
 /**
 * Get config value from database directly, if not return false.
+* @param mixed $name
 */
 function inst_get_config($name)
 {
-	global $SQL, $dbprefix;
+    global $SQL, $dbprefix;
 
-	if(!$SQL)
-	{
-		global $dbserver, $dbuser, $dbpass, $dbname;
-		if(!isset($dbserver))
-		{
-			return false;
-		}
+    if (empty($SQL))
+    {
+        global $dbserver, $dbuser, $dbpass, $dbname, $dbtype;
 
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname);
-	}
+        if (! isset($dbname))
+        {
+            return false;
+        }
 
-	if(!$SQL)
-	{
-		return false;
-	}
+        if(isset($dbtype) && $dbtype == 'sqlite')
+        {
+            @touch(PATH . $dbname);
+        }
 
-	$sql = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
-	$result	= $SQL->query($sql);
-	if($SQL->num_rows($result) == 0)
-	{
-		return false;
-	}
-	else
-	{
-		$current_ver  = $SQL->fetch_array($result);
-		return $current_ver['value'];
-	}
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+    }
+
+    if (empty($SQL))
+    {
+        return false;
+    }
+
+    $sql       = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
+    $result    = $SQL->query($sql);
+
+    if ($SQL->num_rows($result) == 0)
+    {
+        return false;
+    }
+    else
+    {
+        $current_ver  = $SQL->fetch_array($result);
+        return $current_ver['value'];
+    }
 }
 
 
@@ -197,46 +217,56 @@ function inst_get_config($name)
 */
 function get_cookies_settings()
 {
-	$server_port = !empty($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : (int) @getenv('SERVER_PORT');
-	$server_name = $server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : @getenv('SERVER_NAME'));
+    $server_port = ! empty($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : (int) @getenv('SERVER_PORT');
+    $server_name = $server_name = (! empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((! empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : @getenv('SERVER_NAME'));
 
-	// HTTP HOST can carry a port number...
-	if (strpos($server_name, ':') !== false)
-		$server_name = substr($server_name, 0, strpos($server_name, ':'));
-
-
-	$cookie_secure	= isset($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] == 'on' ? true : false;
-	$cookie_name	= 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(md5(mt_rand()), 16, 35)), 0, 5));
-
-	$name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
-	if (!$name)
-		$name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : @getenv('REQUEST_URI');
-
-	$script_path = trim(dirname(str_replace(array('\\', '//'), '/', $name)));
+    // HTTP HOST can carry a port number...
+    if (strpos($server_name, ':') !== false)
+    {
+        $server_name = substr($server_name, 0, strpos($server_name, ':'));
+    }
 
 
-	if ($script_path !== '/')
-	{
-		if (substr($script_path, -1) == '/')
-			$script_path = substr($script_path, 0, -1);
+    $cookie_secure    = isset($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] == 'on' ? true : false;
+    $cookie_name      = 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(md5(mt_rand()), 16, 35)), 0, 5));
 
-		$script_path = str_replace(array('../', './'), '', $script_path);
-		if ($script_path[0] != '/')
-			$script_path = '/' . $script_path;
-	}
+    $name = (! empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
 
-	$cookie_domain = $server_name;
-	if (strpos($cookie_domain, 'www.') === 0)
-	{
-		$cookie_domain = str_replace('www.', '.', $cookie_domain);
-	}
+    if (! $name)
+    {
+        $name = (! empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : @getenv('REQUEST_URI');
+    }
 
-	return array(
-		'server_name'	=> $server_name,
-		'cookie_secure'	=> $cookie_secure,
-		'cookie_name'	=> $cookie_name,
-		'cookie_domain'	=> $cookie_domain,
-		'cookie_path'	=> str_replace('/install', '', $script_path),
-	);
+    $script_path = trim(dirname(str_replace(['\\', '//'], '/', $name)));
 
+
+    if ($script_path !== '/')
+    {
+        if (substr($script_path, -1) == '/')
+        {
+            $script_path = substr($script_path, 0, -1);
+        }
+
+        $script_path = str_replace(['../', './'], '', $script_path);
+
+        if ($script_path[0] != '/')
+        {
+            $script_path = '/' . $script_path;
+        }
+    }
+
+    $cookie_domain = $server_name;
+
+    if (strpos($cookie_domain, 'www.') === 0)
+    {
+        $cookie_domain = str_replace('www.', '.', $cookie_domain);
+    }
+
+    return [
+        'server_name'      => $server_name,
+        'cookie_secure'    => $cookie_secure,
+        'cookie_name'      => $cookie_name,
+        'cookie_domain'    => $cookie_domain,
+        'cookie_path'      => str_replace('/install', '', $script_path),
+    ];
 }

@@ -2,65 +2,69 @@
 /**
 *
 * @package adm
-* @copyright (c) 2007 Kleeja.com
+* @copyright (c) 2007 Kleeja.net
 * @license ./docs/license.txt
 *
 */
 
 
 // not for directly open
-if (!defined('IN_ADMIN'))
+if (! defined('IN_ADMIN'))
 {
-	exit();
+    exit();
 }
 
 
-#turn time-limit off
+//turn time-limit off
 @set_time_limit(0);
 
-#get current case
+//get current case
 $case = false;
-if(ig('case'))
+
+if (ig('case'))
 {
-	$case = g('case');
+    $case = g('case');
 }
 
 
-#set form ket
+//set form ket
 $GET_FORM_KEY = kleeja_add_form_key_get('REPAIR_FORM_KEY');
 
 
 //check _GET Csrf token
-if($case && in_array($case, array('clearc', 'sync_files', 'sync_images', 'sync_users', 'tables', 'sync_sizes', 'status_file')))
+if ($case && in_array($case, ['clearc', 'sync_files', 'sync_images', 'sync_users', 'tables', 'sync_sizes', 'status_file']))
 {
-	if(!kleeja_check_form_key_get('REPAIR_FORM_KEY'))
-	{
-		kleeja_admin_err($lang['INVALID_GET_KEY'], true, $lang['ERROR'], true, basename(ADMIN_PATH), 2);
-	}
+    if (! kleeja_check_form_key_get('REPAIR_FORM_KEY'))
+    {
+        kleeja_admin_err($lang['INVALID_GET_KEY'], true, $lang['ERROR'], true, basename(ADMIN_PATH), 2);
+    }
 }
 
-switch($case):
+$text      = '';
+
+
+switch ($case):
 
 default:
 
-# Get real number from database right now
-$all_files = get_actual_stats('files');
+// Get real number from database right now
+$all_files  = get_actual_stats('files');
 $all_images = get_actual_stats('imgs');
-$all_users = get_actual_stats('users');
-$all_sizes = readable_size(get_actual_stats('sizes'));
+$all_users  = get_actual_stats('users');
+$all_sizes  = readable_size(get_actual_stats('sizes'));
 
 
-#links
-$del_cache_link		= basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . $GET_FORM_KEY;
-$resync_files_link	= $config['siteurl'] . 'go.php?go=resync&amp;case=sync_files';
-$resync_images_link	= $config['siteurl'] . 'go.php?go=resync&amp;case=sync_images';
-$resync_users_link	= basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_users&amp;' . $GET_FORM_KEY;
-$resync_sizes_link	= basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_sizes&amp;' . $GET_FORM_KEY;
-$repair_tables_link	= basename(ADMIN_PATH) . '?cp=r_repair&amp;case=tables&amp;' . $GET_FORM_KEY;
+//links
+$del_cache_link           = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . $GET_FORM_KEY;
+$resync_files_link        = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_files';
+$resync_images_link       = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_images';
+$resync_users_link        = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_users&amp;' . $GET_FORM_KEY;
+$resync_sizes_link        = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_sizes&amp;' . $GET_FORM_KEY;
+$repair_tables_link       = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=tables&amp;' . $GET_FORM_KEY;
 
 $queue_cron_job_url = $config['siteurl'] . 'go.php?go=queue';
 
-$stylee = "admin_repair";
+$stylee = 'admin_repair';
 
 break;
 
@@ -70,23 +74,23 @@ break;
 //
 case 'tables':
 
-$query	= "SHOW TABLE STATUS";
-$result	= $SQL->query($query);
-$text = '';
-	
-while($row=$SQL->fetch_array($result))
+$query     = 'SHOW TABLE STATUS';
+$result    = $SQL->query($query);
+
+while ($row=$SQL->fetch_array($result))
 {
-	$queryf	=	"REPAIR TABLE `" . $row['Name'] . "`";
-	$resultf = $SQL->query($queryf);
-	if ($resultf)
-	{
-		$text .= '<li>' . $lang['REPAIRE_TABLE'] . $row['Name'] . '</li>';
-	}
+    $queryf     =    'REPAIR TABLE `' . $row['Name'] . '`';
+    $resultf    = $SQL->query($queryf);
+
+    if ($resultf)
+    {
+        $text .= '<li>' . $lang['REPAIRE_TABLE'] . $row['Name'] . '</li>';
+    }
 }
-	
+
 $SQL->freeresult($result);
 
-$text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=r_repair' .  '\');", 2000);</script>' . "\n";
+$text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=r_repair' . '\');", 2000);</script>' . "\n";
 $stylee = 'admin_info';
 
 
@@ -98,31 +102,31 @@ break;
 case 'sync_sizes':
 
 
-$query_s	= array(
-					'SELECT'	=> 'size',
-					'FROM'		=> "{$dbprefix}files"
-				);
+$query_s    = [
+    'SELECT'       => 'size',
+    'FROM'         => "{$dbprefix}files"
+];
 
 $result_s = $SQL->build($query_s);
 
 $files_number = $files_sizes = 0;
 
-while($row=$SQL->fetch_array($result_s))
+while ($row=$SQL->fetch_array($result_s))
 {
-	$files_number++;
-	$files_sizes = $files_sizes+$row['size'];
+    $files_number++;
+    $files_sizes = $files_sizes+$row['size'];
 }
 
 $SQL->freeresult($result_s);
 
-$update_query	= array(
-						'UPDATE'	=> "{$dbprefix}stats",
-						'SET'		=> "files=" . $files_number . ", sizes=" . $files_sizes
-					);
+$update_query    = [
+    'UPDATE'       => "{$dbprefix}stats",
+    'SET'          => 'files=' . $files_number . ', sizes=' . $files_sizes
+];
 
 if ($SQL->build($update_query))
 {
-	$text .= '<li>' . $lang['REPAIRE_F_STAT'] . '</li>';
+    $text .= '<li>' . $lang['REPAIRE_F_STAT'] . '</li>';
 }
 
 delete_cache('data_stats');
@@ -137,31 +141,31 @@ break;
 //
 case 'sync_users':
 
-$query_w	= array(
-					'SELECT'	=> 'name',
-					'FROM'		=> "{$dbprefix}users"
-				);
+$query_w    = [
+    'SELECT'       => 'name',
+    'FROM'         => "{$dbprefix}users"
+];
 
 $result_w = $SQL->build($query_w);
-		
+
 $user_number = 0;
-while($row=$SQL->fetch_array($result_w))
+while ($row=$SQL->fetch_array($result_w))
 {
-	$user_number++;
+    $user_number++;
 }
-	
+
 $SQL->freeresult($result_w);
 
-$update_query	= array(
-						'UPDATE'	=> "{$dbprefix}stats",
-						'SET'		=> "users=" . $user_number
-					);
+$update_query    = [
+    'UPDATE'       => "{$dbprefix}stats",
+    'SET'          => 'users=' . $user_number
+];
 
 $result = $SQL->build($update_query);
 
 delete_cache('data_stats');
 $text = sprintf($lang['SYNCING'], $lang['USERS_ST']);
-$text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=r_repair' .  '\');", 2000);</script>' . "\n";
+$text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=r_repair' . '\');", 2000);</script>' . "\n";
 
 $stylee = 'admin_info';
 
@@ -174,19 +178,51 @@ break;
 //
 case 'clearc':
 
-#clear cache
+//clear cache
 delete_cache('', true);
 
-#show done, msg
+//show done, msg
 $text .= '<li>' . $lang['REPAIRE_CACHE'] . '</li>';
-$text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=r_repair' .  '\');", 2000);</script>' . "\n";
+$text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . basename(ADMIN_PATH) . '?cp=r_repair' . '\');", 2000);</script>' . "\n";
 
 $stylee = 'admin_info';
 
 break;
 
+//toggle admin start boxes
+case 'toggle_start_box':
+
+    if (! kleeja_check_form_key_get('adm_start_actions', 3600))
+    {
+        header('HTTP/1.1 405 Method Not Allowed');
+        $adminAjaxContent = $lang['INVALID_FORM_KEY'];
+    }
+    else
+    {
+        $items = explode(':', $config['hidden_start_boxes']);
+        $items = array_filter($items);
+
+        $name = g('name');
+        $hide = g('toggle', 'int') == 1;
+
+        if (in_array($name, $items) && ! $hide)
+        {
+            $new_items = array_diff($items, [$name]);
+        }
+        elseif ($hide)
+        {
+            $new_items   = $items;
+            $new_items[] = $name;
+        }
+
+        if ($new_items != $items)
+        {
+            update_config('hidden_start_boxes', implode(':', $new_items));
+        }
+
+        $adminAjaxContent = $lang['CONFIGS_UPDATED'];
+    }
+
+break;
+
 endswitch;
-
-
-
-

@@ -37,6 +37,7 @@ $(function () {
 
 
     <IF NAME="go_to==start">
+    if(typeof arrayOfDataMulti !== 'undefined') {
     $('#chart_stats').jqBarGraph({
         data: arrayOfDataMulti,
         colors: ['#0275d8', '#d9534f'],
@@ -48,6 +49,7 @@ $(function () {
         width: $('#chart_stats').width
     });
    document.getElementById("chart_stats").style.height = "251px";
+    }
     </IF>
 
 
@@ -220,8 +222,8 @@ function uncheckAll_exts(form, id, _do_c_) {
 
 
 function confirm_form(r)
-	{
-		var msg = !r ? '{lang.ARE_YOU_SURE_DO_THIS}' : r;
+    {
+        var msg = !r ? '{lang.ARE_YOU_SURE_DO_THIS}' : r;
         return confirm(msg);
     }
 
@@ -230,6 +232,8 @@ function get_kleeja_link(link) {
 }
 </script>
 
+<IF ISSET="extra_admin_footer_code">
 {extra_admin_footer_code}
+</IF>
 </body>
 </html>
