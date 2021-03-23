@@ -27,7 +27,7 @@ return [
 	'GOOGLEANALYTICS' 		=> '<a href="http://www.google.com/analytics" target="_kleeja"><span style="color:orange">Google</span> Analytics</a>',
 	'WELCOME_MSG' 			=> 'پيام خوش امد گويي',
 	'USER_SYSTEM' 			=> 'سيستم کاربران (سيستم متصل به اپلود سنتر)',
-	'TOTAL_SIZE' 			=> 'بيشترين حجم اپلود [Mg]',
+	'TOTAL_SIZE' 			=> 'بيشترين حجم اپلود (مگابایت)',
 	'THUMBS_IMGS' 			=> 'فعال کردن پيشنمايش تصاوير (تصاوير بند انگشتي)',
 	'WRITE_IMGS' 			=> 'فعال کردن نشانه گذاري تصاوير',
 	'ID_FORM' 				=> 'نحوه ادرس دهي فايل',
