@@ -117,7 +117,7 @@ about_edit_save.onclick = () => {
             about_content.style.display = '';
             edit_textarea.style.display = 'none';
             about_edit_save.innerHTML = '{lang.EDIT}';
-            ajaxRemote('POST', 'http://kleeja.me.to/do.php?id={id}', 'change_file_about=1&about=' + edit_textarea.value, (request) => {})
+            ajaxRemote('POST', '{{config.siteurl}}do.php?id={id}', 'change_file_about=1&about=' + edit_textarea.value, (request) => {})
             
             break;
 
