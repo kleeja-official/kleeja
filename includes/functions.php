@@ -969,7 +969,8 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
     if (! empty($lang))
     {
         $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
-        if(is_array($lang))
+
+        if (is_array($lang))
         {
             $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $SQL->escape($lang)) . "')";
         }
@@ -984,7 +985,7 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     is_array($plugin_run_result = Plugins::getInstance()->run('del_sql_delete_olang_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    if(empty($delete_query['WHERE']))
+    if (empty($delete_query['WHERE']))
     {
         return false;
     }
@@ -1174,7 +1175,7 @@ function klj_clean_old($table, $for = 'all')
 
     $query = [
         'SELECT'         => 'f.id, f.time',
-        'FROM'         => "`{$dbprefix}" . $table . '` f',
+        'FROM'           => "`{$dbprefix}" . $table . '` f',
         'ORDER BY'       => 'f.id ASC',
         'LIMIT'          => '30',
     ];
@@ -1411,10 +1412,10 @@ function g($name, $type = 'str', $default = '')
 {
     if (isset($_GET[$name]))
     {
-        return $type == 'str' ? htmlspecialchars($_GET[$name]) : intval($_GET[$name]);
+        return $type == 'str' ? htmlspecialchars($_GET[$name], ENT_QUOTES) : intval($_GET[$name]);
     }
 
-    return $type == 'str' ? htmlspecialchars($default) : intval($default);
+    return $type == 'str' ? htmlspecialchars($default, ENT_QUOTES) : intval($default);
 }
 
 function p($name, $type = 'str', $default = '')
@@ -1422,7 +1423,7 @@ function p($name, $type = 'str', $default = '')
     if (isset($_POST[$name]))
     {
         return $type == 'str'
-            ? str_replace(["\r\n", "\r", "\0"], ["\n", "\n", ''], htmlspecialchars(trim($_POST[$name])))
+            ? str_replace(["\r\n", "\r", "\0"], ["\n", "\n", ''], htmlspecialchars(trim($_POST[$name]), ENT_QUOTES))
             : intval($_POST[$name]);
     }
 
