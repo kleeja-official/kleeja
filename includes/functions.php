@@ -599,6 +599,7 @@ function get_mime_for_header($ext)
         'apk'     => 'application/vnd.android.package-archive',
         'mkv'     => 'video/x-matroska',
         'm3u'     => 'text/plain',
+        'webp'    => 'image/webp',
         //add more mime here
     ];
 

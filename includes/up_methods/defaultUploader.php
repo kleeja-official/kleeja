@@ -150,7 +150,7 @@ class defaultUploader implements KleejaUploader
             'id_form'        => $config['id_form'],
         ];
 
-        $is_img = in_array($fileInfo['fileExtension'], ['png','gif','jpg','jpeg', 'bmp']) ? true : false;
+        $is_img = in_array($fileInfo['fileExtension'], ['png','gif','jpg','jpeg', 'bmp', 'webp']) ? true : false;
 
 
         is_array($plugin_run_result = Plugins::getInstance()->run('defaultUploader_saveToDatabase_qr', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -265,7 +265,7 @@ class defaultUploader implements KleejaUploader
 
 
             // watermark on image
-            if ($config['write_imgs'] != 0 && in_array($fileInfo['fileExtension'], ['gif', 'png', 'jpg', 'jpeg', 'bmp']))
+            if ($config['write_imgs'] != 0 && in_array($fileInfo['fileExtension'], ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'webp']))
             {
                 helper_watermark($fileInfo['saveToFolder'] . '/' . $fileInfo['generatedFileName'], $fileInfo['fileExtension']);
             }

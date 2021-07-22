@@ -131,7 +131,7 @@ else
         ];
     }
 
-    $img_types = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
+    $img_types = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG', 'webp'];
 
 //
     // There is a bug with IN statement in MySQL and they said it will solved at 6.0 version

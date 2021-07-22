@@ -295,7 +295,7 @@ elseif (ig('down') || ig('downf') ||
     $pre_ext = array_pop($pre_ext);
 
 
-    $is_image = in_array(strtolower(trim($pre_ext)), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
+    $is_image = in_array(strtolower(trim($pre_ext)), ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']) ? true : false;
 
     //initiate variables
     $ii = $n = $rn = $t = $f = $ftime = $d_size = null;
@@ -315,7 +315,7 @@ elseif (ig('down') || ig('downf') ||
 
 
         //img or not
-        $is_image = in_array($t, ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
+        $is_image = in_array($t, ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']) ? true : false;
         //live url
         $is_live = in_array($t, $livexts) ? true : false;
 

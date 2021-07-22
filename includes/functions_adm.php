@@ -258,6 +258,7 @@ function build_search_query($search)
 
     //if searched by a username
     $usernamee = '';
+
     if (! empty($search['username']) && (int) $config['user_system'] == 1)
     {
         $query = [
@@ -276,7 +277,7 @@ function build_search_query($search)
 
         $SQL->freeresult($result);
 
-        if(! empty($usernamee))
+        if (! empty($usernamee))
         {
             $usernamee = 'AND (' . $usernamee . ')';
         }
@@ -311,7 +312,7 @@ function sync_total_files($files = true, $start = false)
     ];
 
     //!files == images
-    $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
+    $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG', 'webp', 'WEBP'];
     $query['WHERE'] = 'f.type' . ($files  ? ' NOT' : '') . " IN ('" . implode("', '", $img_types) . "')";
 
     $result       = $SQL->build($query);

@@ -82,7 +82,7 @@ if (ip('submit'))
                 @kleeja_unlink(PATH . $row['folder'] . '/thumbs/' . $row['name']);
             }
 
-            $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
+            $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']) ? true : false;
 
             $ids[] = $row['id'];
 
@@ -137,7 +137,7 @@ else
 {
 
 //
-//Delete all user files [only one user]
+    //Delete all user files [only one user]
 //
     if (ig('deletefiles'))
     {
@@ -176,7 +176,7 @@ else
                 @kleeja_unlink(PATH . $row['folder'] . '/thumbs/' . $row['name']);
             }
 
-            $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
+            $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']) ? true : false;
 
             $ids[] = $row['id'];
 
@@ -276,7 +276,7 @@ else
     if (! ig('search_id'))
     {
         //display files or display pics and files only in search
-        $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
+        $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG', 'webp'];
         $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
     }
     else
@@ -311,7 +311,7 @@ else
     $no_results = false;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('query_files_admin', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
+    var_dump($nums_rows);
 
     if ($nums_rows > 0)
     {
@@ -330,7 +330,7 @@ else
 
             $file_info = ['::ID::' => $row['id'], '::NAME::' => $row['name'], '::DIR::' => $row['folder'], '::FNAME::' => $row['real_filename']];
 
-            $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
+            $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']) ? true : false;
 
             $url = kleeja_get_link($is_image ? 'image': 'file', $file_info);
 
