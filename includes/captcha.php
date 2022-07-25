@@ -79,8 +79,8 @@ function kleeja_cpatcha_image()
 
     //Throw in some lines to make it a little bit harder for any bots to break 
     imagerectangle($image, 0, 0, $width-1, $height-1, $grey); 
-    imageline($image, 0, $height/2, $width, $height/2, $grey); 
-    imageline($image, $width/2, 0, $width/2, $height, $grey); 
+    imageline($image, 0, intval($height/2), $width, intval($height/2), $grey); 
+    imageline($image, intval($width/2), 0, intval($width/2), $height, $grey); 
 
 
     //Tell the browser what kind of file is come in 
