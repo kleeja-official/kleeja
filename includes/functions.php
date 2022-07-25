@@ -892,7 +892,7 @@ function delete_config($name)
 //
 //update words to lang
 //
-function update_olang($name, $lang = 'en', $value)
+function update_olang($name, $value, $lang = 'en')
 {
     global $SQL, $dbprefix, $olang;
 
