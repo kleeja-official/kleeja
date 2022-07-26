@@ -307,7 +307,7 @@ class kleeja_style
     {
         global $config;
 
-        $this->vars = &$GLOBALS;
+        $this->vars = $GLOBALS;
 
         //is there ?
         if (! file_exists(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php') || ! $this->caching) {
@@ -329,7 +329,7 @@ class kleeja_style
      */
     public function admindisplayoption($html)
     {
-        $this->vars = &$GLOBALS;
+        $this->vars = $GLOBALS;
 
         $eval_on = false;
         eval('$eval_on = true;');
