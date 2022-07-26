@@ -302,7 +302,7 @@ elseif (ig('down') || ig('downf') ||
 
     $is_live = false;
     $pre_ext = ! empty($filename) && strpos($filename, '.') !== false ? explode('.', $filename) : [];
-    $pre_ext = array_pop($pre_ext);
+    $pre_ext = ! empty($pre_ext) ? array_pop($pre_ext) : '';
 
 
     $is_image = in_array(strtolower(trim($pre_ext)), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
