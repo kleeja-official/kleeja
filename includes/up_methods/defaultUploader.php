@@ -375,7 +375,6 @@ class defaultUploader implements KleejaUploader
 
         //detect flooding, TODO fix it or remove it
         if (isset($_SESSION['FIILES_NOT_DUPLI'])) {
-            var_dump($_SESSION['FIILES_NOT_DUPLI']);
             if (! empty($_SESSION['FIILES_NOT_DUPLI']) && $_SESSION['FIILES_NOT_DUPLI']  == sha1(serialize(array_column($_FILES, 'name')))) {
                 unset($_SESSION['FIILES_NOT_DUPLI']);
 
