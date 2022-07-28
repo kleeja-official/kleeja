@@ -45,6 +45,9 @@ function kleeja_cpatcha_image()
     $width  = 150;
     $height = 25; 
 
+    //Generate a random number of lines to make the image dirty
+    $lines  = rand(3,5);
+
     //Create the image resource 
     $image = imagecreate($width, $height);  
 
@@ -79,12 +82,18 @@ function kleeja_cpatcha_image()
 
     //Throw in some lines to make it a little bit harder for any bots to break 
     imagerectangle($image, 0, 0, $width-1, $height-1, $grey); 
-    imageline($image, 0, intval($height/2), $width, intval($height/2), $grey); 
-    imageline($image, intval($width/2), 0, intval($width/2), $height, $grey); 
+    for( $i=0; $i<$lines; $i++ ) {
+       imageline($image, rand(0,$width), rand(0,$height), rand(0,$width), rand(0,$height), $grey);
+    }
 
 
-    //Tell the browser what kind of file is come in 
-    header('Content-Type: image/png'); 
+    //Tell the browser what kind of file is come in and prevent client side caching
+    header("Expires: Wed, 1 Jan 1997 00:00:00 GMT");
+    header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+    header("Cache-Control: no-store, no-cache, must-revalidate");
+    header("Cache-Control: post-check=0, pre-check=0", FALSE);
+    header("Pragma: no-cache");
+    header('Content-Type: image/png');
 
     //Output the newly created image in jpeg format 
     imagepng($image);
