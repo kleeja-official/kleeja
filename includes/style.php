@@ -64,7 +64,7 @@ class kleeja_style
 
         $is_admin_template = false;
 
-        $style_path = str_replace(DIRECTORY_SEPARATOR, '/', $style_path);
+        $style_path = str_replace(DIRECTORY_SEPARATOR, '/', $style_path ?? '');
 
         //admin template always begin with admin_
         if (substr($template_name, 0, 6) == 'admin_') {
@@ -307,7 +307,7 @@ class kleeja_style
     {
         global $config;
 
-        $this->vars = &$GLOBALS;
+        $this->vars = $GLOBALS;
 
         //is there ?
         if (! file_exists(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php') || ! $this->caching) {
@@ -329,7 +329,7 @@ class kleeja_style
      */
     public function admindisplayoption($html)
     {
-        $this->vars = &$GLOBALS;
+        $this->vars = $GLOBALS;
 
         $eval_on = false;
         eval('$eval_on = true;');

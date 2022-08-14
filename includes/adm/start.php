@@ -85,8 +85,9 @@ if (! file_exists(PATH . '.htaccess') && (int) $config['mod_writer'] == 1)
 
 //updating
 $v = @unserialize($config['new_version']);
+$new_version = isset($v['version_number']) ? $v['version_number'] : '';
 
-if (version_compare(strtolower(KLEEJA_VERSION), strtolower($v['version_number']), '<'))
+if (version_compare(strtolower(KLEEJA_VERSION), strtolower($new_version), '<'))
 {
     $ADM_NOTIFICATIONS['up_ver_klj']  = [
         'id'      => 'up_ver_klj',//this not so important row
