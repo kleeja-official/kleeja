@@ -32,7 +32,7 @@ class cache
     {
         if (defined('DEV_STAGE'))
         {
-            return false;
+            return [];
         }
 
         $name =  preg_replace('![^a-z0-9_]!', '_', $name);
@@ -40,11 +40,11 @@ class cache
         if (file_exists(PATH . 'cache/' . $name . '.php'))
         {
             include PATH . 'cache/' . $name . '.php';
-            return  empty($data) ? false : $data;
+            return  empty($data) ? [] : $data;
         }
         else
         {
-            return false;
+            return [];
         }
     }
 

@@ -9,8 +9,7 @@
 
 
 //no for directly open
-if (! defined('IN_COMMON'))
-{
+if (! defined('IN_COMMON')) {
     exit();
 }
 
@@ -44,19 +43,13 @@ class KleejaDatabase
      */
     public function __construct($location, $db_username, $db_password, $db_name, $dbprefix)
     {
-        try
-        {
-            if (class_exists('SQLite3'))
-            {
+        try {
+            if (class_exists('SQLite3')) {
                 $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
-            }
-            else
-            {
+            } else {
                 $this->error_msg('SQLite3 extension is not installed in your server!');
             }
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             //...
         }
 
@@ -64,13 +57,11 @@ class KleejaDatabase
         $this->dbname          = $db_name;
 
         //no error
-        if (defined('SQL_NO_ERRORS'))
-        {
+        if (defined('SQL_NO_ERRORS')) {
             $this->show_errors = false;
         }
 
-        if (! $this->connect_id)
-        {
+        if (! $this->connect_id) {
             //loggin -> no database -> close connection
             $this->close();
             $this->error_msg('We can not connect to the sqlite database, check location or existence of the SQLite dirver ...');
@@ -97,22 +88,19 @@ class KleejaDatabase
     // close the connection
     public function close()
     {
-        if (! $this->is_connected())
-        {
+        if (! $this->is_connected()) {
             return true;
         }
 
         // Commit any remaining transactions
-        if ($this->in_transaction)
-        {
+        if ($this->in_transaction) {
             $this->query('COMMIT;');
         }
 
         //loggin -> close connection
         kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-        if (! is_resource($this->connect_id))
-        {
+        if (! is_resource($this->connect_id)) {
             return true;
         }
 
@@ -148,8 +136,7 @@ class KleejaDatabase
     public function query($query, $transaction = false)
     {
         //no connection
-        if (! $this->is_connected())
-        {
+        if (! $this->is_connected()) {
             return false;
         }
 
@@ -158,8 +145,7 @@ class KleejaDatabase
         //
         unset($this->result);
 
-        if (strpos($query, 'CREATE TABLE') !== false || strpos($query, 'ALTER DATABASE') !== false)
-        {
+        if (strpos($query, 'CREATE TABLE') !== false || strpos($query, 'ALTER DATABASE') !== false) {
             $sqlite_types = [
                 '/AUTO_INCREMENT/i'                                                                                                                                                 => '',
                 '/VARCHAR\s?(\\([0-9]+\\))?/i'                                                                                                                                      => 'TEXT',
@@ -174,19 +160,16 @@ class KleejaDatabase
 
             //todo extract keys and add as CREATE INDEX index_name ON table (column);
 
-            foreach ($sqlite_types as $old_type => $new_type)
-            {
+            foreach ($sqlite_types as $old_type => $new_type) {
                 $query = preg_replace($old_type, $new_type, $query);
             }
         }
 
-        if (! empty($query))
-        {
+        if (! empty($query)) {
             //debug
             $srartum_sql = get_microtime();
 
-            if ($transaction && ! $this->in_transaction)
-            {
+            if ($transaction && ! $this->in_transaction) {
                 $this->query('BEGIN;');
                 $this->in_transaction = true;
             }
@@ -197,33 +180,24 @@ class KleejaDatabase
             $this->debugr[$this->query_num+1] = [$query, sprintf('%.5f', get_microtime() - $srartum_sql)];
             ////////////////
 
-            if (! $this->result)
-            {
+            if (! $this->result) {
                 $this->error_msg('Error In query');
-            }
-            else
-            {
+            } else {
                 //let's debug it
                 kleeja_log('[Query] : --> ' . $query);
             }
-        }
-        else
-        {
-            if ($this->in_transaction)
-            {
+        } else {
+            if ($this->in_transaction) {
                 $this->result = $this->connect_id->query('COMMIT;');
             }
         }
 
         //is there any result
-        if ($this->result)
-        {
-            if ($this->in_transaction)
-            {
+        if ($this->result) {
+            if ($this->in_transaction) {
                 $this->in_transaction = false;
 
-                if (! $this->connect_id->query('COMMIT;'))
-                {
+                if (! $this->connect_id->query('COMMIT;')) {
                     $this->connect_id->query('ROLLBACK;');
                     return false;
                 }
@@ -231,11 +205,8 @@ class KleejaDatabase
 
             $this->query_num++;
             return $this->result;
-        }
-        else
-        {
-            if ($this->in_transaction)
-            {
+        } else {
+            if ($this->in_transaction) {
                 $this->connect_id->query('ROLLBACK;');
                 $this->in_transaction = false;
             }
@@ -253,78 +224,58 @@ class KleejaDatabase
     {
         $sql = '';
 
-        if (isset($query['SELECT']) && isset($query['FROM']))
-        {
+        if (isset($query['SELECT']) && isset($query['FROM'])) {
             $sql = 'SELECT ' . $query['SELECT'] . ' FROM ' . $query['FROM'];
 
-            if (isset($query['JOINS']))
-            {
-                foreach ($query['JOINS'] as $cur_join)
-                {
+            if (isset($query['JOINS'])) {
+                foreach ($query['JOINS'] as $cur_join) {
                     $sql .= ' ' . key($cur_join) . ' ' . current($cur_join) . ' ON ' . $cur_join['ON'];
                 }
             }
 
-            if (! empty($query['WHERE']))
-            {
+            if (! empty($query['WHERE'])) {
                 $sql .= ' WHERE ' . $query['WHERE'];
             }
 
-            if (! empty($query['GROUP BY']))
-            {
+            if (! empty($query['GROUP BY'])) {
                 $sql .= ' GROUP BY ' . $query['GROUP BY'];
             }
 
-            if (! empty($query['HAVING']))
-            {
+            if (! empty($query['HAVING'])) {
                 $sql .= ' HAVING ' . $query['HAVING'];
             }
 
-            if (! empty($query['ORDER BY']))
-            {
+            if (! empty($query['ORDER BY'])) {
                 $sql .= ' ORDER BY ' . $query['ORDER BY'];
             }
 
-            if (! empty($query['LIMIT']))
-            {
+            if (! empty($query['LIMIT'])) {
                 $sql .= ' LIMIT ' . $query['LIMIT'];
             }
-        }
-        elseif (isset($query['INSERT']))
-        {
+        } elseif (isset($query['INSERT'])) {
             $sql = 'INSERT INTO ' . $query['INTO'];
 
-            if (! empty($query['INSERT']))
-            {
+            if (! empty($query['INSERT'])) {
                 $sql .= ' (' . $query['INSERT'] . ')';
             }
 
             $sql .= ' VALUES(' . $query['VALUES'] . ')';
-        }
-        elseif (isset($query['UPDATE']))
-        {
+        } elseif (isset($query['UPDATE'])) {
             $sql = 'UPDATE ' . $query['UPDATE'] . ' SET ' . $query['SET'];
 
-            if (! empty($query['WHERE']))
-            {
+            if (! empty($query['WHERE'])) {
                 $sql .= ' WHERE ' . $query['WHERE'];
             }
-        }
-        elseif (isset($query['DELETE']))
-        {
+        } elseif (isset($query['DELETE'])) {
             $sql = 'DELETE FROM ' . $query['DELETE'];
 
-            if (! empty($query['WHERE']))
-            {
+            if (! empty($query['WHERE'])) {
                 $sql .= ' WHERE ' . $query['WHERE'];
             }
-        }
-        elseif (isset($query['REPLACE']))
-        {
+        } elseif (isset($query['REPLACE'])) {
             $sql = 'REPLACE INTO ' . $query['INTO'];
 
-            if (! empty($query['REPLACE']))
-            {
+            if (! empty($query['REPLACE'])) {
                 $sql .= ' (' . $query['REPLACE'] . ')';
             }
 
@@ -342,18 +293,14 @@ class KleejaDatabase
      */
     public function freeresult($query_id = 0)
     {
-        if (! $query_id)
-        {
+        if (! $query_id) {
             $query_id = $this->result;
         }
 
-        if ($query_id)
-        {
+        if ($query_id) {
             $query_id->finalize();
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -377,13 +324,11 @@ class KleejaDatabase
      */
     public function fetch_array($query_id = 0)
     {
-        if (! $query_id)
-        {
+        if (! $query_id) {
             $query_id = $this->result;
         }
 
-        if ($query_id && $query_id->numColumns() > 0)
-        {
+        if ($query_id && $query_id->numColumns() > 0) {
             return $query_id->fetchArray(SQLITE3_ASSOC);
         }
 
@@ -398,15 +343,13 @@ class KleejaDatabase
      */
     public function num_rows($query_id = 0)
     {
-        if (! $query_id)
-        {
+        if (! $query_id) {
             $query_id = $this->result;
         }
 
 
 
-        if ($query_id && $results = $query_id->numColumns())
-        {
+        if ($query_id && $results = $query_id->numColumns()) {
             return $results;
         }
 
@@ -475,8 +418,7 @@ class KleejaDatabase
      */
     private function error_msg($msg)
     {
-        if (! $this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')))
-        {
+        if (! $this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS'))) {
             kleeja_log('SQLite3: ' . $msg);
             return false;
         }
@@ -485,21 +427,20 @@ class KleejaDatabase
         $error_sql                  = @current($this->debugr[$this->query_num+1]);
 
         //some ppl want hide their table names
-        if (! defined('DEV_STAGE'))
-        {
-            $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function($m) {
+        if (! defined('DEV_STAGE')) {
+            $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function ($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_sql);
-            $error_msg = preg_replace_callback("#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#", function($m) {
+            $error_msg = preg_replace_callback("#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#", function ($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_msg);
-            $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+            $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function ($m) {
                 return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
             }, $error_sql);
-            $error_msg = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+            $error_msg = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function ($m) {
                 return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
             }, $error_msg);
-            $error_msg = preg_replace_callback("#\s'([^']+)'@'([^']+)'#i", function($m) {
+            $error_msg = preg_replace_callback("#\s'([^']+)'@'([^']+)'#i", function ($m) {
                 return ' <span style="color:blue">hidden</span>@' . $m[2] . ' ';
             }, $error_msg);
             $error_sql = preg_replace("#password\s*=\s*'[^']+'#i", "password='<span style=\"color:blue\">hidden</span>'", $error_sql);
@@ -508,8 +449,7 @@ class KleejaDatabase
         //is this error related to updating?
         $updating_related = false;
 
-        if (strpos($error_msg, 'Unknown column') !== false || strpos($error_msg, 'no such table') !== false)
-        {
+        if (strpos($error_msg, 'Unknown column') !== false || strpos($error_msg, 'no such table') !== false) {
             $updating_related = true;
         }
 
@@ -521,14 +461,12 @@ class KleejaDatabase
         $error_message .= " <a href='#' onclick='window.location.reload( false );'>click to Refresh this page ...</a><br />";
         $error_message .= '<h2>Sorry , We encountered a MySQL error: ' . ($msg !='' ? $msg : '') . '</h2>';
 
-        if ($error_sql != '')
-        {
+        if ($error_sql != '') {
             $error_message .= "<br />--[query]-------------------------- <br />$error_sql<br />---------------------------------<br /><br />";
         }
         $error_message .= "[$error_no : $error_msg] <br />";
 
-        if ($updating_related)
-        {
+        if ($updating_related) {
             global $config;
             $error_message .= '<br /><strong>Your Kleeja database might be old, try to update it now from: ' . rtrim($config['siteurl'], '/') . '/install</strong>';
             $error_message .= "<br /><br><strong>If this error happened after installing a plugin, add <span style=\"background-color:#ccc; padding:2px\">define('STOP_PLUGINS', true);</span> to end of config.php file.</strong>";
@@ -556,14 +494,20 @@ class KleejaDatabase
      */
     public function get_error()
     {
-        if ($this->connect_id)
-        {
+        if ($this->connect_id) {
             return [$this->connect_id->lastErrorCode(), $this->connect_id->lastErrorMsg()];
-        }
-        else
-        {
+        } else {
             return [0, 'uknown-error-not-connected'];
         }
+    }
+    public function showErrors()
+    {
+        $this->show_errors = true;
+    }
+
+    public function hideErrors()
+    {
+        $this->show_errors = false;
     }
 }
 

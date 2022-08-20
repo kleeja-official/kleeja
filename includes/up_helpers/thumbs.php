@@ -135,8 +135,8 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     );
 
     // Copy cropped region from temporary image into the desired GD image
-    $x0 = ($temp_width - $dw)  / 2;
-    $y0 = ($temp_height - $dh) / 2;
+    $x0 = (int) (($temp_width - $dw)  / 2);
+    $y0 = (int) (($temp_height - $dh) / 2);
 
     $desired_gdim = imagecreatetruecolor($dw, $dh);
     imagecopy(

@@ -9,8 +9,7 @@
 
 
 //no for directly open
-if (! defined('IN_COMMON'))
-{
+if (! defined('IN_COMMON')) {
     exit();
 }
 
@@ -28,13 +27,12 @@ class usrcp
 
         is_array($plugin_run_result = Plugins::getInstance()->run('data_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        if ($return_now)
-        {
+        if ($return_now) {
             return $login_status;
         }
 
         //normal
-        return $this->normal($name, $pass, $hashed, $expire, $loginadm);
+        return $this->normal($name, $pass, $expire, $hashed, $loginadm);
     }
 
     //get username by id
@@ -44,8 +42,7 @@ class usrcp
 
         is_array($plugin_run_result = Plugins::getInstance()->run('auth_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        if ($return_now)
-        {
+        if ($return_now) {
             return $auth_status;
         }
 
@@ -55,7 +52,7 @@ class usrcp
     }
 
     //now our table, normal user system
-    public function normal($name, $pass, $hashed = false, $expire, $loginadm = false)
+    public function normal($name, $pass, $expire, $hashed = false, $loginadm = false)
     {
         global $SQL, $dbprefix, $config, $userinfo;
 
@@ -70,24 +67,18 @@ class usrcp
             'LIMIT'        => '1'
         ];
 
-        if ($hashed)
-        {
+        if ($hashed) {
             $query['WHERE'] = 'id=' . intval($name) . " and password='" . $SQL->escape($pass) . "'";
-        }
-        else
-        {
+        } else {
             $query['WHERE'] = "clean_name='" . $SQL->real_escape($this->cleanusername($name)) . "'";
         }
 
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_usrdata_n_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         $result = $SQL->build($query);
 
-        if ($SQL->num_rows($result))
-        {
-            while ($row=$SQL->fetch_array($result))
-            {
-                if (empty($row['password']))
-                {
+        if ($SQL->num_rows($result)) {
+            while ($row=$SQL->fetch_array($result)) {
+                if (empty($row['password'])) {
                     //more security
                     return false;
                 }
@@ -95,12 +86,10 @@ class usrcp
                 $phppass = $hashed ?  $pass : $pass . $row['password_salt'];
 
                 //CHECK IF IT'S MD5 PASSWORD
-                if (strlen($row['password']) == '32' && empty($row['password_salt']) && defined('CONVERTED_SCRIPT'))
-                {
+                if (strlen($row['password']) == '32' && empty($row['password_salt']) && defined('CONVERTED_SCRIPT')) {
                     $passmd5 = md5($pass);
                     ////update old md5 hash to phpass hash
-                    if ($row['password'] == $passmd5)
-                    {
+                    if ($row['password'] == $passmd5) {
                         ////new salt
                         $new_salt = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
                         ////new password hash
@@ -116,21 +105,17 @@ class usrcp
                         ];
 
                         $SQL->build($update_query);
-                    }
-                    else
-                    { //if the password is wrong
+                    } else { //if the password is wrong
                         return false;
                     }
                 }
 
-                if (($phppass != $row['password'] && $hashed) || ($this->kleeja_hash_password($phppass, $row['password']) != true && $hashed == false))
-                {
+                if (($phppass != $row['password'] && $hashed) || ($this->kleeja_hash_password($phppass, $row['password']) != true && $hashed == false)) {
                     return false;
                 }
 
                 //Avoid dfining constants again for admin panel login
-                if (! $loginadm)
-                {
+                if (! $loginadm) {
                     define('USER_ID', $row['id']);
                     define('GROUP_ID', $row['group_id']);
                     define('USER_NAME', $row['name']);
@@ -143,15 +128,13 @@ class usrcp
 
                 $user_y = base64_encode(serialize(['id'=>$row['id'], 'name'=>$row['name'], 'mail'=>$row['mail'], 'last_visit'=>$row['last_visit']]));
 
-                if (! $hashed && ! $loginadm)
-                {
+                if (! $hashed && ! $loginadm) {
                     $hash_key_expire = sha1(md5($config['h_key'] . $row['password']) . $expire);
                     $this->kleeja_set_cookie('ulogu', $this->en_de_crypt($row['id'] . '|' . $row['password'] . '|' . $expire . '|' . $hash_key_expire . '|' . $row['group_id'] . '|' . $user_y), $expire);
                 }
 
                 //if last visit > 1 minute then update it
-                if (empty($row['last_visit']) || time() - $row['last_visit'] > 60)
-                {
+                if (empty($row['last_visit']) || time() - $row['last_visit'] > 60) {
                     $update_last_visit = [
                         'UPDATE'       => "{$dbprefix}users",
                         'SET'          => 'last_visit=' . time(),
@@ -167,9 +150,7 @@ class usrcp
 
             unset($pass);
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -182,8 +163,7 @@ class usrcp
     {
         global $dbprefix, $SQL;
 
-        if (! $user_id)
-        {
+        if (! $user_id) {
             $user_id = $this->id();
         }
 
@@ -241,8 +221,7 @@ class usrcp
         is_array($plugin_run_result = Plugins::getInstance()->run('logout_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         //acp
-        if (user_can('enter_acp') && ! empty($_SESSION['ADMINLOGIN']))
-        {
+        if (user_can('enter_acp') && ! empty($_SESSION['ADMINLOGIN'])) {
             $this->logout_cp();
         }
 
@@ -257,8 +236,7 @@ class usrcp
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('logout_cp_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        if (! empty($_SESSION['ADMINLOGIN']))
-        {
+        if (! empty($_SESSION['ADMINLOGIN'])) {
             unset($_SESSION['ADMINLOGIN'], $_SESSION['USER_SESS'] /*, $_SESSION['LAST_VISIT']*/);
         }
 
@@ -276,8 +254,7 @@ class usrcp
             ['a','a','a','a','a','a','a','a','a','a','e','e','e','e','e','e','e','i','i','i','i','i','i','i','i','o','o','o','o','o','o','o','o','o','o','o','u','u','u','u','u','u','c','c','n','n','y','e']
         ];
 
-        if (empty($arabic_t))
-        {
+        if (empty($arabic_t)) {
             //Arabic chars must be stay in utf8 format, so we encoded them
             $arabic_t = unserialize(base64_decode('YToyOntpOjA7YToxMjp7aTowO3M6Mjoi2KMiO2k6MTtzOjI6ItilIjtpOjI7czoyOiLYpCI7aTozO3M6Mjoi2YAiO2k6NDtzOjI6Itm' .
             'LIjtpOjU7czoyOiLZjCI7aTo2O3M6Mjoi2Y8iO2k6NztzOjI6ItmOIjtpOjg7czoyOiLZkCI7aTo5O3M6Mjoi2ZIiO2k6MTA7czoyOiLYoiI7aToxMTtzOjI6ItimIjt9aToxO' .
@@ -326,8 +303,7 @@ class usrcp
         //
         //when user add define('FORCE_COOKIES', true) in config.php we will make our settings of cookies
         //
-        if (defined('FORCE_COOKIES'))
-        {
+        if (defined('FORCE_COOKIES')) {
             $config['cookie_domain'] = ! empty($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : (! empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : @getenv('SERVER_NAME'));
             $config['cookie_domain'] = str_replace('www.', '.', substr($config['cookie_domain'], 0, strpos($config['cookie_domain'], ':')));
             $config['cookie_path']   = '/';
@@ -350,27 +326,22 @@ class usrcp
         global $config;
         static $txt = [];
 
-        if (empty($txt))
-        {
-            if (empty($config['h_key']))
-            {
+        if (empty($txt)) {
+            if (empty($config['h_key'])) {
                 $config['h_key'] = sha1(microtime());
             }
 
             $chars = str_split($config['h_key']);
 
-            foreach (range('a', 'z') as $k=>$v)
-            {
-                if (! isset($chars[$k]))
-                {
+            foreach (range('a', 'z') as $k=>$v) {
+                if (! isset($chars[$k])) {
                     break;
                 }
                 $txt[$v] = $chars[$k] . $k . '-';
             }
         }
 
-        switch ($type)
-        {
+        switch ($type) {
             case 1:
                 $data = str_replace('=', '_', base64_encode($data));
                 $data = strtr($data, $txt);
@@ -416,23 +387,17 @@ class usrcp
         ];
 
         //if login up
-        if ($this->kleeja_get_cookie('ulogu'))
-        {
+        if ($this->kleeja_get_cookie('ulogu')) {
             $user_data = false;
 
             list($user_id, $hashed_password, $expire_at, $hashed_expire, $group_id, $u_info) =  @explode('|', $this->en_de_crypt($this->kleeja_get_cookie('ulogu'), 2));
 
             //if not expire
-            if (($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at)) && ($expire_at > time()))
-            {
-                if (user_can('enter_acp', $group_id))
-                {
+            if (($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at)) && ($expire_at > time())) {
+                if (user_can('enter_acp', $group_id)) {
                     $user_data = $this->data($user_id, $hashed_password, true, $expire_at);
-                }
-                else
-                {
-                    if (! empty($u_info))
-                    {
+                } else {
+                    if (! empty($u_info)) {
                         $userinfo             = unserialize(base64_decode($u_info));
                         $userinfo['group_id'] = $group_id;
                         $userinfo['password'] = $hashed_password;
@@ -447,17 +412,12 @@ class usrcp
                 }
             }
 
-            if ($user_data == false)
-            {
+            if ($user_data == false) {
                 $this->logout();
-            }
-            else
-            {
+            } else {
                 return $user_data;
             }
-        }
-        else
-        {
+        } else {
             //guest
             define('USER_ID', $userinfo['id']);
             define('GROUP_ID', $userinfo['group_id']);

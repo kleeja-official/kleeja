@@ -31,7 +31,7 @@ if (ig('id') || ig('filename'))
     is_array($plugin_run_result = Plugins::getInstance()->run('begin_download_id_filename', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $query = [
-        'SELECT'       => 'f.id, f.real_filename, f.name, f.folder, f.size, f.time, f.uploads, f.type',
+        'SELECT'       => 'f.id, f.real_filename, f.about, f.name, f.folder, f.size, f.time, f.uploads, f.type',
         'FROM'         => "{$dbprefix}files f",
         'LIMIT'        => '1',
     ];
@@ -84,13 +84,23 @@ if (ig('id') || ig('filename'))
         $size          = $file_info['size'];
         $time          = $file_info['time'];
         $uploads       = $file_info['uploads'];
+        $about_file    = ! in_array($file_info['about'], ['', null]) ? $file_info['about'] : $lang['FILE_NO_INFO'];
 
 
-        $fname2           = str_replace('.', '-', htmlspecialchars($name));
-        $name             = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
-        $name             = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
-        $fusername        = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
-        $userfolder       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
+        $fname2               = str_replace('.', '-', htmlspecialchars($name));
+        $name                 = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
+        $name                 = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
+        $fusername            = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
+        $userfolder           = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
+        $isFileOwnerOfFounder = $fusername == $usrcp->name() && $usrcp->name() || $usrcp->get_data('founder')['founder'] == 1;
+
+        if (ip('change_file_about') &&  $isFileOwnerOfFounder)
+        {
+            $newAbout = (String) p('about') != '' ? (string) p('about') : null;
+            $SQL->query("UPDATE {$dbprefix}files SET about = \"{$newAbout}\" WHERE id = {$file_info['id']}");
+
+            exit;
+        }
 
         if (ig('filename'))
         {
@@ -292,7 +302,7 @@ elseif (ig('down') || ig('downf') ||
 
     $is_live = false;
     $pre_ext = ! empty($filename) && strpos($filename, '.') !== false ? explode('.', $filename) : [];
-    $pre_ext = array_pop($pre_ext);
+    $pre_ext = ! empty($pre_ext) ? array_pop($pre_ext) : '';
 
 
     $is_image = in_array(strtolower(trim($pre_ext)), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;

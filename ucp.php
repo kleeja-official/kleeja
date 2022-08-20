@@ -346,7 +346,7 @@ switch (g('go'))
         $total_pages         = $Pager->getTotalPages();
         $linkgoto            = $config['siteurl'] . (
                                     $config['mod_writer']
-                                    ?  'fileuser-' . $user_id . ($currentPage > 1  && $currentPage <= $total_pages ? '-' . $currentPage : '') . '.html'
+                                    ?  'fileuser-' . $user_id  . '.html'
                                     : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null)
                             );
 
@@ -454,29 +454,26 @@ switch (g('go'))
                     is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_all_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
                     //delete all files
-                    foreach ($arr as $row)
+                    @kleeja_unlink($row['folder'] . '/' . $row['name']);
+
+                    //delete thumb
+                    if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                     {
-                        @kleeja_unlink($row['folder'] . '/' . $row['name']);
-
-                        //delete thumb
-                        if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
-                        {
-                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
-                        }
-
-                        $ids[] = $row['id'];
-
-                        if ($is_image)
-                        {
-                            $imgs_num++;
-                        }
-                        else
-                        {
-                            $files_num++;
-                        }
-
-                        $sizes += $r['size'];
+                        @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
                     }
+
+                    $ids[] = $row['id'];
+
+                    if ($is_image)
+                    {
+                        $imgs_num++;
+                    }
+                    else
+                    {
+                        $files_num++;
+                    }
+
+                    $sizes += $row['size'];
                 }
             }
 

@@ -32,3 +32,7 @@ $update_schema[9]['sql'] = [
 //     function () {
 //     },
 // ];
+
+$update_schema[10]['sql'] = [
+    'about_files'   => "ALTER TABLE `{$dbprefix}files` ADD `about` LONGTEXT NULL DEFAULT NULL AFTER `real_filename`;",
+];
