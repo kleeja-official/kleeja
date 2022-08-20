@@ -57,7 +57,7 @@ return [
     'DB_INFO'                      => 'أدخل معلومات قاعدة البيانات',
     'DB_SERVER'                    => 'الخادم',
     'DB_TYPE'                      => 'نوع قاعدة البيانات',
-    'DB_TYPE_MYSQL'                => 'MySQL',
+    'DB_TYPE_MYSQLI'               => 'MySQL Improved',
     'DB_TYPE_SQLITE'               => 'SQLite',
     'DB_USER'                      => 'اسم المستخدم لقاعدة البيانات',
     'DB_PASSWORD'                  => 'كلمة المرور لقاعدة البيانات',
