@@ -27,7 +27,7 @@ class KleejaDatabase
     private $dbname                   = '';
     public $query_num                 = 0;
     private $in_transaction           = 0;
-    public $debugr                    = false;
+    public $debugr                    = [];
     private $show_errors              = true;
 
 
