@@ -10,7 +10,7 @@
             <td class="TdInput">
                 <select name="db_type" id="db_type" style="text-align:left;direction:ltr">
                     <option value="mysqli" selected>{{echo $lang['DB_TYPE_MYSQLI']}}</option>
-                    {{if ($sqlite3_exists):}}
+                    {{if ($GLOBALS['sqlite3_exists']):}}
                     <option value="sqlite">{{echo $lang['DB_TYPE_SQLITE']}}</option>
                     {{endif;}}
                 </select>
