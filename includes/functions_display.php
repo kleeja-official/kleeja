@@ -291,7 +291,7 @@ function kleeja_debug()
     echo '<p>&nbsp;</p>';
     echo '<p><h2><strong><em>SQL</em> Information :</strong></h2></p> ';
 
-    if (is_array($SQL->debugr))
+    if (!empty($SQL->debugr))
     {
         foreach ($SQL->debugr as $key=>$val)
         {
