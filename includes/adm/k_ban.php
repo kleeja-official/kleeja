@@ -41,7 +41,7 @@ $result = $SQL->build($query);
 $current_ban_data = $SQL->fetch_array($result);
 $SQL->freeresult($result);
 
-$banned_items = explode('|', $current_ban_data['ban']);
+$banned_items = ! empty($current_ban_data['ban']) ? explode('|', $current_ban_data['ban']) : [];
 
 $show_message = false;
 

@@ -114,13 +114,13 @@ function kleeja_eval($code)
 * @param mixed $nm
 * @param mixed $prf
 */
-function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
+function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysqli')
 {
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
     $data .= '//for more information about this file, visit: ' . "\n";
     $data .= '//https://github.com/kleeja-official/kleeja/wiki/config.php-file' . "\n\n";
 
-    if(!empty($type) && $type != 'mysql')
+    if(!empty($type) && $type != 'mysqli')
     {
         if ($type == 'sqlite' && strpos($nm, '.') === false)
         {
