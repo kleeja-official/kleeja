@@ -109,7 +109,7 @@ if (! ($config = $cache->get('data_config')))
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_config_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $result = $SQL->build($query);
-
+    $config = [];
     while ($row=$SQL->fetch_array($result))
     {
         $config[$row['name']] = $row['value'];
