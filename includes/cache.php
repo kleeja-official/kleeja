@@ -126,6 +126,8 @@ if (! ($config = $cache->get('data_config')))
 
 if (! ($olang = $cache->get('data_lang' . $config['language'])))
 {
+    $olang = [];
+
     $query = [
         'SELECT'       => 'l.word, l.trans',
         'FROM'         => "{$dbprefix}lang l",
