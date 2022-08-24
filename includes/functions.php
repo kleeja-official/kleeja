@@ -698,7 +698,7 @@ function get_config($name)
 
     $result       = $SQL->build($query);
     $v            = $SQL->fetch($result);
-    $return       = $v['value'];
+    $return       = isset($v['value']) ? $v['value'] : NULL;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     return $return;
@@ -892,7 +892,7 @@ function delete_config($name)
 //
 //update words to lang
 //
-function update_olang($name, $value, $lang = 'en')
+function update_olang($name, $lang = 'en', $value = '')
 {
     global $SQL, $dbprefix, $olang;
 
@@ -968,10 +968,14 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     if (! empty($lang))
     {
-        $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
         if(is_array($lang))
         {
-            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $SQL->escape($lang)) . "')";
+            foreach ($lang as $index=>$current_lang) {
+                $lang[$index] = $SQL->escape($lang[$index]);
+            }
+            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $lang) . "')";
+        } else {
+            $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
         }
 
         $delete_query['WHERE'] .=  (empty($delete_query['WHERE']) ? '' : ' AND ') . $lang_sql;
