@@ -86,7 +86,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
             echo '.error {color: #333;background:#ffebe8;float:left;width:73%;text-align:left;margin-top:10px;border: 1px solid #dd3c10; padding: 10px;font-family:tahoma,arial;font-size: 12px;}' . "\n";
             echo "</style>\n</head>\n<body>\n\t" . '<div class="error">' . "\n\n\t\t<h2>Kleeja error  : </h2><br />" . "\n";
             echo "\n\t\t<strong> [ " . $error_number . ':' . basename($error_file) . ':' . $error_line . ' ] </strong><br /><br />' . "\n\t\t" . $error_string . "\n\t";
-            echo "\n\t\t" . '<br /><br /><small>Visit <a href="http://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
+            echo "\n\t\t" . '<br /><br /><small>Visit <a href="https://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
             echo "</div>\n</body>\n</html>";
             global $SQL;
 
@@ -147,9 +147,21 @@ if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
 //no enough data
 if ((empty($dbname) || empty($dbuser)) && ($dbtype !== 'sqlite'))
 {
-    header('Location: ./install/index.php');
+    $install_file_url = (defined('IN_ADMIN') ? '.' : '') . './install/index.php';
 
+    if (file_exists(PATH . '/install/index.php')) {
+        header("Location: {$install_file_url}");
+        exit;
+    }
+    
+    kleeja_show_error(
+        '',
+        "There is no (install) folder, and the config file is not correct",
+        'includes/common.php',
+        __LINE__
+    );
     exit;
+
 }
 
 // solutions for hosts running under suexec, add define('HAS_SUEXEC', true) to config.php.
