@@ -322,7 +322,7 @@ elseif ($current_smt == '')
         $sizes              = false;
         $num                = 0;
         //if Kleeja integtared we dont want make alot of queries
-        $ids_and_names = [];
+        $ids_and_names = $arr = [];
 
         while ($row=$SQL->fetch_array($result))
         {
