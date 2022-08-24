@@ -378,7 +378,7 @@ switch (g('go'))
             $result    = $SQL->build($query);
 
             $i      = ($currentPage * $perpage) - $perpage;
-            $tdnumi = $num = $files_num = $imgs_num = 0;
+            $tdnumi = $num = $files_num = $imgs_num = $sizes = 0;
             while ($row=$SQL->fetch_array($result))
             {
                 ++$i;
