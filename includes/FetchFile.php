@@ -124,26 +124,27 @@ class FetchFile
             $out = fopen($this->destinationPath, 'w');
             curl_setopt($ch, CURLOPT_FILE, $out);
             $result = curl_exec($ch);
+            curl_close($ch);
+            fclose($out);
 
             if ($result === false)
             {
                 kleeja_log(sprintf("cUrl error (#%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
+                return false;
             }
-
-            curl_close($ch);
-            fclose($out);
 
             return true;
         }
         else
         {
             $data = curl_exec($ch);
+            curl_close($ch);
 
             if ($data === false)
             {
                 kleeja_log(sprintf("FetchFile error (curl: #%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
+                return false;
             }
-            curl_close($ch);
 
             return $data;
         }
