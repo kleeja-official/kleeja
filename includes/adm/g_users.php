@@ -1122,6 +1122,7 @@ case 'users':
     $start                = $Pager->getStartRow();
 
     $no_results = false;
+    $arr = [];
 
     if ($nums_rows > 0)
     {
