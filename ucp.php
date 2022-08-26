@@ -423,7 +423,7 @@ switch (g('go'))
                         kleeja_info($lang['INVALID_FORM_KEY']);
                     }
 
-                    if ($_POST['del_' . $row['id']])
+                    if (isset($_POST['del_' . $row['id']]))
                     {
                         //delete from folder ..
                         @kleeja_unlink($row['folder'] . '/' . $row['name']);
