@@ -200,7 +200,7 @@ case 'toggle_start_box':
     else
     {
         $items = explode(':', $config['hidden_start_boxes']);
-        $items = array_filter($items);
+        $new_items = $items = array_filter($items);
 
         $name = g('name');
         $hide = g('toggle', 'int') == 1;
@@ -211,7 +211,6 @@ case 'toggle_start_box':
         }
         elseif ($hide)
         {
-            $new_items   = $items;
             $new_items[] = $name;
         }
 
