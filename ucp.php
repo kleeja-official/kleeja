@@ -655,7 +655,8 @@ switch (g('go'))
                 $user_salt        = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
                 $mail             = $new_mail ? "mail='" . $SQL->escape(strtolower(trim(p('pmail')))) . "'" : '';
                 $showmyfile       = p('show_my_filecp', 'int') != $show_my_filecp ?  ($mail == '' ? '': ',') . "show_my_filecp='" . p('show_my_filecp', 'int') . "'" : '';
-                $pass             = ! empty(p('ppass_new')) ? ($showmyfile != ''  || $mail != '' ? ',' : '') . "password='" . $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt) .
+                $insertnewpass    = $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt);
+                $pass             = ! empty(p('ppass_new')) ? ($showmyfile != ''  || $mail != '' ? ',' : '') . "password='" . $insertnewpass .
                                 "', password_salt='" . $user_salt . "'" : '';
                 $id            = (int) $usrcp->id();
 
@@ -675,8 +676,17 @@ switch (g('go'))
                 {
                     $text = $lang['DATA_CHANGED_O_LO'];
                     $SQL->build($update_query);
-                }
 
+                    //Need to update cookies
+                    $prev_cookie = @explode('|', $usrcp->en_de_crypt($usrcp->kleeja_get_cookie('ulogu'), 2));
+                    $prev_cookie[1] = !empty(p('ppass_new')) ? $insertnewpass : $prev_cookie[1];
+                    $prev_cookie[3] = sha1(md5($config['h_key'] . $prev_cookie[1]) . $prev_cookie[2]);
+                    $usinfo = unserialize(base64_decode($prev_cookie[5]));
+                    $mail = $new_mail ? $SQL->escape(strtolower(trim(p('pmail')))) : $usinfo['mail'];
+                    $prev_cookie[5] = base64_encode(serialize(['id'=>$prev_cookie[0], 'name'=>$usinfo['name'], 'mail'=>$mail, 'last_visit'=>$usinfo['last_visit']]));
+                    $usrcp->kleeja_set_cookie('ulogu', $usrcp->en_de_crypt(implode('|',$prev_cookie)), $prev_cookie[2]);
+                }
+                
                 kleeja_info($text, '', true, $action);
             }
         }//else submit
