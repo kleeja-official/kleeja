@@ -367,7 +367,7 @@ class defaultUploader implements KleejaUploader
         if (! user_can('enter_acp') && user_is_flooding($current_user_id)) {
             $this->addErrorMessage(sprintf(
                 $lang['YOU_HAVE_TO_WAIT'],
-                $current_user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']
+                $config['usersectoupload']
             ));
             return;
         }
