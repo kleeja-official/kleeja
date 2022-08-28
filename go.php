@@ -413,6 +413,8 @@ switch ($current_go_case)
                     }
 
                     $SQL->freeresult($result);
+                } else {
+                    kleeja_info($lang['NOT_FOUND']);
                 }
             }
             else
