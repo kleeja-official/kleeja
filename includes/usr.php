@@ -57,7 +57,7 @@ class usrcp
         global $SQL, $dbprefix, $config, $userinfo;
 
         $userinfo = [
-            'id'             => 0,
+            'id'             => -1,
             'group_id'       => 2,
         ];
 
@@ -143,8 +143,8 @@ class usrcp
             return true;
         } else {
             //guest
-            define('USER_ID', -1);
-            define('GROUP_ID', 2);
+            define('USER_ID', $userinfo['id']);
+            define('GROUP_ID', $userinfo['group_id']);
             return false;
         }
     }
