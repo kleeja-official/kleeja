@@ -131,12 +131,29 @@
         </IF>
 </div>
 <script>
+    function convertSize(size) {
+        if (size > 1024 * 1024 * 1024) {
+            size = Math.round(size / (1024 * 1024 * 1024) * 10) / 10 + " Gb";
+        } else if (size > 1024 * 1024) {
+            size = Math.round(size / (1024 * 1024) * 10) / 10 + '';
+            if (!size.match(/\./)) size += '.0';
+            size += ' Mb';
+        } else if (size > 1024) {
+            size = Math.round(size / 1024 * 10) / 10 + " Kb";
+        } else {
+            size = size + " Bytes";
+        }
+        return size;
+    }
+    
     let uploadForm = document.getElementById('uploader');
     let uploadProgress = document.getElementById('uploadProgress');
     let progressHolder = document.getElementById('progressHolder');
     let loadbox = document.getElementById('loadbox');
     let fileCount = {config.filesnum};
     let uploaded = 0, uploadSpeed = 0, lastUploadTime = 0;
+    let stats = document.getElementById('uploaderstats');
+    let speed = document.getElementById('uploaderspeed');
 
     uploadForm.onsubmit = e => {
         e.preventDefault();
@@ -151,34 +168,66 @@
         if (! haveFiles) {
             return false;
         }
+        
         var xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "{action}", true);
+        
+        xhttp.onerror = e=> {
+            uploadProgress.classList.add("bg-danger");
+            loadbox.innerHTML = "{lang.ERROR_TRY_AGAIN}";
+        }
 
         xhttp.upload.onprogress = e => {
-            let endUploadTime = Date.now();
-            uploadSpeed = ((e.loaded - uploaded) * 1000) / ((endUploadTime - lastUploadTime) * 1024);
+            if (!lastUploadTime) lastUploadTime = Date.now();
+            let elapsed = Date.now() - lastUploadTime;
             const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
             uploadProgress.style.width = percent.toFixed(2) + '%';
             uploadProgress.textContent = percent.toFixed(2) + '%';
-            uploaded = e.loaded;
-            lastUploadTime = endUploadTime;
-            console.log(uploadSpeed);
+            uploadProgress.setAttribute("aria-valuenow", percent.toFixed(0));
+            if (elapsed > 1000) {
+                uploadSpeed = (e.loaded - uploaded);
+                speed.innerHTML = convertSize(uploadSpeed)+"/s";
+                uploaded = e.loaded;
+                lastUploadTime = Date.now();
+            }
+			let humanSent = convertSize(e.loaded);
+			let humanSize = convertSize(e.total);
+			self.humanSize = humanSize;
+			let newHTML = humanSent + " / " + humanSize + " (" + percent.toFixed(2) + "%) complete";
+			stats.innerHTML = newHTML;
+			console.log(uploadSpeed);
         };
 
-        xhttp.onreadystatechange = function () {
+        xhttp.onreadystatechange = function (e) {
             if (this.readyState == 4 && this.status == 200) {
-                let response = JSON.parse(this.response);
+                speed.style.display = 'none';
+                try {
+                    var response = JSON.parse(this.response);
+                } catch (err) {
+                    stats.style.display = 'none';
+                    console.error("Server returned some ugly/empty JSON");
+                    return xhttp.onerror(e);
+                }
+                uploadProgress.classList.add("bg-success");
+                let newHTML = self.humanSize + " complete";
+                stats.innerHTML = newHTML;
                 loadbox.innerHTML = '';
                 response.forEach(element => {
                     loadbox.innerHTML += element.i + '<hr><br>';
                 });
             }
+            else if (this.readyState == 4 && this.status != 200)
+    		{
+				speed.style.display = stats.style.display = 'none';
+				console.error("Server returned bad status");
+				return xhttp.onerror(e);
+    		}
         };
 
         let formd = new FormData(uploadForm);
         formd.append('submitr', true);
         formd.append('ajax', true);
-        progressHolder.style.display = '';
+        progressHolder.style.display = stats.style.display = speed.style.display = '';
+        xhttp.open("POST", "{action}", true);
         xhttp.send(formd);
         return false;
     }
