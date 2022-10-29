@@ -220,6 +220,7 @@ return [
     'NO_FILE_USER'                             => 'No files were found in the account!',
     'SHOWFILESBYIP'                            => 'Show files by IP',
     'WAIT_LOADING'                             => 'Please wait, the files are being uploaded to the server...',
+    'LOADING'                                  => 'Loading',
     'NOTICECLOSED'                             => 'Note: website is in maintenance mode!',
     'UNKNOWN'                                  => 'Unknown',
     'WE_UPDATING_KLEEJA_NOW'                   => 'Closed for maintenance, Check back soon...',
