@@ -178,7 +178,7 @@ switch ($current_go_case)
             if (empty($ERRORS))
             {
                 $name        = $NOT_USER ? (string) $SQL->escape(p('rname')) : $usrcp->name();
-                $text        = (string) $SQL->escape(p('rtext'));
+                $text        = (string) $SQL->escape(htmlspecialchars_decode(p('rtext')));
                 $mail        = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('rmail')))) : $usrcp->mail();
                 $url         = (string) ip('rid') ? $SQL->escape($url_id) : $SQL->real_escape(p('surl'));
                 $time        = (int) time();
@@ -307,7 +307,7 @@ switch ($current_go_case)
             if (empty($ERRORS))
             {
                 $name        = $NOT_USER ? (string) $SQL->escape(p('cname')) : $usrcp->name();
-                $text        = (string) $SQL->escape(p('ctext'));
+                $text        = (string) $SQL->escape(htmlspecialchars_decode(p('ctext')));
                 $mail        = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('cmail')))) : $usrcp->mail();
                 $timee       = (int) time();
                 $ip          =  get_ip();
@@ -519,11 +519,11 @@ switch ($current_go_case)
         //do some of the queue ..
         if (preg_match('/:del_[a-z0-9]{0,3}calls:/i', $config['queue']))
         {
-            klj_clean_old('call', (strpos(':del_allcalls:', $config['queue']) !== false ? 'all': 30));
+            klj_clean_old('call', (strpos($config['queue'], ':del_allcalls:') !== false ? 'all': 30));
         }
         elseif (preg_match('/:del_[a-z0-9]{0,3}reports:/i', $config['queue']))
         {
-            klj_clean_old('reports', (strpos(':del_allreports:', $config['queue']) !== false ? 'all': 30));
+            klj_clean_old('reports', (strpos($config['queue'], ':del_allreports:') !== false ? 'all': 30));
         }
         elseif ((int) $config['del_f_day'] > 0)
         {
