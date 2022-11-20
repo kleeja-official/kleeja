@@ -210,10 +210,14 @@
                 uploadProgress.classList.add("bg-success");
                 let newHTML = self.humanSize + " complete";
                 stats.innerHTML = newHTML;
-                loadbox.innerHTML = '';
+                html = "<div class=\"card mb-5\">\n<ul class=\"list-group list-group-flush\">\n";
+                loadbox.remove();
                 response.forEach(element => {
-                    loadbox.innerHTML += element.i + '<hr><br>';
+                    typeclass = element.t == 'index_info' ? '' : ' list-group-item-danger';
+                    html += "<li class=\"list-group-item"+typeclass+"\">\n"+element.i+"</li>";
                 });
+                html += "</ul>";
+                speed.insertAdjacentHTML("afterend", html);
             }
             else if (this.readyState == 4 && this.status != 200)
     		{
