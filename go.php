@@ -178,7 +178,7 @@ switch ($current_go_case)
             if (empty($ERRORS))
             {
                 $name        = $NOT_USER ? (string) $SQL->escape(p('rname')) : $usrcp->name();
-                $text        = (string) $SQL->escape(htmlspecialchars_decode(p('rtext')));
+                $text        = (string) $SQL->real_escape(nl2br(p('rtext')));
                 $mail        = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('rmail')))) : $usrcp->mail();
                 $url         = (string) ip('rid') ? $SQL->escape($url_id) : $SQL->real_escape(p('surl'));
                 $time        = (int) time();
@@ -307,7 +307,7 @@ switch ($current_go_case)
             if (empty($ERRORS))
             {
                 $name        = $NOT_USER ? (string) $SQL->escape(p('cname')) : $usrcp->name();
-                $text        = (string) $SQL->escape(htmlspecialchars_decode(p('ctext')));
+                $text        = (string) $SQL->real_escape(nl2br(p('ctext')));
                 $mail        = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('cmail')))) : $usrcp->mail();
                 $timee       = (int) time();
                 $ip          =  get_ip();
