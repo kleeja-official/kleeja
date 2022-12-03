@@ -250,11 +250,7 @@ function send_mail($to, $body, $subject, $fromAddress, $fromName, $bcc = '')
     $body = str_replace(["\n", "\0"], ["\r\n", ''], $body);
 
     // Change the line breaks used in the headers according to OS
-    if (strtoupper(substr(PHP_OS, 0, 3)) == 'MAC')
-    {
-        $headers = str_replace("\r\n", "\r", $headers);
-    }
-    elseif (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN')
+    if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN' && version_compare(PHP_VERSION, '8.0.0', '<'))
     {
         $headers = str_replace("\r\n", "\n", $headers);
     }
