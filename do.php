@@ -532,7 +532,7 @@ elseif (ig('down') || ig('downf') ||
     {
         list($a, $range)         = explode('=', $_SERVER['HTTP_RANGE'], 2);
         list($range)             = explode(',', $range, 2);
-        list($range, $range_end) = explode('=', $range);
+        list($range, $range_end) = explode('-', $range, 2);
         $range                   = round(floatval($range), 0);
         $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
 
