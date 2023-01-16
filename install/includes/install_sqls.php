@@ -98,6 +98,7 @@ CREATE TABLE `{$dbprefix}files` (
   `last_down` int(11) unsigned NOT NULL DEFAULT '0',
   `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
   `real_filename` VARCHAR( 350 ) collate utf8_bin NOT NULL DEFAULT '',
+  `fld_id` int(11) unsigned NOT NULL DEFAULT '0',
   `about` LONGTEXT collate utf8_bin,
   `size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `uploads` int(11) unsigned NOT NULL DEFAULT '0',
@@ -105,7 +106,7 @@ CREATE TABLE `{$dbprefix}files` (
   `type` varchar(20) collate utf8_bin NOT NULL,
   `folder` varchar(100) collate utf8_bin NOT NULL,
   `report` int(11) unsigned  NOT NULL DEFAULT '0',
-  `user` int(11)  NOT NULL default '-1',
+  `user` int(11)  NOT NULL DEFAULT '-1',
   `code_del` varchar(150) collate utf8_bin NOT NULL DEFAULT '',
   `user_ip` VARCHAR( 250 ) NOT NULL DEFAULT '',
   `id_form` VARCHAR( 100 ) NOT NULL DEFAULT 'id',
@@ -115,6 +116,19 @@ CREATE TABLE `{$dbprefix}files` (
   KEY `time` (`time`),
   KEY `last_down` (`last_down`),
   KEY `type` (`type`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+";
+
+$install_sqls['folders'] = "
+CREATE TABLE `{$dbprefix}folders` (
+  `id` int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
+  `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
+  `parent` int(11) unsigned NOT NULL DEFAULT '0',
+  `user` int(11)  NOT NULL DEFAULT '-1',
+  `time` int(11) unsigned NOT NULL DEFAULT '0',
+  KEY `name` (`name`(300)),
+  KEY `user` (`user`),
+  KEY `time` (`time`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 

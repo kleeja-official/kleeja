@@ -35,6 +35,7 @@ $rules = [
     '^(filecp|profile|fileuser|register|login|logout).html$' => ['file' => 'ucp.php', 'args' => 'go=$1'],
     '^fileuser[_-]([0-9]+).html$'                            => ['file' => 'ucp.php', 'args' => 'go=fileuser&id=$1'],
     '^fileuser[_-]([0-9]+)-([0-9]+).html$'                   => ['file' => 'ucp.php', 'args' => 'go=fileuser&id=$1&page=$2'],
+    '^fileuser[_-]([0-9]+)-0*([1-9]\d*)-([0-9]+).html$'      => ['file' => 'ucp.php', 'args' => 'go=fileuser&id=$1&folder_id=$2&page=$3'],
     // #for future plugins
     '^go-(.*).html$' => ['file' => 'go.php', 'args' => 'go=$1'],
 ];

@@ -383,6 +383,60 @@ function kleeja_unlink($filePath, $cache_file = false)
 }
 
 /**
+ * Try to get folder childs id's.
+ * @param  int $folder_id
+ */
+function kleeja_folder_childs($folder_id){
+    global $SQL,$dbprefix;
+    $query = [
+         'SELECT' => 'GROUP_CONCAT(id) as ids',
+         'FROM' => "{$dbprefix}folders",
+         'WHERE' => 'parent='.$folder_id,
+         'GROUP BY' => 'parent'
+        ];
+    $result = $SQL->build($query);
+    $num_rows = $SQL->num_rows($result);
+    if(!$num_rows){
+        return [];
+    }else{
+        $narr= [];
+        $arr = $SQL->fetch($result);
+        $arr = explode(',',$arr['ids']);
+        foreach($arr as $fld_id){
+            $narr[] = $fld_id;
+            $narr   = array_merge($narr,kleeja_folder_childs($fld_id));
+        }
+        return $narr;
+    }
+}
+
+/**
+ * check destFolder is chilf of srcFolder.
+ * @param  int $srcFolderId
+ * @param  int $destFolderId
+ */
+function isChildFolder($srcFolderId, $destFolderId) {
+    global $SQL,$dbprefix,$usrcp;
+    $query = [
+        'SELECT'         => 'd.id, d.parent',
+        'FROM'           => "{$dbprefix}folders d",
+        'WHERE'          => 'd.user=' . $usrcp->id() . ' AND d.id=' . $destFolderId
+    ];
+    $result             = $SQL->build($query);
+    if($SQL->num_rows($result) == 0){
+        return false;
+    }
+    $row = $SQL->fetch_array($result);
+    if ($row['parent'] == $srcFolderId) {
+        return true;
+    } else if ($row['parent'] == 0) {
+        return false;
+    } else {
+        return isChildFolder($srcFolderId, $row['parent']);
+    }
+}
+
+/**
  * Get mime header
  * @param  string $ext file extension
  * @return string mime

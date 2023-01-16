@@ -276,15 +276,21 @@ switch (g('go'))
         //
         case 'fileuser' :
 
-         is_array($plugin_run_result = Plugins::getInstance()->run('begin_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+        is_array($plugin_run_result = Plugins::getInstance()->run('begin_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         $stylee         = 'fileuser';
         $H_FORM_KEYS    = kleeja_add_form_key('fileuser');
 
         $user_id_get           = ig('id') ? g('id', 'int') : false;
         $user_id               = ! $user_id_get && $usrcp->id() ? $usrcp->id() : $user_id_get;
+        $folder_id             = g('folder_id', 'int', 0);
         $user_himself          = $usrcp->id() == $user_id;
-        $action                = $config['siteurl'] . 'ucp.php?go=fileuser' . (ig('page') ? '&amp;page=' . g('page', 'int') : '');
+        $action                = $config['siteurl'] . 'ucp.php?go=fileuser' . (ig('page') ? '&amp;page=' . g('page', 'int') : '') . (ig('folder_id') ? '&amp;folder_id='.$folder_id : '');
+        $linkgoto              = $config['siteurl'] . (
+                                    $config['mod_writer']
+                                    ?  'fileuser-'. $user_id .(!empty($folder_id) ? '-'.$folder_id.'-1' : ''). '.html'
+                                    : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null) . (!empty($folder_id) ? '&amp;folder_id='.$folder_id : '')
+                            );
 
         //no logon before
         if (! $usrcp->name() && ! ig('id'))
@@ -321,16 +327,63 @@ switch (g('go'))
             kleeja_err($lang['NOT_EXSIT_USER'], $lang['PLACE_NO_YOU']);
         }
 
-            //this user closed his folder, and it's not the current user folder
+        //this user closed his folder, and it's not the current user folder
         if (! $data_user['show_my_filecp'] && ($usrcp->id() != $user_id) && ! user_can('enter_acp'))
         {
             kleeja_info($lang['USERFILE_CLOSED'], $lang['CLOSED_FEATURE']);
         }
 
+        //Check if folder owner
+        if (!empty($folder_id)) {
+	        $query = [
+	            'SELECT'         => 'd.id, d.parent, d.name, d.user, d.time',
+	            'FROM'           => "{$dbprefix}folders d",
+	            'WHERE'          => 'd.user=' . $user_id.' AND d.id=' . $folder_id
+	        ];
+	        $result              = $SQL->build($query);
+	        if ($SQL->num_rows($result)==0) {
+	        	kleeja_err($lang['NOT_EXIST_FOLDER'], '', true, $config['mod_writer'] ? str_replace('-'.$folder_id.'-1.html','.html',$linkgoto) : str_replace("&amp;folder_id=".$folder_id,'',$linkgoto), 2);
+	        }
+	    }
+	    
+	    $folders_tree = generateFoldersSelectOptions(0,1);
+	    
+	    //create new folder
+        if (ip('create_folder_submit') && $user_himself)
+        {
+            $create_folder_name = ip('create_new_folder') ? p('create_new_folder') : false;
+            if ($create_folder_name)
+            {
+                $query_create = [
+                    'INSERT'       => 'name ,parent, user, time',
+                    'INTO'         => "{$dbprefix}folders",
+                    'VALUES'       => "'$create_folder_name', " . $folder_id . ", '$user_id', " . time()
+                ];
+                is_array($plugin_run_result = Plugins::getInstance()->run('qr_create_folder_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                $SQL->build($query_create);
+                //folder created , show msg
+                kleeja_info($lang['FOLDER_CREATED'], '', true, $linkgoto, 2);
+            }
+            else
+            {
+                //no folder name, show msg
+                kleeja_info($lang['EMPTY_FOLDER_NAME'], '', true, $linkgoto, 2);
+            }
+        }
+
+	    //count all folders
+	    $dquery = [
+            'SELECT'         => 'd.id, d.parent, d.name, d.user, d.time',
+            'FROM'           => "{$dbprefix}folders d",
+            'WHERE'          => 'd.user=' . $user_id . ' AND d.parent=' . $folder_id
+        ];
+        $dresult             = $SQL->build($dquery);
+        $all_folders_count   = $SQL->num_rows($dresult);
+
         $query    = [
             'SELECT'         => 'f.id, f.name, f.real_filename, f.folder, f.type, f.uploads, f.time, f.size',
             'FROM'           => "{$dbprefix}files f",
-            'WHERE'          => 'f.user=' . $user_id,
+            'WHERE'          => 'f.user=' . $user_id . (!ip('submit_all_files') ? ' AND f.fld_id=' . $folder_id : ''),
             'ORDER BY'       => 'f.id DESC'
         ];
 
@@ -339,20 +392,15 @@ switch (g('go'))
         $result_p             = $SQL->build($query);
         $nums_rows            = $SQL->num_rows($result_p);
         $currentPage          = ig('page') ? g('page', 'int') : 1;
-        $Pager                = new Pagination($perpage, $nums_rows, $currentPage);
+        $Pager                = new Pagination($perpage, $nums_rows+$all_folders_count, $currentPage);
         $start                = $Pager->getStartRow();
-
         $your_fileuser       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $usrcp->id() . '.html' : 'ucp.php?go=fileuser&amp;id=' . $usrcp->id());
         $total_pages         = $Pager->getTotalPages();
-        $linkgoto            = $config['siteurl'] . (
-                                    $config['mod_writer']
-                                    ?  'fileuser-' . $user_id  . '.html'
-                                    : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null)
-                            );
 
         $page_nums        = $Pager->print_nums(str_replace('.html', '', $linkgoto));
 
         $no_results = true;
+        $darr = $arr = [];
 
         if ((int) $config['user_system'] != 1 && $usrcp->id() != $user_id)
         {
@@ -363,79 +411,195 @@ switch (g('go'))
 
         //set page title
         $titlee    = $lang['FILEUSER'] . ': ' . $user_name;
-        //there is result ? show them
-        if ($nums_rows != 0)
+        
+        //there is result of folders ? show them
+        $fetched_folders = $files_num = $imgs_num = $sizes = 0;
+        if ($total_pages != 0)
         {
             $no_results = false;
 
-            if (! ip('submit_all_files'))
-            { // in delete all files we do not need any limit;
-                $query['LIMIT'] = "$start, $perpage";
-            }
-
-            is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_files_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-            $result    = $SQL->build($query);
-
-            $i      = ($currentPage * $perpage) - $perpage;
-            $tdnumi = $num = $files_num = $imgs_num = $sizes = 0;
+            $dquery['LIMIT'] = "$start, $perpage";
+            $result    = $SQL->build($dquery);
             while ($row=$SQL->fetch_array($result))
             {
-                ++$i;
-                $file_info = ['::ID::' => $row['id'], '::NAME::' => $row['name'], '::DIR::' => $row['folder'], '::FNAME::' => $row['real_filename']];
-
-                $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
-
-                $url = $is_image ? kleeja_get_link('image', $file_info) : kleeja_get_link('file', $file_info);
-
-                $url_thumb = kleeja_get_link('thumb', $file_info);
-
-                $url_fileuser = $is_image
-                        ? $url
-                        : (file_exists('images/filetypes/' . $row['type'] . '.png') ? 'images/filetypes/' . $row['type'] . '.png' : 'images/filetypes/file.png');
-
-                $file_name = $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
-
-                //make new lovely arrays !!
-                $arr[]     = [
-                    'id'              => $row['id'],
-                    'name_file'       => shorten_text($file_name, 25),
-                    'file_type'       => $row['type'],
-                    'uploads'         => $row['uploads'],
-                    'tdnum'           => $tdnumi == 0 ? '<ul>': '',
-                    'tdnum2'          => $tdnumi == 4 ? '</ul>' : '',
-                    'href'            => $url,
-                    'size'            => readable_size($row['size']),
-                    'time'            => ! empty($row['time']) ? kleeja_date($row['time']) : '...',
-                    'thumb_link'      => $is_image ? $url_thumb : $url_fileuser,
-                    'is_image'        => $is_image,
-                ];
-
-                $tdnumi = $tdnumi == 2 ? 0 : $tdnumi+1;
-
-                if (ip('submit_files') && $user_himself)
+                $row['url_folder']  =   $config['siteurl'] . ($config['mod_writer'] ?
+                    'fileuser-'.$user_id.'-'.$row['id'].'-1.html' :
+                    'ucp.php?go=fileuser'.($user_himself ? '' : '&amp;id='.$user_id).'&amp;folder_id='.$row['id']);
+                $darr[]=$row;
+                if ((ip('submit_files') || ip('to_folder_move')) && $user_himself)
                 {
-                    is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-                    //check for form key
-                    if (! kleeja_check_form_key('fileuser', 1800 /* half hour */))
+                    if(isset($_POST['del_d_' . $row['id']]))
                     {
-                        kleeja_info($lang['INVALID_FORM_KEY']);
+                        if(ip('to_folder_move'))
+                        {	
+                            if(p('to_folder','int')!=$row['id'] && !isChildFolder($row['id'],p('to_folder','int')))
+                            {
+                                $fids[] = $row['id'];
+                            }
+                        }else{
+                            $fids[] = $row['id'];
+                        }
+                        if(ip('submit_files'))
+                        {
+                            $fchilds = kleeja_folder_childs($row['id']);
+                            $fids = array_merge($fids,$fchilds);
+                        }
                     }
-
-                    if (isset($_POST['del_' . $row['id']]))
+                }
+            }
+            
+            if (ip('submit_files') && $user_himself && ! empty($fids))
+            {
+                //Time to delete all files in these folders
+                $delete_query_files_in_folders  = [
+                    'SELECT'         => 'f.id, f.name, f.real_filename, f.folder, f.type, f.uploads, f.time, f.size',
+                    'FROM'           => "{$dbprefix}files f",
+                    'WHERE'          => 'f.fld_id IN (' . implode(',',$fids) . ')',
+                    'ORDER BY'       => 'f.id DESC'
+                ];
+                $result  = $SQL->build($delete_query_files_in_folders);
+                while ($row=$SQL->fetch_array($result))
+                {
+                    $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
+                    //delete from folder ..
+                    @kleeja_unlink($row['folder'] . '/' . $row['name']);
+        
+                    //delete thumb
+                    if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                     {
-                        //delete from folder ..
+                        @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
+                    }
+                    $ids[] = $row['id'];
+                    $sizes += $row['size'];
+                    if($is_image)
+                    {
+                        $imgs_num++;
+                    }else
+                    {
+                        $files_num++;
+                    }
+                }
+            }
+            $fetched_folders = count($darr);
+        }
+        
+        //there is result ? show them
+        if($fetched_folders<$perpage)
+        {
+            if ($nums_rows != 0)
+            {
+                $no_results = false;
+    
+                if (! ip('submit_all_files'))
+                { // in delete all files we do not need any limit;
+                    $nstart         = $start - $all_folders_count;
+                    if($nstart<0)
+                    {
+                        $nstart     = 0;
+                    }
+                    $nperpage       = $perpage - $fetched_folders;
+                    $query['LIMIT'] = "$nstart, $nperpage";
+                }
+    
+                is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_files_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    
+                $result    = $SQL->build($query);
+    
+                $i      = ($currentPage * $perpage) - $perpage;
+                $tdnumi = $num = 0;
+                while ($row=$SQL->fetch_array($result))
+                {
+                    ++$i;
+                    $file_info = ['::ID::' => $row['id'], '::NAME::' => $row['name'], '::DIR::' => $row['folder'], '::FNAME::' => $row['real_filename']];
+    
+                    $is_image = in_array(strtolower(trim($row['type'])), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
+    
+                    $url = $is_image ? kleeja_get_link('image', $file_info) : kleeja_get_link('file', $file_info);
+    
+                    $url_thumb = kleeja_get_link('thumb', $file_info);
+    
+                    $url_fileuser = $is_image
+                            ? $url
+                            : (file_exists('images/filetypes/' . $row['type'] . '.png') ? 'images/filetypes/' . $row['type'] . '.png' : 'images/filetypes/file.png');
+    
+                    $file_name = $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
+    
+                    //make new lovely arrays !!
+                    $arr[]     = [
+                        'id'              => $row['id'],
+                        'name_file'       => shorten_text($file_name, 25),
+                        'file_type'       => $row['type'],
+                        'uploads'         => $row['uploads'],
+                        'tdnum'           => $tdnumi == 0 ? '<ul>': '',
+                        'tdnum2'          => $tdnumi == 4 ? '</ul>' : '',
+                        'href'            => $url,
+                        'size'            => readable_size($row['size']),
+                        'time'            => ! empty($row['time']) ? kleeja_date($row['time']) : '...',
+                        'thumb_link'      => $is_image ? $url_thumb : $url_fileuser,
+                        'is_image'        => $is_image,
+                    ];
+    
+                    $tdnumi = $tdnumi == 2 ? 0 : $tdnumi+1;
+    
+                    if (ip('submit_files') && $user_himself)
+                    {
+                        is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    
+                        //check for form key
+                        if (! kleeja_check_form_key('fileuser', 1800 /* half hour */))
+                        {
+                            kleeja_info($lang['INVALID_FORM_KEY']);
+                        }
+    
+                        if (isset($_POST['del_' . $row['id']]))
+                        {
+                            //delete from folder ..
+                            @kleeja_unlink($row['folder'] . '/' . $row['name']);
+    
+                            //delete thumb
+                            if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
+                            {
+                                @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
+                            }
+    
+                            $ids[] = $row['id'];
+    
+                            if ($is_image)
+                            {
+                                $imgs_num++;
+                            }
+                            else
+                            {
+                                $files_num++;
+                            }
+    
+                            $sizes += $row['size'];
+                        }
+                    }
+                    
+                    if(ip('to_folder_move') && $user_himself)
+                    {
+                        if (isset($_POST['del_' . $row['id']]))
+                        {
+                            $ids[] = $row['id'];
+                        }
+                    }
+                    
+                    if (ip('submit_all_files') && $user_himself)
+                    {
+                        is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_all_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    
+                        //delete all files
                         @kleeja_unlink($row['folder'] . '/' . $row['name']);
-
+    
                         //delete thumb
                         if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                         {
                             @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
                         }
-
+    
                         $ids[] = $row['id'];
-
+    
                         if ($is_image)
                         {
                             $imgs_num++;
@@ -444,122 +608,125 @@ switch (g('go'))
                         {
                             $files_num++;
                         }
-
+    
                         $sizes += $row['size'];
                     }
                 }
+    
+                $SQL->freeresult($result_p);
+                $SQL->freeresult($result);
+            }//num result
+        }
 
-                if (ip('submit_all_files') && $user_himself)
-                {
-                    is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_all_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-                    //delete all files
-                    @kleeja_unlink($row['folder'] . '/' . $row['name']);
-
-                    //delete thumb
-                    if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
-                    {
-                        @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
-                    }
-
-                    $ids[] = $row['id'];
-
-                    if ($is_image)
-                    {
-                        $imgs_num++;
-                    }
-                    else
-                    {
-                        $files_num++;
-                    }
-
-                    $sizes += $row['size'];
-                }
-            }
-
-            $SQL->freeresult($result_p);
-            $SQL->freeresult($result);
-
-            //
-            //after submit
-            //
-            if (ip('submit_files') && $user_himself)
+        //
+        //after submit
+        //
+        if ((ip('submit_files') || ip('to_folder_move')) && $user_himself)
+        {
+            //no files to delete
+            if ((isset($ids) && ! empty($ids)) || (isset($fids) && ! empty($fids)))
             {
-                //no files to delete
-                if (isset($ids) && ! empty($ids))
+                if(isset($ids) && ! empty($ids))
                 {
-                    $query_del = [
-                        'DELETE'       => "{$dbprefix}files",
-                        'WHERE'        => 'id IN (' . implode(',', $ids) . ')'
-                    ];
-
-                    is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-                    $SQL->build($query_del);
-
-                    if (($files_num <= $stat_files) && ($imgs_num <= $stat_imgs))
+                    if(ip('submit_files'))
                     {
-                        //update number of stats
-                        $update_query    = [
-                            'UPDATE'       => "{$dbprefix}stats",
-                            'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                        $query_del = [
+                            'DELETE'       => "{$dbprefix}files",
+                            'WHERE'        => 'id IN (' . implode(',', $ids) . ')'
                         ];
-
-                        $SQL->build($update_query);
+                        is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                        $SQL->build($query_del);
+                        if (($files_num <= $stat_files) && ($imgs_num <= $stat_imgs))
+                        {
+                            //update number of stats
+                            $update_query    = [
+                                'UPDATE'       => "{$dbprefix}stats",
+                                'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                            ];
+                            $SQL->build($update_query);
+                        }
+                    }else
+                    {
+                        $query_move = [
+                            'UPDATE'       => "{$dbprefix}files",
+                            'SET'          => "fld_id=".p('to_folder','int'),
+                            'WHERE'        => 'id IN (' . implode(',', $ids) . ')'
+                        ];
+                        is_array($plugin_run_result = Plugins::getInstance()->run('qr_move_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                        $SQL->build($query_move);
                     }
-
-                    //delete is ok, show msg
+                }
+                if(isset($fids) && ! empty($fids))
+                {
+                    if(ip('submit_files'))
+                    {
+                        $query_del = [
+                            'DELETE'     => "{$dbprefix}folders",
+                            'WHERE'      => 'id IN (' . implode(',', $fids) . ')'
+                        ];
+                        is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_folders_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                        $SQL->build($query_del);
+                    }else
+                    {
+                        $query_del = [
+                            'UPDATE'     => "{$dbprefix}folders",
+                            'SET'        => "parent=" . p('to_folder','int'),
+                            'WHERE'      => 'id IN (' . implode(',', $fids) . ')'
+                        ];
+                        is_array($plugin_run_result = Plugins::getInstance()->run('qr_move_folders_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                        $SQL->build($query_del);
+                    }
+                }
+                //delete is ok, show msg
+                if(ip('submit_files'))
+                {
                     kleeja_info($lang['FILES_DELETED'], '', true, $linkgoto, 2);
-                }
-                else
+                }else
                 {
-                    //no file selected, show msg
-                    kleeja_info($lang['NO_FILE_SELECTED'], '', true, $linkgoto, 2);
+                    kleeja_info($lang['FILES_MOVED'], '', true, $linkgoto, 2);
                 }
             }
-
-
-            if (ip('submit_all_files') && $user_himself)
+            else
             {
-                if (isset($ids) && ! empty($ids))
-                {
-                    $query_del = [
-                        'DELETE'       => "{$dbprefix}files",
-                        'WHERE'        => 'id IN (' . implode(',', $ids) . ')'
-                    ];
-
-                    is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-                    $SQL->build($query_del);
-
-                    if (($files_num <= $stat_files) && ($imgs_num <= $stat_imgs))
-                    {
-                        //update number of stats
-                        $update_query    = [
-                            'UPDATE'       => "{$dbprefix}stats",
-                            'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
-                        ];
-
-                        $SQL->build($update_query);
-                    }
-
-
-                    //write  all delete log for current user for last time only
-                    $log_msg=$usrcp->name() . ' has deleted all his/her files at this time : ' . date('H:i a, d-m-Y') . "] \r\n" .
-                    'files numbers:' . $files_num . "\r\n" .
-                    'images numbers:' . $imgs_num . "\r\n";
-                    $last_id=PATH . 'cache/' . $usrcp->id() . $usrcp->name();    //based on user id
-                    file_put_contents($last_id, $log_msg);
-
-                    //delete all files , show msg
-                    kleeja_info($lang['ALL_DELETED'], '', true, $linkgoto, 2);
-                }
-                else
-                {
-                    //no file selected, show msg
-                    kleeja_info($lang['NO_FILES_DELETE'], '', true, $linkgoto, 2);
-                }
+                //no file selected, show msg
+                kleeja_info($lang['NO_FILE_SELECTED'], '', true, $linkgoto, 2);
             }
-        }//num result
-
+        }
+        if (ip('submit_all_files') && $user_himself)
+        {
+            if (isset($ids) && ! empty($ids))
+            {
+                $query_del = [
+                    'DELETE'       => "{$dbprefix}files",
+                    'WHERE'        => 'id IN (' . implode(',', $ids) . ')'
+                ];
+                is_array($plugin_run_result = Plugins::getInstance()->run('qr_del_files_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+                $SQL->build($query_del);
+                if (($files_num <= $stat_files) && ($imgs_num <= $stat_imgs))
+                {
+                    //update number of stats
+                    $update_query    = [
+                        'UPDATE'       => "{$dbprefix}stats",
+                        'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                    ];
+                    $SQL->build($update_query);
+                }
+                //write  all delete log for current user for last time only
+                $log_msg=$usrcp->name() . ' has deleted all his/her files at this time : ' . date('H:i a, d-m-Y') . "] \r\n" .
+                'files numbers:' . $files_num . "\r\n" .
+                'images numbers:' . $imgs_num . "\r\n";
+                $last_id=PATH . 'cache/' . $usrcp->id() . $usrcp->name();    //based on user id
+                file_put_contents($last_id, $log_msg);
+                //delete all files , show msg
+                kleeja_info($lang['ALL_DELETED'], '', true, $linkgoto, 2);
+            }
+            else
+            {
+                //no file selected, show msg
+                kleeja_info($lang['NO_FILES_DELETE'], '', true, $linkgoto, 2);
+            }
+        }
+        
         is_array($plugin_run_result = Plugins::getInstance()->run('end_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         break;
