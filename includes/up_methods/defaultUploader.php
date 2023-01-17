@@ -114,6 +114,24 @@ class defaultUploader implements KleejaUploader
     {
         global $SQL, $dbprefix, $config;
 
+        //Check if user is the owner of the folder or not
+        $queryValues =
+        [
+            'id'         => $fileInfo['saveToUserFolder'],
+            'user'           => $fileInfo['currentUserId'],
+        ];
+
+        // selection query
+        $select_query = [
+            'SELECT'         => 'd.id',
+            'FROM'           => "{$dbprefix}folders d",
+            'WHERE'          => 'd.user=' . $queryValues['user'] . ' AND d.id=' . $queryValues['id']
+        ];
+
+        // do the query
+        if(!$SQL->num_rows($SQL->build($select_query)))
+            $fileInfo['saveToUserFolder'] = 0;
+
 //        $fileInfo =
 //         [
 //            'saveToFolder'
@@ -142,6 +160,7 @@ class defaultUploader implements KleejaUploader
             'size'           => intval($fileInfo['fileSize']),
             'time'           => time(),
             'folder'         => $fileInfo['saveToFolder'],
+            'fld_id'         => $fileInfo['saveToUserFolder'],
             'type'           => $fileInfo['fileExtension'],
             'user'           => $fileInfo['currentUserId'],
             'code_del'       => $fileInfo['DeleteCode'],
@@ -330,6 +349,9 @@ class defaultUploader implements KleejaUploader
         //upload to this folder
         $current_uploading_folder = $config['foldername'];
 
+        //upload to this user folder
+        $to_folder = p('to_folder','int');
+
         //current user id
         $current_user_id = $usrcp->name() ? $usrcp->id() : '-1';
 
@@ -464,7 +486,7 @@ class defaultUploader implements KleejaUploader
             }
 
 
-            $this->uploadTypeFile($i, $current_uploading_folder, $current_user_id);
+            $this->uploadTypeFile($i, $current_uploading_folder, $current_user_id, $to_folder);
         }
 
 
@@ -481,7 +503,7 @@ class defaultUploader implements KleejaUploader
      * @param $current_uploading_folder
      * @param $current_user_id
      */
-    public function uploadTypeFile($fieldNumber, $current_uploading_folder, $current_user_id)
+    public function uploadTypeFile($fieldNumber, $current_uploading_folder, $current_user_id, $user_folder_id)
     {
         global $config, $lang;
 
@@ -491,12 +513,14 @@ class defaultUploader implements KleejaUploader
             'generatedFileName',
             'fileSize',
             'currentUserId',
-            'fileExtension'
+            'fileExtension',
+            'saveToUserFolder'
         ];
 
 
-        $fileInfo['saveToFolder']  = $current_uploading_folder;
-        $fileInfo['currentUserId'] = $current_user_id;
+        $fileInfo['saveToFolder']     = $current_uploading_folder;
+        $fileInfo['saveToUserFolder'] = $user_folder_id;
+        $fileInfo['currentUserId']    = $current_user_id;
 
 
         if (! isset($_FILES['file_' . $fieldNumber . '_']) && isset($_FILES['file'][$fieldNumber])) {

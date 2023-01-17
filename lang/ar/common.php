@@ -224,6 +224,7 @@ return [
     'FOLDER_CREATED'                              => 'تم إنشاء المجلد',
     'EMPTY_FOLDER_NAME'                           => 'اسم المجلد فارغ',
     'FILES_MOVED'                                 => 'تم نقل الملفات',
+    'UPLOAD_TO_FOLDER'                            => 'رفع إلى ملف',
     'WAIT_LOADING'                                => 'فضلاً انتظر جاري رفع الملفات .....',
     'LOADING'                                     => 'جاري التنفيذ',
     'NOTICECLOSED'                                => 'تنبيه : المركز في وضع الصيانة',

@@ -70,6 +70,8 @@ if (ip('submitr'))
     $uploader->upload();
 }
 
+//Folders tree
+$TO_FOLDER = generateFoldersSelectOptions(0,1);
 
 //file input fields
 $FILES_NUM_LOOP = [];

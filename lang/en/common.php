@@ -224,6 +224,7 @@ return [
     'FOLDER_CREATED'                           => 'Folder has been created',
     'EMPTY_FOLDER_NAME'                        => 'Folder name is empty',
     'FILES_MOVED'                              => 'Files has been moved',
+    'UPLOAD_TO_FOLDER'                         => 'Upload to folder',
     'NO_FILE_USER'                             => 'No files were found in the account!',
     'SHOWFILESBYIP'                            => 'Show files by IP',
     'WAIT_LOADING'                             => 'Please wait, the files are being uploaded to the server...',

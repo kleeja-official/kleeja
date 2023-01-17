@@ -89,6 +89,18 @@
 
                         </LOOP>
 
+						<IF NAME="userinfo.id != '-1'">
+							<div class="input-group mb-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text text-white bg-primary border-primary"><label for="to_folder" class="mb-0">{lang.UPLOAD_TO_FOLDER}</label></div>
+								</div>
+								<select class="form-control" id="to_folder" name="to_folder">
+									<option disabled selected>--</option>
+									{TO_FOLDER}
+								</select>
+							</div>
+						</IF>
+
                         <div>
                             <br>
                             <div class="agree text-muted"><small>{terms_msg}</small></div>
@@ -236,5 +248,32 @@
         return false;
     }
     
+	let select = document.getElementById("to_folder");
+    let options = select.options;
+    let changed = false;
+    
+    select.addEventListener("mousedown", function() {
+      changed = false;
+    });
+    
+    select.addEventListener("mouseup", function() {
+      if (!changed) {
+        for (let i = 0; i < options.length; i++) {
+          if (options[i].hasAttribute("data-default")) {
+            options[i].textContent = options[i].getAttribute("data-default");
+          }
+        }
+      }
+    });
+    
+    select.addEventListener("change", function() {
+      let selectedOption = select.options[select.selectedIndex];
+      if (selectedOption.hasAttribute("data-text")) {
+        selectedOption.textContent = selectedOption.getAttribute("data-text");
+      } else if (selectedOption.hasAttribute("data-default")) {
+        selectedOption.textContent = selectedOption.getAttribute("data-default");
+      }
+      changed = true;
+    });
 
 </script>
