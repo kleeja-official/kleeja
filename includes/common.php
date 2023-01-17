@@ -47,6 +47,7 @@ if (! file_exists(PATH . KLEEJA_CONFIG_FILE))
 
 //there is a config
 require_once PATH . KLEEJA_CONFIG_FILE;
+$customadminpath = $customadminpath ?? 'admin';
 
 
 //admin files path
@@ -191,6 +192,24 @@ include PATH . 'includes/FetchFile.php';
 
 if (defined('IN_ADMIN'))
 {
+    $currentDirectoryPath = dirname($_SERVER['PHP_SELF']);
+    $currentDirectoryPathParts = explode('/', $currentDirectoryPath);
+    $currentDir = array_pop($currentDirectoryPathParts);
+    $adminDirErrorMsg = '';
+    if ($customadminpath == 'admin' && $currentDir != $customadminpath) {
+        $adminDirErrorMsg = 'You are trying to access the admin area through a directory that is not configured. Please either revert to the default admin directory name, or see our documentation for customizing the admin directory.';
+    } else {
+        if ($currentDir != $customadminpath) {
+            $adminDirErrorMsg = 'You are trying to access the admin area through a directory different from the one configured. Please refer to the Customize Administrator\'s Guide documentation for instructions on how to update it.';
+        } else {
+            if ($customadminpath != 'admin' && is_dir(PATH . 'admin')) {
+                $adminDirErrorMsg = 'You are trying to access the admin area through a custom directory, but we also detected that there is a default directory \'admin\'. This may indicate that files from a recent update were uploaded to the default admin path location instead of the custom location, resulting in these files becoming outdated. Please make sure your custom admin folder contains the latest files, and delete the default admin directory to continue.';
+            }
+        }
+    }
+    if ($adminDirErrorMsg) {
+        kleeja_show_error('', 'Critical Error', $adminDirErrorMsg);
+    }
     include PATH . 'includes/functions_adm.php';
 }
 
@@ -239,7 +258,7 @@ $config = array_merge($config, (array) $d_groups[$usrcp->group_id()]['configs'])
 
 
 //admin path
-define('ADMIN_PATH', rtrim($config['siteurl'], '/') . '/admin/index.php');
+define('ADMIN_PATH', rtrim($config['siteurl'], '/') . '/'. $customadminpath .'/index.php');
 
 
 //no tpl caching in dev stage
@@ -330,10 +349,10 @@ define('ACP_STYLE_NAME', 'Masmak');
 $STYLE_PATH                         = $config['siteurl'] . 'styles/' . (trim($config['style_depend_on']) == '' ? $config['style'] : $config['style_depend_on']) . '/';
 $THIS_STYLE_PATH                    = $config['siteurl'] . 'styles/' . $config['style'] . '/';
 $THIS_STYLE_PATH_ABS                = PATH . 'styles/' . $config['style'] . '/';
-$STYLE_PATH_ADMIN                   = $config['siteurl'] . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME : ACP_STYLE_NAME) . '/';
-$STYLE_PATH_ADMIN_ABS               = PATH . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME . '/' : ACP_STYLE_NAME . '/');
-$DEFAULT_PATH_ADMIN_ABS             = PATH . 'admin/' . ACP_STYLE_NAME . '/';
-$DEFAULT_PATH_ADMIN                 = $config['siteurl'] . 'admin/' . ACP_STYLE_NAME . '/';
+$STYLE_PATH_ADMIN                   = $config['siteurl'] . $customadminpath . '/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME : ACP_STYLE_NAME) . '/';
+$STYLE_PATH_ADMIN_ABS               = PATH . $customadminpath . '/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME . '/' : ACP_STYLE_NAME . '/');
+$DEFAULT_PATH_ADMIN_ABS             = PATH . $customadminpath . '/' . ACP_STYLE_NAME . '/';
+$DEFAULT_PATH_ADMIN                 = $config['siteurl'] . $customadminpath . '/' . ACP_STYLE_NAME . '/';
 
 
 //get languge of common
