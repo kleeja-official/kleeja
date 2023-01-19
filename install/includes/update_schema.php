@@ -34,5 +34,7 @@ $update_schema[9]['sql'] = [
 // ];
 
 $update_schema[10]['sql'] = [
-    'about_files'   => "ALTER TABLE `{$dbprefix}files` ADD `about` LONGTEXT NULL DEFAULT NULL AFTER `real_filename`;",
+    'folders_table'   => "CREATE TABLE `{$dbprefix}folders` (`id` int(11) unsigned NOT NULL auto_increment PRIMARY KEY, `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '', `parent` int(11) unsigned NOT NULL DEFAULT '0', `user` int(11)  NOT NULL DEFAULT '-1', `time` int(11) unsigned NOT NULL DEFAULT '0', KEY `name` (`name`(300)), KEY `user` (`user`), KEY `time` (`time`)) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
+    'about_files'     => "ALTER TABLE `{$dbprefix}files` ADD `about` LONGTEXT NULL DEFAULT NULL AFTER `real_filename`;",
+    'files_folder_id' => "ALTER TABLE `{$dbprefix}files` ADD `fld_id` int(11) unsigned NOT NULL DEFAULT '0' AFTER `real_filename`;",
 ];
