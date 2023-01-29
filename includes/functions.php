@@ -25,7 +25,7 @@ function kleeja_detecting_bots()
     global $SQL, $dbprefix, $config;
 
     // get information ..
-    $agent    = $SQL->escape($_SERVER['HTTP_USER_AGENT']);
+    $agent    = $SQL->escape($_SERVER['HTTP_USER_AGENT'] ?? '');
     $time     = time();
 
     //for stats
