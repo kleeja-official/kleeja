@@ -131,6 +131,28 @@
         </IF>
 </div>
 <script>
+	function copyText(elementId) {
+		const copyText = document.getElementById(elementId);
+		copyText.select();
+		document.execCommand("copy");
+		
+		// Show tooltip
+		const tooltip = document.createElement("div");
+		tooltip.innerHTML = "Copied!";
+		tooltip.style.position = "fixed";
+		tooltip.style.bottom = "10px";
+		tooltip.style.right = "10px";
+		tooltip.style.backgroundColor = "lightgreen";
+		tooltip.style.padding = "10px";
+		tooltip.style.borderRadius = "5px";
+		document.body.appendChild(tooltip);
+		
+		// Remove tooltip after 3 seconds
+		setTimeout(function() {
+			document.body.removeChild(tooltip);
+		}, 3000);
+    }
+	
     function convertSize(size) {
         if (size > 1024 * 1024 * 1024) {
             size = Math.round(size / (1024 * 1024 * 1024) * 10) / 10 + " Gb";

@@ -10,6 +10,7 @@
     <div class="form-group w-100">
             <label for="thumb">{b_title}</label>
             <textarea id="thumb" readonly="readonly"  rows="2" cols="40" class="form-control" tabindex="1">[url={b_url_link}][img]{b_img_link}[/img][/url]</textarea>
+            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="copyText('thumb')">Copy</button>
     </div>
 
 <!-- END image_thumb -->
@@ -21,16 +22,19 @@
     <div class="form-group w-100">
         <label for="image1">{b_title}</label>
         <textarea id="image1" readonly="readonly" rows="1" cols="40" class="form-control" tabindex="2">{b_url_link}</textarea>
+        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="copyText('image1')">Copy</button>
     </div>
 
     <div class="form-group w-100">
         <label for="imageBBC">{b_bbc_title}</label>
         <textarea id="imageBBC" readonly="readonly" rows="2" cols="40" class="form-control" tabindex="3">[url={siteurl}][img]{b_url_link}[/img][/url]</textarea>
+        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="copyText('imageBBC')">Copy</button>
     </div>
 
     <div class="form-group w-100">
         <label for="imageHTML">HTML</label>
         <textarea id="imageHTML" readonly="readonly" rows="4" cols="40" class="form-control" tabindex="4">&lt;a href=&quot;{siteurl}&quot; target=&quot;_blank&quot; title=&quot;{siteurl}&quot;&gt;&lt;img src=&quot;{b_url_link}&quot; border=&quot;0&quot; alt=&quot;{b_url_link}&quot; /&gt;&lt;/a&gt;</textarea>
+        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="copyText('imageHTML')">Copy</button>
     </div>
 <!-- END image -->        
 
@@ -41,11 +45,13 @@
     <div class="form-group w-100">
         <label for="file1">{b_title}</label>
         <textarea id="file1" readonly="readonly" rows="2" cols="40" class="form-control" tabindex="5">{b_url_link}</textarea>
+        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="copyText('file1')">Copy</button>
     </div>
 
     <div class="form-group w-100">
         <label for="fileBBC">{b_bbc_title}</label>
         <textarea id="fileBBC" readonly="readonly" rows="2" cols="40" class="form-control" tabindex="6">[url={b_url_link}]{b_url_link}[/url]</textarea>
+        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="copyText('fileBBC')">Copy</button>
     </div>
 
 <!-- END file -->
@@ -58,6 +64,7 @@
     <div class="form-group w-100">
         <label for="delCode">{b_title}</label>
         <textarea id="delCode" readonly="readonly" rows="2" cols="40" class="form-control" tabindex="7">{b_code_link}</textarea>
+        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="copyText('delCode')">Copy</button>
     </div>
 
 <!-- END del_file_code -->
