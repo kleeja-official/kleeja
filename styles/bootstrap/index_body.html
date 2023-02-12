@@ -131,8 +131,9 @@
         </IF>
 </div>
 <script>
-	function copyText(elementId) {
-		const copyText = document.getElementById(elementId);
+	function copyText(e) {
+		const button = e.target;
+		const copyText = button.closest('.form-group').querySelector('textarea');
 		copyText.select();
 		document.execCommand("copy");
 		
