@@ -55,7 +55,7 @@ class usrcp
     }
 
     //now our table, normal user system
-    public function normal($name, $pass, $hashed = false, $expire, $loginadm = false)
+    public function normal($name, $pass, $expire, $hashed = false, $loginadm = false)
     {
         global $SQL, $dbprefix, $config, $userinfo;
 
