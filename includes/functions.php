@@ -969,7 +969,7 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
             foreach ($lang as $index=>$current_lang) {
                 $lang[$index] = $SQL->escape($lang[$index]);
             }
-            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $lang) . "')";
+            $lang_sql = "(lang_id = '" . implode("' OR lang_id = '", $lang) . "')";
         } else {
             $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
         }
