@@ -136,23 +136,22 @@
 		const copyText = button.closest('.form-group').querySelector('textarea');
 		copyText.select();
 		document.execCommand("copy");
-		
-		// Show tooltip
-		const tooltip = document.createElement("div");
-		tooltip.innerHTML = "Copied!";
-		tooltip.style.position = "fixed";
-		tooltip.style.bottom = "10px";
-		tooltip.style.right = "10px";
-		tooltip.style.backgroundColor = "lightgreen";
-		tooltip.style.padding = "10px";
-		tooltip.style.borderRadius = "5px";
-		document.body.appendChild(tooltip);
-		
-		// Remove tooltip after 3 seconds
+
+		// Store original button text
+		const originalButtonText = button.textContent;
+
+		// Disable button while text is being copied
+		button.disabled = true;
+
+		// Change button text to "Copied!"
+		button.textContent = "✔️";
+
+		// Wait for 3 seconds and then change button text back to original
 		setTimeout(function() {
-			document.body.removeChild(tooltip);
+			button.textContent = originalButtonText;
+			button.disabled = false;
 		}, 3000);
-    }
+	}
 	
     function convertSize(size) {
         if (size > 1024 * 1024 * 1024) {
@@ -217,7 +216,6 @@
 			self.humanSize = humanSize;
 			let newHTML = humanSent + " / " + humanSize + " (" + percent.toFixed(2) + "%) complete";
 			stats.innerHTML = newHTML;
-			console.log(uploadSpeed);
         };
 
         xhttp.onreadystatechange = function (e) {
@@ -241,6 +239,19 @@
                 });
                 html += "</ul>";
                 speed.insertAdjacentHTML("afterend", html);
+				
+                // Add buttons after the new textareas
+                const formGroups = document.querySelectorAll(".form-group");
+                formGroups.forEach(formGroup => {
+                    const textarea = formGroup.querySelector("textarea");
+                    if (textarea) {
+                        const button = document.createElement("button");
+                        button.innerHTML = "📋";
+                        button.classList.add("btn", "btn-primary", "btn-sm", "mt-2");
+                        button.addEventListener("click", copyText);
+                        textarea.insertAdjacentElement("afterend", button);
+                    }
+                });
             }
             else if (this.readyState == 4 && this.status != 200)
     		{
