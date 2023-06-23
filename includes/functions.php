@@ -250,11 +250,7 @@ function send_mail($to, $body, $subject, $fromAddress, $fromName, $bcc = '')
     $body = str_replace(["\n", "\0"], ["\r\n", ''], $body);
 
     // Change the line breaks used in the headers according to OS
-    if (strtoupper(substr(PHP_OS, 0, 3)) == 'MAC')
-    {
-        $headers = str_replace("\r\n", "\r", $headers);
-    }
-    elseif (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN')
+    if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN' && version_compare(PHP_VERSION, '8.0.0', '<'))
     {
         $headers = str_replace("\r\n", "\n", $headers);
     }
@@ -698,7 +694,7 @@ function get_config($name)
 
     $result       = $SQL->build($query);
     $v            = $SQL->fetch($result);
-    $return       = $v['value'];
+    $return       = isset($v['value']) ? $v['value'] : NULL;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     return $return;
@@ -968,10 +964,14 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     if (! empty($lang))
     {
-        $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
         if(is_array($lang))
         {
-            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $SQL->escape($lang)) . "')";
+            foreach ($lang as $index=>$current_lang) {
+                $lang[$index] = $SQL->escape($lang[$index]);
+            }
+            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $lang) . "')";
+        } else {
+            $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
         }
 
         $delete_query['WHERE'] .=  (empty($delete_query['WHERE']) ? '' : ' AND ') . $lang_sql;

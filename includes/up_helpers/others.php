@@ -302,14 +302,14 @@ function user_is_flooding($user_id = '-1')
     }
 
     //if the value is zero (means that the function is disabled) then return false immediately
-    if (($user_id == '-1' && $config['guestsectoupload'] == 0) || $user_id != '-1' && $config['usersectoupload'] == 0)
+    if ($config['usersectoupload'] == 0)
     {
         return false;
     }
 
     //In my point of view I see 30 seconds is not bad rate to stop flooding ..
     //even though this minimum rate sometime isn't enough to protect Kleeja from flooding attacks
-    $time = time() - ($user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']);
+    $time = time() - $config['usersectoupload'];
 
     $query = [
         'SELECT'          => 'f.time',

@@ -192,7 +192,7 @@ break;
 //toggle admin start boxes
 case 'toggle_start_box':
 
-    if (! kleeja_check_form_key_get('adm_start_actions', 3600))
+    if (! kleeja_check_form_key_get('adm_start_actions'))
     {
         header('HTTP/1.1 405 Method Not Allowed');
         $adminAjaxContent = $lang['INVALID_FORM_KEY'];
@@ -200,7 +200,7 @@ case 'toggle_start_box':
     else
     {
         $items = explode(':', $config['hidden_start_boxes']);
-        $items = array_filter($items);
+        $new_items = $items = array_filter($items);
 
         $name = g('name');
         $hide = g('toggle', 'int') == 1;
@@ -211,7 +211,6 @@ case 'toggle_start_box':
         }
         elseif ($hide)
         {
-            $new_items   = $items;
             $new_items[] = $name;
         }
 

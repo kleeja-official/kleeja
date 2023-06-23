@@ -47,55 +47,48 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     //if there is imagick lib, then we should use it
     if (function_exists('phpversion') && phpversion('imagick'))
     {
+        $ext = strtolower(trim($ext));
+
+        if (empty($ext))
+        {
+            $ext = strtolower(preg_replace('/^.*\./', '', $source_path));
+        }
+
         helper_thumb_imagick($source_path, $ext, $dest_image, $dw, $dh);
         return null;
     }
 
-    //get file info
-    list($source_width, $source_height, $source_type) = [false, false, false];
-
-    if (function_exists('getimagesize'))
-    {
-        list($source_width, $source_height, $source_type) = getimagesize($source_path);
-    }
-
-    if (! function_exists('imagecreatefromjpeg'))
+    if (! function_exists('imagecreatefromjpeg') || ! function_exists('getimagesize'))
     {
         return null;
     }
 
-    $source_gdim = null;
-
-    $ext = strtolower(trim($ext));
-
-    if (empty($ext))
+    //get file info
+    list($source_width, $source_height, $source_type) = getimagesize($source_path);
+    
+    $source_gdim = false;
+    
+    switch ($source_type)
     {
-        $ext = strtolower(preg_replace('/^.*\./', '', $source_path));
-    }
-
-    switch ($ext)
-    {
-        case 'gif':
+        case IMAGETYPE_GIF:
             $source_gdim = imagecreatefromgif($source_path);
 
             break;
 
-        case 'jpg':
-        case 'jpeg':
+        case IMAGETYPE_JPEG:
             $source_gdim = imagecreatefromjpeg($source_path);
 
             break;
 
-        case 'png':
+        case IMAGETYPE_PNG:
             $source_gdim = imagecreatefrompng($source_path);
 
             break;
 
-        case 'bmp':
-            if (! defined('BMP_CLASS_INCLUDED'))
+        case IMAGETYPE_BMP:
+            if (! function_exists('imagecreatefrombmp'))
             {
                 include dirname(__file__) . '/BMP.php';
-                define('BMP_CLASS_INCLUDED', true);
             }
 
             $source_gdim = imagecreatefrombmp($source_path);
@@ -103,8 +96,10 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
             break;
     }
 
-    $source_width  = ! $source_width ? imagesx($source_gdim) : $source_width;
-    $source_height = ! $source_height ? imagesy($source_gdim) : $source_height;
+    if (! $source_gdim)
+    {
+        return null;
+    }
 
     $source_aspect_ratio  = $source_width / $source_height;
     $desired_aspect_ratio = $dw           / $dh;
@@ -173,9 +168,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
 
         default:
             // Unsupported format
-        $return = false;
-
-        break;
+            $return = false;
     }
 
     @imagedestroy($desired_gdim);

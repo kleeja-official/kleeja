@@ -367,7 +367,7 @@ class defaultUploader implements KleejaUploader
         if (! user_can('enter_acp') && user_is_flooding($current_user_id)) {
             $this->addErrorMessage(sprintf(
                 $lang['YOU_HAVE_TO_WAIT'],
-                $current_user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']
+                $config['usersectoupload']
             ));
             return;
         }
@@ -514,7 +514,8 @@ class defaultUploader implements KleejaUploader
         }
 
         // get the extension of file
-        $fileInfo['fileExtension'] = strtolower(array_pop(explode('.', $fileInfo['originalFileName'])));
+        $originalFileName = explode('.', $fileInfo['originalFileName']);
+        $fileInfo['fileExtension'] = strtolower(array_pop($originalFileName));
 
 
         // them the size
