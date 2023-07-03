@@ -247,8 +247,8 @@
         xhttp.send(formd);
         return false;
     }
-    
-	let select = document.getElementById("to_folder");
+    <IF NAME="userinfo.id != '-1'">
+    let select = document.getElementById("to_folder");
     let options = select.options;
     let changed = false;
     
@@ -275,5 +275,5 @@
       }
       changed = true;
     });
-
+    </IF>
 </script>
