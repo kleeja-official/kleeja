@@ -1003,3 +1003,39 @@ function shorten_text($text, $until = 30)
 
     return $return;
 }
+
+/**
+ * Generate Folders Tree as Select Options
+ *
+ * @param  int    $parent
+ * @param  int    $indent
+ * @return string string select options html
+ */
+function generateFoldersSelectOptions($parent, $indent) {
+    global $SQL,$usrcp,$dbprefix;
+    $return = '';
+    
+    if($parent == 0) {
+        $return .= "<option value='" . 0 . "'>/</option>";
+    }
+    
+    // Query the database to get all folders with the given parent
+    $query = [
+        'SELECT'         => 'd.id, d.parent, d.name, d.user, d.time',
+        'FROM'           => "{$dbprefix}folders d",
+        'WHERE'          => 'd.user=' . $usrcp->id() . ' AND d.parent=' . $parent
+    ];
+    $folders             = $SQL->build($query);
+
+    // Iterate through the folders
+    foreach ($folders as $folder) {
+        // Print the folder name as an option
+        $option_text = str_repeat('&nbsp;', $indent).'└' . $folder['name'];
+        $return .= "<option value='" . $folder['id'] . "' data-default='".$option_text."' data-text='".$folder['name']."'>".$option_text."</option>";
+        
+        // Recursively call this function to add options for any subfolders
+        $return .= generateFoldersSelectOptions($folder['id'], $indent + 1);
+    }
+
+    return $return;
+}

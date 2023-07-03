@@ -81,15 +81,15 @@ $config_values[] = ['thmb_dims', '100*100', '', 0, 0, 0];
 $config_values[] = ['style', 'bootstrap', '', 0, '0', 0, 0];
 $config_values[] = ['new_version', '', '', 0, 0, 0];
 $config_values[] = ['db_version', KLEEJA_DB_VERSION, '', 0, 0, 0];
-$config_values[] = ['last_online_time_update', time(), '', 0, 0, 1];
-$config_values[] = ['klj_clean_files_from', '0', '', 0, 0, 1];
+$config_values[] = ['last_online_time_update', time(), '', 0, 0, 0];
+$config_values[] = ['klj_clean_files_from', '0', '', 0, 0, 0];
 $config_values[] = ['style_depend_on', '', '', 0, 0, 0];
-$config_values[] = ['most_user_online_ever', '', '', 0, 0, 1];
-$config_values[] = ['expand_menu', '0', '', 0, 0, 1];
-$config_values[] = ['firstime', '0', '', 0, 0, 1];
+$config_values[] = ['most_user_online_ever', '', '', 0, 0, 0];
+$config_values[] = ['expand_menu', '0', '', 0, 0, 0];
+$config_values[] = ['firstime', '0', '', 0, 0, 0];
 $config_values[] = ['ftp_info', '', '', 0, 0, 0];
-$config_values[] = ['queue', '', '', 0, 0, 1];
-$config_values[] = ['default_group', '3', '', 0, 0, 1];
+$config_values[] = ['queue', '', '', 0, 0, 0];
+$config_values[] = ['default_group', '3', '', 0, 0, 0];
 
 //
 // Extensions

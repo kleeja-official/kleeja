@@ -99,7 +99,7 @@ if ($current_smt != 'all')
 }
 elseif ($current_smt == 'all')
 {
-    $query['WHERE'] = "type <> 'groups' OR type = ''";
+    $query['WHERE'] = "(type <> 'groups' OR type = '') AND type <> '0'";
 }
 
 $result = $SQL->build($query);

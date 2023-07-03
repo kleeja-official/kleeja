@@ -52,6 +52,7 @@ class KleejaDatabase
         $this->dbprefix        = $dbprefix;
         $this->dbname          = $db_name;
 
+        mysqli_report(MYSQLI_REPORT_OFF);
         $this->connect_id = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
 
         //no error

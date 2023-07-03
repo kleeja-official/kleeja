@@ -98,6 +98,7 @@ CREATE TABLE `{$dbprefix}files` (
   `last_down` int(11) unsigned NOT NULL DEFAULT '0',
   `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
   `real_filename` VARCHAR( 350 ) collate utf8_bin NOT NULL DEFAULT '',
+  `fld_id` int(11) unsigned NOT NULL DEFAULT '0',
   `about` LONGTEXT collate utf8_bin,
   `size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `uploads` int(11) unsigned NOT NULL DEFAULT '0',
@@ -105,7 +106,7 @@ CREATE TABLE `{$dbprefix}files` (
   `type` varchar(20) collate utf8_bin NOT NULL,
   `folder` varchar(100) collate utf8_bin NOT NULL,
   `report` int(11) unsigned  NOT NULL DEFAULT '0',
-  `user` int(11)  NOT NULL default '-1',
+  `user` int(11)  NOT NULL DEFAULT '-1',
   `code_del` varchar(150) collate utf8_bin NOT NULL DEFAULT '',
   `user_ip` VARCHAR( 250 ) NOT NULL DEFAULT '',
   `id_form` VARCHAR( 100 ) NOT NULL DEFAULT 'id',
@@ -115,6 +116,19 @@ CREATE TABLE `{$dbprefix}files` (
   KEY `time` (`time`),
   KEY `last_down` (`last_down`),
   KEY `type` (`type`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+";
+
+$install_sqls['folders'] = "
+CREATE TABLE `{$dbprefix}folders` (
+  `id` int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
+  `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
+  `parent` int(11) unsigned NOT NULL DEFAULT '0',
+  `user` int(11)  NOT NULL DEFAULT '-1',
+  `time` int(11) unsigned NOT NULL DEFAULT '0',
+  KEY `name` (`name`(300)),
+  KEY `user` (`user`),
+  KEY `time` (`time`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 
@@ -217,7 +231,7 @@ CREATE TABLE `{$dbprefix}filters` (
 
 $install_sqls['stats_insert']   = "INSERT INTO `{$dbprefix}stats`  VALUES (0,0,1,0,0," . time() . ",0,0,0,0,'',0,0,0,0,'','','','')";
 $install_sqls['users_insert']   = "INSERT INTO `{$dbprefix}users` (`id`,`name`,`group_id`,`password`,`password_salt`,`mail`,`founder`,`clean_name`) VALUES (1,'" . $user_name . "', 1, '" . $user_pass . "','" . $user_salt . "', '" . $user_mail . "', 1,'" . $clean_name . "')";
-$install_sqls['TeamMsg_insert'] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" . $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) . "', '" . $SQL->escape($lang['KLEEJA_TEAM_MSG_TEXT']) . "','info@kleeja.net', " . time() . ", '127.0.0.1')";
+$install_sqls['TeamMsg_insert'] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" . $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) . "', '" . $SQL->real_escape(nl2br($lang['KLEEJA_TEAM_MSG_TEXT'])) . "','info@kleeja.net', " . time() . ", '127.0.0.1')";
 $install_sqls['groups_insert']  = "INSERT INTO `{$dbprefix}groups` (`group_id`, `group_name`, `group_is_default`, `group_is_essential`) VALUES
 (1, '{lang.ADMINS}', 0, 1),
 (2, '{lang.GUESTS}', 0, 1),

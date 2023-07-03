@@ -250,11 +250,7 @@ function send_mail($to, $body, $subject, $fromAddress, $fromName, $bcc = '')
     $body = str_replace(["\n", "\0"], ["\r\n", ''], $body);
 
     // Change the line breaks used in the headers according to OS
-    if (strtoupper(substr(PHP_OS, 0, 3)) == 'MAC')
-    {
-        $headers = str_replace("\r\n", "\r", $headers);
-    }
-    elseif (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN')
+    if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN' && version_compare(PHP_VERSION, '8.0.0', '<'))
     {
         $headers = str_replace("\r\n", "\n", $headers);
     }
@@ -384,6 +380,60 @@ function kleeja_unlink($filePath, $cache_file = false)
     }
 
     return false;
+}
+
+/**
+ * Try to get folder childs id's.
+ * @param  int $folder_id
+ */
+function kleeja_folder_childs($folder_id){
+    global $SQL,$dbprefix;
+    $query = [
+         'SELECT' => 'GROUP_CONCAT(id) as ids',
+         'FROM' => "{$dbprefix}folders",
+         'WHERE' => 'parent='.$folder_id,
+         'GROUP BY' => 'parent'
+        ];
+    $result = $SQL->build($query);
+    $num_rows = $SQL->num_rows($result);
+    if(!$num_rows){
+        return [];
+    }else{
+        $narr= [];
+        $arr = $SQL->fetch($result);
+        $arr = explode(',',$arr['ids']);
+        foreach($arr as $fld_id){
+            $narr[] = $fld_id;
+            $narr   = array_merge($narr,kleeja_folder_childs($fld_id));
+        }
+        return $narr;
+    }
+}
+
+/**
+ * check destFolder is chilf of srcFolder.
+ * @param  int $srcFolderId
+ * @param  int $destFolderId
+ */
+function isChildFolder($srcFolderId, $destFolderId) {
+    global $SQL,$dbprefix,$usrcp;
+    $query = [
+        'SELECT'         => 'd.id, d.parent',
+        'FROM'           => "{$dbprefix}folders d",
+        'WHERE'          => 'd.user=' . $usrcp->id() . ' AND d.id=' . $destFolderId
+    ];
+    $result             = $SQL->build($query);
+    if($SQL->num_rows($result) == 0){
+        return false;
+    }
+    $row = $SQL->fetch_array($result);
+    if ($row['parent'] == $srcFolderId) {
+        return true;
+    } else if ($row['parent'] == 0) {
+        return false;
+    } else {
+        return isChildFolder($srcFolderId, $row['parent']);
+    }
 }
 
 /**
@@ -698,7 +748,7 @@ function get_config($name)
 
     $result       = $SQL->build($query);
     $v            = $SQL->fetch($result);
-    $return       = $v['value'];
+    $return       = isset($v['value']) ? $v['value'] : NULL;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     return $return;
@@ -968,10 +1018,14 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
 
     if (! empty($lang))
     {
-        $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
         if(is_array($lang))
         {
-            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $SQL->escape($lang)) . "')";
+            foreach ($lang as $index=>$current_lang) {
+                $lang[$index] = $SQL->escape($lang[$index]);
+            }
+            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $lang) . "')";
+        } else {
+            $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
         }
 
         $delete_query['WHERE'] .=  (empty($delete_query['WHERE']) ? '' : ' AND ') . $lang_sql;

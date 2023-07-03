@@ -253,6 +253,12 @@ elseif ($current_smt == '')
     {
         //get search filter
         $filter            = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
+        
+        if (! $filter)
+        {
+            kleeja_admin_err($lang['ERROR_TRY_AGAIN'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=h_search', 1);
+        }
+        
         $deletelink        = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&deletefiles=' . g('search_id');
         $is_search         = true;
         $query['WHERE']    = build_search_query(unserialize(htmlspecialchars_decode($filter['filter_value'])));
@@ -260,6 +266,10 @@ elseif ($current_smt == '')
     elseif (isset($_REQUEST['last_visit']))
     {
         $query['WHERE']    = 'f.time > ' . intval($_REQUEST['last_visit']);
+    }
+    else
+    {
+        $do_not_query_total_files = true;
     }
 
     //to-be-deleted
@@ -269,20 +279,12 @@ elseif ($current_smt == '')
     {
         $query['ORDER BY'] = 'f.' . $SQL->escape($_REQUEST['order_by']);
     }
-    else
-    {
-        $do_not_query_total_files = true;
-    }
 
     if (! ig('search_id'))
     {
         //display files or display pics and files only in search
         $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
         $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
-    }
-    else
-    {
-        $do_not_query_total_files = false;
     }
 
 

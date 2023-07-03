@@ -184,7 +184,6 @@ return [
     'ADM_UNWANTED_FILES'                       => 'You seem to have upgraded from a previous version, and because some file names are different now, you\'ll notice duplicated buttons in control panel. </ br> to solve this, remove all the files in "includes/adm" directory and re-upload them.',
     'HTML_URLS_ENABLED_NO_HTCC'                => 'you have enabled the rewrite URLs, but you seem to have forgot to rename .htaccess.txt in Kleeja\'s root directory to ".htaccess", however, if you don\'t know what I\'m talking about, go ask for Kleeja\'s support or simply disable the rewrite urls feature.',
     'PLUGIN_CONFIRM_ADD'                       => 'Caution: plugins make changes to Kleeja functionality, and they could be harmful at times. so be sure to check the plugin source and make sure that it is an official Kleeja plugin.',
-    'LOADING'                                  => 'Loading',
     'WELCOME'                                  => 'Welcome',
     'ENABLE_CAPTCHA'                           => 'Enable Captcha in Kleeja',
     'NO_THUMB_FOLDER'                          => 'It seems you enabled Thumbs but in same time the folder %s does not exist! create it.',
