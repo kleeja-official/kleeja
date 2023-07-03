@@ -75,6 +75,9 @@ if (
                 $ERRORS[] = $lang['INVALID_FORM_KEY'];
             }
 
+            is_array($plugin_run_result = Plugins::getInstance()->run('admin_login_submit', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+
             if (empty($ERRORS))
             {
                 if ($f = $usrcp->data(p('lname'), p($pass_field), false, 3600*6, true))
@@ -97,8 +100,6 @@ if (
                     $_SESSION['SHOW_CAPTCHA'] = function_exists('gd_info') && ! defined('STOP_CAPTCHA');
                 }
             }
-
-			is_array($plugin_run_result = Plugins::getInstance()->run('admin_login_submit_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
             //let's see if there is errors
             if (sizeof($ERRORS))
