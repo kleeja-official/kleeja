@@ -539,7 +539,7 @@ elseif (ig('down') || ig('downf') ||
         $partial_length = $range_end - $range + 1;
         header('HTTP/1.1 206 Partial Content');
         header("Content-Length: $partial_length");
-        header('Content-Range: bytes ' . ($range - $range_end / $size));
+        header("Content-Range: bytes $range-$range_end/$size");
 
         fseek($fp, $range);
     }
