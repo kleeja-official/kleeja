@@ -396,7 +396,7 @@ elseif (ig('down') || ig('downf') ||
     //download process
     $path_file   = ig('thmb') || ig('thmbf') ? "./{$f}/thumbs/{$n}" : "./{$f}/{$n}";
     $chunksize   = 8192;
-    $resuming_on = true;
+    $resuming_on = $config['enable_multipart'] == 1;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('down_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -528,20 +528,29 @@ elseif (ig('down') || ig('downf') ||
     //}
 
     //add multipart download and resume support
-    if (isset($_SERVER['HTTP_RANGE']) && $resuming_on)
+    if (isset($_SERVER['HTTP_RANGE']))
     {
-        list($a, $range)         = explode('=', $_SERVER['HTTP_RANGE'], 2);
-        list($range)             = explode(',', $range, 2);
-        list($range, $range_end) = explode('-', $range, 2);
-        $range                   = round(floatval($range), 0);
-        $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
-
-        $partial_length = $range_end - $range + 1;
-        header('HTTP/1.1 206 Partial Content');
-        header("Content-Length: $partial_length");
-        header('Content-Range: bytes ' . ($range - $range_end / $size));
-
-        fseek($fp, $range);
+        if ($resuming_on)
+        {
+            list($a, $range)         = explode('=', $_SERVER['HTTP_RANGE'], 2);
+            list($range)             = explode(',', $range, 2);
+            list($range, $range_end) = explode('-', $range, 2);
+            $range                   = round(floatval($range), 0);
+            $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
+    
+            $partial_length = $range_end - $range + 1;
+            header('HTTP/1.1 206 Partial Content');
+            header("Content-Length: $partial_length");
+            header("Content-Range: bytes $range-$range_end/$size");
+    
+            fseek($fp, $range);
+        }
+        else
+        {
+            // Respond with a 416 Range Not Satisfiable
+            header('HTTP/1.1 416 Range Not Satisfiable');
+            exit;
+        }
     }
     else
     {
@@ -556,6 +565,9 @@ elseif (ig('down') || ig('downf') ||
     //read and output the file in chunks
     while (! feof($fp) && (! connection_aborted()) && ($bytes_sent < $partial_length))
     {
+        if ($chunksize > ($partial_length - $bytes_sent)) {
+            $chunksize = $partial_length - $bytes_sent;
+        }
         $buffer = fread($fp, $chunksize);
         print($buffer);
         flush();
