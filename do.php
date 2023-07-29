@@ -505,7 +505,11 @@ elseif (ig('down') || ig('downf') ||
 
     //send file headers
     header('Pragma: public');
-    header('Accept-Ranges: bytes');
+    if ($resuming_on) {
+        header('Accept-Ranges: bytes');
+    } else {
+        header('Accept-Ranges: none');
+    }
     header('Content-Description: File Transfer');
 
     //dirty fix
@@ -528,29 +532,27 @@ elseif (ig('down') || ig('downf') ||
     //}
 
     //add multipart download and resume support
-    if (isset($_SERVER['HTTP_RANGE']))
+    if (isset($_SERVER['HTTP_RANGE']) && $resuming_on)
     {
-        if ($resuming_on)
-        {
-            list($a, $range)         = explode('=', $_SERVER['HTTP_RANGE'], 2);
-            list($range)             = explode(',', $range, 2);
-            list($range, $range_end) = explode('-', $range, 2);
-            $range                   = round(floatval($range), 0);
-            $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
-    
-            $partial_length = $range_end - $range + 1;
-            header('HTTP/1.1 206 Partial Content');
-            header("Content-Length: $partial_length");
-            header("Content-Range: bytes $range-$range_end/$size");
-    
-            fseek($fp, $range);
-        }
-        else
-        {
-            // Respond with a 416 Range Not Satisfiable
-            header('HTTP/1.1 416 Range Not Satisfiable');
+        list($a, $range)         = explode('=', $_SERVER['HTTP_RANGE'], 2);
+        list($range)             = explode(',', $range, 2);
+        list($range, $range_end) = explode('-', $range, 2);
+        $range                   = round(floatval($range), 0);
+        $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
+        
+        if ($range < 0 || $range >= $size || $range > $range_end || $range_end >= $size ) {
+            header('HTTP/1.1 416 Requested Range Not Satisfiable');
+            header("Content-Range: bytes */$size");
+            fclose($fp);
             exit;
         }
+        
+        $partial_length = $range_end - $range + 1;
+        header('HTTP/1.1 206 Partial Content');
+        header("Content-Length: $partial_length");
+        header("Content-Range: bytes $range-$range_end/$size");
+
+        fseek($fp, $range);
     }
     else
     {
@@ -565,9 +567,6 @@ elseif (ig('down') || ig('downf') ||
     //read and output the file in chunks
     while (! feof($fp) && (! connection_aborted()) && ($bytes_sent < $partial_length))
     {
-        if ($chunksize > ($partial_length - $bytes_sent)) {
-            $chunksize = $partial_length - $bytes_sent;
-        }
         $buffer = fread($fp, $chunksize);
         print($buffer);
         flush();
