@@ -214,15 +214,11 @@ while ($row=$SQL->fetch_array($result))
             {
                 if (! file_exists(PATH . '.htaccess') && file_exists(PATH . 'htaccess.txt') && function_exists('rename'))
                 {
-                    rename(PATH . 'htaccess.txt', PATH . '.htaccess');
-
-                    if (! file_exists(PATH . '.htaccess'))
+                    if (! rename(PATH . 'htaccess.txt', PATH . '.htaccess'))
                     {
-                        chmod(PATH . '.htaccess', K_FILE_CHMOD);
+                        chmod(PATH . 'htaccess.txt', K_FILE_CHMOD);
+                        rename(PATH . 'htaccess.txt', PATH . '.htaccess');
                     }
-
-                    //re-do after chmod
-                    rename(PATH . 'htaccess.txt', PATH . '.htaccess');
                 }
             }
         }
