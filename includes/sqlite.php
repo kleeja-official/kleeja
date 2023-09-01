@@ -424,10 +424,10 @@ class KleejaDatabase
         }
 
         list($error_no, $error_msg) = $this->get_error();
-        $error_sql                  = @current($this->debugr[$this->query_num+1]);
+        $error_sql                  = $this->query_num ? @current($this->debugr[$this->query_num+1]) : '';
 
         //some ppl want hide their table names
-        if (! defined('DEV_STAGE')) {
+        if (! defined('DEV_STAGE') && $error_sql != '') {
             $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function ($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_sql);
