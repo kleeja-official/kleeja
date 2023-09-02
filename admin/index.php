@@ -29,6 +29,9 @@ if (! $username)
 {
     is_array($plugin_run_result = Plugins::getInstance()->run('user_not_admin_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     redirect(PATH . 'ucp.php?go=login&return=' . urlencode(ADMIN_PATH . '?cp=' . $go_to));
+}else if(!user_can('enter_acp')){
+    $usrcp->logout_cp();
+    redirect($config['siteurl']);
 }
 
 //get language of admin

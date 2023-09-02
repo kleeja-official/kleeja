@@ -194,8 +194,7 @@ case 'data' :
              || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')))
         {
             echo $lang['EMPTY_FIELDS'];
-            echo $footer_inst;
-
+            echo gettpl('footer.html');
             exit();
         }
 
@@ -203,16 +202,14 @@ case 'data' :
         if (! empty(p('password')) && ! empty(p('password2')) && p('password') != p('password2'))
         {
             echo $lang['PASS_NEQ_PASS2'];
-            echo $footer_inst;
-
+            echo gettpl('footer.html');
             exit();
         }
 
         if (strpos(p('email'), '@') === false)
         {
             echo $lang['WRONG_EMAIL'];
-            echo $footer_inst;
-
+            echo gettpl('footer.html');
             exit();
         }
 

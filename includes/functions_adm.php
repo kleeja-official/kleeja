@@ -193,7 +193,7 @@ function get_filter($item, $filter_type = false, $just_value = false, $get_by = 
 
     if ($just_value)
     {
-        return $v['filter_value'];
+        return $v['filter_value'] ?? '';
     }
 
     return $v;

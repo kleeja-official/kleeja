@@ -92,7 +92,7 @@ if (ig('id') || ig('filename'))
         $name                 = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
         $fusername            = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
         $userfolder           = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
-        $isFileOwnerOfFounder = ($fusername == $usrcp->name() && $usrcp->name()) || $usrcp->get_data('founder')['founder'] == 1;
+        $isFileOwnerOfFounder = ($fusername == $usrcp->name() && $usrcp->name()) || ($usrcp->id() < 1 ? false : $usrcp->get_data('founder')['founder'] == 1);
 
         if (ip('change_file_about') &&  $isFileOwnerOfFounder)
         {
@@ -532,14 +532,14 @@ elseif (ig('down') || ig('downf') ||
     {
         list($a, $range)         = explode('=', $_SERVER['HTTP_RANGE'], 2);
         list($range)             = explode(',', $range, 2);
-        list($range, $range_end) = explode('=', $range);
+        list($range, $range_end) = explode('-', $range, 2);
         $range                   = round(floatval($range), 0);
         $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
 
         $partial_length = $range_end - $range + 1;
         header('HTTP/1.1 206 Partial Content');
         header("Content-Length: $partial_length");
-        header('Content-Range: bytes ' . ($range - $range_end / $size));
+        header("Content-Range: bytes $range-$range_end/$size");
 
         fseek($fp, $range);
     }
