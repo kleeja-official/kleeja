@@ -657,9 +657,6 @@ switch ($case):
                             {
                                 if ($zip->extractTo(PATH . KLEEJA_PLUGINS_FOLDER))
                                 {
-                                    // we dont need the zip file anymore
-                                    kleeja_unlink(PATH . 'cache/' . $plugin_name . '.zip');
-
                                     // uploaded plugin's archive has different name, so we change it
                                     rename(
                                         PATH . KLEEJA_PLUGINS_FOLDER . '/' . trim($zip->getNameIndex(0), '/'),
@@ -667,6 +664,9 @@ switch ($case):
                                     );
 
                                     $zip->close();
+
+                                    // we dont need the zip file anymore
+                                    kleeja_unlink(PATH . 'cache/' . $plugin_name . '.zip');
 
                                     // download or update msg
                                     $adminAjaxContent = '1:::' . sprintf($lang[$is_update ? 'ITEM_UPDATED' : 'ITEM_DOWNLOADED'], $plugin_name);

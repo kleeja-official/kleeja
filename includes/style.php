@@ -194,7 +194,7 @@ class kleeja_style
             $var2   = trim($arr[3]);
 
             //check for type
-            if ($var2[0] != '$' && ! preg_match('/[0-9]/', $var2)) {
+            if (strpos($var2, '$')!==0 && ! preg_match('/[0-9]/', $var2)) {
                 $var2 = '"' . str_replace('"', '\"', $var2) . '"';
             }
 

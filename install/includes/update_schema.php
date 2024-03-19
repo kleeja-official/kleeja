@@ -35,4 +35,5 @@ $update_schema[9]['sql'] = [
 
 $update_schema[10]['sql'] = [
     'about_files'   => "ALTER TABLE `{$dbprefix}files` ADD `about` LONGTEXT NULL DEFAULT NULL AFTER `real_filename`;",
+    'enable_multipart' => "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) SELECT `group_id`, 'enable_multipart', 1 FROM `{$dbprefix}groups`;",
 ];

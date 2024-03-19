@@ -57,7 +57,7 @@ class usrcp
         global $SQL, $dbprefix, $config, $userinfo;
 
         $userinfo = [
-            'id'             => 0,
+            'id'             => -1,
             'group_id'       => 2,
         ];
 
@@ -114,15 +114,6 @@ class usrcp
                     return false;
                 }
 
-                //Avoid dfining constants again for admin panel login
-                if (! $loginadm) {
-                    define('USER_ID', $row['id']);
-                    define('GROUP_ID', $row['group_id']);
-                    define('USER_NAME', $row['name']);
-                    define('USER_MAIL', $row['mail']);
-                    define('LAST_VISIT', $row['last_visit']);
-                }
-
                 //all user fileds info
                 $userinfo = $row;
 
@@ -151,6 +142,9 @@ class usrcp
             unset($pass);
             return true;
         } else {
+            //guest
+            define('USER_ID', $userinfo['id']);
+            define('GROUP_ID', $userinfo['group_id']);
             return false;
         }
     }
@@ -394,27 +388,22 @@ class usrcp
 
             //if not expire
             if (($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at)) && ($expire_at > time())) {
-                if (user_can('enter_acp', $group_id)) {
+                if (! empty($u_info)) {
+                    $userinfo             = unserialize(base64_decode($u_info));
+                    $userinfo['group_id'] = $group_id;
+                    $userinfo['password'] = $hashed_password;
                     $user_data = $this->data($user_id, $hashed_password, true, $expire_at);
-                } else {
-                    if (! empty($u_info)) {
-                        $userinfo             = unserialize(base64_decode($u_info));
-                        $userinfo['group_id'] = $group_id;
-                        $userinfo['password'] = $hashed_password;
-
-                        define('USER_ID', $userinfo['id']);
-                        define('GROUP_ID', $userinfo['group_id']);
-                        define('USER_NAME', $userinfo['name']);
-                        define('USER_MAIL', $userinfo['mail']);
-                        define('LAST_VISIT', $userinfo['last_visit']);
-                        $user_data = true;
-                    }
                 }
             }
 
             if ($user_data == false) {
                 $this->logout();
             } else {
+                define('USER_ID', $userinfo['id']);
+                define('GROUP_ID', $userinfo['group_id']);
+                define('USER_NAME', $userinfo['name']);
+                define('USER_MAIL', $userinfo['mail']);
+                define('LAST_VISIT', $userinfo['last_visit']);
                 return $user_data;
             }
         } else {
