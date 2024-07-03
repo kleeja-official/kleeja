@@ -221,6 +221,7 @@ return [
     'NEW_FOLDER_NAME'                          => 'New Folder Name',
     'CREATE_FOLDER'                            => 'Create Folder',
     'MOVE_FILES'                               => 'Move files',
+    'FOLDER_ALREADY_EXISTS'                    => 'The Folder already exists',
     'FOLDER_CREATED'                           => 'Folder has been created',
     'EMPTY_FOLDER_NAME'                        => 'Folder name is empty',
     'FILES_MOVED'                              => 'Files has been moved',

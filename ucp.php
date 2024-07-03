@@ -351,13 +351,22 @@ switch (g('go'))
 	    //create new folder
         if (ip('create_folder_submit') && $user_himself)
         {
-            $create_folder_name = ip('create_new_folder') ? p('create_new_folder') : false;
+            $create_folder_name = ip('create_new_folder') ? $SQL->escape(p('create_new_folder')) : false;
             if ($create_folder_name)
             {
+                $query_search = [
+                    'SELECT' => '*',
+                    'FROM'   => "{$dbprefix}folders",
+                    'WHERE'  => "name='" . $create_folder_name . "' AND parent=" . $folder_id . " AND user=" . $user_id
+                ];
+                $search_res = $SQL->build($query_search);
+                if ($SQL->num_rows($search_res)>0){
+                    kleeja_err($lang['FOLDER_ALREADY_EXISTS'], '', true, $linkgoto, 2);
+                }
                 $query_create = [
                     'INSERT'       => 'name ,parent, user, time',
                     'INTO'         => "{$dbprefix}folders",
-                    'VALUES'       => "'$create_folder_name', " . $folder_id . ", '$user_id', " . time()
+                    'VALUES'       => "'$create_folder_name', $folder_id, $user_id, " . time()
                 ];
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_create_folder_in_filecp', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
                 $SQL->build($query_create);

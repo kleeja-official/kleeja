@@ -221,6 +221,7 @@ return [
 	'NEW_FOLDER_NAME'           => 'نام پوشه جدید',
 	'CREATE_FOLDER'             => 'یک پوشه ایجاد کنید',
 	'MOVE_FILES'                => 'انتقال فایل',
+	'FOLDER_ALREADY_EXISTS'     => 'پوشه از قبل وجود دارد',
 	'FOLDER_CREATED'            => 'پوشه ایجاد شده است',
 	'EMPTY_FOLDER_NAME'         => 'نام پوشه خالی است',
 	'FILES_MOVED'               => 'فایل ها منتقل شده اند',

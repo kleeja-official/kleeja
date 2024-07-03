@@ -221,6 +221,7 @@ return [
     'NEW_FOLDER_NAME'                             => 'اسم المجلد الجديد',
     'CREATE_FOLDER'                               => 'أنشئ مجلد',
     'MOVE_FILES'                                  => 'نقل الملفات',
+    'FOLDER_ALREADY_EXISTS'                       => 'المجلد موجود بالفعل',
     'FOLDER_CREATED'                              => 'تم إنشاء المجلد',
     'EMPTY_FOLDER_NAME'                           => 'اسم المجلد فارغ',
     'FILES_MOVED'                                 => 'تم نقل الملفات',
