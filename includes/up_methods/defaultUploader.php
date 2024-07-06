@@ -505,7 +505,7 @@ class defaultUploader implements KleejaUploader
      */
     public function uploadTypeFile($fieldNumber, $current_uploading_folder, $current_user_id, $user_folder_id)
     {
-        global $config, $lang;
+        global $config, $lang, $SQL, $dbprefix;
 
         $fileInfo = [
             'saveToFolder',
@@ -540,6 +540,25 @@ class defaultUploader implements KleejaUploader
         // get the extension of file
         $originalFileName = explode('.', $fileInfo['originalFileName']);
         $fileInfo['fileExtension'] = strtolower(array_pop($originalFileName));
+
+
+        // select query
+        $select_query = [
+            'SELECT'         => 'f.id',
+            'FROM'           => "{$dbprefix}files f",
+            'WHERE'          => "f.user=" . $current_user_id . " AND f.real_filename='" . $fileInfo['originalFileName'] . "' AND f.fld_id=" . $user_folder_id
+        ];
+
+
+        // do the query
+        if($SQL->num_rows($SQL->build($select_query))) {
+            $fileInfo['originalFileName'] = change_filename_decoding(
+                $fileInfo['originalFileName'],
+                $fieldNumber,
+                $fileInfo['fileExtension'],
+                'exists'
+            );
+        }
 
 
         // them the size
