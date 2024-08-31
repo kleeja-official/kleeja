@@ -66,7 +66,7 @@ if (ip('submit'))
     foreach ($del as $key => $id)
     {
         $query    = [
-            'SELECT'           => 'f.id, f.name, f.folder, f.size, f.type',
+            'SELECT'           => 'f.id, f.name, f.folder, f.size, f.type, f.user',
             'FROM'             => "{$dbprefix}files f",
             'WHERE'            => 'f.id = ' . intval($id),
         ];
@@ -96,6 +96,11 @@ if (ip('submit'))
                 $files_num++;
             }
             $sizes += $row['size'];
+
+            //Subtract size from storage of the user
+            if ($row['user'] != -1) {
+                $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-".$row['size']." WHERE id=".$row['user']);
+            }
         }
     }
 
@@ -436,18 +441,18 @@ elseif ($current_smt == 'delete_by_extension')
         $ext = p('selected_extnsion');
 
         $query = [
-            'SELECT' => 'id, name, type, size',
+            'SELECT' => 'id, name, type, size, user',
             'FROM'   => $dbprefix . 'files',
             'WHERE'  => 'type = \'' . $ext . '\''
         ];
 
-        $SQL->build($query);
+        $result = $SQL->build($query);
         $deleted_files = [];
         $fileSizes     = 0;
 
         if ($SQL->num_rows())
         {
-            while ($file = $SQL->fetch())
+            while ($file = $SQL->fetch_array($result))
             {
                 $fileLocation      = PATH . 'uploads/' . $file['name'];
                 $thumbFileLocation = PATH . 'uploads/thumbs/' . $file['name'];
@@ -463,6 +468,11 @@ elseif ($current_smt == 'delete_by_extension')
                 }
                 $fileSizes += $file['size'];
                 $deleted_files[] = $file['id'];
+
+                //Subtract size from storage of the user
+                if ($file['user'] != -1) {
+                    $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-".$file['size']." WHERE id=".$file['user']);
+                }
             }
 
             if (($deletedFileCount = count($deleted_files)) <= 1)
@@ -481,6 +491,7 @@ elseif ($current_smt == 'delete_by_extension')
             $SQL->query($update_stats);
         }
 
+        $SQL->freeresult($result);
         kleeja_admin_info($lang['ADMIN_DELETE_FILE_OK'], true, '', true, $action);
 
         exit;

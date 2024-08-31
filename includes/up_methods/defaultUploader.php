@@ -181,6 +181,19 @@ class defaultUploader implements KleejaUploader
         $SQL->build($update_query);
 
 
+        if ($fileInfo['currentUserId']!=-1)
+        {
+            // update user storage size
+            $update_query = [
+                'UPDATE'       => "{$dbprefix}users",
+                'SET'          => 'storage_size=storage_size+' . intval($fileInfo['fileSize']),
+                'WHERE'        => 'id=' . $fileInfo['currentUserId'],
+            ];
+
+            $SQL->build($update_query);
+        }
+
+
         $this->generateOutputBox($fileInfo);
     }
 
@@ -483,7 +496,7 @@ class defaultUploader implements KleejaUploader
      */
     public function uploadTypeFile($fieldNumber, $current_uploading_folder, $current_user_id)
     {
-        global $config, $lang;
+        global $config, $lang, $remaining_storage;
 
         $fileInfo = [
             'saveToFolder',
@@ -582,6 +595,10 @@ class defaultUploader implements KleejaUploader
                 )
             );
         }
+        elseif ($remaining_storage != -1 && $fileInfo['fileSize'] > $remaining_storage)
+        {
+            $this->addErrorMessage($lang['TOTAL_SIZE_EXCEEDED']);
+        }
         // no errors, so upload it
         else {
             is_array($plugin_run_result = Plugins::getInstance()->run('defaultUploader_uploadTypeFile_2nd', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -591,6 +608,10 @@ class defaultUploader implements KleejaUploader
 
             if ($file) {
                 $this->saveToDatabase($fileInfo);
+                if ($remaining_storage != -1)
+                {
+                    $remaining_storage -= $fileInfo['fileSize'];
+                }
             } else {
                 $this->addErrorMessage(sprintf($lang['CANT_UPLAOD'], $fileInfo['originalFileName']));
             }

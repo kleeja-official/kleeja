@@ -343,6 +343,21 @@ switch (g('go'))
         $start                = $Pager->getStartRow();
 
         $your_fileuser       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $usrcp->id() . '.html' : 'ucp.php?go=fileuser&amp;id=' . $usrcp->id());
+        if($user_himself)
+        {
+            $used_storage        = $userinfo['storage_size'];
+            $max_storage         = $d_groups[$usrcp->group_id()]['configs']['max_storage'];
+            $is_limited          = $max_storage>0;
+            if($is_limited)
+            {
+                $storage_per         = ($used_storage*100)/$max_storage;
+                $storage_per         = round($storage_per, 2);
+                $storage_per         = min($storage_per,100);
+                $max_storage         = readable_size($max_storage);
+            }
+            $used_storage        = readable_size($used_storage);
+            $storage_usage_str   = sprintf($lang['STORAGE_USAGE'], $used_storage, $is_limited ? $max_storage : '∞');
+        }
         $total_pages         = $Pager->getTotalPages();
         $linkgoto            = $config['siteurl'] . (
                                     $config['mod_writer']
@@ -505,6 +520,15 @@ switch (g('go'))
                         ];
 
                         $SQL->build($update_query);
+						
+                        //update storage
+                        $update_query    = [
+                            'UPDATE'       => "{$dbprefix}users",
+                            'SET'          => "storage_size=storage_size-$sizes",
+                            'WHERE'        => "id=$user_id",
+                        ];
+
+                        $SQL->build($update_query);
                     }
 
                     //delete is ok, show msg
@@ -536,6 +560,15 @@ switch (g('go'))
                         $update_query    = [
                             'UPDATE'       => "{$dbprefix}stats",
                             'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                        ];
+
+                        $SQL->build($update_query);
+						
+                        //update storage
+                        $update_query    = [
+                            'UPDATE'       => "{$dbprefix}users",
+                            'SET'          => "storage_size=storage_size-$sizes",
+                            'WHERE'        => "id=$user_id",
                         ];
 
                         $SQL->build($update_query);

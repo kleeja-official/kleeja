@@ -361,7 +361,7 @@ switch ($current_go_case)
             if (ig('sure') && g('sure') == 'ok')
             {
                 $query    = [
-                    'SELECT'   => 'f.id, f.name, f.folder, f.size, f.type',
+                    'SELECT'   => 'f.id, f.name, f.folder, f.size, f.type, f.user',
                     'FROM'     => "{$dbprefix}files f",
                     'WHERE'    => "f.code_del='" . $cd . "'",
                     'LIMIT'    => '1',
@@ -402,6 +402,19 @@ switch ($current_go_case)
                             ];
 
                             $SQL->build($update_query);
+
+                            if ($row['user']!=-1)
+                            {
+                                //update user storage size
+                                $update_query    = [
+                                    'UPDATE'       => "{$dbprefix}users",
+                                    'SET'          => 'storage_size=storage_size-' . $row['size'],
+                                    'WHERE'        => 'id=' . $row['user'],
+                                ];
+
+                                $SQL->build($update_query);
+                            }
+
                             kleeja_info($lang['DELETE_SUCCESFUL']);
                         }
                         else

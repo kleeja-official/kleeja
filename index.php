@@ -62,8 +62,7 @@ if (! $uploader instanceof KleejaUploader) {
 $uploader->setAllowedFileExtensions($d_groups[$userinfo['group_id']]['exts']);
 $uploader->setUploadFieldsLimit($config['filesnum']);
 
-
-
+$remaining_storage = $d_groups[$userinfo['group_id']]['configs']['max_storage']>0 ? $d_groups[$userinfo['group_id']]['configs']['max_storage']-$userinfo['storage_size'] : -1;
 
 if (ip('submitr'))
 {

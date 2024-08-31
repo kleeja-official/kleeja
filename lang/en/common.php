@@ -90,6 +90,8 @@ return [
     'URL'                                  => 'Link',
     'REASON'                               => 'Reason',
     'NO_ID'                                => 'No file selected ..!!',
+    'TOTAL_SIZE_EXCEEDED'                  => 'The total size has been exceeded',
+    'STORAGE_USAGE'                        => '<b>%s</b> of <b>%s</b>',
     'NO_ME300RES'                          => 'The Reason field cannot be more than 300 characters!!',
     'THNX_REPORTED'                        => 'We have received your report, Thank you.',
     'RULES'                                => 'Terms',
@@ -111,6 +113,7 @@ return [
     'IMAGE'                                => 'Image',
     'USERS_ST'                             => 'Total Users',
     'USER'                                 => 'user',
+    'USED_SPACE'                           => 'Used Space',
     'SIZES_ST'                             => 'Total size of uploaded files',
     'LSTDELST'                             => 'Last check for un-downloaded (inactive) files',
 
