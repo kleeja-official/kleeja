@@ -573,7 +573,7 @@ switch ($current_go_case)
         {
             delete_cache('data_stats');
             $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_FILES']);
-            $link_to_go = './admin/?cp=r_repair#!cp=r_repair';
+            $link_to_go = './'.$customadminpath.'/?cp=r_repair#!cp=r_repair';
         }
         else
         {
@@ -604,7 +604,7 @@ switch ($current_go_case)
         {
             delete_cache('data_stats');
             $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_IMAGES']) . ' (' . (! $start ? 0 : $start) . '->' . (! $end  ? '?' : $end) . ')';
-            $link_to_go = './admin/?cp=r_repair#!cp=r_repair';
+            $link_to_go = './'.$customadminpath.'/?cp=r_repair#!cp=r_repair';
         }
         else
         {
