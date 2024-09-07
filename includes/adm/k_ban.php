@@ -101,6 +101,6 @@ if ($update_ban_content)
     }
 }
 
-array_walk($banned_items, function (&$value, &$key) {
+array_walk($banned_items, function (&$value, $key) {
     $value = ['content' => $value, 'del_key' => md5($value), 'id' => $key+1];
 });

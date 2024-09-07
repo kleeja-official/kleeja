@@ -249,10 +249,12 @@ function downloadPlugin(name, nextPlugins) {
                 this.fail();
             }
 
-            setTimeout(function() {
-                var currentPlugin = nextPlugins.shift();
-                downloadPlugin(currentPlugin, nextPlugins);
-            }, 500);
+            if (nextPlugins.length > 0) {
+                setTimeout(function() {
+                    var currentPlugin = nextPlugins.shift();
+                    downloadPlugin(currentPlugin, nextPlugins);
+                }, 500);
+            }
         })
         .fail(function(data) {
             var tryAgainMsg = '{lang.ERROR_TRY_AGAIN}';

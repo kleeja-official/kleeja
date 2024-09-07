@@ -52,6 +52,7 @@ class KleejaDatabase
         $this->dbprefix        = $dbprefix;
         $this->dbname          = $db_name;
 
+        mysqli_report(MYSQLI_REPORT_OFF);
         $this->connect_id = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
 
         //no error
@@ -419,7 +420,7 @@ class KleejaDatabase
         }
 
         list($error_no, $error_msg) = $this->get_error();
-        $error_sql                  = @current($this->debugr[$this->query_num+1]);
+        $error_sql                  = $this->connect_id ? @current($this->debugr[$this->query_num+1]) : '';
 
         //some ppl want hide their table names
         if (! defined('DEV_STAGE')) {

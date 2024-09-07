@@ -197,12 +197,12 @@ if (function_exists('fileperms') && ! defined('KLEEJA_NO_CONFIG_CHECK') && strto
 }
 
 //no htaccess
-if (! file_exists(PATH . $config['foldername'] . '/.htaccess'))
+if (is_dir(PATH . $config['foldername']) && ! file_exists(PATH . $config['foldername'] . '/.htaccess'))
 {
     $ADM_NOTIFICATIONS['htaccess_u'] = ['id' => 'htaccess_u', 'msg_type'=> 'error', 'title'=> $lang['WARN'], 'msg'=> sprintf($lang['NO_HTACCESS_DIR_UP'], $config['foldername'])];
 }
 
-if (! file_exists(PATH . $config['foldername'] . '/thumbs/.htaccess'))
+if (is_dir(PATH . $config['foldername']) && ! file_exists(PATH . $config['foldername'] . '/thumbs/.htaccess'))
 {
     $ADM_NOTIFICATIONS['htaccess_t'] = ['id' => 'htaccess_t', 'msg_type'=> 'error', 'title'=> $lang['WARN'], 'msg'=> sprintf($lang['NO_HTACCESS_DIR_UP_THUMB'], $config['foldername'] . '/thumbs')];
 }
@@ -215,7 +215,7 @@ if ((int) $config['klj_clean_files_from'] > 0)
 }
 
 //if there is no thumbs folder
-if (! file_exists(PATH . $config['foldername'] . '/thumbs') && (int) $config['thumbs_imgs'] != 0)
+if (is_dir(PATH . $config['foldername']) && ! file_exists(PATH . $config['foldername'] . '/thumbs') && (int) $config['thumbs_imgs'] != 0)
 {
     $ADM_NOTIFICATIONS['no_thumbs']  = ['id' => 'no_thumbs', 'msg_type'=> 'info', 'title'=> $lang['NOTE'], 'msg'=> sprintf($lang['NO_THUMB_FOLDER'], PATH . $config['foldername'] . '/thumbs')];
 }
