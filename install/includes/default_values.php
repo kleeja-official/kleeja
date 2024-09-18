@@ -37,6 +37,7 @@ $config_values[] = ['user_system', '1', '<select id=\"user_system\" name=\"user_
 $config_values[] = ['register', '1', '<label>{lang.YES}<input type=\"radio\" id=\"register\" name=\"register\" value=\"1\"  <IF NAME=\"con.register==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"register\" name=\"register\" value=\"0\"  <IF NAME=\"con.register==0\"> checked=\"checked\"</IF> /></label>', 10, 'general', 0, 0];
 $config_values[] = ['enable_userfile', '1', '<label>{lang.YES}<input type=\"radio\" id=\"enable_userfile\" name=\"enable_userfile\" value=\"1\"  <IF NAME=\"con.enable_userfile==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"enable_userfile\" name=\"enable_userfile\" value=\"0\"  <IF NAME=\"con.enable_userfile==0\"> checked=\"checked\"</IF> /></label>', 11, 'groups', 0, 0];
 $config_values[] = ['mod_writer', '0', '<label>{lang.YES}<input type=\"radio\" id=\"mod_writer\" name=\"mod_writer\" value=\"1\"  <IF NAME=\"con.mod_writer==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"mod_writer\" name=\"mod_writer\" value=\"0\"  <IF NAME=\"con.mod_writer==0\"> checked=\"checked\"</IF> /></label>\r\n   [ {lang.MOD_WRITER_EX} ]', 12, 'advanced', 0, 0];
+$config_values[] = ['max_storage', '0', '<input type=\"text\" id=\"max_storage\" name=\"max_storage\" value=\"{con.max_storage}\" size=\"20\" style=\"direction:ltr\" />', 11, 'groups', 0, 0];
 
 // Cookies settings
 $cookie_data     = get_cookies_settings();

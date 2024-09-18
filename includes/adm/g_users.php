@@ -868,7 +868,8 @@ case 'group_data':
             }
         }
 
-        if ($req_group == 2 && in_array($row['name'], ['enable_userfile']))
+        $guest_disallowed_configs = ['enable_userfile', 'max_storage'];
+        if ($req_group == 2 && in_array($row['name'], $guest_disallowed_configs))
         {
             continue;
         }

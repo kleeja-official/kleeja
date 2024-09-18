@@ -102,6 +102,7 @@ return [
     'SEARCH_USERS'                          => 'Search for users',
     'R_IMG_CTRL'                            => 'Image control only',
     'ENABLE_USERFILE'                       => 'Enable users files',
+    'MAX_STORAGE'                           => 'Maximum storage (Bytes)',
     'R_EXTRA'                               => 'Extra Templates',
     'EX_HEADER_N'                           => 'Extra header ... which shows at the bottom of the original header',
     'EX_FOOTER_N'                           => 'Extra footer ... which shows at the top of the original footer',

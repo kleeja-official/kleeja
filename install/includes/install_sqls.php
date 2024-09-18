@@ -87,6 +87,7 @@ CREATE TABLE `{$dbprefix}users` (
   `show_my_filecp` tinyint(1) unsigned NOT NULL default '1',
   `new_password` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '',
   `hash_key` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `storage_size` bigint(20) NOT NULL DEFAULT '0',
   KEY `clean_name` (`clean_name`(300)),
   KEY `group_id` (`group_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

@@ -71,6 +71,11 @@ if (ip('submit'))
             $ids[] = $row['id'];
             $num++;
             $sizes += $row['size'];
+
+            //Subtract size from storage of the user
+            if ($row['user'] != -1) {
+                $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-".$row['size']." WHERE id=".$row['user']);
+            }
         }
 
         $SQL->freeresult($result);
