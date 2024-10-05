@@ -29,7 +29,9 @@ if (! $username)
 {
     is_array($plugin_run_result = Plugins::getInstance()->run('user_not_admin_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     redirect(PATH . 'ucp.php?go=login&return=' . urlencode(ADMIN_PATH . '?cp=' . $go_to));
-}else if(!user_can('enter_acp')){
+}
+elseif(! user_can('enter_acp'))
+{
     $usrcp->logout_cp();
     redirect($config['siteurl']);
 }
@@ -42,7 +44,7 @@ get_lang('acp');
 //
 if (
     (empty($_SESSION['ADMINLOGIN']) || $_SESSION['ADMINLOGIN'] != md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl'])) ||
-    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != KJ_SESSION) ||
+    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != KJ_SESSION)                                                          ||
     (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())
 ) {
     if (ig('go') && g('go') == 'login')
@@ -192,9 +194,9 @@ else
 }
 
 
-(! defined('LAST_VISIT')) ? define('LAST_VISIT', time() - 3600 * 12) : null;
 //last visit
-$last_visit        = defined('LAST_VISIT') && preg_match('/[0-9]{10}/', LAST_VISIT) ? kleeja_date(LAST_VISIT) : false;
+$last_visit        = $usrcp->last_visit();
+$last_visit        = $last_visit && preg_match('/[0-9]{10}/', $last_visit) ? kleeja_date($last_visit) : false;
 
 //
 //exceptional
@@ -295,41 +297,41 @@ $adm_extensions_menu =    $adm_topmenu = [];
 //sort the items as alphabetic !
 sort($adm_extensions);
 $i       = 0;
-$cr_time = LAST_VISIT > 0 ? LAST_VISIT : time() - 3600*12;
+$cr_time = $usrcp->last_visit() > 0 ? $usrcp->last_visit() : time() - 3600*12;
 
 
 // check calls and reports numbers
 if (ig('check_msgs') || ! ig('_ajax_')):
 
-//small bubble system
-//any item can show what is inside it as unread messages
-$kbubbles = [];
+    //small bubble system
+    //any item can show what is inside it as unread messages
+    $kbubbles = [];
 
-//for calls and reports
-foreach (['call'=>'calls', 'reports'=>'reports'] as $table=>$n)
-{
-    $query    = [
-        'SELECT'       => 'COUNT(' . $table[0] . '.id) AS total_rows',
-        'FROM'         => "`{$dbprefix}" . $table . '` ' . $table[0]
-    ];
+    //for calls and reports
+    foreach (['call'=>'calls', 'reports'=>'reports'] as $table=>$n)
+    {
+        $query    = [
+            'SELECT'       => 'COUNT(' . $table[0] . '.id) AS total_rows',
+            'FROM'         => "`{$dbprefix}" . $table . '` ' . $table[0]
+        ];
 
-    $fetched = $SQL->fetch_array($SQL->build($query));
+        $fetched = $SQL->fetch_array($SQL->build($query));
 
-    $kbubbles[$n] = $fetched['total_rows'];
+        $kbubbles[$n] = $fetched['total_rows'];
 
-    $SQL->freeresult();
-}
+        $SQL->freeresult();
+    }
 
-//if ajax, echo differntly
-if (ig('check_msgs'))
-{
-    $SQL->close();
+    //if ajax, echo differntly
+    if (ig('check_msgs'))
+    {
+        $SQL->close();
 
-    exit($kbubbles['calls'] . '::' . $kbubbles['reports']);
-}
+        exit($kbubbles['calls'] . '::' . $kbubbles['reports']);
+    }
 
 //add your own bubbles here
-is_array($plugin_run_result = Plugins::getInstance()->run('kbubbles_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('kbubbles_admin_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
 endif;
 
@@ -458,9 +460,10 @@ else
 {
     $is_ajax = 'yes';
 
-    echo_ajax(1,
-            empty($adminAjaxContent) ? $tpl->display($stylee, $styleePath) : $adminAjaxContent,
-            $go_menu_html
+    echo_ajax(
+        1,
+        empty($adminAjaxContent) ? $tpl->display($stylee, $styleePath) : $adminAjaxContent,
+        $go_menu_html
     );
 }
 
