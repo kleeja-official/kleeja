@@ -55,7 +55,7 @@ if ($current_smt == 'check')
     if (! ($version_data = $cache->get('kleeja_repo_version')))
     {
         $version_data = [];
-        
+
         $github_data = FetchFile::make(KLEEJA_VERSION_CHECK_LINK)->setTimeOut(100)->get();
 
         if (! empty($github_data))

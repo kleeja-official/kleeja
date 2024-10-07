@@ -18,8 +18,8 @@ if (! defined('IN_COMMON'))
  * return nothing because if it work then ok , and if not then ok too :)
  * @todo text support
  *
- * @param $name
- * @param $ext
+ * @param            $name
+ * @param            $ext
  * @return bool|void
  */
 function helper_watermark($name, $ext)
@@ -64,12 +64,12 @@ function helper_watermark($name, $ext)
         helper_watermark_imagick($name, $ext, $logo_path);
         return;
     }
-	
-	//now, lets work and detect our image extension
-	list($bwidth, $bheight, $src_img_type) = getimagesize($name);
-	
-	$src_img = false;
-    
+
+    //now, lets work and detect our image extension
+    list($bwidth, $bheight, $src_img_type) = getimagesize($name);
+
+    $src_img = false;
+
     switch ($src_img_type)
     {
         case IMAGETYPE_GIF:
@@ -182,6 +182,7 @@ function helper_watermark_imagick($name, $ext, $logo)
     if ($ext == 'gif')
     {
         $i = 0;
+
         //$gif_new = new Imagick();
         foreach ($im as $frame)
         {

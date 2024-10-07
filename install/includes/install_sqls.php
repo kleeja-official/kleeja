@@ -8,12 +8,14 @@
 */
 
 // not for directly open
-if (! defined('IN_COMMON')) {
+if (! defined('IN_COMMON'))
+{
     exit();
 }
 
 
-if (empty($install_sqls) || ! is_array($install_sqls)) {
+if (empty($install_sqls) || ! is_array($install_sqls))
+{
     $install_sqls = [];
 }
 

@@ -18,13 +18,13 @@ if (! defined('IN_COMMON'))
 * Print cp error function handler
 *
 * For admin
-* @param mixed $msg
-* @param mixed $navigation
-* @param mixed $title
-* @param mixed $exit
-* @param mixed $redirect
-* @param mixed $rs
-* @param mixed $style
+ * @param mixed $msg
+ * @param mixed $navigation
+ * @param mixed $title
+ * @param mixed $exit
+ * @param mixed $redirect
+ * @param mixed $rs
+ * @param mixed $style
 */
 function kleeja_admin_err($msg, $navigation = true, $title='', $exit = true, $redirect = false, $rs = 3, $style = 'admin_err')
 {
@@ -258,6 +258,7 @@ function build_search_query($search)
 
     //if searched by a username
     $usernamee = '';
+
     if (! empty($search['username']) && (int) $config['user_system'] == 1)
     {
         $query = [
@@ -276,7 +277,7 @@ function build_search_query($search)
 
         $SQL->freeresult($result);
 
-        if(! empty($usernamee))
+        if (! empty($usernamee))
         {
             $usernamee = 'AND (' . $usernamee . ')';
         }

@@ -130,7 +130,7 @@ class FetchFile
                 $error = true;
                 kleeja_log(sprintf("cUrl error (#%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
             }
-            
+
             curl_close($ch);
             fclose($out);
 
@@ -145,7 +145,7 @@ class FetchFile
                 $error = true;
                 kleeja_log(sprintf("FetchFile error (curl: #%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
             }
-            
+
             curl_close($ch);
 
             return isset($error) ? false : $data;

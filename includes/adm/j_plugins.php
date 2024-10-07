@@ -90,13 +90,13 @@ switch ($case):
 
             $installed_plugins[$row['plg_name']]['icon'] = file_exists(
                 PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/icon.png'
-                )
+            )
                 ? PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/icon.png'
                 : $STYLE_PATH_ADMIN . 'images/plugin.png';
 
             $installed_plugins[$row['plg_name']]['has_settings_page'] = ! empty(
                 $installed_plugins[$row['plg_name']]['extra_info']['settings_page']
-                ) && ! preg_match('/^https?:\/\//', $installed_plugins[$row['plg_name']]['extra_info']['settings_page']);
+            ) && ! preg_match('/^https?:\/\//', $installed_plugins[$row['plg_name']]['extra_info']['settings_page']);
 
 
             foreach (['plugin_title', 'plugin_description'] as $localized_info)
@@ -197,7 +197,7 @@ switch ($case):
 
             if ($case == 'store' && (in_array($plugin_info['name'], $available_plugins_names) ||
                  ! empty($installed_plugins[$plugin_info['name']]))
-                 ) {
+            ) {
                 continue;
             }
 
@@ -233,8 +233,9 @@ switch ($case):
         $store_plugins_count = sizeof($store_plugins);
 
         break;
+
     //
-    //upload a plugin
+        //upload a plugin
     //
     case 'upload':
         $ERRORS = [];
@@ -291,8 +292,9 @@ switch ($case):
         }
 
         break;
+
     //
-    //install a plugin
+        //install a plugin
     //
     case 'install':
 
@@ -369,12 +371,12 @@ switch ($case):
                 if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
                 {
                     kleeja_admin_info(
-                    $lang['PACKAGE_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'],
-                    true,
-                    '',
-                    true,
-                    ADMIN_PATH . '?cp=' . basename(__FILE__, '.php')
-                );
+                        $lang['PACKAGE_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'],
+                        true,
+                        '',
+                        true,
+                        ADMIN_PATH . '?cp=' . basename(__FILE__, '.php')
+                    );
 
                     exit;
                 }
@@ -435,8 +437,9 @@ switch ($case):
         }
 
         break;
+
     //
-    //uninstall a plugin
+        //uninstall a plugin
     //
     case 'uninstall':
 
@@ -516,8 +519,9 @@ switch ($case):
         }
 
         break;
+
     //
-    // disable a plugin
+        // disable a plugin
     //
     case 'disable':
     case 'enable':
@@ -639,7 +643,7 @@ switch ($case):
                 if (
                     version_compare(strtolower($store_plugins[$plugin_name]['kj_min_version']), KLEEJA_VERSION, '<=')
                     && version_compare(strtolower($store_plugins[$plugin_name]['kj_max_version']), KLEEJA_VERSION, '>=')
-                    ) {
+                ) {
                     $plugin_name_link = $store_plugins[$plugin_name]['url'];
 
                     $plugin_archive = FetchFile::make($plugin_name_link)

@@ -59,10 +59,10 @@ error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 
 /**
 * functions for start
-* @param mixed $error_number
-* @param mixed $error_string
-* @param mixed $error_file
-* @param mixed $error_line
+ * @param mixed $error_number
+ * @param mixed $error_string
+ * @param mixed $error_file
+ * @param mixed $error_line
 */
 function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
 {
@@ -77,7 +77,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
                 kleeja_log('[' . $error_name . '] ' . basename($error_file) . ':' . $error_line . ' ' . $error_string);
             }
 
-        break;
+            break;
 
         default:
             header('HTTP/1.1 503 Service Temporarily Unavailable');
@@ -98,7 +98,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
 
             exit;
 
-        break;
+            break;
     }
 }
 set_error_handler('kleeja_show_error');
@@ -125,7 +125,7 @@ $starttm = get_microtime();
 
 if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
 {
-    if(function_exists('ini_set'))
+    if (function_exists('ini_set'))
     {
         ini_set('session.use_cookies', 1);
         ini_set('session.lazy_write', 1);
@@ -135,7 +135,7 @@ if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
     }
 
 
-    if(! session_start())
+    if (! session_start())
     {
         // big_error is not defined yet, and the file *function_display.php* is not included yet
         kleeja_show_error('', 'Session Error!', 'There is a problem with PHP session. We can not start it.');
@@ -150,19 +150,21 @@ if ((empty($dbname) || empty($dbuser)) && ($dbtype !== 'sqlite'))
 {
     $install_file_url = (defined('IN_ADMIN') ? '.' : '') . './install/index.php';
 
-    if (file_exists(PATH . '/install/index.php')) {
+    if (file_exists(PATH . '/install/index.php'))
+    {
         header("Location: {$install_file_url}");
+
         exit;
     }
-    
+
     kleeja_show_error(
         '',
-        "There is no (install) folder, and the config file is not correct",
+        'There is no (install) folder, and the config file is not correct',
         'includes/common.php',
         __LINE__
     );
-    exit;
 
+    exit;
 }
 
 // solutions for hosts running under suexec, add define('HAS_SUEXEC', true) to config.php.
@@ -192,22 +194,32 @@ include PATH . 'includes/FetchFile.php';
 
 if (defined('IN_ADMIN'))
 {
-    $currentDirectoryPath = dirname($_SERVER['PHP_SELF']);
+    $currentDirectoryPath      = dirname($_SERVER['PHP_SELF']);
     $currentDirectoryPathParts = explode('/', $currentDirectoryPath);
-    $currentDir = array_pop($currentDirectoryPathParts);
-    $adminDirErrorMsg = '';
-    if ($customadminpath == 'admin' && $currentDir != $customadminpath) {
+    $currentDir                = array_pop($currentDirectoryPathParts);
+    $adminDirErrorMsg          = '';
+
+    if ($customadminpath == 'admin' && $currentDir != $customadminpath)
+    {
         $adminDirErrorMsg = 'You are trying to access the admin area through a directory that is not configured. Please either revert to the default admin directory name, or see our documentation for customizing the admin directory.';
-    } else {
-        if ($currentDir != $customadminpath) {
+    }
+    else
+    {
+        if ($currentDir != $customadminpath)
+        {
             $adminDirErrorMsg = 'You are trying to access the admin area through a directory different from the one configured. Please refer to the Customize Administrator\'s Guide documentation for instructions on how to update it.';
-        } else {
-            if ($customadminpath != 'admin' && is_dir(PATH . 'admin')) {
+        }
+        else
+        {
+            if ($customadminpath != 'admin' && is_dir(PATH . 'admin'))
+            {
                 $adminDirErrorMsg = 'You are trying to access the admin area through a custom directory, but we also detected that there is a default directory \'admin\'. This may indicate that files from a recent update were uploaded to the default admin path location instead of the custom location, resulting in these files becoming outdated. Please make sure your custom admin folder contains the latest files, and delete the default admin directory to continue.';
             }
         }
     }
-    if ($adminDirErrorMsg) {
+
+    if ($adminDirErrorMsg)
+    {
         kleeja_show_error('', 'Critical Error', $adminDirErrorMsg);
     }
     include PATH . 'includes/functions_adm.php';
@@ -258,7 +270,7 @@ $config = array_merge($config, (array) $d_groups[$usrcp->group_id()]['configs'])
 
 
 //admin path
-define('ADMIN_PATH', rtrim($config['siteurl'], '/') . '/'. $customadminpath .'/index.php');
+define('ADMIN_PATH', rtrim($config['siteurl'], '/') . '/' . $customadminpath . '/index.php');
 
 
 //no tpl caching in dev stage
@@ -368,10 +380,10 @@ if (isset($_GET['go']) && $_GET['go'] == 'login')
 
 //install.php exists
 if (
-    file_exists(PATH . 'install')  &&
-    ! defined('IN_ADMIN') &&
-    ! defined('IN_LOGIN') &&
-    ! defined('DEV_STAGE') &&
+    file_exists(PATH . 'install')                        &&
+    ! defined('IN_ADMIN')                                &&
+    ! defined('IN_LOGIN')                                &&
+    ! defined('DEV_STAGE')                               &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login']))
 ) {
@@ -384,18 +396,18 @@ if (
 $login_page = '';
 
 if (
-    $config['siteclose'] == '1' &&
-    ! user_can('enter_acp') &&
-    ! defined('IN_LOGIN') &&
-    ! defined('IN_ADMIN') &&
+    $config['siteclose'] == '1'                          &&
+    ! user_can('enter_acp')                              &&
+    ! defined('IN_LOGIN')                                &&
+    ! defined('IN_ADMIN')                                &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login', 'register', 'logout']))
-    ) {
+) {
     //if download, images ?
     if (
         (defined('IN_DOWNLOAD') && (ig('img') || ig('thmb') || ig('thmbf') || ig('imgf')))
         || g('go', 'str', '') == 'queue'
-        ) {
+    ) {
         @$SQL->close();
         $fullname = 'images/site_closed.jpg';
         $filesize = filesize($fullname);

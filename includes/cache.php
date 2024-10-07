@@ -62,14 +62,17 @@ class cache
         $data_for_save .= 'if(time() > ' . (time() + $time) . ') return false;' . "\n\n";
         $data_for_save .= '$data = ' . var_export($data, true) . ";\n\n//end of cache";
 
-        try {
+        try
+        {
             $fd = fopen(PATH . 'cache/' . $name . '.php', 'w');
             flock($fd, LOCK_EX); // exclusive look
             fwrite($fd, $data_for_save);
             flock($fd, LOCK_UN);
             fclose($fd);
             return true;
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             return false;
         }
     }

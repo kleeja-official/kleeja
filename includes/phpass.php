@@ -51,6 +51,7 @@ class PasswordHash
         $this->portable_hashes = $portable_hashes;
 
         $this->random_state = microtime();
+
         if (function_exists('getmypid'))
         {
             $this->random_state .= getmypid();
@@ -114,7 +115,8 @@ class PasswordHash
                 break;
             }
             $output .= $this->itoa64[($value >> 18) & 0x3f];
-        } while ($i < $count);
+        }
+        while ($i < $count);
 
         return $output;
     }
@@ -138,6 +140,7 @@ class PasswordHash
         }
 
         $id = substr($setting, 0, 3);
+
         // We use "$P$", phpBB3 uses "$H$" for the same thing
         if ($id !== '$P$' && $id !== '$H$')
         {
@@ -170,7 +173,8 @@ class PasswordHash
         do
         {
             $hash = md5($hash . $password, true);
-        } while (--$count);
+        }
+        while (--$count);
 
         $output = substr($setting, 0, 12);
         $output .= $this->encode64($hash, 16);
@@ -191,7 +195,7 @@ class PasswordHash
         $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
         $output = '$2a$';
-        $output .= chr((int)(ord('0') + $this->iteration_count_log2 / 10));
+        $output .= chr((int) (ord('0') + $this->iteration_count_log2 / 10));
         $output .= chr(ord('0') + $this->iteration_count_log2 % 10);
         $output .= '$';
 
@@ -218,7 +222,8 @@ class PasswordHash
             $c1 |= $c2 >> 6;
             $output .= $itoa64[$c1];
             $output .= $itoa64[$c2 & 0x3f];
-        } while (1);
+        }
+        while (1);
 
         return $output;
     }
@@ -243,8 +248,10 @@ class PasswordHash
             $random = $this->get_random_bytes(6);
         }
         $hash =
-            $this->crypt_private($password,
-            $this->gensalt_private($random));
+            $this->crypt_private(
+                $password,
+                $this->gensalt_private($random)
+            );
 
         if (strlen($hash) === 34)
         {

@@ -63,6 +63,7 @@ if (ip('submit'))
         {
             //delete from folder ..
             @kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
+
             //delete thumb
             if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
             {
@@ -73,8 +74,9 @@ if (ip('submit'))
             $sizes += $row['size'];
 
             //Subtract size from storage of the user
-            if ($row['user'] != -1) {
-                $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-".$row['size']." WHERE id=".$row['user']);
+            if ($row['user'] != -1)
+            {
+                $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-" . $row['size'] . ' WHERE id=' . $row['user']);
             }
         }
 

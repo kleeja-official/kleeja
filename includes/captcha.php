@@ -46,7 +46,7 @@ function kleeja_cpatcha_image()
     $height = 25; 
 
     //Generate a random number of lines to make the image dirty
-    $lines  = rand(3,5);
+    $lines  = rand(3, 5);
 
     //Create the image resource 
     $image = imagecreate($width, $height);  
@@ -72,7 +72,7 @@ function kleeja_cpatcha_image()
         // he search in the Linux fonts cache , but when you add './' he will know it's our font.
         //
         imagettftext($image, 16, $angle, rand(50, $x), $y+rand(1, 3), $white, dirname(__FILE__) . '/arial.ttf', $security_code);
-    //imagettftext ($image, 7, 0, $width-30, $height-4, $white,'./arial.ttf', 'Kleeja');
+        //imagettftext ($image, 7, 0, $width-30, $height-4, $white,'./arial.ttf', 'Kleeja');
     }
     else
     {
@@ -81,18 +81,20 @@ function kleeja_cpatcha_image()
     }
 
     //Throw in some lines to make it a little bit harder for any bots to break 
-    imagerectangle($image, 0, 0, $width-1, $height-1, $grey); 
-    for( $i=0; $i<$lines; $i++ ) {
-       imageline($image, rand(0,$width), rand(0,$height), rand(0,$width), rand(0,$height), $grey);
+    imagerectangle($image, 0, 0, $width-1, $height-1, $grey);
+
+    for ($i=0; $i<$lines; $i++)
+    {
+        imageline($image, rand(0, $width), rand(0, $height), rand(0, $width), rand(0, $height), $grey);
     }
 
 
     //Tell the browser what kind of file is come in and prevent client side caching
-    header("Expires: Wed, 1 Jan 1997 00:00:00 GMT");
-    header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-    header("Cache-Control: no-store, no-cache, must-revalidate");
-    header("Cache-Control: post-check=0, pre-check=0", FALSE);
-    header("Pragma: no-cache");
+    header('Expires: Wed, 1 Jan 1997 00:00:00 GMT');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+    header('Cache-Control: post-check=0, pre-check=0', false);
+    header('Pragma: no-cache');
     header('Content-Type: image/png');
 
     //Output the newly created image in jpeg format 

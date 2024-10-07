@@ -9,7 +9,8 @@
 
 
 //no for directly open
-if (! defined('IN_COMMON')) {
+if (! defined('IN_COMMON'))
+{
     exit();
 }
 
@@ -234,24 +235,27 @@ class defaultUploader implements KleejaUploader
         // show del code link box
         $extra_del = '';
 
-        if ($config['del_url_file']) {
+        if ($config['del_url_file'])
+        {
             $extra_del    = get_up_tpl_box(
                 'del_file_code',
                 [
-                         'b_title'     => $lang['URL_F_DEL'],
-                         'b_code_link' => kleeja_get_link('del', ['::CODE::'=>$fileInfo['DeleteCode']])
-                     ]
+                    'b_title'     => $lang['URL_F_DEL'],
+                    'b_code_link' => kleeja_get_link('del', ['::CODE::'=>$fileInfo['DeleteCode']])
+                ]
             );
         }
 
         //show imgs
-        if ($is_img) {
+        if ($is_img)
+        {
             $img_html_result = '';
 
             // get default thumb dimensions
             $thmb_dim_w = $thmb_dim_h = 150;
 
-            if (strpos($config['thmb_dims'], '*') !== false) {
+            if (strpos($config['thmb_dims'], '*') !== false)
+            {
                 list($thmb_dim_w, $thmb_dim_h) = array_map('trim', explode('*', $config['thmb_dims']));
             }
 
@@ -268,15 +272,16 @@ class defaultUploader implements KleejaUploader
             $img_html_result .= get_up_tpl_box(
                 'image_thumb',
                 [
-                            'b_title'      => $lang['URL_F_THMB'],
-                            'b_url_link'   => kleeja_get_link('image', $file_info),
-                            'b_img_link'   => kleeja_get_link('thumb', $file_info)
-                        ]
+                    'b_title'      => $lang['URL_F_THMB'],
+                    'b_url_link'   => kleeja_get_link('image', $file_info),
+                    'b_img_link'   => kleeja_get_link('thumb', $file_info)
+                ]
             );
 
 
             // watermark on image
-            if ($config['write_imgs'] != 0 && in_array($fileInfo['fileExtension'], ['gif', 'png', 'jpg', 'jpeg', 'bmp'])) {
+            if ($config['write_imgs'] != 0 && in_array($fileInfo['fileExtension'], ['gif', 'png', 'jpg', 'jpeg', 'bmp']))
+            {
                 helper_watermark($fileInfo['saveToFolder'] . '/' . $fileInfo['generatedFileName'], $fileInfo['fileExtension']);
             }
 
@@ -284,10 +289,10 @@ class defaultUploader implements KleejaUploader
             $img_html_result .= get_up_tpl_box(
                 'image',
                 [
-                                'b_title'       => $lang['URL_F_IMG'],
-                                'b_bbc_title'   => $lang['URL_F_BBC'],
-                                'b_url_link'    => kleeja_get_link('image', $file_info),
-                            ]
+                    'b_title'       => $lang['URL_F_IMG'],
+                    'b_bbc_title'   => $lang['URL_F_BBC'],
+                    'b_url_link'    => kleeja_get_link('image', $file_info),
+                ]
             );
 
             //add del link box to the result if there is any
@@ -302,15 +307,17 @@ class defaultUploader implements KleejaUploader
                 htmlspecialchars($fileInfo['originalFileName']) . '</div>' . "\n" .
                 $img_html_result
             );
-        } else {
+        }
+        else
+        {
             //then show other files
             $else_html_result = get_up_tpl_box(
                 'file',
                 [
-                        'b_title'       => $lang['URL_F_FILE'],
-                        'b_bbc_title'   => $lang['URL_F_BBC'],
-                        'b_url_link'    => kleeja_get_link('file', $file_info),
-                    ]
+                    'b_title'       => $lang['URL_F_FILE'],
+                    'b_bbc_title'   => $lang['URL_F_BBC'],
+                    'b_url_link'    => kleeja_get_link('file', $file_info),
+                ]
             );
 
 
@@ -356,28 +363,34 @@ class defaultUploader implements KleejaUploader
 
 
         // check folder our real folder
-        if (! file_exists($current_uploading_folder)) {
-            if (! make_folder($current_uploading_folder)) {
+        if (! file_exists($current_uploading_folder))
+        {
+            if (! make_folder($current_uploading_folder))
+            {
                 $this->addErrorMessage($lang['CANT_DIR_CRT']);
             }
         }
 
 
-        if ($return_now) {
+        if ($return_now)
+        {
             return;
         }
 
         // is captcha on, and there is uploading going on
-        if ($captcha_enabled) {
+        if ($captcha_enabled)
+        {
             //captcha is wrong
-            if (! kleeja_check_captcha()) {
+            if (! kleeja_check_captcha())
+            {
                 $this->addErrorMessage($lang['WRONG_VERTY_CODE']);
                 return;
             }
         }
 
         // to prevent flooding, user must wait, waiting-time is grapped from Kleeja settings, admin is exceptional
-        if (! user_can('enter_acp') && user_is_flooding($current_user_id)) {
+        if (! user_can('enter_acp') && user_is_flooding($current_user_id))
+        {
             $this->addErrorMessage(sprintf(
                 $lang['YOU_HAVE_TO_WAIT'],
                 $config['usersectoupload']
@@ -387,8 +400,10 @@ class defaultUploader implements KleejaUploader
 
 
         //detect flooding, TODO fix it or remove it
-        if (isset($_SESSION['FIILES_NOT_DUPLI'])) {
-            if (! empty($_SESSION['FIILES_NOT_DUPLI']) && $_SESSION['FIILES_NOT_DUPLI']  == sha1(serialize(array_column($_FILES, 'name')))) {
+        if (isset($_SESSION['FIILES_NOT_DUPLI']))
+        {
+            if (! empty($_SESSION['FIILES_NOT_DUPLI']) && $_SESSION['FIILES_NOT_DUPLI']  == sha1(serialize(array_column($_FILES, 'name'))))
+            {
                 unset($_SESSION['FIILES_NOT_DUPLI']);
 
                 $this->addErrorMessage($lang['U_R_FLOODER']);
@@ -397,7 +412,8 @@ class defaultUploader implements KleejaUploader
         }
 
         // flooding code, making sure every ok session is cleared
-        if (sizeof($_FILES) > 0) {
+        if (sizeof($_FILES) > 0)
+        {
             $_SESSION['FIILES_NOT_DUPLI'] = sha1(serialize(array_column($_FILES, 'name')));
         }
 
@@ -405,16 +421,20 @@ class defaultUploader implements KleejaUploader
         //now close session to let user open any other page in Kleeja
         session_write_close();
 
-        if (! empty($_FILES['file']['tmp_name'])) {
+        if (! empty($_FILES['file']['tmp_name']))
+        {
             $_FILES['file'][0] = $_FILES['file'];
         }
 
 
         // loop the uploaded files
-        for ($i=0; $i<=$this->getUploadFieldsLimit(); $i++) {
+        for ($i=0; $i<=$this->getUploadFieldsLimit(); $i++)
+        {
             //no file!
-            if (empty($_FILES['file_' . $i . '_']['tmp_name']) && empty($_FILES['file'][$i]['tmp_name'])) {
-                if (! isset($_FILES['file_' . $i . '_'], $_FILES['file'][$i])) {
+            if (empty($_FILES['file_' . $i . '_']['tmp_name']) && empty($_FILES['file'][$i]['tmp_name']))
+            {
+                if (! isset($_FILES['file_' . $i . '_'], $_FILES['file'][$i]))
+                {
                     continue;
                 }
 
@@ -428,8 +448,10 @@ class defaultUploader implements KleejaUploader
 
                 $upload_max_size = ini_get('upload_max_filesize');
 
-                if ($error !== UPLOAD_ERR_OK) {
-                    switch ($error) {
+                if ($error !== UPLOAD_ERR_OK)
+                {
+                    switch ($error)
+                    {
                         case UPLOAD_ERR_INI_SIZE:
                         case UPLOAD_ERR_FORM_SIZE:
                             $this->addErrorMessage(
@@ -469,7 +491,6 @@ class defaultUploader implements KleejaUploader
                             $this->addErrorMessage(sprintf($lang['CANT_UPLAOD'], htmlspecialchars($filename)));
 
                             break;
-
                     }
                 }
 
@@ -482,7 +503,8 @@ class defaultUploader implements KleejaUploader
 
 
         // well, no file uploaded, ask user to choose a file before submit
-        if ($this->total_uploaded_files == 0 && sizeof($this->messages) == 0) {
+        if ($this->total_uploaded_files == 0 && sizeof($this->messages) == 0)
+        {
             $this->addErrorMessage($lang['CHOSE_F']);
         }
     }
@@ -490,9 +512,9 @@ class defaultUploader implements KleejaUploader
 
     /**
      * upload a file from $_FILES
-     * @param integer $fieldNumber as in file[i]
-     * @param $current_uploading_folder
-     * @param $current_user_id
+     * @param integer $fieldNumber              as in file[i]
+     * @param         $current_uploading_folder
+     * @param         $current_user_id
      */
     public function uploadTypeFile($fieldNumber, $current_uploading_folder, $current_user_id)
     {
@@ -512,7 +534,8 @@ class defaultUploader implements KleejaUploader
         $fileInfo['currentUserId'] = $current_user_id;
 
 
-        if (! isset($_FILES['file_' . $fieldNumber . '_']) && isset($_FILES['file'][$fieldNumber])) {
+        if (! isset($_FILES['file_' . $fieldNumber . '_']) && isset($_FILES['file'][$fieldNumber]))
+        {
             $_FILES['file_' . $fieldNumber . '_'] = $_FILES['file'][$fieldNumber];
         }
 
@@ -521,13 +544,14 @@ class defaultUploader implements KleejaUploader
                             ? urldecode(str_replace([';',','], '', $_FILES['file_' . $fieldNumber . '_']['name']))
                             : '';
 
-        if (empty($fileInfo['originalFileName'])) {
+        if (empty($fileInfo['originalFileName']))
+        {
             $this->addErrorMessage(sprintf($lang['WRONG_F_NAME'], htmlspecialchars($_FILES['file_' . $fieldNumber . '_']['name'])));
             return;
         }
 
         // get the extension of file
-        $originalFileName = explode('.', $fileInfo['originalFileName']);
+        $originalFileName          = explode('.', $fileInfo['originalFileName']);
         $fileInfo['fileExtension'] = strtolower(array_pop($originalFileName));
 
 
@@ -546,7 +570,8 @@ class defaultUploader implements KleejaUploader
 
 
         // file exists before? change it a little
-        if (file_exists($current_uploading_folder . '/' . $fileInfo['generatedFileName'])) {
+        if (file_exists($current_uploading_folder . '/' . $fileInfo['generatedFileName']))
+        {
             $fileInfo['generatedFileName'] = change_filename_decoding(
                 $fileInfo['generatedFileName'],
                 $fieldNumber,
@@ -559,9 +584,11 @@ class defaultUploader implements KleejaUploader
 
 
         // now, let process it
-        if (! in_array(strtolower($fileInfo['fileExtension']), array_keys($this->getAllowedFileExtensions()))) {
+        if (! in_array(strtolower($fileInfo['fileExtension']), array_keys($this->getAllowedFileExtensions())))
+        {
             // guest
-            if ($current_user_id == '-1') {
+            if ($current_user_id == '-1')
+            {
                 $this->addErrorMessage(
                     sprintf($lang['FORBID_EXT'], $fileInfo['fileExtension'])
                                     . '<br> <a href="' . ($config['mod_writer'] ? 'register.html' : 'ucp.php?go=register') .
@@ -569,24 +596,29 @@ class defaultUploader implements KleejaUploader
                 );
             }
             // a member
-            else {
+            else
+            {
                 $this->addErrorMessage(sprintf($lang['FORBID_EXT'], $fileInfo['fileExtension']));
             }
         }
         // bad chars in the filename
-        elseif (preg_match("#[\\\/\:\*\?\<\>\|\"]#", $fileInfo['generatedFileName'])) {
+        elseif (preg_match("#[\\\/\:\*\?\<\>\|\"]#", $fileInfo['generatedFileName']))
+        {
             $this->addErrorMessage(sprintf($lang['WRONG_F_NAME'], htmlspecialchars($_FILES['file_' . $fieldNumber . '_']['name'])));
         }
         // check file extension for bad stuff
-        elseif (ext_check_safe($_FILES['file_' . $fieldNumber . '_']['name']) == false) {
+        elseif (ext_check_safe($_FILES['file_' . $fieldNumber . '_']['name']) == false)
+        {
             $this->addErrorMessage(sprintf($lang['WRONG_F_NAME'], htmlspecialchars($_FILES['file_' . $fieldNumber . '_']['name'])));
         }
         // check the mime-type for the file
-        elseif (check_mime_type($_FILES['file_' . $fieldNumber . '_']['type'], $fileInfo['fileExtension'], $_FILES['file_' . $fieldNumber . '_']['tmp_name']) == false) {
+        elseif (check_mime_type($_FILES['file_' . $fieldNumber . '_']['type'], $fileInfo['fileExtension'], $_FILES['file_' . $fieldNumber . '_']['tmp_name']) == false)
+        {
             $this->addErrorMessage(sprintf($lang['NOT_SAFE_FILE'], htmlspecialchars($_FILES['file_' . $fieldNumber . '_']['name'])));
         }
         // check file size
-        elseif ($this->getAllowedFileExtensions()[$fileInfo['fileExtension']] > 0 && $fileInfo['fileSize'] >= $this->getAllowedFileExtensions()[$fileInfo['fileExtension']]) {
+        elseif ($this->getAllowedFileExtensions()[$fileInfo['fileExtension']] > 0 && $fileInfo['fileSize'] >= $this->getAllowedFileExtensions()[$fileInfo['fileExtension']])
+        {
             $this->addErrorMessage(
                 sprintf(
                     $lang['SIZE_F_BIG'],
@@ -600,19 +632,24 @@ class defaultUploader implements KleejaUploader
             $this->addErrorMessage($lang['TOTAL_SIZE_EXCEEDED']);
         }
         // no errors, so upload it
-        else {
+        else
+        {
             is_array($plugin_run_result = Plugins::getInstance()->run('defaultUploader_uploadTypeFile_2nd', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
             // now, upload the file
             $file = move_uploaded_file($_FILES['file_' . $fieldNumber . '_']['tmp_name'], $current_uploading_folder . '/' . $fileInfo['generatedFileName']);
 
-            if ($file) {
+            if ($file)
+            {
                 $this->saveToDatabase($fileInfo);
+
                 if ($remaining_storage != -1)
                 {
                     $remaining_storage -= $fileInfo['fileSize'];
                 }
-            } else {
+            }
+            else
+            {
                 $this->addErrorMessage(sprintf($lang['CANT_UPLAOD'], $fileInfo['originalFileName']));
             }
         }

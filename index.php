@@ -54,8 +54,10 @@ $action = $config['siteurl'];
 $uploadingMethodClassBaseName = basename($uploadingMethodClass, '.php');
 $uploader                     = new $uploadingMethodClassBaseName;
 
-if (! $uploader instanceof KleejaUploader) {
+if (! $uploader instanceof KleejaUploader)
+{
     kleeja_err('Your upload Method class is not implemented our KleejaUploader Interface');
+
     exit;
 }
 

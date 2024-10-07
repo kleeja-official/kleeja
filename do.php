@@ -184,9 +184,9 @@ if (ig('id') || ig('filename'))
 // x : used only for html links, where x = extension, downf is filename without extension
 
 elseif (ig('down') || ig('downf') ||
-        ig('img') || ig('imgf') ||
+        ig('img')  || ig('imgf') ||
         ig('thmb') || ig('thmbf') ||
-    ig('downex') || ig('downexf'))
+    ig('downex')   || ig('downexf'))
 {
     is_array($plugin_run_result = Plugins::getInstance()->run('begin_down_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -505,9 +505,13 @@ elseif (ig('down') || ig('downf') ||
 
     //send file headers
     header('Pragma: public');
-    if ($resuming_on) {
+
+    if ($resuming_on)
+    {
         header('Accept-Ranges: bytes');
-    } else {
+    }
+    else
+    {
         header('Accept-Ranges: none');
     }
     header('Content-Description: File Transfer');
@@ -539,14 +543,16 @@ elseif (ig('down') || ig('downf') ||
         list($range, $range_end) = explode('-', $range, 2);
         $range                   = round(floatval($range), 0);
         $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
-        
-        if ($range < 0 || $range >= $size || $range > $range_end || $range_end >= $size ) {
+
+        if ($range < 0 || $range >= $size || $range > $range_end || $range_end >= $size)
+        {
             header('HTTP/1.1 416 Requested Range Not Satisfiable');
             header("Content-Range: bytes */$size");
             fclose($fp);
+
             exit;
         }
-        
+
         $partial_length = $range_end - $range + 1;
         header('HTTP/1.1 206 Partial Content');
         header("Content-Length: $partial_length");

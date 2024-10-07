@@ -275,9 +275,10 @@ foreach ($types as $typekey => $type)
         if ($option['type'] == $typekey)
         {
             $options .= str_replace(
-                    ['<input ', '<select ', '<td>', '</td>', '<label>', '<tr>', '</tr>'],
-                    ['<input class="form-control" ', '<select class="form-control" ', '<div class="form-group">', '</div>', '<label class="form-check-label">', '', ''],
-                    $option['option']);
+                ['<input ', '<select ', '<td>', '</td>', '<label>', '<tr>', '</tr>'],
+                ['<input class="form-control" ', '<select class="form-control" ', '<div class="form-group">', '</div>', '<label class="form-check-label">', '', ''],
+                $option['option']
+            );
         }
     }
 }
@@ -285,7 +286,6 @@ foreach ($types as $typekey => $type)
 //after submit
 if (ip('submit'))
 {
-
     //some configs need refresh page ..
     $need_refresh_configs = ['language'];
 

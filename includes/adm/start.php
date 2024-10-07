@@ -84,7 +84,7 @@ if (! file_exists(PATH . '.htaccess') && (int) $config['mod_writer'] == 1)
 }
 
 //updating
-$v = @unserialize($config['new_version']);
+$v           = @unserialize($config['new_version']);
 $new_version = isset($v['version_number']) ? $v['version_number'] : '';
 
 if (version_compare(strtolower(KLEEJA_VERSION), strtolower($new_version), '<'))
@@ -266,9 +266,11 @@ $hurry_groups_list .= '<option value="' . $config['default_group'] . '">' . $lan
 foreach ($d_groups as $id=>$ddt)
 {
     $hurry_groups_list .= '<option value="' . $id . '">' .
-            str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-            [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-            $d_groups[$id]['data']['group_name']) .
+            str_replace(
+                ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                $d_groups[$id]['data']['group_name']
+            ) .
              '</option>';
 }
 

@@ -53,9 +53,11 @@ switch ($current_go_case)
                     'ext'          => $ext,
                     'size'         => readable_size($size),
                     'group'        => $gid,
-                    'group_name'   => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'], 
-                                        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                        $d_groups[$gid]['data']['group_name']),
+                    'group_name'   => str_replace(
+                        ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                        $d_groups[$gid]['data']['group_name']
+                    ),
                     'most_firstrow'   => $same_group == 0 ? true : false,
                     'firstrow'        => $same_group ==0 or $same_group != $gid ? true : false,
                     'rando'           => $rando,
@@ -67,10 +69,10 @@ switch ($current_go_case)
 
         is_array($plugin_run_result = Plugins::getInstance()->run('guide_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    break;
+        break;
 
     //
-    //Page of reporting
+        //Page of reporting
     //
     case 'report' :
 
@@ -218,10 +220,10 @@ switch ($current_go_case)
 
         is_array($plugin_run_result = Plugins::getInstance()->run('report_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    break; 
+        break; 
 
     //
-    //Pages of rules
+        //Pages of rules
     //
     case 'rules' :
 
@@ -231,10 +233,10 @@ switch ($current_go_case)
 
         is_array($plugin_run_result = Plugins::getInstance()->run('rules_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    break;
+        break;
 
     //
-    //Page of call-us
+        //Page of call-us
     //
     case 'call' : 
 
@@ -330,10 +332,10 @@ switch ($current_go_case)
 
         is_array($plugin_run_result = Plugins::getInstance()->run('call_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    break;
+        break;
 
     //
-    //Page for requesting delete file 
+        //Page for requesting delete file 
     //
     case 'del' :
 
@@ -376,6 +378,7 @@ switch ($current_go_case)
                     while ($row=$SQL->fetch_array($result))
                     {
                         @kleeja_unlink($row['folder'] . '/' . $row['name']);
+
                         //delete thumb
                         if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                         {
@@ -426,7 +429,9 @@ switch ($current_go_case)
                     }
 
                     $SQL->freeresult($result);
-                } else {
+                }
+                else
+                {
                     kleeja_info($lang['NOT_FOUND']);
                 }
             }
@@ -448,10 +453,10 @@ switch ($current_go_case)
             }
         }//else
 
-    break;
+        break;
 
     //
-    //Page of Kleeja stats
+        //Page of Kleeja stats
     //
     case 'stats' :
 
@@ -492,11 +497,11 @@ switch ($current_go_case)
 
         is_array($plugin_run_result = Plugins::getInstance()->run('stats_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    break; 
+        break; 
 
     //
-    // Page for redirect to downloading a file
-    // [!] depreacted from 1rc6+, see do.php
+        // Page for redirect to downloading a file
+        // [!] depreacted from 1rc6+, see do.php
     //
     case 'down':
 
@@ -515,10 +520,10 @@ switch ($current_go_case)
 
         exit;
 
-    break;
+        break;
 
     //
-    // for queue
+        // for queue
     //
     case 'queue':
 
@@ -551,10 +556,10 @@ switch ($current_go_case)
 
         exit;
 
-    break;
+        break;
 
     //
-    //this is a part of ACP, only admins can access this part of page
+        //this is a part of ACP, only admins can access this part of page
     //
     case 'resync':
 
@@ -572,73 +577,73 @@ switch ($current_go_case)
 
         switch (g('case')):
         //
-        //re-sync total files number ..
+            //re-sync total files number ..
         //
-        case 'sync_files':
+            case 'sync_files':
 
-        //no start ? or there 
-        $start = ! ig('start') ? false : g('start', 'int');
+                //no start ? or there 
+                $start = ! ig('start') ? false : g('start', 'int');
 
-        $end = sync_total_files(true, $start);
+                $end = sync_total_files(true, $start);
 
-        //no end, then sync'ing is done...
-        if (! $end)
-        {
-            delete_cache('data_stats');
-            $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_FILES']);
-            $link_to_go = './'.$customadminpath.'/?cp=r_repair#!cp=r_repair';
-        }
-        else
-        {
-            $text       = $title       = sprintf($lang['SYNCING'], $lang['ALL_FILES']) . ' (' . (! $start ? 0 : $start) . '->' . (! $end  ? '?' : $end) . ')';
-            $link_to_go = './go.php?go=resync&case=sync_files&start=' . $end;
-        }
+                //no end, then sync'ing is done...
+                if (! $end)
+                {
+                    delete_cache('data_stats');
+                    $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_FILES']);
+                    $link_to_go = './' . $customadminpath . '/?cp=r_repair#!cp=r_repair';
+                }
+                else
+                {
+                    $text       = $title       = sprintf($lang['SYNCING'], $lang['ALL_FILES']) . ' (' . (! $start ? 0 : $start) . '->' . (! $end  ? '?' : $end) . ')';
+                    $link_to_go = './go.php?go=resync&case=sync_files&start=' . $end;
+                }
 
-        //to be sure !
-        $text .= '<script type="text/javascript"> setTimeout("location.href=\'' . $link_to_go . '\';", 3000);</script>' . "\n";
+                //to be sure !
+                $text .= '<script type="text/javascript"> setTimeout("location.href=\'' . $link_to_go . '\';", 3000);</script>' . "\n";
 
-        kleeja_info($text, $title, true, $link_to_go, 2);
+                kleeja_info($text, $title, true, $link_to_go, 2);
 
-        break;
+                break;
 
 
         //
-        //re-sync total images number ..
+                //re-sync total images number ..
         //
-        case 'sync_images':
+            case 'sync_images':
 
-        //no start ? or there 
-        $start = ! ig('start') ? false : g('start', 'int');
+                //no start ? or there 
+                $start = ! ig('start') ? false : g('start', 'int');
 
-        $end = sync_total_files(false, $start);
+                $end = sync_total_files(false, $start);
 
-        //no end, then sync'ing is done...
-        if (! $end)
-        {
-            delete_cache('data_stats');
-            $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_IMAGES']) . ' (' . (! $start ? 0 : $start) . '->' . (! $end  ? '?' : $end) . ')';
-            $link_to_go = './'.$customadminpath.'/?cp=r_repair#!cp=r_repair';
-        }
-        else
-        {
-            $text       = $title       = sprintf($lang['SYNCING'], $lang['ALL_IMAGES']);
-            $link_to_go = './go.php?go=resync&case=sync_images&start=' . $end;
-        }
+                //no end, then sync'ing is done...
+                if (! $end)
+                {
+                    delete_cache('data_stats');
+                    $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_IMAGES']) . ' (' . (! $start ? 0 : $start) . '->' . (! $end  ? '?' : $end) . ')';
+                    $link_to_go = './' . $customadminpath . '/?cp=r_repair#!cp=r_repair';
+                }
+                else
+                {
+                    $text       = $title       = sprintf($lang['SYNCING'], $lang['ALL_IMAGES']);
+                    $link_to_go = './go.php?go=resync&case=sync_images&start=' . $end;
+                }
 
-        //to be sure !
-        $text .= '<script type="text/javascript"> setTimeout("location.href=\'' . $link_to_go . '\';", 3000);</script>' . "\n";
+                //to be sure !
+                $text .= '<script type="text/javascript"> setTimeout("location.href=\'' . $link_to_go . '\';", 3000);</script>' . "\n";
 
-        kleeja_info($text, $title, true, $link_to_go, 2);
+                kleeja_info($text, $title, true, $link_to_go, 2);
 
-        break;
+                break;
         endswitch;
 
-    break;
+        break;
 
 
-    /**
-     * Ajax get uploading progress
-     */
+        /**
+         * Ajax get uploading progress
+         */
     case 'uploading_progress':
 
         header('Content-type: application/json; charset=UTF-8');
@@ -656,10 +661,10 @@ switch ($current_go_case)
 //        }
 
 
-       if (! function_exists('ini_get'))
-       {
-           exit(json_encode($result_data));
-       }
+        if (! function_exists('ini_get'))
+        {
+            exit(json_encode($result_data));
+        }
 
         $key = ini_get('session.upload_progress.prefix') . $field_value;
 
@@ -678,8 +683,8 @@ switch ($current_go_case)
 
 
     //
-    // Default , if you are a developer , you can embed your page here with this hook
-    // by using g('go') and your codes.
+        // Default , if you are a developer , you can embed your page here with this hook
+        // by using g('go') and your codes.
     //
     default:
 
@@ -692,7 +697,7 @@ switch ($current_go_case)
             kleeja_err($lang['ERROR_NAVIGATATION']);
         }
 
-    break;
+        break;
 }//end switch
 
 is_array($plugin_run_result = Plugins::getInstance()->run('end_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook

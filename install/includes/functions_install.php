@@ -65,7 +65,7 @@ function getjquerylink()
 
 /**
 * Parsing installing templates
-* @param mixed $tplname
+ * @param mixed $tplname
 */
 function gettpl($tplname)
 {
@@ -108,11 +108,12 @@ function kleeja_eval($code)
 
 /**
 * Export config
-* @param mixed $srv
-* @param mixed $usr
-* @param mixed $pass
-* @param mixed $nm
-* @param mixed $prf
+ * @param mixed $srv
+ * @param mixed $usr
+ * @param mixed $pass
+ * @param mixed $nm
+ * @param mixed $prf
+ * @param mixed $type
 */
 function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysqli')
 {
@@ -120,7 +121,7 @@ function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysqli')
     $data .= '//for more information about this file, visit: ' . "\n";
     $data .= '//https://github.com/kleeja-official/kleeja/wiki/config.php-file' . "\n\n";
 
-    if(!empty($type) && $type != 'mysqli')
+    if (! empty($type) && $type != 'mysqli')
     {
         if ($type == 'sqlite' && strpos($nm, '.') === false)
         {
@@ -168,7 +169,7 @@ function get_microtime()
 
 /**
 * Get config value from database directly, if not return false.
-* @param mixed $name
+ * @param mixed $name
 */
 function inst_get_config($name)
 {
@@ -183,7 +184,7 @@ function inst_get_config($name)
             return false;
         }
 
-        if(isset($dbtype) && $dbtype == 'sqlite')
+        if (isset($dbtype) && $dbtype == 'sqlite')
         {
             @touch(PATH . $dbname);
         }

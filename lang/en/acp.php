@@ -281,5 +281,5 @@ return [
     'DEL_BY_EXT'                                  => 'Delete Files By Extension',
     'SELECT_EXT'                                  => 'Select an Extension',
     'NO_FILE_WITH_EXT'                            => 'there is no files exists with the selected extension',
-    'X_FILE_WITH_EXT'                            => 'there is (x) files exists with the selected extension',
+    'X_FILE_WITH_EXT'                             => 'there is (x) files exists with the selected extension',
 ];

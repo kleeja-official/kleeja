@@ -137,7 +137,7 @@ function get_ban()
 
 /**
  * Check if the given plugin installed ?
- * @param $plugin_name
+ * @param       $plugin_name
  * @return bool
  */
 function kleeja_plugin_exists($plugin_name)
@@ -211,7 +211,7 @@ function kleeja_get_page()
 
 /**
  * Fix email string to be UTF8
- * @param $text
+ * @param         $text
  * @return string
  */
 function _sm_mk_utf8($text)
@@ -268,7 +268,6 @@ function send_mail($to, $body, $subject, $fromAddress, $fromName, $bcc = '')
  */
 function delete_cache($name, $all=false)
 {
-
     //Those files are exceptions and not for deletion
     $exceptions = ['.htaccess', 'index.html', 'php.ini', 'web.config'];
 
@@ -389,7 +388,7 @@ function kleeja_unlink($filePath, $cache_file = false)
  */
 function get_mime_for_header($ext)
 {
-    $mime_types = include __DIR__.'/mime_types.php';
+    $mime_types = include __DIR__ . '/mime_types.php';
 
     //return mime
     $ext = strtolower($ext);
@@ -487,7 +486,7 @@ function get_config($name)
 
     $result       = $SQL->build($query);
     $v            = $SQL->fetch($result);
-    $return       = isset($v['value']) ? $v['value'] : NULL;
+    $return       = isset($v['value']) ? $v['value'] : null;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
     return $return;
@@ -555,7 +554,7 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
 
 /**
  * add an array of new configs
- * @param $configs
+ * @param       $configs
  * @return bool
  */
 function add_config_r($configs)
@@ -759,7 +758,8 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
     {
         if (is_array($lang))
         {
-            foreach ($lang as $index=>$current_lang) {
+            foreach ($lang as $index=>$current_lang)
+            {
                 $lang[$index] = $SQL->escape($lang[$index]);
             }
             $lang_sql = "(lang_id = '" . implode("' OR lang_id = '", $lang) . "')";
@@ -900,6 +900,7 @@ function klj_clean_old_files($from = 0)
                 {
                     @kleeja_unlink($row['folder'] . '/' . $row['name']);
                 }
+
                 //delete thumb
                 if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                 {
@@ -1103,8 +1104,8 @@ function kleeja_log($text)
 
 /**
  * Return the first and last seek of range to be flushed.
- * @param string $range
- * @param $fileSize
+ * @param  string $range
+ * @param         $fileSize
  * @return array
  */
 function kleeja_set_range($range, $fileSize)
@@ -1253,10 +1254,10 @@ function add_to_serve_rules($rules, $unique_id = '')
     }
 
     $current_serve_content = preg_replace(
-                        '/return\s{0,4}\[/',
-                        'return [' . PHP_EOL . $rules,
-                        $current_serve_content
-                    );
+        '/return\s{0,4}\[/',
+        'return [' . PHP_EOL . $rules,
+        $current_serve_content
+    );
 
 
     if (! is_writable(PATH . 'plugins_rules.php'))
@@ -1285,7 +1286,7 @@ function remove_from_serve_rules($unique_id)
         '/^#start_' . preg_quote($unique_id) . '.*' . '#end_' . preg_quote($unique_id) . '$/sm',
         '',
         $current_serve_content
-        );
+    );
 
     if ($new_serve_content === $current_serve_content)
     {

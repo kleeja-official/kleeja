@@ -77,6 +77,7 @@ if (ip('submit'))
         {
             //delete from folder ..
             @kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
+
             //delete thumb
             if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
             {
@@ -98,8 +99,9 @@ if (ip('submit'))
             $sizes += $row['size'];
 
             //Subtract size from storage of the user
-            if ($row['user'] != -1) {
-                $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-".$row['size']." WHERE id=".$row['user']);
+            if ($row['user'] != -1)
+            {
+                $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-" . $row['size'] . ' WHERE id=' . $row['user']);
             }
         }
     }
@@ -141,7 +143,6 @@ if (ip('submit'))
 }
 elseif ($current_smt == '')
 {
-
 //
     //Delete all user files [only one user]
 //
@@ -258,12 +259,12 @@ elseif ($current_smt == '')
     {
         //get search filter
         $filter            = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
-        
+
         if (! $filter)
         {
             kleeja_admin_err($lang['ERROR_TRY_AGAIN'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=h_search', 1);
         }
-        
+
         $deletelink        = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&deletefiles=' . g('search_id');
         $is_search         = true;
         $query['WHERE']    = build_search_query(unserialize(htmlspecialchars_decode($filter['filter_value'])));
@@ -446,7 +447,7 @@ elseif ($current_smt == 'delete_by_extension')
             'WHERE'  => 'type = \'' . $ext . '\''
         ];
 
-        $result = $SQL->build($query);
+        $result        = $SQL->build($query);
         $deleted_files = [];
         $fileSizes     = 0;
 
@@ -470,8 +471,9 @@ elseif ($current_smt == 'delete_by_extension')
                 $deleted_files[] = $file['id'];
 
                 //Subtract size from storage of the user
-                if ($file['user'] != -1) {
-                    $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-".$file['size']." WHERE id=".$file['user']);
+                if ($file['user'] != -1)
+                {
+                    $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-" . $file['size'] . ' WHERE id=' . $file['user']);
                 }
             }
 

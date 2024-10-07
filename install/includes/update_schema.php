@@ -34,6 +34,10 @@ $update_schema[9]['sql'] = [
 // ];
 
 $update_schema[10]['sql'] = [
-    'about_files'   => "ALTER TABLE `{$dbprefix}files` ADD `about` LONGTEXT NULL DEFAULT NULL AFTER `real_filename`;",
-    'enable_multipart' => "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) SELECT `group_id`, 'enable_multipart', 1 FROM `{$dbprefix}groups`;",
+    'about_files'           => "ALTER TABLE `{$dbprefix}files` ADD `about` LONGTEXT NULL DEFAULT NULL AFTER `real_filename`;",
+    'enable_multipart'      => "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) SELECT `group_id`, 'enable_multipart', 1 FROM `{$dbprefix}groups`;",
+    'user_storage_size'     => "ALTER TABLE `{$dbprefix}users` ADD `storage_size` bigint(20) NOT NULL DEFAULT '0' AFTER `hash_key`;",
+    'group_max_storage'     => "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) SELECT `group_id`, 'max_storage', 0 FROM `{$dbprefix}groups`;",
+    'multipart_config'      => 'INSERT INTO `' . $dbprefix . 'config` (`name`, `value`, `option`, `display_order`, `type`, `plg_id`, `dynamic`) VALUES (\'enable_multipart\', 1, \'<label>{lang.YES}<input type=\"radio\" id=\"enable_multipart\" name=\"enable_multipart\" value=\"1\"  <IF NAME=\"con.enable_multipart==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"enable_multipart\" name=\"enable_multipart\" value=\"0\"  <IF NAME=\"con.enable_multipart==0\"> checked=\"checked\"</IF> /></label>\', 45, \'groups\', 0, 0);',
+    'max_storage_config'    => 'INSERT INTO `' . $dbprefix . 'config` (`name`, `value`, `option`, `display_order`, `type`, `plg_id`, `dynamic`) VALUES (\'max_storage\', 0, \'<input type=\"text\" id=\"max_storage\" name=\"max_storage\" value=\"{con.max_storage}\" size=\"20\" style=\"direction:ltr\" />\', 11, \'groups\', 0, 0);',
 ];
