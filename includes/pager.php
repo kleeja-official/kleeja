@@ -19,8 +19,8 @@ class Pagination
     protected $totalPages, $startRow , $currentPage;
 
     /**
-     * @param     $rowsPerPage
-     * @param     $numRows
+     * @param $rowsPerPage
+     * @param $numRows
      * @param int $currentPage
      */
     public function __construct($rowsPerPage, $numRows, $currentPage = 1)
@@ -91,7 +91,7 @@ class Pagination
 
 
     /**
-     * @param         $link
+     * @param $link
      * @param  string $link_plus
      * @return string
      */

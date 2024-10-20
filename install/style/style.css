@@ -303,7 +303,7 @@ ul.headerIcon li a img {
     width: 960px;
     margin: 50px auto 10px auto;
     padding-top: 20px;
-    background: url('style/images/{{echo !empty($GLOBALS['IN_UPDATE']) ? 'logo2.gif':'logo.gif';}}') no-repeat center 20px;
+    background: url('style/images/{{echo $GLOBALS['IN_UPDATE'] ? 'logo2.gif':'logo.gif';}}') no-repeat center 20px;
 }
 .BoxInner  {
     width: 680px;

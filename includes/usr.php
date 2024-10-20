@@ -17,12 +17,6 @@ if (! defined('IN_COMMON'))
 
 class usrcp
 {
-    private $user_id    = -1;
-    private $group_id   = 2;
-    private $user_name  = null;
-    private $user_mail  = null;
-    private $last_visit = null;
-
     public function data($name, $pass, $hashed = false, $expire = 86400, $loginadm = false)
     {
         //expire
@@ -40,7 +34,7 @@ class usrcp
         }
 
         //normal
-        return $this->normal($name, $pass, $expire, $hashed, $loginadm);
+        return $this->normal($name, $pass, $hashed, $expire, $loginadm);
     }
 
     //get username by id
@@ -61,13 +55,13 @@ class usrcp
     }
 
     //now our table, normal user system
-    public function normal($name, $pass, $expire, $hashed = false, $loginadm = false)
+    public function normal($name, $pass, $hashed = false, $expire, $loginadm = false)
     {
         global $SQL, $dbprefix, $config, $userinfo;
 
         $userinfo = [
-            'id'             => $this->user_id,
-            'group_id'       => $this->group_id,
+            'id'             => 0,
+            'group_id'       => 2,
         ];
 
         $query = [
@@ -104,7 +98,6 @@ class usrcp
                 if (strlen($row['password']) == '32' && empty($row['password_salt']) && defined('CONVERTED_SCRIPT'))
                 {
                     $passmd5 = md5($pass);
-
                     ////update old md5 hash to phpass hash
                     if ($row['password'] == $passmd5)
                     {
@@ -124,8 +117,8 @@ class usrcp
 
                         $SQL->build($update_query);
                     }
-                    else //if the password is wrong
-                    {
+                    else
+                    { //if the password is wrong
                         return false;
                     }
                 }
@@ -135,14 +128,18 @@ class usrcp
                     return false;
                 }
 
+                //Avoid dfining constants again for admin panel login
+                if (! $loginadm)
+                {
+                    define('USER_ID', $row['id']);
+                    define('GROUP_ID', $row['group_id']);
+                    define('USER_NAME', $row['name']);
+                    define('USER_MAIL', $row['mail']);
+                    define('LAST_VISIT', $row['last_visit']);
+                }
+
                 //all user fileds info
                 $userinfo = $row;
-
-                $this->user_id    = $row['id'];
-                $this->group_id   = $row['group_id'];
-                $this->user_name  = $row['name'];
-                $this->user_mail  = $row['mail'];
-                $this->last_visit = $row['last_visit'];
 
                 $user_y = base64_encode(serialize(['id'=>$row['id'], 'name'=>$row['name'], 'mail'=>$row['mail'], 'last_visit'=>$row['last_visit']]));
 
@@ -155,10 +152,9 @@ class usrcp
                 //if last visit > 1 minute then update it
                 if (empty($row['last_visit']) || time() - $row['last_visit'] > 60)
                 {
-                    $this->last_visit  = time();
                     $update_last_visit = [
                         'UPDATE'       => "{$dbprefix}users",
-                        'SET'          => 'last_visit=' . $this->last_visit,
+                        'SET'          => 'last_visit=' . time(),
                         'WHERE'        => 'id=' . intval($row['id'])
                     ];
 
@@ -212,7 +208,7 @@ class usrcp
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('id_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        return $this->user_id;
+        return defined('USER_ID') ? USER_ID : false;
     }
 
     // group ids
@@ -220,7 +216,7 @@ class usrcp
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('group_id_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        return $this->group_id;
+        return defined('GROUP_ID') ? GROUP_ID : false;
     }
 
     // user name
@@ -228,7 +224,7 @@ class usrcp
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('name_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        return $this->user_name;
+        return defined('USER_NAME') ? USER_NAME : false;
     }
 
     // user mail
@@ -236,15 +232,7 @@ class usrcp
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('mail_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-        return $this->user_mail;
-    }
-
-    // last visit
-    public function last_visit()
-    {
-        is_array($plugin_run_result = Plugins::getInstance()->run('last_visit_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-        return $this->last_visit;
+        return defined('USER_MAIL') ? USER_MAIL : false;
     }
 
     // logout func
@@ -257,12 +245,6 @@ class usrcp
         {
             $this->logout_cp();
         }
-
-        $this->user_id    = -1;
-        $this->group_id   = 2;
-        $this->user_name  = null;
-        $this->user_mail  = null;
-        $this->last_visit = null;
 
         //is ther any cookies
         $this->kleeja_set_cookie('ulogu', '', time() - 31536000);//31536000 = year
@@ -393,7 +375,7 @@ class usrcp
                 $data = str_replace('=', '_', base64_encode($data));
                 $data = strtr($data, $txt);
 
-                break;
+            break;
 
             case 2:
                 $txtx = array_flip($txt);
@@ -401,7 +383,7 @@ class usrcp
                 $data = strtr($data, $txtx);
                 $data = base64_decode(str_replace('_', '=', $data));
 
-                break;
+            break;
         }
 
         return $data;
@@ -429,8 +411,8 @@ class usrcp
 
         //to make sure
         $userinfo = [
-            'id'             => $this->user_id,
-            'group_id'       => $this->group_id,
+            'id'             => -1,
+            'group_id'       => 2,
         ];
 
         //if login up
@@ -443,12 +425,25 @@ class usrcp
             //if not expire
             if (($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at)) && ($expire_at > time()))
             {
-                if (! empty($u_info))
+                if (user_can('enter_acp', $group_id))
                 {
-                    $userinfo             = unserialize(base64_decode($u_info));
-                    $userinfo['group_id'] = $group_id;
-                    $userinfo['password'] = $hashed_password;
-                    $user_data            = $this->data($user_id, $hashed_password, true, $expire_at);
+                    $user_data = $this->data($user_id, $hashed_password, true, $expire_at);
+                }
+                else
+                {
+                    if (! empty($u_info))
+                    {
+                        $userinfo             = unserialize(base64_decode($u_info));
+                        $userinfo['group_id'] = $group_id;
+                        $userinfo['password'] = $hashed_password;
+
+                        define('USER_ID', $userinfo['id']);
+                        define('GROUP_ID', $userinfo['group_id']);
+                        define('USER_NAME', $userinfo['name']);
+                        define('USER_MAIL', $userinfo['mail']);
+                        define('LAST_VISIT', $userinfo['last_visit']);
+                        $user_data = true;
+                    }
                 }
             }
 
@@ -458,13 +453,14 @@ class usrcp
             }
             else
             {
-                $this->user_id    = $userinfo['id'];
-                $this->group_id   = $userinfo['group_id'];
-                $this->user_name  = $userinfo['name'];
-                $this->user_mail  = $userinfo['mail'];
-                $this->last_visit = $userinfo['last_visit'];
                 return $user_data;
             }
+        }
+        else
+        {
+            //guest
+            define('USER_ID', $userinfo['id']);
+            define('GROUP_ID', $userinfo['group_id']);
         }
 
         return false; //nothing

@@ -85,7 +85,7 @@ if ($nums_rows > 0)
             'id'              => $row['id'],
             'name'            => $row['name'],
             'mail'            => $row['mail'],
-            'text'            => $row['text'],
+            'text'            => htmlspecialchars($row['text']),
             'human_time'      => kleeja_date($row['time']),
             'time'            => kleeja_date($row['time'], false),
             'ip'              => $row['ip'],
@@ -156,6 +156,7 @@ $page_nums         = $Pager->print_nums(basename(ADMIN_PATH) . '?cp=' . basename
 if (ip('submit'))
 {
     $text    = ($SQL->affected() ? $lang['CALLS_UPDATED'] : $lang['NO_UP_CHANGE_S']);
+    $text    .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . $action . '\'); check_msg_and_reports();", 2000);</script>' . "\n";
     kleeja_admin_info($text, true, '', true, $action);
 }
 

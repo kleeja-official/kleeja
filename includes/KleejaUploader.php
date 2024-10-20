@@ -18,6 +18,7 @@ if (! defined('IN_COMMON'))
 
 interface KleejaUploader
 {
+
     /**
      * set the allowed extensions of uploaded files
      * @param  array $allowed_file_extensions an array of allowed extensions, and sizes ['gif'=>122, 'png'=>2421 ..]

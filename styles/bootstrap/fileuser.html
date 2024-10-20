@@ -93,19 +93,6 @@
 
     </form>
 
-    <!-- user storage -->
-    <div class="card mb-3">
-        <div class="card-header">{lang.USED_SPACE}</div>
-        <div class="card-body text-center">
-            <span>{storage_usage_str}</span>
-            <IF NAME="is_limited">
-                <div class="progress mt-1">
-                    <div role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {storage_per}%" aria-valuenow="{storage_per}" class="progress-bar bg-(storage_per gte 90?danger:primary)">{storage_per}%</div>
-                </div>
-            </IF>
-        </div>
-    </div>
-
     <!-- link user folder -->
     <div class="card">
         <div class="card-header copylink">{lang.COPY_AND_GET_DUD}</div>

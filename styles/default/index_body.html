@@ -1,0 +1,95 @@
+<!-- Powered by kleeja -->
+<div id="content_index">
+
+    <!-- welcome -->
+    <h6><img src="{STYLE_PATH}images/Smile.png" width="20" height="20" alt="{lang.WELCOME}" style="vertical-align:middle;" /> {lang.WELCOME} .. <IF NAME="user_is">[ {username} ]</IF></h6>
+    <div class="wolcome_msg">{welcome_msg}</div>
+    <!-- @end-welcome -->
+
+    <div class="clr"></div>
+
+    <IF NAME="info">
+    <!-- msg, Infos & Alerts & Errors -->
+    <div id="system-message">
+        <LOOP NAME="info">
+        <ul class="{{t}}">
+            <li>{lang.INFORMATION} : <span> {{i}} </span></li>
+        </ul>
+        </LOOP>
+    </div><!-- @end-msg -->
+    </IF>
+
+    <div class="clr"></div>
+
+    <!-- form upload -->
+    <form id="uploader" action="{action}" method="post" enctype="multipart/form-data">
+
+        <!-- upload boxes -->
+        <div class="tabmain">
+
+            <ul class="tabnav">
+                <!-- First-Tab -->
+                <li title="{lang.DOWNLOAD_F}">{lang.DOWNLOAD_F}</li>
+                <!-- @First-Tab -->
+
+                <!--you-can-add-another-tab-here-->
+            </ul>
+
+            <!-- First-Box -->
+            <div class="tabcon" title="{lang.DOWNLOAD_F}">
+            <div class="go_up">
+                <!-- upload normal -->
+                <LOOP NAME=FILES_NUM_LOOP>
+                <input class="file" type="file" name="file_{{i}}_" data-number="{{i}}" style="{{show}}" size="60" />
+                </LOOP>
+                <div class="agree"><span>{terms_msg}</span></div>
+                <div class="bn_up"><input type="submit" id="submitr" name="submitr" value="{lang.DOWNLOAD_F}" /></div>
+                <div class="clr"></div>
+                <!-- @upload normal -->
+            </div>
+            </div>
+            <!-- @First-Box -->
+
+            <!--you-can-add-another-box-here-->
+
+        </div>
+        <!-- @upload boxes -->
+
+
+        <IF NAME="config.safe_code">
+        <!-- verification code -->
+        <div class="safe_code IEs_c">
+            <p>{lang.VERTY_CODE}</p>
+            <div class="clr"></div>
+            <div>
+                <img style="vertical-align:middle;" id="kleeja_img_captcha" src="{captcha_file_path}" alt="{lang.REFRESH_CAPTCHA}" title="{lang.REFRESH_CAPTCHA}" onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
+                <input type="text" name="kleeja_code_answer" id="kleeja_code_answer" />
+            </div>
+            <div class="clr"></div>
+            <p class="explain">{lang.NOTE_CODE}</p>
+        </div>
+        <div class="clr"></div>
+        <!-- @end-verification-code -->
+        </IF>
+
+    </form><!-- @end-form-upload -->
+
+    <!-- box loading -->
+    <div id="loadbox">
+        <div class="waitloading">{lang.WAIT_LOADING}</div>
+        <div class="clr"></div><br />
+            <img src="{STYLE_PATH}images/loading.gif" alt="loading ..." />
+        <div class="clr"></div><br /><br /><br />
+    </div><!-- @end-box-loading -->
+
+    <IF NAME="show_online">
+        <!-- OnLine -->
+        <div class="online">
+            <p class="onlineall">{lang.NUMBER_ONLINE} : [ {current_online_users} ]</p>
+            <LOOP NAME="show_names">
+                <p class="name_users"><!--{{separator}}-->{{name}}</p>
+            </LOOP>
+        </div><!-- @end-OnLine -->
+    </IF>
+<div class="clr"></div>
+</div>

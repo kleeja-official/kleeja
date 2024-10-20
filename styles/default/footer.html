@@ -1,0 +1,140 @@
+    <div class="clr"></div>
+
+    <!-- Extras Footer -->
+    (extras.footer?<div class="dot"></div><div class="extras_footer">{extras.footer}</div><div class="dot"></div>:)
+    <!-- @end-extras-footer -->
+
+    </div><!-- @end-wrapper -->
+</div><!-- @end-main -->
+
+<!-- begin footer -->
+<div class="FooterLine clr"></div>
+<div id="footer">
+    <div class="footer_inner">
+        <div class="left">
+        <!--
+            Powered by kleeja,
+            Kleeja is Free PHP software, designed to help webmasters by
+            give their Users ability to upload files yo thier servers.
+            www.Kleeja.net
+         -->
+        </div>
+        <div class="right">
+            <!-- Copyrights-->
+            <div class="Copyrights">
+                {lang.COPYRIGHTS_X} &copy; <a href="{config.siteurl}">{config.sitename}</a>
+            </div><!-- @end-Copyrights -->
+        </div>
+
+        <div class="clr"></div>
+
+        <!-- button panel --><div class="bu-panel">{admin_page}</div><!-- @end-button-panel -->
+        <!-- footer stats -->(page_stats?<div class="footer_stats">{page_stats}</div>:)<!-- @end-footer-stats -->
+        <!-- google analytics -->(googleanalytics?<div class="footer_stats">{googleanalytics}</div>:)<!-- @end-google-analytics -->
+
+    </div>
+</div>
+<!-- @end-footer -->
+
+<div
+    style="padding:1px;font-size:11px;display:block !important;background:#f7f7f7 !important; color:#888 !important; margin:3px; position:fixed;bottom:0;left:1%;z-index:99999;text-align:center;">
+    Powered by
+    <a style="display:inline !important;color:#888 !important;" href="https://kleeja.net/" onclick="window.open(this.href,'_blank');return false;"
+        title="Kleeja">Kleeja</a>
+</div>
+
+<script type="text/javascript" src="{STYLE_PATH}jquery.js"></script>
+
+<!-- don't ever delete this -->
+{run_queue}
+
+<script type="text/javascript">
+<IF NAME="js_allowed_extensions_types">
+$(document).ready(function(){
+    $('#uploader').submit(function(){
+        var numfiles = 0;
+        $("#uploader input:file").each(function() {
+            if ($(this).get(0).files.length !== 0) {
+                numfiles++;
+            }
+        });
+
+        if(numfiles == 0){
+            alert('{lang.NO_FILE_SELECTED}');
+            return false;
+        }
+
+        $('#loadbox').css('display', 'block');
+        $('#uploader').css('display', 'none');
+
+    });
+
+
+    $("#uploader input:file").change(function (){
+        if(!check_selected_file(this)){
+            $(this).val('');
+        }else{
+            if($(this).data('number') !== null){
+                var selected_text = $('#file-text' + $(this).data('number'));
+                selected_text.val($(this).val());
+                //show another one
+                var current_plus_one = Number($(this).data('number')) + 1;
+                if($('[data-number="' + current_plus_one + '"]') !== null){
+                    $('[data-number="' + current_plus_one + '"]').show();
+                }else{
+                    //alert reached limit
+                }
+            }
+        }
+    });
+
+});
+
+
+var allowed_exts = {js_allowed_extensions_types};
+var allowed_sizes = {js_allowed_extensions_sizes};
+
+function check_selected_file(file) {
+    var selected_file = file.files[0];
+    var file_name = selected_file.name;
+    var ext_dot_position = file_name.lastIndexOf(".");
+
+    if(ext_dot_position === -1){
+        alert('{lang.WRONG_F_NAME}'.replace('%s', file_name));
+        return false;
+    }
+    var file_extension = file_name.substring(ext_dot_position + 1).toLowerCase();
+    var file_size = selected_file.size;
+
+    if(!(allowed_exts.indexOf(file_extension) > -1)){
+        //extension not allowed message alert
+        alert('{lang.FORBID_EXT}'.replace('%s', file_extension));
+        return false;
+    }else{
+
+        //check size
+        var ext_allowed_size = allowed_sizes[allowed_exts.indexOf(file_extension)];
+        if(file_size > ext_allowed_size){
+            //size is larger than allowed message alert
+            alert('{lang.SIZE_F_BIG}'.replace('%1$s', file_name).replace('%2$s', (ext_allowed_size/1048576).toFixed(2) + ' MB'));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function tabs(c1,c2,c3,c4){var m2,m3,l,t;var onclickf=function(){if(l<1)return 0;for(t=0;t<l;t++)if(m2[t]!=this){m2[t].className="";m3[t].style.display="none"}else{m2[t].className=c4;m3[t].style.display="block"}};var cl=function(){if(l<1)return 0;m2[0].className=c4;m3[0].style.display="block";for(t=0;t<l;t++)m2[t].onclick=onclickf};m2=$(c1+" "+c2+" li");if(m2[0]!="undefined"){m3=$(c1+" "+c3);l=m2.length;cl()}}$(document).ready(function(){var mah;mah=new tabs(".tabmain",".tabnav",".tabcon","tabactive")});
+</IF>
+
+function update_kleeja_captcha(captcha_file, input_id)
+{
+    document.getElementById(input_id).value = '';
+    //Get a reference to CAPTCHA image
+    img = document.getElementById('kleeja_img_captcha');
+    //Change the image
+    img.src = captcha_file + '&' + Math.random();
+}
+</script>
+</body>
+</html>

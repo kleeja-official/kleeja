@@ -268,11 +268,10 @@
 <br>
 
 
-<IF NAME="no_results">
-	<div class="alert alert-info">{lang.NOTHING}</div>
-<ELSE>
-	<ul class="list-group">
+<IF NAME="arr">
+    <ul class="list-group">
     <LOOP NAME="arr">
+
         <li class="list-group-item d-flex justify-content-between">
             <div class="col col-md-auto">
                 <h3>{{name}} <IF LOOP="founder==1"><i class="fa fa-star text-warning" title="{lang.FOUNDER}" data-toggle="tooltip" style="font-size: medium;vertical-align: top;"></i></IF></h3>
@@ -293,8 +292,12 @@
                 </div>
             </div>
         </li>
+
+
     </LOOP>
     </ul>
+    <ELSE>
+        <div class="alert alert-info">{lang.NOTHING}</div>
 </IF>
 
 

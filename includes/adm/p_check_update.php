@@ -54,13 +54,12 @@ if ($current_smt == 'check')
     //get data from kleeja github repo
     if (! ($version_data = $cache->get('kleeja_repo_version')))
     {
-        $version_data = [];
-
         $github_data = FetchFile::make(KLEEJA_VERSION_CHECK_LINK)->setTimeOut(100)->get();
 
         if (! empty($github_data))
         {
             $latest_release = json_decode($github_data, true);
+            $version_data   = null;
 
             if (json_last_error() === JSON_ERROR_NONE)
             {
@@ -104,7 +103,7 @@ if ($current_smt == 'check')
     }
 
     $data    = [
-        'version_number'       => isset($version_data['version']) ? $version_data['version'] : null,
+        'version_number'       => $version_data['version'],
         'last_check'           => time()
     ];
 

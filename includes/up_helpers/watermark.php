@@ -18,8 +18,8 @@ if (! defined('IN_COMMON'))
  * return nothing because if it work then ok , and if not then ok too :)
  * @todo text support
  *
- * @param            $name
- * @param            $ext
+ * @param $name
+ * @param $ext
  * @return bool|void
  */
 function helper_watermark($name, $ext)
@@ -44,12 +44,12 @@ function helper_watermark($name, $ext)
     if (file_exists(dirname(__FILE__) . '/../../images/watermark.png'))
     {
         $logo_path= dirname(__FILE__) . '/../../images/watermark.png';
-        $src_logo = @imagecreatefrompng($logo_path);
+        $src_logo = imagecreatefrompng($logo_path);
     }
     elseif (file_exists(dirname(__FILE__) . '/../../images/watermark.gif'))
     {
         $logo_path= dirname(__FILE__) . '/../../images/watermark.gif';
-        $src_logo = @imagecreatefromgif($logo_path);
+        $src_logo = imagecreatefromgif($logo_path);
     }
 
     //no watermark pic
@@ -66,43 +66,37 @@ function helper_watermark($name, $ext)
     }
 
     //now, lets work and detect our image extension
-    list($bwidth, $bheight, $src_img_type) = getimagesize($name);
-
-    $src_img = false;
-
-    switch ($src_img_type)
+    if (strpos($ext, 'jp') !== false)
     {
-        case IMAGETYPE_GIF:
-            //$src_img = imagecreatefromgif($name);
-            return;
-
-            break;
-
-        case IMAGETYPE_JPEG:
-            $src_img = imagecreatefromjpeg($name);
-
-            break;
-
-        case IMAGETYPE_PNG:
-            $src_img = imagecreatefrompng($name);
-
-            break;
-
-        case IMAGETYPE_BMP:
-            if (! function_exists('imagecreatefrombmp'))
-            {
-                include dirname(__file__) . '/BMP.php';
-            }
-
-            $src_img = imagecreatefrombmp($name);
-
-            break;
+        $src_img = @imagecreatefromjpeg($name);
     }
+    elseif (strpos($ext, 'png') !== false)
+    {
+        $src_img = @imagecreatefrompng($name);
+    }
+    elseif (strpos($ext, 'gif') !== false)
+    {
+        return;
+    //        $src_img = @imagecreatefromgif($name);
+    }
+    elseif (strpos($ext, 'bmp') !== false)
+    {
+        if (! defined('BMP_CLASS_INCLUDED'))
+        {
+            include dirname(__file__) . '/BMP.php';
+            define('BMP_CLASS_INCLUDED', true);
+        }
 
-    if (! $src_img)
+        $src_img = imagecreatefrombmp($name);
+    }
+    else
     {
         return;
     }
+
+    //detect width, height for the image
+    $bwidth  = @imagesx($src_img);
+    $bheight = @imagesy($src_img);
 
     //detect width, height for the watermark image
     $lwidth  = @imagesx($src_logo);
@@ -182,7 +176,6 @@ function helper_watermark_imagick($name, $ext, $logo)
     if ($ext == 'gif')
     {
         $i = 0;
-
         //$gif_new = new Imagick();
         foreach ($im as $frame)
         {
