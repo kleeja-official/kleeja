@@ -50,61 +50,61 @@ if (ip('newstyle'))
 }
 
 switch ($case):
-default:
-case 'local':
-case 'store':
+    default:
+    case 'local':
+    case 'store':
 
-    //get styles
-    $available_styles = [];
+        //get styles
+        $available_styles = [];
 
-    if ($dh = @opendir(PATH . 'styles'))
-    {
-        while (false !== ($folder_name = readdir($dh)))
+        if ($dh = @opendir(PATH . 'styles'))
         {
-            if (is_dir(PATH . 'styles/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
+            while (false !== ($folder_name = readdir($dh)))
             {
-                //info
-                $style_info_arr = [
-                    'name'      => $folder_name,
-                    'desc'      => '',
-                    'copyright' => '',
-                    'version'   => ''
-                ];
-
-                if (($style_info = kleeja_style_info($folder_name)) != false)
+                if (is_dir(PATH . 'styles/' . $folder_name) && preg_match('/[a-z0-9_.]{3,}/', $folder_name))
                 {
-                    foreach (['name', 'desc', 'copyright', 'version'] as $InfoKey)
+                    //info
+                    $style_info_arr = [
+                        'name'      => $folder_name,
+                        'desc'      => '',
+                        'copyright' => '',
+                        'version'   => ''
+                    ];
+
+                    if (($style_info = kleeja_style_info($folder_name)) != false)
                     {
-                        if (array_key_exists($InfoKey, $style_info))
+                        foreach (['name', 'desc', 'copyright', 'version'] as $InfoKey)
                         {
-                            if (is_array($style_info[$InfoKey]))
+                            if (array_key_exists($InfoKey, $style_info))
                             {
-                                $style_info_arr[$InfoKey] = ! empty($style_info[$InfoKey][$config['language']])
-                                    ? htmlspecialchars($style_info[$InfoKey][$config['language']])
-                                    : htmlspecialchars($style_info[$InfoKey]['en']);
-                            }
-                            else
-                            {
-                                $style_info_arr[$InfoKey] = htmlspecialchars($style_info[$InfoKey]);
+                                if (is_array($style_info[$InfoKey]))
+                                {
+                                    $style_info_arr[$InfoKey] = ! empty($style_info[$InfoKey][$config['language']])
+                                        ? htmlspecialchars($style_info[$InfoKey][$config['language']])
+                                        : htmlspecialchars($style_info[$InfoKey]['en']);
+                                }
+                                else
+                                {
+                                    $style_info_arr[$InfoKey] = htmlspecialchars($style_info[$InfoKey]);
+                                }
                             }
                         }
                     }
+
+                    $available_styles[$folder_name] = [
+                        'name'            => $folder_name,
+                        'is_default'      => $config['style'] == $folder_name ? true : false,
+                        'link_mk_default' => basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;style_choose=' . $folder_name,
+                        'icon'            => file_exists(PATH . 'styles/' . $folder_name . '/screenshot.png')
+                                                ? PATH . 'styles/' . $folder_name . '/screenshot.png'
+                                                : $STYLE_PATH_ADMIN . 'images/style.png',
+                        'info' => $style_info_arr
+                    ];
                 }
-
-                $available_styles[$folder_name] = [
-                    'name'            => $folder_name,
-                    'is_default'      => $config['style'] == $folder_name ? true : false,
-                    'link_mk_default' => basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;style_choose=' . $folder_name,
-                    'icon'            => file_exists(PATH . 'styles/' . $folder_name . '/screenshot.png')
-                                            ? PATH . 'styles/' . $folder_name . '/screenshot.png'
-                                            : $STYLE_PATH_ADMIN . 'images/style.png',
-                    'info' => $style_info_arr
-                ];
             }
-        }
 
-        @closedir($dh);
-    }
+            @closedir($dh);
+        }
 
         //do not proceed if not store case
         if (! in_array($case, ['store', 'check']))
@@ -174,142 +174,142 @@ case 'store':
 
         $store_styles_count = sizeof($store_styles);
 
-break;
+        break;
 
-case 'select':
+    case 'select':
 
-    $style_name = preg_replace('/[^a-z0-9_\-\.]/i', '', g('style'));
+        $style_name = preg_replace('/[^a-z0-9_\-\.]/i', '', g('style'));
 
-    //if empty, let's ignore it
-    if (empty($style_name))
-    {
-        redirect(basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
-    }
-
-    //
-    //check if this style depend on other style and
-    //check kleeja version that required by this style
-    //
-    if (($style_info = kleeja_style_info($style_name)) != false)
-    {
-        if (isset($style_info['depend_on']) && ! is_dir(PATH . 'styles/' . $style_info['depend_on']))
+        //if empty, let's ignore it
+        if (empty($style_name))
         {
-            kleeja_admin_err(sprintf($lang['DEPEND_ON_NO_STYLE_ERR'], $style_info['depend_on']));
+            redirect(basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
         }
 
-        if (isset($style_info['kleeja_version']) && version_compare(strtolower($style_info['kleeja_version']), strtolower(KLEEJA_VERSION), '>'))
+    //
+        //check if this style depend on other style and
+        //check kleeja version that required by this style
+    //
+        if (($style_info = kleeja_style_info($style_name)) != false)
         {
-            kleeja_admin_err(sprintf($lang['KLJ_VER_NO_STYLE_ERR'], $style_info['kleeja_version']));
-        }
-
-        //is this style require some plugins to be installed
-        if (isset($style_info['plugins_required']))
-        {
-            $plugins_required = explode(',', $style_info['plugins_required']);
-            $plugins_required = array_map('trim', $plugins_required);
-
-            $query = [
-                'SELECT' => 'plg_name, plg_disabled',
-                'FROM'   => "{$dbprefix}plugins",
-            ];
-
-            $result = $SQL->build($query);
-
-            if ($SQL->num_rows($result) != 0)
+            if (isset($style_info['depend_on']) && ! is_dir(PATH . 'styles/' . $style_info['depend_on']))
             {
-                $plugins_required = array_flip($plugins_required);
-                while ($row = $SQL->fetch_array($result))
+                kleeja_admin_err(sprintf($lang['DEPEND_ON_NO_STYLE_ERR'], $style_info['depend_on']));
+            }
+
+            if (isset($style_info['kleeja_version']) && version_compare(strtolower($style_info['kleeja_version']), strtolower(KLEEJA_VERSION), '>'))
+            {
+                kleeja_admin_err(sprintf($lang['KLJ_VER_NO_STYLE_ERR'], $style_info['kleeja_version']));
+            }
+
+            //is this style require some plugins to be installed
+            if (isset($style_info['plugins_required']))
+            {
+                $plugins_required = explode(',', $style_info['plugins_required']);
+                $plugins_required = array_map('trim', $plugins_required);
+
+                $query = [
+                    'SELECT' => 'plg_name, plg_disabled',
+                    'FROM'   => "{$dbprefix}plugins",
+                ];
+
+                $result = $SQL->build($query);
+
+                if ($SQL->num_rows($result) != 0)
                 {
-                    if (in_array($row['plg_name'], $plugins_required) and $row['plg_disabled'] != 1)
+                    $plugins_required = array_flip($plugins_required);
+                    while ($row = $SQL->fetch_array($result))
                     {
-                        unset($plugins_required[$row['plg_name']]);
+                        if (in_array($row['plg_name'], $plugins_required) and $row['plg_disabled'] != 1)
+                        {
+                            unset($plugins_required[$row['plg_name']]);
+                        }
                     }
                 }
-            }
 
-            $SQL->freeresult($result);
+                $SQL->freeresult($result);
 
-            $plugins_required = array_flip($plugins_required);
+                $plugins_required = array_flip($plugins_required);
 
-            if (sizeof($plugins_required))
-            {
-                kleeja_admin_err(sprintf($lang['PLUGINS_REQ_NO_STYLE_ERR'], implode(', ', $plugins_required)));
+                if (sizeof($plugins_required))
+                {
+                    kleeja_admin_err(sprintf($lang['PLUGINS_REQ_NO_STYLE_ERR'], implode(', ', $plugins_required)));
+                }
             }
         }
-    }
 
 
-    //make it as default
-    update_config('style', $style_name);
-    update_config('style_depend_on', isset($style_info['depend_on']) ? $style_info['depend_on'] : '');
+        //make it as default
+        update_config('style', $style_name);
+        update_config('style_depend_on', isset($style_info['depend_on']) ? $style_info['depend_on'] : '');
 
-    //delete all cache to get new style
-    delete_cache('', true);
+        //delete all cache to get new style
+        delete_cache('', true);
 
-    //show msg
-    kleeja_admin_info(sprintf($lang['STYLE_NOW_IS_DEFAULT'], $style_name), $action);
+        //show msg
+        kleeja_admin_info(sprintf($lang['STYLE_NOW_IS_DEFAULT'], $style_name), $action);
 
-break;
+        break;
 
-case 'upload':
+    case 'upload':
 
-    if (intval($userinfo['founder']) !== 1)
-    {
-        $ERRORS[] = $lang['HV_NOT_PRVLG_ACCESS'];
-    }
-
-
-    $ERRORS = [];
-
-    //is uploaded?
-    if (empty($_FILES['style_file']['tmp_name']))
-    {
-        $ERRORS[] = $lang['CHOSE_F'];
-    }
-
-
-    //extract it to plugins folder
-    if (! sizeof($ERRORS))
-    {
-        if (class_exists('ZipArchive'))
+        if (intval($userinfo['founder']) !== 1)
         {
-            $zip = new ZipArchive;
+            $ERRORS[] = $lang['HV_NOT_PRVLG_ACCESS'];
+        }
 
-            if ($zip->open($_FILES['style_file']['tmp_name']) === true)
+
+        $ERRORS = [];
+
+        //is uploaded?
+        if (empty($_FILES['style_file']['tmp_name']))
+        {
+            $ERRORS[] = $lang['CHOSE_F'];
+        }
+
+
+        //extract it to plugins folder
+        if (! sizeof($ERRORS))
+        {
+            if (class_exists('ZipArchive'))
             {
-                if (! $zip->extractTo(PATH . 'styles'))
+                $zip = new ZipArchive;
+
+                if ($zip->open($_FILES['style_file']['tmp_name']) === true)
                 {
-                    $ERRORS[] = sprintf($lang['EXTRACT_ZIP_FAILED'], 'styles');
+                    if (! $zip->extractTo(PATH . 'styles'))
+                    {
+                        $ERRORS[] = sprintf($lang['EXTRACT_ZIP_FAILED'], 'styles');
+                    }
+                    $zip->close();
                 }
-                $zip->close();
+                else
+                {
+                    $ERRORS[] =  sprintf($lang['EXTRACT_ZIP_FAILED'], 'styles');
+                }
             }
             else
             {
-                $ERRORS[] =  sprintf($lang['EXTRACT_ZIP_FAILED'], 'styles');
+                $ERRORS[] = $lang['NO_ZIP_ARCHIVE'];
             }
+        }
+
+        if (! empty($_FILES['style_file']['tmp_name']))
+        {
+            @unlink($_FILES['style_file']['tmp_name']);
+        }
+
+
+        if (! sizeof($ERRORS))
+        {
+            kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], true, '', true, $action);
         }
         else
         {
-            $ERRORS[] = $lang['NO_ZIP_ARCHIVE'];
+            kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), $action);
         }
-    }
 
-    if (! empty($_FILES['style_file']['tmp_name']))
-    {
-        @unlink($_FILES['style_file']['tmp_name']);
-    }
-
-
-    if (! sizeof($ERRORS))
-    {
-        kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], true, '', true, $action);
-    }
-    else
-    {
-        kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), $action);
-    }
-
-    break;
+        break;
 
     case 'dfolder':
 
@@ -341,160 +341,160 @@ case 'upload':
 
         kleeja_admin_err($lang['ERROR_TRY_AGAIN'], $action);
 
-    break;
+        break;
 
 
-case 'download':
+    case 'download':
 
-    if (intval($userinfo['founder']) !== 1)
-    {
-        header('HTTP/1.0 401 Unauthorized');
-        kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
-    }
-
-    $style_name = g('style');
-
-    $is_update = false;
-
-
-    if (! is_writable(PATH . 'styles'))
-    {
-        @chmod(PATH . 'styles', K_DIR_CHMOD);
-    }
-
-    //if style exists before, then trigger update action. rename folder to rollback in case of failure
-    if (file_exists(PATH . 'styles/' . $style_name))
-    {
-        $is_update = true;
-
-        if (! rename(
-            PATH . 'styles/' . $style_name,
-            PATH . 'styles/' . $style_name . '_backup'
-        ))
+        if (intval($userinfo['founder']) !== 1)
         {
-            if (file_exists(PATH . 'styles/' . $style_name))
-            {
-                kleeja_unlink(PATH . 'styles/' . $style_name);
-            }
-        }
-    }
-
-    // plugins avilable in kleeja store
-    $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
-
-    $catalog_styles = FetchFile::make($store_link)->get();
-
-    if ($catalog_styles)
-    {
-        $catalog_styles = json_decode($catalog_styles, true);
-
-        $store_styles = [];
-
-        // make an arry for all plugins in kleeja store that not included in our server
-        foreach ($catalog_styles as $style_info)
-        {
-            if ($style_info['type'] != 'style')
-            {
-                continue;
-            }
-
-            $store_styles[$style_info['name']] = [
-                'name'           => $style_info['name'] ,
-                'plg_version'    => $style_info['file']['version'] ,
-                'url'            => $style_info['file']['url'] ,
-                'kj_min_version' => $style_info['kleeja_version']['min'] ,
-                'kj_max_version' => $style_info['kleeja_version']['max'] ,
-            ];
+            header('HTTP/1.0 401 Unauthorized');
+            kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
         }
 
-        // this style is hosted in our store
-        if (isset($store_styles[$style_name]))
+        $style_name = g('style');
+
+        $is_update = false;
+
+
+        if (! is_writable(PATH . 'styles'))
         {
-            // check if the version of the plugin is compatible with our kleeja version or not
-            if (
-                version_compare(strtolower($store_styles[$style_name]['kj_min_version']), KLEEJA_VERSION, '<=')
-                && version_compare(strtolower($store_styles[$style_name]['kj_max_version']), KLEEJA_VERSION, '>=')
-                ) {
-                $style_name_link = $store_styles[$style_name]['url'];
+            @chmod(PATH . 'styles', K_DIR_CHMOD);
+        }
 
-                $style_archive = FetchFile::make($style_name_link)
-                                ->setDestinationPath(PATH . 'cache/' . $style_name . '.zip')
-                                ->isBinaryFile(true)
-                                ->get();
+        //if style exists before, then trigger update action. rename folder to rollback in case of failure
+        if (file_exists(PATH . 'styles/' . $style_name))
+        {
+            $is_update = true;
 
-                if ($style_archive)
+            if (! rename(
+                PATH . 'styles/' . $style_name,
+                PATH . 'styles/' . $style_name . '_backup'
+            ))
+            {
+                if (file_exists(PATH . 'styles/' . $style_name))
                 {
-                    if (file_exists(PATH . 'cache/' . $style_name . '.zip'))
+                    kleeja_unlink(PATH . 'styles/' . $style_name);
+                }
+            }
+        }
+
+        // plugins avilable in kleeja store
+        $store_link = 'https://raw.githubusercontent.com/kleeja-official/store-catalog/master/catalog.json';
+
+        $catalog_styles = FetchFile::make($store_link)->get();
+
+        if ($catalog_styles)
+        {
+            $catalog_styles = json_decode($catalog_styles, true);
+
+            $store_styles = [];
+
+            // make an arry for all plugins in kleeja store that not included in our server
+            foreach ($catalog_styles as $style_info)
+            {
+                if ($style_info['type'] != 'style')
+                {
+                    continue;
+                }
+
+                $store_styles[$style_info['name']] = [
+                    'name'           => $style_info['name'] ,
+                    'plg_version'    => $style_info['file']['version'] ,
+                    'url'            => $style_info['file']['url'] ,
+                    'kj_min_version' => $style_info['kleeja_version']['min'] ,
+                    'kj_max_version' => $style_info['kleeja_version']['max'] ,
+                ];
+            }
+
+            // this style is hosted in our store
+            if (isset($store_styles[$style_name]))
+            {
+                // check if the version of the plugin is compatible with our kleeja version or not
+                if (
+                    version_compare(strtolower($store_styles[$style_name]['kj_min_version']), KLEEJA_VERSION, '<=')
+                    && version_compare(strtolower($store_styles[$style_name]['kj_max_version']), KLEEJA_VERSION, '>=')
+                ) {
+                    $style_name_link = $store_styles[$style_name]['url'];
+
+                    $style_archive = FetchFile::make($style_name_link)
+                        ->setDestinationPath(PATH . 'cache/' . $style_name . '.zip')
+                        ->isBinaryFile(true)
+                        ->get();
+
+                    if ($style_archive)
                     {
-                        $zip = new ZipArchive();
-
-                        if ($zip->open(PATH . 'cache/' . $style_name . '.zip') === true)
+                        if (file_exists(PATH . 'cache/' . $style_name . '.zip'))
                         {
-                            if ($zip->extractTo(PATH . 'styles'))
+                            $zip = new ZipArchive();
+
+                            if ($zip->open(PATH . 'cache/' . $style_name . '.zip') === true)
                             {
-                                // we dont need the zip file anymore
-                                kleeja_unlink(PATH . 'cache/' . $style_name . '.zip');
-
-                                // uploaded style's archive has different name, so we change it
-                                rename(
-                                    PATH . 'styles/' . trim($zip->getNameIndex(0), '/'),
-                                    PATH . 'styles/' . $style_name
-                                );
-
-                                $zip->close();
-
-                                // download or update msg
-                                $adminAjaxContent = '1:::' . sprintf($lang[$is_update  ? 'ITEM_UPDATED' : 'ITEM_DOWNLOADED'], $style_name);
-
-                                //in case of update, delete back up version
-                                if (file_exists(PATH . 'styles/' . $style_name . '_backup'))
+                                if ($zip->extractTo(PATH . 'styles'))
                                 {
-                                    kleeja_unlink(PATH . 'styles/' . $style_name . '_backup');
+                                    // we dont need the zip file anymore
+                                    kleeja_unlink(PATH . 'cache/' . $style_name . '.zip');
+
+                                    // uploaded style's archive has different name, so we change it
+                                    rename(
+                                        PATH . 'styles/' . trim($zip->getNameIndex(0), '/'),
+                                        PATH . 'styles/' . $style_name
+                                    );
+
+                                    $zip->close();
+
+                                    // download or update msg
+                                    $adminAjaxContent = '1:::' . sprintf($lang[$is_update  ? 'ITEM_UPDATED' : 'ITEM_DOWNLOADED'], $style_name);
+
+                                    //in case of update, delete back up version
+                                    if (file_exists(PATH . 'styles/' . $style_name . '_backup'))
+                                    {
+                                        kleeja_unlink(PATH . 'styles/' . $style_name . '_backup');
+                                    }
+                                }
+                                else
+                                {
+                                    $adminAjaxContent = '1003:::' . sprintf($lang['EXTRACT_ZIP_FAILED'], PATH . 'styles');
                                 }
                             }
-                            else
-                            {
-                                $adminAjaxContent = '1003:::' . sprintf($lang['EXTRACT_ZIP_FAILED'], PATH . 'styles');
-                            }
+                        }
+                        else
+                        {
+                            $adminAjaxContent = '1004:::' . $lang['DOWNLOADED_FILE_NOT_FOUND'];
                         }
                     }
                     else
                     {
-                        $adminAjaxContent = '1004:::' . $lang['DOWNLOADED_FILE_NOT_FOUND'];
+                        $adminAjaxContent = '1005:::' . $lang['STORE_SERVER_ERROR'];
                     }
                 }
                 else
                 {
-                    $adminAjaxContent = '1005:::' . $lang['STORE_SERVER_ERROR'];
+                    $adminAjaxContent = '1006:::' . $lang['PACKAGE_N_CMPT_KLJ'];
                 }
             }
             else
             {
-                $adminAjaxContent = '1006:::' . $lang['PACKAGE_N_CMPT_KLJ'];
+                $adminAjaxContent = '1007:::' . sprintf($lang['PACKAGE_REMOTE_FILE_MISSING'], $style_name);
             }
         }
         else
         {
-            $adminAjaxContent = '1007:::' . sprintf($lang['PACKAGE_REMOTE_FILE_MISSING'], $style_name);
+            $adminAjaxContent = '1008:::' . $lang['STORE_SERVER_ERROR'];
         }
-    }
-    else
-    {
-        $adminAjaxContent = '1008:::' . $lang['STORE_SERVER_ERROR'];
-    }
 
 
-    //in case of update failure, rollback to current plugin version
-    if (strpos($adminAjaxContent, '1:::') === false)
-    {
-        if (file_exists(PATH . 'styles/' . $style_name . '_backup'))
+        //in case of update failure, rollback to current plugin version
+        if (strpos($adminAjaxContent, '1:::') === false)
         {
-            rename(
-                PATH . 'styles/' . $style_name . '_backup',
-                PATH . 'styles/' . $style_name
-            );
+            if (file_exists(PATH . 'styles/' . $style_name . '_backup'))
+            {
+                rename(
+                    PATH . 'styles/' . $style_name . '_backup',
+                    PATH . 'styles/' . $style_name
+                );
+            }
         }
-    }
 
-    break;
+        break;
 endswitch;

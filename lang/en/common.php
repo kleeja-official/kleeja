@@ -90,6 +90,8 @@ return [
     'URL'                                  => 'Link',
     'REASON'                               => 'Reason',
     'NO_ID'                                => 'No file selected ..!!',
+    'TOTAL_SIZE_EXCEEDED'                  => 'The total size has been exceeded',
+    'STORAGE_USAGE'                        => '<b>%s</b> of <b>%s</b>',
     'NO_ME300RES'                          => 'The Reason field cannot be more than 300 characters!!',
     'THNX_REPORTED'                        => 'We have received your report, Thank you.',
     'RULES'                                => 'Terms',
@@ -111,6 +113,7 @@ return [
     'IMAGE'                                => 'Image',
     'USERS_ST'                             => 'Total Users',
     'USER'                                 => 'user',
+    'USED_SPACE'                           => 'Used Space',
     'SIZES_ST'                             => 'Total size of uploaded files',
     'LSTDELST'                             => 'Last check for un-downloaded (inactive) files',
 
@@ -220,6 +223,7 @@ return [
     'NO_FILE_USER'                             => 'No files were found in the account!',
     'SHOWFILESBYIP'                            => 'Show files by IP',
     'WAIT_LOADING'                             => 'Please wait, the files are being uploaded to the server...',
+    'LOADING'                                  => 'Loading',
     'NOTICECLOSED'                             => 'Note: website is in maintenance mode!',
     'UNKNOWN'                                  => 'Unknown',
     'WE_UPDATING_KLEEJA_NOW'                   => 'Closed for maintenance, Check back soon...',
@@ -282,4 +286,7 @@ return [
     'EMAIL_CHANGE_REQ_PASS'             => 'In order to change your email address, It\'s required to type your current password.',
     'DRAG_AND_DROP'                     => 'Drop a file inside&hellip;',
     'OR_MANUAL_SELECT'                  => 'Or click here to <em>Select</em> a file manually..',
+    'ABOUT_FILE'                        => 'File Information',
+    'FILE_NO_INFO'                      => 'No Information found about this file',
+    'SAVE'                              => 'Save',
 ];

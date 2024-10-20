@@ -54,11 +54,17 @@ $action = $config['siteurl'];
 $uploadingMethodClassBaseName = basename($uploadingMethodClass, '.php');
 $uploader                     = new $uploadingMethodClassBaseName;
 
+if (! $uploader instanceof KleejaUploader)
+{
+    kleeja_err('Your upload Method class is not implemented our KleejaUploader Interface');
+
+    exit;
+}
+
 $uploader->setAllowedFileExtensions($d_groups[$userinfo['group_id']]['exts']);
 $uploader->setUploadFieldsLimit($config['filesnum']);
 
-
-
+$remaining_storage = $d_groups[$userinfo['group_id']]['configs']['max_storage']>0 ? $d_groups[$userinfo['group_id']]['configs']['max_storage']-$userinfo['storage_size'] : -1;
 
 if (ip('submitr'))
 {

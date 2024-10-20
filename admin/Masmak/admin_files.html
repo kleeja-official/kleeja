@@ -1,83 +1,156 @@
-
 <!-- Breadcrumbs -->
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="./">{lang.R_CPINDEX}</a></li>
-    <li class="breadcrumb-item active">{lang.R_FILES} (<span>{current_page}/{total_pages}</span>)</li>
+    <li class="breadcrumb-item active">
+        <IF NAME="current_smt == "> {lang.R_FILES} (<span>{current_page}/{total_pages}</span>)<ELSE>{lang.DEL_BY_EXT}
+        </IF>
+    </li>
 </ol>
 
 <IF NAME="is_search">
-<div class="card">
-    <span>{lang.FIND_IP_FILES} ( {nums_rows} ) {lang.FILE}  <IF NAME="nums_rows"> | <a href="{deletelink}"  onclick="javascript:get_kleeja_link(this.href, '#content', {confirm:true}); return false;">{lang.DELETEALLRES}</a></IF></span>
-</div>
+    <div class="card">
+        <span>{lang.FIND_IP_FILES} ( {nums_rows} ) {lang.FILE} <IF NAME="nums_rows"> | <a href="{deletelink}"
+                    onclick="javascript:get_kleeja_link(this.href, '#content', {confirm:true}); return false;">{lang.DELETEALLRES}</a>
+            </IF></span>
+    </div>
 </IF>
 
 
+<IF NAME="current_smt == ">
+    <form method="post" name="filesform" action="{action}" id="files_form">
 
-<form method="post" name="filesform" action="{action}" id="files_form">
-    
-    <IF NAME="no_results">
-        <div class="alert alert-info">
-        {lang.NO_RESULT_USE_SYNC}
-        </div>
+        <IF NAME="no_results">
+            <div class="alert alert-info">
+                {lang.NO_RESULT_USE_SYNC}
+            </div>
+            <ELSE>
+
+
+                <!-- start data table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped table-sm" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th><a href="javascript:void(0);" onclick="checkAll(document.filesform, '_del', 'su');"
+                                        title="{lang.DELETE}">#</a></th>
+                                <th style="width:20px;"></th>
+                                <th style="white-space:nowrap;">
+                                    <a title="{lang.ALPHABETICAL_ORDER_FILES}"
+                                        href="{ord_action}&amp;order_by=real_filename">{lang.FILENAME}</a>
+                                    <a href="{page2_action}&amp;order_way=1"><i class="fa fa-sort-asc"
+                                            title="&uarr;"></i></a>
+                                    <a href="{page2_action}&amp;order_way=2"><i class="fa fa-sort-desc"
+                                            title="&darr;"></i></a>
+                                </th>
+                                <th><a title="{lang.ORDER_SIZE}" href="{ord_action}&amp;order_by=size">{lang.SIZE}</a>
+                                </th>
+                                <th><a href="{ord_action}&amp;order_by=folder">{lang.FILDER}</a></th>
+                                <th><a href="{ord_action}&amp;order_by=user">{lang.BY}</a></th>
+                                <th><a href="{ord_action}&amp;order_by=user_ip">{lang.IP}</a></th>
+                                <th><a title="{lang.ORDER_TOTAL_DOWNLOADS}" href="{ord_action}&amp;order_by=uploads"><i
+                                            class="fa fa-download" title="{lang.FILEUPS}" data-toggle="tooltip"></i></a>
+                                </th>
+                                <th><a href="{ord_action}&amp;order_by=report"><i class="fa fa-flag"
+                                            title="{lang.NUMPER_REPORT}" data-toggle="tooltip"></i></a></th>
+                                <th><a href="{ord_action}&amp;order_by=time">{lang.FILEDATE}</a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <LOOP NAME="arr">
+                                <tr id="su[{{id}}]" class="osilver">
+                                    <td><input type="checkbox" name="del_{{id}}" value="{{id}}"
+                                            onclick="change_color(this,'su[{{id}}]');" rel="_del" /></td>
+                                    <td style="width:20px;"><img src="{{typeicon}}" alt="{{type}}" title="{{type}}"
+                                            data-toggle="tooltip" /></td>
+                                    <td title="{{fullname}}" data-toggle="tooltip">{{name}}</td>
+                                    <td>{{size}}</td>
+                                    <td>{{folder}}</td>
+                                    <td>{{user}}</td>
+                                    <td>{{ip}} <a title="{lang.SHOWFILESBYIP}" href="{{showfilesbyip}}"><i
+                                                class="fa fa-search"></i></a></td>
+                                    <td>
+                                        <IF LOOP="direct"><i class="fa fa-bell-slash-o" title="{lang.DIRECT_FILE_NOTE}"
+                                                data-toggle="tooltip"></i>
+                                            <ELSE>{{ups}}
+                                        </IF>
+                                    </td>
+                                    <td>{{report}}</td>
+                                    <td title="{{time}}" data-toggle="tooltip">{{time_human}}</td>
+                                    <!-- admin files data td2 extra -->
+                                </tr>
+                            </LOOP>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- end data table -->
+
+                <div class="form-group">
+                    <!--<div class="col">[ <a href="javascript:void(0);" onclick="checkAll(document.filesform, '_del', 'su');">{lang.CHECK_ALL}</a> ]</div>-->
+
+                    <input type="submit" class="btn btn-outline-primary" name="submit" value="{lang.DEL_SELECTED}">
+                </div>
+
+
+                <!-- pagination -->
+                {page_nums}
+
+        </IF>
+
+        {H_FORM_KEYS}
+    </form>
     <ELSE>
-
-
-<!-- start data table -->
-    <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped table-sm" width="100%" cellspacing="0">
-                <thead>
-                <tr>
-                    <th><a href="javascript:void(0);" onclick="checkAll(document.filesform, '_del', 'su');" title="{lang.DELETE}">#</a></th>
-                    <th style="width:20px;"></th>
-                    <th style="white-space:nowrap;">
-                        <a title="{lang.ALPHABETICAL_ORDER_FILES}"
-                           href="{ord_action}&amp;order_by=real_filename">{lang.FILENAME}</a>
-                        <a href="{page2_action}&amp;order_way=1"><i class="fa fa-sort-asc" title="&uarr;"></i></a>
-                        <a href="{page2_action}&amp;order_way=2"><i class="fa fa-sort-desc"
-                                                                      title="&darr;"></i></a>
-                    </th>
-                    <th><a title="{lang.ORDER_SIZE}" href="{ord_action}&amp;order_by=size">{lang.SIZE}</a></th>
-                    <th><a href="{ord_action}&amp;order_by=folder">{lang.FILDER}</a></th>
-                    <th><a href="{ord_action}&amp;order_by=user">{lang.BY}</a></th>
-                    <th><a href="{ord_action}&amp;order_by=user_ip">{lang.IP}</a></th>
-                    <th><a title="{lang.ORDER_TOTAL_DOWNLOADS}" href="{ord_action}&amp;order_by=uploads"><i class="fa fa-download" title="{lang.FILEUPS}" data-toggle="tooltip"></i></a></th>
-                    <th><a href="{ord_action}&amp;order_by=report"><i class="fa fa-flag" title="{lang.NUMPER_REPORT}" data-toggle="tooltip"></i></a></th>
-                    <th><a href="{ord_action}&amp;order_by=time">{lang.FILEDATE}</a></th>
-                </tr>
-                </thead>
-                <tbody>
-                <LOOP NAME="arr">
-                    <tr id="su[{{id}}]" class="osilver">
-                        <td><input type="checkbox" name="del_{{id}}" value="{{id}}" onclick="change_color(this,'su[{{id}}]');" rel="_del" /></td>
-                        <td style="width:20px;"><img src="{{typeicon}}" alt="{{type}}" title="{{type}}"  data-toggle="tooltip"/></td>
-                        <td title="{{fullname}}" data-toggle="tooltip">{{name}}</td>
-                        <td>{{size}}</td>
-                        <td>{{folder}}</td>
-                        <td>{{user}}</td>
-                        <td>{{ip}} <a title="{lang.SHOWFILESBYIP}" href="{{showfilesbyip}}"><i class="fa fa-search"></i></a></td>
-                        <td><IF LOOP="direct"><i class="fa fa-bell-slash-o" title="{lang.DIRECT_FILE_NOTE}"  data-toggle="tooltip"></i><ELSE>{{ups}}</IF></td>
-                        <td>{{report}}</td>
-                        <td title="{{time}}" data-toggle="tooltip">{{time_human}}</td>
-                        <!-- admin files data td2 extra -->
-                    </tr>
-                </LOOP>
-                </tbody>
-            </table>
+        <div class="container">
+            <IF NAME="no_results">
+                <div class="alert alert-info">
+                    {lang.NO_RESULT_USE_SYNC}
+                </div>
+                <ELSE>
+                    <form action="{action}" style="text-align: center;" method="post">
+                        <div class="form-group">
+                            <label for="selected_extnsions">{lang.SELECT_EXT}</label>
+                            <select class="form-control" name="selected_extnsion" id="selected_extnsions">
+                                <option></option>
+                                <LOOP NAME="available_extensions">
+                                    <option>{{type}}</option>
+                                </LOOP>
+                            </select>
+                        </div>
+                        <p id="file_count_viewer"></p>
+                        <button id="delete_button" style="display: none;" name="delete_files" type="submit"
+                            class="btn btn-danger">{lang.DELETE}</button>
+                    </form>
+            </IF>
         </div>
-<!-- end data table -->
 
-<div class="form-group">
-    <!--<div class="col">[ <a href="javascript:void(0);" onclick="checkAll(document.filesform, '_del', 'su');">{lang.CHECK_ALL}</a> ]</div>-->
+        <script>
+            let selected_extnsions = document.getElementById('selected_extnsions');
+            let delete_button = document.getElementById('delete_button');
+            let file_count_viewer = document.getElementById('file_count_viewer');
+            if (selected_extnsions && delete_button) {
+                selected_extnsions.onchange = () => {
+                    if (selected_extnsions.value.trim() != '') {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function () {
+                            if (this.readyState == 4 && this.status == 200) {
+                                if (this.responseText == '0') {
+                                    alert('{lang.NO_FILE_WITH_EXT}')
+                                    delete_button.style.display = 'none';
+                                }
+                                else {
+                                    file_count_viewer.innerHTML = ("{lang.X_FILE_WITH_EXT}").replace('(x)', this.responseText)
+                                    delete_button.style.display = '';
+                                }
+                            }
 
-    <input type="submit" class="btn btn-outline-primary" name="submit" value="{lang.DEL_SELECTED}">
-</div>
-
-    
-<!-- pagination -->
-{page_nums}
-
+                        };
+                        xhttp.open("GET", "{action}&fetch_ext_files=" + selected_extnsions.value, true);
+                        xhttp.send();
+                    }
+                    else {
+                        delete_button.style.display = 'none';
+                        file_count_viewer.innerHTML = ''
+                    }
+                }
+            }
+        </script>
 </IF>
-
-{H_FORM_KEYS}
-</form>
-

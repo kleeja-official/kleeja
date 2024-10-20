@@ -205,7 +205,7 @@ function readable_size($size)
 /**
  * show an error message
  *
- * @param $message
+ * @param             $message
  * @param string      $title
  * @param bool        $exit
  * @param bool|string $redirect          a link to redirect after showing the message, or false
@@ -240,7 +240,7 @@ function kleeja_err($message, $title = '', $exit = true, $redirect = false, $rs 
 /**
  * show an information message
  *
- * @param $message
+ * @param             $message
  * @param string      $title
  * @param bool        $exit
  * @param bool|string $redirect          a link to redirect after showing the message, or false
@@ -291,7 +291,7 @@ function kleeja_debug()
     echo '<p>&nbsp;</p>';
     echo '<p><h2><strong><em>SQL</em> Information :</strong></h2></p> ';
 
-    if (is_array($SQL->debugr))
+    if (! empty($SQL->debugr))
     {
         foreach ($SQL->debugr as $key=>$val)
         {
@@ -495,7 +495,7 @@ function kleeja_check_form_key($form_name, $require_time = 300)
  * Link generator
  * TODO to be edited
  * Files can be many links styles, so this will generate the current style of link
- * @param $pid
+ * @param         $pid
  * @param  array  $extra
  * @return string
  */
@@ -514,8 +514,8 @@ function kleeja_get_link ($pid, $extra = [])
     if ($config['mod_writer'] && ! empty($extra['::NAME::']))
     {
         if (
-             (($pid == 'image' || $pid == 'thumb') && $config['id_form_img'] != 'direct') ||
-             ($pid == 'file' && $config['id_form'] != 'direct')
+            (($pid == 'image' || $pid == 'thumb') && $config['id_form_img'] != 'direct') ||
+            ($pid == 'file' && $config['id_form'] != 'direct')
         ) {
             $extra['::NAME::'] = str_replace('.', '-', $extra['::NAME::']);
         }
@@ -671,6 +671,7 @@ function kleeja_style_info($style_name)
         }
 
         $t = array_map('trim', @explode('=', $m, 2));
+
         // ':' mean something secondary as in sub-array
         if (strpos($t[0], ':') !== false)
         {
@@ -730,52 +731,53 @@ function is_browser($b)
         case 'ie':
             $return = strpos(strtolower($u_agent), trim('msie ' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'firefox':
             $return = strpos(str_replace('/', ' ', strtolower($u_agent)), trim('firefox ' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'safari':
             $return = strpos(strtolower($u_agent), trim('safari/' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'chrome':
             $return = strpos(strtolower($u_agent), trim('chrome ' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'flock':
             $return = strpos(strtolower($u_agent), trim('flock ' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'opera':
             $return = strpos(strtolower($u_agent), trim('opera ' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'konqueror':
             $return = strpos(strtolower($u_agent), trim('konqueror/' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'mozilla':
             $return = strpos(strtolower($u_agent), trim('gecko/' . $r)) !== false ? true : false;
 
-        break;
+            break;
 
         case 'webkit':
             $return = strpos(strtolower($u_agent), trim('applewebkit/' . $r)) !== false ? true : false;
 
-        break;
-        /**
-         * Mobile Phones are so popular those days, so we have to support them ...
-         * This is still in our test lab.
-         * @see http://en.wikipedia.org/wiki/List_of_user_agents_for_mobile_phones
-         **/
+            break;
+
+            /**
+             * Mobile Phones are so popular those days, so we have to support them ...
+             * This is still in our test lab.
+             * @see http://en.wikipedia.org/wiki/List_of_user_agents_for_mobile_phones
+             **/
         case 'mobile':
             $mobile_agents = ['iPhone;', 'iPod;', 'blackberry', 'Android', 'HTC' , 'IEMobile', 'LG/', 'LG-',
                 'LGE-', 'MOT-', 'Nokia', 'SymbianOS', 'nokia_', 'PalmSource', 'webOS', 'SAMSUNG-',
@@ -792,7 +794,7 @@ function is_browser($b)
                 }
             }
 
-        break;
+            break;
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('is_browser_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -847,7 +849,7 @@ function kleeja_date($time, $human_time = true, $format = false)
 
     if (! empty($config['time_zone']) && strpos($config['time_zone'], '/') !== false)
     {
-        if(strpos($config['time_zone'], 'Buraydah') !== false)
+        if (strpos($config['time_zone'], 'Buraydah') !== false)
         {
             $config['time_zone'] = 'Asia/Riyadh';
         }
@@ -951,7 +953,8 @@ function time_zones()
  */
 function configField($name, $type = 'text', $select_options = [])
 {
-    switch ($type) {
+    switch ($type)
+    {
         default:
         case 'text':
             return '<input type="text" id="kj_meta_seo_home_meta_keywords" name="' . $name . '"' .

@@ -76,61 +76,61 @@ if (! ip('lang'))
 */
 switch (g('step', 'str'))
 {
-default:
-case 'language':
+    default:
+    case 'language':
 
-    if (ig('ln'))
-    {
-        echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' . g('ln', 'str', 'en') . '">';
-
-        exit;
-    }
-
-    echo gettpl('lang.html');
-
-break;
-
-case 'what_is_kleeja':
-
-    echo gettpl('what_is_kleeja.html');
-
-break;
-
-case 'official':
-
-    echo gettpl('official.html');
-
-break;
-
-case 'choose' :
-
-    $install_or_no    = $php_ver = true;
-
-    //check version of PHP
-    if (! function_exists('version_compare')
-        || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
-    {
-        $php_ver = false;
-    }
-
-    if (file_exists(PATH . 'config.php'))
-    {
-        include_once PATH . 'config.php';
-
-        if (! empty($dbuser) && ! empty($dbname))
+        if (ig('ln'))
         {
-            $d = inst_get_config('language');
+            echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' . g('ln', 'str', 'en') . '">';
 
-            if (! empty($d))
+            exit;
+        }
+
+        echo gettpl('lang.html');
+
+        break;
+
+    case 'what_is_kleeja':
+
+        echo gettpl('what_is_kleeja.html');
+
+        break;
+
+    case 'official':
+
+        echo gettpl('official.html');
+
+        break;
+
+    case 'choose' :
+
+        $install_or_no    = $php_ver = true;
+
+        //check version of PHP
+        if (! function_exists('version_compare')
+            || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
+        {
+            $php_ver = false;
+        }
+
+        if (file_exists(PATH . 'config.php'))
+        {
+            include_once PATH . 'config.php';
+
+            if (! empty($dbuser) && ! empty($dbname))
             {
-                $install_or_no = false;
+                $d = inst_get_config('language');
+
+                if (! empty($d))
+                {
+                    $install_or_no = false;
+                }
             }
         }
-    }
 
-    echo gettpl('choose.html');
+        echo gettpl('choose.html');
 
-break;
+        break;
 }
 
 

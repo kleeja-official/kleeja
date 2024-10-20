@@ -99,7 +99,7 @@ if ($current_smt != 'all')
 }
 elseif ($current_smt == 'all')
 {
-    $query['WHERE'] = "type <> 'groups' OR type = ''";
+    $query['WHERE'] = "(type <> 'groups' OR type = '') AND type <> '0'";
 }
 
 $result = $SQL->build($query);
@@ -214,15 +214,11 @@ while ($row=$SQL->fetch_array($result))
             {
                 if (! file_exists(PATH . '.htaccess') && file_exists(PATH . 'htaccess.txt') && function_exists('rename'))
                 {
-                    rename(PATH . 'htaccess.txt', PATH . '.htaccess');
-
-                    if (! file_exists(PATH . '.htaccess'))
+                    if (! rename(PATH . 'htaccess.txt', PATH . '.htaccess'))
                     {
-                        chmod(PATH . '.htaccess', K_FILE_CHMOD);
+                        chmod(PATH . 'htaccess.txt', K_FILE_CHMOD);
+                        rename(PATH . 'htaccess.txt', PATH . '.htaccess');
                     }
-
-                    //re-do after chmod
-                    rename(PATH . 'htaccess.txt', PATH . '.htaccess');
                 }
             }
         }
@@ -279,9 +275,10 @@ foreach ($types as $typekey => $type)
         if ($option['type'] == $typekey)
         {
             $options .= str_replace(
-                    ['<input ', '<select ', '<td>', '</td>', '<label>', '<tr>', '</tr>'],
-                    ['<input class="form-control" ', '<select class="form-control" ', '<div class="form-group">', '</div>', '<label class="form-check-label">', '', ''],
-                    $option['option']);
+                ['<input ', '<select ', '<td>', '</td>', '<label>', '<tr>', '</tr>'],
+                ['<input class="form-control" ', '<select class="form-control" ', '<div class="form-group">', '</div>', '<label class="form-check-label">', '', ''],
+                $option['option']
+            );
         }
     }
 }
@@ -289,7 +286,6 @@ foreach ($types as $typekey => $type)
 //after submit
 if (ip('submit'))
 {
-
     //some configs need refresh page ..
     $need_refresh_configs = ['language'];
 

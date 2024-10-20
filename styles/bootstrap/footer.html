@@ -38,7 +38,9 @@
 
 
 <script type="text/javascript" src="{STYLE_PATH}js/jquery.min.js"></script>
+<script type="text/javascript" src="{STYLE_PATH}js/popper.min.js"></script>
 <script type="text/javascript" src="{STYLE_PATH}js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{STYLE_PATH}js/script.js"></script>
 
 <!-- don't ever delete this -->
 {run_queue}
@@ -74,6 +76,7 @@ $(document).ready(function(){
     $("#uploader input:file").change(function (){
         if(!check_selected_file(this)){
             $(this).val('');
+            this.dataset.previousSize = 0; // Reset previous size if file is invalid
         }else{
             if($(this).data('number') !== null){
                 var selected_text = $('#file-text' + $(this).data('number'));
@@ -94,6 +97,8 @@ $(document).ready(function(){
 
 var allowed_exts = {js_allowed_extensions_types};
 var allowed_sizes = {js_allowed_extensions_sizes};
+var remaining_storage = {remaining_storage};
+var totalSize = 0;
 
 function check_selected_file(file) {
     var selected_file = file.files[0];
@@ -121,6 +126,19 @@ function check_selected_file(file) {
             return false;
         }
     }
+
+    // Subtract the previous file size and add the new file size
+    var previousSize = parseInt(file.dataset.previousSize || 0);
+    totalSize = totalSize - previousSize + file_size;
+
+    if (remaining_storage != -1 && totalSize > remaining_storage){
+        totalSize = totalSize - file_size + previousSize; // Revert the change
+        alert('{lang.TOTAL_SIZE_EXCEEDED}');
+        return false;
+    }
+
+    // Update the previous size for this file input
+    file.dataset.previousSize = file_size;
 
     return true;
 }

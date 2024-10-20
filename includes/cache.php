@@ -42,20 +42,13 @@ class cache
             include PATH . 'cache/' . $name . '.php';
             return  empty($data) ? false : $data;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
-    public function exists($name)
+    public function exists($name): bool
     {
         $name =  preg_replace('![^a-z0-9_]!', '_', $name);
-
-        if (file_exists(PATH . 'cache/' . $name . '.php'))
-        {
-            return true;
-        }
+        return file_exists(PATH . 'cache/' . $name . '.php');
     }
 
     public function save($name, $data, $time = 86400)
@@ -64,17 +57,23 @@ class cache
         $data_for_save = '<?' . 'php' . "\n";
         $data_for_save .= '//Cache file, generated for Kleeja at ' . gmdate('d-m-Y h:i A') . "\n\n";
         $data_for_save .= '//No direct opening' . "\n";
-        $data_for_save .= '(!defined("IN_COMMON") ? exit("hacking attemp!") : null);' . "\n\n";
+        $data_for_save .= '(!defined("IN_COMMON") ? exit("hacking attempt!") : null);' . "\n\n";
         $data_for_save .= '//return false after x time' . "\n";
         $data_for_save .= 'if(time() > ' . (time() + $time) . ') return false;' . "\n\n";
         $data_for_save .= '$data = ' . var_export($data, true) . ";\n\n//end of cache";
 
-        if ($fd = @fopen(PATH . 'cache/' . $name . '.php', 'w'))
+        try
         {
-            @flock($fd, LOCK_EX); // exlusive look
-            @fwrite($fd, $data_for_save);
-            @flock($fd, LOCK_UN);
-            @fclose($fd);
+            $fd = fopen(PATH . 'cache/' . $name . '.php', 'w');
+            flock($fd, LOCK_EX); // exclusive look
+            fwrite($fd, $data_for_save);
+            flock($fd, LOCK_UN);
+            fclose($fd);
+            return true;
+        }
+        catch (Exception $e)
+        {
+            return false;
         }
     }
 
@@ -113,7 +112,7 @@ if (! ($config = $cache->get('data_config')))
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_config_cache', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $result = $SQL->build($query);
-
+    $config = [];
     while ($row=$SQL->fetch_array($result))
     {
         $config[$row['name']] = $row['value'];
@@ -130,6 +129,8 @@ if (! ($config = $cache->get('data_config')))
 
 if (! ($olang = $cache->get('data_lang' . $config['language'])))
 {
+    $olang = [];
+
     $query = [
         'SELECT'       => 'l.word, l.trans',
         'FROM'         => "{$dbprefix}lang l",

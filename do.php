@@ -31,7 +31,7 @@ if (ig('id') || ig('filename'))
     is_array($plugin_run_result = Plugins::getInstance()->run('begin_download_id_filename', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
     $query = [
-        'SELECT'       => 'f.id, f.real_filename, f.name, f.folder, f.size, f.time, f.uploads, f.type',
+        'SELECT'       => 'f.id, f.real_filename, f.about, f.name, f.folder, f.size, f.time, f.uploads, f.type',
         'FROM'         => "{$dbprefix}files f",
         'LIMIT'        => '1',
     ];
@@ -84,13 +84,23 @@ if (ig('id') || ig('filename'))
         $size          = $file_info['size'];
         $time          = $file_info['time'];
         $uploads       = $file_info['uploads'];
+        $about_file    = ! in_array($file_info['about'], ['', null]) ? $file_info['about'] : $lang['FILE_NO_INFO'];
 
 
-        $fname2           = str_replace('.', '-', htmlspecialchars($name));
-        $name             = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
-        $name             = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
-        $fusername        = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
-        $userfolder       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
+        $fname2               = str_replace('.', '-', htmlspecialchars($name));
+        $name                 = $real_filename != '' ? str_replace('.' . $type, '', htmlspecialchars($real_filename)) : $name;
+        $name                 = strlen($name)                                        > 70 ? substr($name, 0, 70) . '...' : $name;
+        $fusername            = $config['user_system'] == 1 && $file_info['fuserid'] > -1 ? $file_info['fusername'] : false;
+        $userfolder           = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $file_info['fuserid'] . '.html' : 'ucp.php?go=fileuser&amp;id=' . $file_info['fuserid']);
+        $isFileOwnerOfFounder = ($fusername == $usrcp->name() && $usrcp->name()) || ($usrcp->id() < 1 ? false : $usrcp->get_data('founder')['founder'] == 1);
+
+        if (ip('change_file_about') &&  $isFileOwnerOfFounder)
+        {
+            $newAbout = (String) p('about') != '' ? (string) p('about') : null;
+            $SQL->query("UPDATE {$dbprefix}files SET about = \"{$newAbout}\" WHERE id = {$file_info['id']}");
+
+            exit;
+        }
 
         if (ig('filename'))
         {
@@ -174,9 +184,9 @@ if (ig('id') || ig('filename'))
 // x : used only for html links, where x = extension, downf is filename without extension
 
 elseif (ig('down') || ig('downf') ||
-        ig('img') || ig('imgf') ||
+        ig('img')  || ig('imgf') ||
         ig('thmb') || ig('thmbf') ||
-    ig('downex') || ig('downexf'))
+    ig('downex')   || ig('downexf'))
 {
     is_array($plugin_run_result = Plugins::getInstance()->run('begin_down_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -292,7 +302,7 @@ elseif (ig('down') || ig('downf') ||
 
     $is_live = false;
     $pre_ext = ! empty($filename) && strpos($filename, '.') !== false ? explode('.', $filename) : [];
-    $pre_ext = array_pop($pre_ext);
+    $pre_ext = ! empty($pre_ext) ? array_pop($pre_ext) : '';
 
 
     $is_image = in_array(strtolower(trim($pre_ext)), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
@@ -386,7 +396,7 @@ elseif (ig('down') || ig('downf') ||
     //download process
     $path_file   = ig('thmb') || ig('thmbf') ? "./{$f}/thumbs/{$n}" : "./{$f}/{$n}";
     $chunksize   = 8192;
-    $resuming_on = true;
+    $resuming_on = $config['enable_multipart'] == 1;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('down_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -495,7 +505,15 @@ elseif (ig('down') || ig('downf') ||
 
     //send file headers
     header('Pragma: public');
-    header('Accept-Ranges: bytes');
+
+    if ($resuming_on)
+    {
+        header('Accept-Ranges: bytes');
+    }
+    else
+    {
+        header('Accept-Ranges: none');
+    }
     header('Content-Description: File Transfer');
 
     //dirty fix
@@ -522,14 +540,23 @@ elseif (ig('down') || ig('downf') ||
     {
         list($a, $range)         = explode('=', $_SERVER['HTTP_RANGE'], 2);
         list($range)             = explode(',', $range, 2);
-        list($range, $range_end) = explode('=', $range);
+        list($range, $range_end) = explode('-', $range, 2);
         $range                   = round(floatval($range), 0);
         $range_end               = ! $range_end ? $size - 1 : round(floatval($range_end), 0);
+
+        if ($range < 0 || $range >= $size || $range > $range_end || $range_end >= $size)
+        {
+            header('HTTP/1.1 416 Requested Range Not Satisfiable');
+            header("Content-Range: bytes */$size");
+            fclose($fp);
+
+            exit;
+        }
 
         $partial_length = $range_end - $range + 1;
         header('HTTP/1.1 206 Partial Content');
         header("Content-Length: $partial_length");
-        header('Content-Range: bytes ' . ($range - $range_end / $size));
+        header("Content-Range: bytes $range-$range_end/$size");
 
         fseek($fp, $range);
     }

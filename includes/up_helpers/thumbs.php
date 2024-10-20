@@ -47,55 +47,48 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     //if there is imagick lib, then we should use it
     if (function_exists('phpversion') && phpversion('imagick'))
     {
+        $ext = strtolower(trim($ext));
+
+        if (empty($ext))
+        {
+            $ext = strtolower(preg_replace('/^.*\./', '', $source_path));
+        }
+
         helper_thumb_imagick($source_path, $ext, $dest_image, $dw, $dh);
         return null;
     }
 
-    //get file info
-    list($source_width, $source_height, $source_type) = [false, false, false];
-
-    if (function_exists('getimagesize'))
-    {
-        list($source_width, $source_height, $source_type) = getimagesize($source_path);
-    }
-
-    if (! function_exists('imagecreatefromjpeg'))
+    if (! function_exists('imagecreatefromjpeg') || ! function_exists('getimagesize'))
     {
         return null;
     }
 
-    $source_gdim = null;
+    //get file info
+    list($source_width, $source_height, $source_type) = getimagesize($source_path);
 
-    $ext = strtolower(trim($ext));
+    $source_gdim = false;
 
-    if (empty($ext))
+    switch ($source_type)
     {
-        $ext = strtolower(preg_replace('/^.*\./', '', $source_path));
-    }
-
-    switch ($ext)
-    {
-        case 'gif':
+        case IMAGETYPE_GIF:
             $source_gdim = imagecreatefromgif($source_path);
 
             break;
 
-        case 'jpg':
-        case 'jpeg':
+        case IMAGETYPE_JPEG:
             $source_gdim = imagecreatefromjpeg($source_path);
 
             break;
 
-        case 'png':
+        case IMAGETYPE_PNG:
             $source_gdim = imagecreatefrompng($source_path);
 
             break;
 
-        case 'bmp':
-            if (! defined('BMP_CLASS_INCLUDED'))
+        case IMAGETYPE_BMP:
+            if (! function_exists('imagecreatefrombmp'))
             {
                 include dirname(__file__) . '/BMP.php';
-                define('BMP_CLASS_INCLUDED', true);
             }
 
             $source_gdim = imagecreatefrombmp($source_path);
@@ -103,8 +96,10 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
             break;
     }
 
-    $source_width  = ! $source_width ? imagesx($source_gdim) : $source_width;
-    $source_height = ! $source_height ? imagesy($source_gdim) : $source_height;
+    if (! $source_gdim)
+    {
+        return null;
+    }
 
     $source_aspect_ratio  = $source_width / $source_height;
     $desired_aspect_ratio = $dw           / $dh;
@@ -128,23 +123,30 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     imagecopyresampled(
         $temp_gdim,
         $source_gdim,
-        0, 0,
-        0, 0,
-        $temp_width, $temp_height,
-        $source_width, $source_height
+        0,
+        0,
+        0,
+        0,
+        $temp_width,
+        $temp_height,
+        $source_width,
+        $source_height
     );
 
     // Copy cropped region from temporary image into the desired GD image
-    $x0 = ($temp_width - $dw)  / 2;
-    $y0 = ($temp_height - $dh) / 2;
+    $x0 = (int) (($temp_width - $dw)  / 2);
+    $y0 = (int) (($temp_height - $dh) / 2);
 
     $desired_gdim = imagecreatetruecolor($dw, $dh);
     imagecopy(
         $desired_gdim,
         $temp_gdim,
-        0, 0,
-        $x0, $y0,
-        $dw, $dh
+        0,
+        0,
+        $x0,
+        $y0,
+        $dw,
+        $dh
     );
 
     // Create thumbnail
@@ -164,7 +166,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
         case 'gif':
             $return = @imagegif($desired_gdim, $dest_image);
 
-        break;
+            break;
 
         case 'bmp':
             $return = @imagebmp($desired_gdim, $dest_image);
@@ -173,9 +175,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
 
         default:
             // Unsupported format
-        $return = false;
-
-        break;
+            $return = false;
     }
 
     @imagedestroy($desired_gdim);
@@ -241,21 +241,24 @@ function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
 
     //guess the right thumb height, weights
     list($thumb_w, $thumb_h) = scale_image_imagick(
-                    $im->getImageWidth(),
-                    $im->getImageHeight(),
-                    $new_w,
-                    $new_h);
+        $im->getImageWidth(),
+        $im->getImageHeight(),
+        $new_w,
+        $new_h
+    );
 
     //an exception for gif image
     //generating thumb with 10 frames only, big gif is a devil
     if ($ext == 'gif')
     {
         $i = 0;
+
         //$gif_new = new Imagick(); 
         foreach ($im as $frame)
         {
             $frame->thumbnailImage($thumb_w, $thumb_h);
             $frame->setImagePage($thumb_w, $thumb_h, 0, 0);
+
             //    $gif_new->addImage($frame->getImage()); 
             if ($i >= 10)
             {

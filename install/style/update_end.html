@@ -4,25 +4,15 @@
                 {{foreach($GLOBALS['update_msgs_arr'] as $m):}}
                 <li><img src="style/images/ok.png" class="img" alt="ok" /> {{echo $m}}</li>
                 {{endforeach;}}
-                {{if(is_array($GLOBALS['NOTES_CUP'])):foreach($GLOBALS['NOTES_CUP'] as $i=>$m):}}
-                <li><img src="style/images/ok.png" class="img" alt="ok" />{{echo $i;}} - {{echo $m}} </li>
-                {{endforeach;endif;}}
             </ul>
         </div>
         <div class="clr"></div>
-        {{if($GLOBALS['complete_upate']):}} 
+        {{if($GLOBALS['complete_update']):}} 
             <div class="hr"></div>
             <div class="notice">
-                <h6><img src="style/images/info2.png" class="img" alt="" /> {{echo $lang['INST_NOTES_UPDATE']}} :</h6>
-                <p><img src="style/images/inst_notes.png" class="img" alt="" />{{echo $lang['INST_NOTE_RC6_TO_1.0.0']}}</p>
+                <h6><img src="style/images/info2.png" class="img" alt="" /> {{echo $lang['KLEEJA_TEAM_MSG_NAME']}}</h6>
+                <p><img src="style/images/inst_notes.png" class="img" alt="" />{{echo $lang['KLEEJA_TEAM_MSG_TEXT']}}</p>
             </div>
-                {{if(is_array($GLOBALS['NOTES_CUP'])):foreach($GLOBALS['NOTES_CUP'] as $i=>$m):}}
-                    <div id="Scro11">
-                        <ul class="inside">
-                            <li><img src="style/images/ok.png" class="img" alt="ok" />{{echo $i;}} - {{echo $m}} </li>
-                        </ul>
-                    </div>
-                {{endforeach;endif;}}  
         {{else:}}
             <div class="notice TN">
                 <p>{{echo $lang['INST_UPDATE_IS_FINISH']}}</p>

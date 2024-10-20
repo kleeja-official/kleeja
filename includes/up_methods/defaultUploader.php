@@ -182,6 +182,19 @@ class defaultUploader implements KleejaUploader
         $SQL->build($update_query);
 
 
+        if ($fileInfo['currentUserId']!=-1)
+        {
+            // update user storage size
+            $update_query = [
+                'UPDATE'       => "{$dbprefix}users",
+                'SET'          => 'storage_size=storage_size+' . intval($fileInfo['fileSize']),
+                'WHERE'        => 'id=' . $fileInfo['currentUserId'],
+            ];
+
+            $SQL->build($update_query);
+        }
+
+
         $this->generateOutputBox($fileInfo);
     }
 
@@ -224,12 +237,13 @@ class defaultUploader implements KleejaUploader
 
         if ($config['del_url_file'])
         {
-            $extra_del    = get_up_tpl_box('del_file_code',
-                     [
-                         'b_title'     => $lang['URL_F_DEL'],
-                         'b_code_link' => kleeja_get_link('del', ['::CODE::'=>$fileInfo['DeleteCode']])
-                     ]
-                );
+            $extra_del    = get_up_tpl_box(
+                'del_file_code',
+                [
+                    'b_title'     => $lang['URL_F_DEL'],
+                    'b_code_link' => kleeja_get_link('del', ['::CODE::'=>$fileInfo['DeleteCode']])
+                ]
+            );
         }
 
         //show imgs
@@ -248,20 +262,21 @@ class defaultUploader implements KleejaUploader
             // generate a thumbnail
             helper_thumb(
                 $fileInfo['saveToFolder'] . '/' . $fileInfo['generatedFileName'],
-                 $fileInfo['fileExtension'],
+                $fileInfo['fileExtension'],
                 $fileInfo['saveToFolder'] . '/thumbs/' . $fileInfo['generatedFileName'],
                 $thmb_dim_w,
                 $thmb_dim_h
             );
 
 
-            $img_html_result .= get_up_tpl_box('image_thumb',
-                        [
-                            'b_title'      => $lang['URL_F_THMB'],
-                            'b_url_link'   => kleeja_get_link('image', $file_info),
-                            'b_img_link'   => kleeja_get_link('thumb', $file_info)
-                        ]
-                    );
+            $img_html_result .= get_up_tpl_box(
+                'image_thumb',
+                [
+                    'b_title'      => $lang['URL_F_THMB'],
+                    'b_url_link'   => kleeja_get_link('image', $file_info),
+                    'b_img_link'   => kleeja_get_link('thumb', $file_info)
+                ]
+            );
 
 
             // watermark on image
@@ -271,13 +286,14 @@ class defaultUploader implements KleejaUploader
             }
 
             //then show, image box
-            $img_html_result .= get_up_tpl_box('image',
-                            [
-                                'b_title'       => $lang['URL_F_IMG'],
-                                'b_bbc_title'   => $lang['URL_F_BBC'],
-                                'b_url_link'    => kleeja_get_link('image', $file_info),
-                            ]
-                    );
+            $img_html_result .= get_up_tpl_box(
+                'image',
+                [
+                    'b_title'       => $lang['URL_F_IMG'],
+                    'b_bbc_title'   => $lang['URL_F_BBC'],
+                    'b_url_link'    => kleeja_get_link('image', $file_info),
+                ]
+            );
 
             //add del link box to the result if there is any
             $img_html_result .= $extra_del;
@@ -295,12 +311,13 @@ class defaultUploader implements KleejaUploader
         else
         {
             //then show other files
-            $else_html_result = get_up_tpl_box('file',
-                    [
-                        'b_title'       => $lang['URL_F_FILE'],
-                        'b_bbc_title'   => $lang['URL_F_BBC'],
-                        'b_url_link'    => kleeja_get_link('file', $file_info),
-                    ]
+            $else_html_result = get_up_tpl_box(
+                'file',
+                [
+                    'b_title'       => $lang['URL_F_FILE'],
+                    'b_bbc_title'   => $lang['URL_F_BBC'],
+                    'b_url_link'    => kleeja_get_link('file', $file_info),
+                ]
             );
 
 
@@ -374,8 +391,10 @@ class defaultUploader implements KleejaUploader
         // to prevent flooding, user must wait, waiting-time is grapped from Kleeja settings, admin is exceptional
         if (! user_can('enter_acp') && user_is_flooding($current_user_id))
         {
-            $this->addErrorMessage(sprintf($lang['YOU_HAVE_TO_WAIT'],
-                                    $current_user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']));
+            $this->addErrorMessage(sprintf(
+                $lang['YOU_HAVE_TO_WAIT'],
+                $config['usersectoupload']
+            ));
             return;
         }
 
@@ -435,10 +454,12 @@ class defaultUploader implements KleejaUploader
                     {
                         case UPLOAD_ERR_INI_SIZE:
                         case UPLOAD_ERR_FORM_SIZE:
-                            $this->addErrorMessage(sprintf(
+                            $this->addErrorMessage(
+                                sprintf(
                                     $lang['SIZE_F_BIG'],
                                     htmlspecialchars($filename),
-                                    'php.ini/upload_max_filesize: ' . $upload_max_size)
+                                    'php.ini/upload_max_filesize: ' . $upload_max_size
+                                )
                             );
 
                             break;
@@ -470,7 +491,6 @@ class defaultUploader implements KleejaUploader
                             $this->addErrorMessage(sprintf($lang['CANT_UPLAOD'], htmlspecialchars($filename)));
 
                             break;
-
                     }
                 }
 
@@ -492,13 +512,13 @@ class defaultUploader implements KleejaUploader
 
     /**
      * upload a file from $_FILES
-     * @param integer $fieldNumber as in file[i]
-     * @param $current_uploading_folder
-     * @param $current_user_id
+     * @param integer $fieldNumber              as in file[i]
+     * @param         $current_uploading_folder
+     * @param         $current_user_id
      */
     public function uploadTypeFile($fieldNumber, $current_uploading_folder, $current_user_id)
     {
-        global $config, $lang;
+        global $config, $lang, $remaining_storage;
 
         $fileInfo = [
             'saveToFolder',
@@ -531,7 +551,8 @@ class defaultUploader implements KleejaUploader
         }
 
         // get the extension of file
-        $fileInfo['fileExtension'] = strtolower(array_pop(explode('.', $fileInfo['originalFileName'])));
+        $originalFileName          = explode('.', $fileInfo['originalFileName']);
+        $fileInfo['fileExtension'] = strtolower(array_pop($originalFileName));
 
 
         // them the size
@@ -552,10 +573,11 @@ class defaultUploader implements KleejaUploader
         if (file_exists($current_uploading_folder . '/' . $fileInfo['generatedFileName']))
         {
             $fileInfo['generatedFileName'] = change_filename_decoding(
-                                                        $fileInfo['generatedFileName'],
-                                                        $fieldNumber, $fileInfo['fileExtension'],
-                                                        'exists'
-                                                );
+                $fileInfo['generatedFileName'],
+                $fieldNumber,
+                $fileInfo['fileExtension'],
+                'exists'
+            );
         }
 
         is_array($plugin_run_result = Plugins::getInstance()->run('defaultUploader_uploadTypeFile_1st', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -568,10 +590,10 @@ class defaultUploader implements KleejaUploader
             if ($current_user_id == '-1')
             {
                 $this->addErrorMessage(
-                                    sprintf($lang['FORBID_EXT'], $fileInfo['fileExtension'])
+                    sprintf($lang['FORBID_EXT'], $fileInfo['fileExtension'])
                                     . '<br> <a href="' . ($config['mod_writer'] ? 'register.html' : 'ucp.php?go=register') .
                                     '" title="' . htmlspecialchars($lang['REGISTER']) . '">' . $lang['REGISTER'] . '</a>'
-                                );
+                );
             }
             // a member
             else
@@ -597,11 +619,17 @@ class defaultUploader implements KleejaUploader
         // check file size
         elseif ($this->getAllowedFileExtensions()[$fileInfo['fileExtension']] > 0 && $fileInfo['fileSize'] >= $this->getAllowedFileExtensions()[$fileInfo['fileExtension']])
         {
-            $this->addErrorMessage(sprintf(
-                                        $lang['SIZE_F_BIG'],
-                                        htmlspecialchars($_FILES['file_' . $fieldNumber . '_']['name']),
-                                        readable_size($this->getAllowedFileExtensions()[$fileInfo['fileExtension']]))
-                                    );
+            $this->addErrorMessage(
+                sprintf(
+                    $lang['SIZE_F_BIG'],
+                    htmlspecialchars($_FILES['file_' . $fieldNumber . '_']['name']),
+                    readable_size($this->getAllowedFileExtensions()[$fileInfo['fileExtension']])
+                )
+            );
+        }
+        elseif ($remaining_storage != -1 && $fileInfo['fileSize'] > $remaining_storage)
+        {
+            $this->addErrorMessage($lang['TOTAL_SIZE_EXCEEDED']);
         }
         // no errors, so upload it
         else
@@ -614,6 +642,11 @@ class defaultUploader implements KleejaUploader
             if ($file)
             {
                 $this->saveToDatabase($fileInfo);
+
+                if ($remaining_storage != -1)
+                {
+                    $remaining_storage -= $fileInfo['fileSize'];
+                }
             }
             else
             {

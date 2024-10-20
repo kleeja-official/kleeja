@@ -89,6 +89,7 @@ CREATE TABLE `{$dbprefix}users` (
   `show_my_filecp` tinyint(1) unsigned NOT NULL default '1',
   `new_password` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '',
   `hash_key` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `storage_size` bigint(20) NOT NULL DEFAULT '0',
   KEY `clean_name` (`clean_name`(300)),
   KEY `group_id` (`group_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -100,6 +101,7 @@ CREATE TABLE `{$dbprefix}files` (
   `last_down` int(11) unsigned NOT NULL DEFAULT '0',
   `name` varchar(300) collate utf8_bin NOT NULL DEFAULT '',
   `real_filename` VARCHAR( 350 ) collate utf8_bin NOT NULL DEFAULT '',
+  `about` LONGTEXT collate utf8_bin,
   `size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `uploads` int(11) unsigned NOT NULL DEFAULT '0',
   `time` int(11) unsigned NOT NULL DEFAULT '0',
@@ -218,7 +220,7 @@ CREATE TABLE `{$dbprefix}filters` (
 
 $install_sqls['stats_insert']   = "INSERT INTO `{$dbprefix}stats`  VALUES (0,0,1,0,0," . time() . ",0,0,0,0,'',0,0,0,0,'','','','')";
 $install_sqls['users_insert']   = "INSERT INTO `{$dbprefix}users` (`id`,`name`,`group_id`,`password`,`password_salt`,`mail`,`founder`,`clean_name`) VALUES (1,'" . $user_name . "', 1, '" . $user_pass . "','" . $user_salt . "', '" . $user_mail . "', 1,'" . $clean_name . "')";
-$install_sqls['TeamMsg_insert'] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" . $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) . "', '" . $SQL->escape($lang['KLEEJA_TEAM_MSG_TEXT']) . "','info@kleeja.net', " . time() . ", '127.0.0.1')";
+$install_sqls['TeamMsg_insert'] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" . $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) . "', '" . $SQL->real_escape(nl2br($lang['KLEEJA_TEAM_MSG_TEXT'])) . "','info@kleeja.net', " . time() . ", '127.0.0.1')";
 $install_sqls['groups_insert']  = "INSERT INTO `{$dbprefix}groups` (`group_id`, `group_name`, `group_is_default`, `group_is_essential`) VALUES
 (1, '{lang.ADMINS}', 0, 1),
 (2, '{lang.GUESTS}', 0, 1),

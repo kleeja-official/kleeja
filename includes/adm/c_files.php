@@ -17,6 +17,7 @@ if (! defined('IN_ADMIN'))
 
 //number of images per page
 $files_acp_perpage = defined('ACP_FILES_PER_PAGE') ? ACP_FILES_PER_PAGE : 20;
+$current_smt       = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', ''));
 
 
 //display
@@ -30,7 +31,7 @@ $url_pg                = ig('page') ? '&amp;page=' . g('page', 'int') : '';
 $page_action           = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or . $url_sea . $url_lst;
 $ord_action            = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_pg . $url_sea . $url_lst;
 $page2_action          = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . $url_or2 . $url_sea . $url_lst;
-$action                = $page_action . $url_pg;
+$action                = $page_action . $url_pg . ($current_smt == 'delete_by_extension' ? '&smt=delete_by_extension' : '');
 $is_search             = $affected      = false;
 $H_FORM_KEYS           = kleeja_add_form_key('adm_files');
 
@@ -65,7 +66,7 @@ if (ip('submit'))
     foreach ($del as $key => $id)
     {
         $query    = [
-            'SELECT'           => 'f.id, f.name, f.folder, f.size, f.type',
+            'SELECT'           => 'f.id, f.name, f.folder, f.size, f.type, f.user',
             'FROM'             => "{$dbprefix}files f",
             'WHERE'            => 'f.id = ' . intval($id),
         ];
@@ -76,6 +77,7 @@ if (ip('submit'))
         {
             //delete from folder ..
             @kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
+
             //delete thumb
             if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
             {
@@ -95,6 +97,12 @@ if (ip('submit'))
                 $files_num++;
             }
             $sizes += $row['size'];
+
+            //Subtract size from storage of the user
+            if ($row['user'] != -1)
+            {
+                $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-" . $row['size'] . ' WHERE id=' . $row['user']);
+            }
         }
     }
 
@@ -133,11 +141,10 @@ if (ip('submit'))
                 '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . str_replace('&amp;', '&', $action) . '\');", 2000);</script>' . "\n";
     $stylee    = 'admin_info';
 }
-else
+elseif ($current_smt == '')
 {
-
 //
-//Delete all user files [only one user]
+    //Delete all user files [only one user]
 //
     if (ig('deletefiles'))
     {
@@ -252,6 +259,12 @@ else
     {
         //get search filter
         $filter            = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
+
+        if (! $filter)
+        {
+            kleeja_admin_err($lang['ERROR_TRY_AGAIN'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=h_search', 1);
+        }
+
         $deletelink        = basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&deletefiles=' . g('search_id');
         $is_search         = true;
         $query['WHERE']    = build_search_query(unserialize(htmlspecialchars_decode($filter['filter_value'])));
@@ -259,6 +272,10 @@ else
     elseif (isset($_REQUEST['last_visit']))
     {
         $query['WHERE']    = 'f.time > ' . intval($_REQUEST['last_visit']);
+    }
+    else
+    {
+        $do_not_query_total_files = true;
     }
 
     //to-be-deleted
@@ -268,20 +285,12 @@ else
     {
         $query['ORDER BY'] = 'f.' . $SQL->escape($_REQUEST['order_by']);
     }
-    else
-    {
-        $do_not_query_total_files = true;
-    }
 
     if (! ig('search_id'))
     {
         //display files or display pics and files only in search
         $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
         $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
-    }
-    else
-    {
-        $do_not_query_total_files = false;
     }
 
 
@@ -403,4 +412,112 @@ else
     $total_pages     = $Pager->getTotalPages();
     $page_nums       = $Pager->print_nums($page_action);
     $current_page    = $Pager->getCurrentPage();
+}
+elseif ($current_smt == 'delete_by_extension')
+{
+    if (intval($userinfo['founder']) !== 1)
+    {
+        kleeja_admin_err($lang['HV_NOT_PRVLG_ACCESS']);
+
+        exit;
+    }
+
+    if (ig('fetch_ext_files'))
+    {
+        $query                = [
+            'SELECT' => 'id',
+            'FROM'   => $dbprefix . 'files',
+            'WHERE'  => 'type = \'' . g('fetch_ext_files') . '\''
+        ];
+
+        $SQL->build($query);
+
+        echo $SQL->num_rows();
+
+        exit;
+    }
+
+    if (ip('delete_files'))
+    {
+        $ext = p('selected_extnsion');
+
+        $query = [
+            'SELECT' => 'id, name, type, size, user',
+            'FROM'   => $dbprefix . 'files',
+            'WHERE'  => 'type = \'' . $ext . '\''
+        ];
+
+        $result        = $SQL->build($query);
+        $deleted_files = [];
+        $fileSizes     = 0;
+
+        if ($SQL->num_rows())
+        {
+            while ($file = $SQL->fetch_array($result))
+            {
+                $fileLocation      = PATH . 'uploads/' . $file['name'];
+                $thumbFileLocation = PATH . 'uploads/thumbs/' . $file['name'];
+
+                if (is_file($fileLocation))
+                {
+                    kleeja_unlink($fileLocation);
+                }
+
+                if (is_file($thumbFileLocation))
+                {
+                    kleeja_unlink($thumbFileLocation);
+                }
+                $fileSizes += $file['size'];
+                $deleted_files[] = $file['id'];
+
+                //Subtract size from storage of the user
+                if ($file['user'] != -1)
+                {
+                    $SQL->query("UPDATE {$dbprefix}users SET storage_size=storage_size-" . $file['size'] . ' WHERE id=' . $file['user']);
+                }
+            }
+
+            if (($deletedFileCount = count($deleted_files)) <= 1)
+            {
+                $SQL->query("delete from {$dbprefix}files where id = '$deleted_files[0]'");
+            }
+            else
+            {
+                $SQL->query("delete from {$dbprefix}files where id in (" . implode(',', $deleted_files) . ')');
+            }
+
+            $update_stats = "update {$dbprefix}stats set " . (in_array($ext, ['png','gif','jpg','jpeg', 'bmp']) ? 'imgs = imgs-' . $deletedFileCount : 'files = files-' . $deletedFileCount)
+            . ", sizes = sizes-{$fileSizes}";
+
+
+            $SQL->query($update_stats);
+        }
+
+        $SQL->freeresult($result);
+        kleeja_admin_info($lang['ADMIN_DELETE_FILE_OK'], true, '', true, $action);
+
+        exit;
+    }
+
+    $available_extensions = [];
+    $query                = [
+        'SELECT' => 'DISTINCT type',
+        'FROM'   => $dbprefix . 'files'
+    ];
+
+    $SQL->build($query);
+
+    while ($ext = $SQL->fetch())
+    {
+        $available_extensions[] = $ext;
+    }
+
+    $no_results = count($available_extensions) == 0;
+}
+
+if (intval($userinfo['founder']) == 1)
+{
+    $go_menu = [
+        'delete_by_extension' => ['name'=> $lang['DEL_BY_EXT'], 'link'=> basename(ADMIN_PATH) . '?cp=c_files&amp;smt=delete_by_extension', 'goto'=>'delete_by_extension', 'current'=> $current_smt == 'delete_by_extension'],
+    ];
 }
