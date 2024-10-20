@@ -74,7 +74,7 @@ function toggleStartBox(name, hide, current) {
 
 <IF NAME="ADM_NOTIFICATIONS">
 <!-- notifications -->
-<div class="card mb-3 admin-card" id="notifications" style="display:(startBoxes.notifications.hidden?none:)">
+<div class="card mb-3" id="notifications" style="display:(startBoxes.notifications.hidden?none:)">
         <div class="card-header">
             <i class="fa fa-bell-o"></i> {lang.NOTIFICATIONS}
         </div>
@@ -103,7 +103,7 @@ function toggleStartBox(name, hide, current) {
 {extra_adm_start_html}
 
 <!-- stats boxes -->
-<div class="card mb-3 admin-card" id="statsBoxes" style="display:(startBoxes.statsBoxes.hidden?none:)">
+<div class="card mb-3" id="statsBoxes" style="display:(startBoxes.statsBoxes.hidden?none:)">
     <div class="card-header">
         <i class="fa fa-bar-chart"></i> {lang.STATS_BOXES}
     </div>
@@ -203,7 +203,7 @@ function toggleStartBox(name, hide, current) {
 
 <!-- last visit actions -->
 <IF NAME="last_visit">
-    <div class="card mb-3 admin-card" id="lastVisitActions"  style="display:(startBoxes.lastVisitActions.hidden?none:)">
+    <div class="card mb-3" id="lastVisitActions"  style="display:(startBoxes.lastVisitActions.hidden?none:)">
         <div class="card-header">
             {lang.LAST_VISIT} ({last_visit})
         </div>
@@ -258,7 +258,7 @@ function toggleStartBox(name, hide, current) {
 
 <!-- stats_chart -->
 <IF NAME="stats_chart">
-<div class="card mb-3 admin-card" id="statsChart" style="display:(startBoxes.statsChart.hidden?none:)">
+<div class="card mb-3" id="statsChart" style="display:(startBoxes.statsChart.hidden?none:)">
     <div class="card-header">
         <i class="fa fa-area-chart"></i> {lang.STATS}
     </div>
@@ -275,7 +275,7 @@ function toggleStartBox(name, hide, current) {
 
 
 <!-- hurry hurry actions -->
-<div class="card mb-3 admin-card" id="hurryActions" style="display:(startBoxes.hurryActions.hidden?none:)">
+<div class="card mb-3" id="hurryActions" style="display:(startBoxes.hurryActions.hidden?none:)">
     <div class="card-header">
         {lang.HURRY_HURRY}
     </div>
@@ -304,7 +304,7 @@ function toggleStartBox(name, hide, current) {
 
 
 <!-- extra stats -->
-<div class="card admin-card" id="extraStats" style="display:(startBoxes.extraStats.hidden?none:)">
+<div class="card" id="extraStats" style="display:(startBoxes.extraStats.hidden?none:)">
     <div class="card-header">{lang.OTHER_INFO}</div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item d-flex justify-content-between">
@@ -314,8 +314,8 @@ function toggleStartBox(name, hide, current) {
         <li class="list-group-item">
             {lang.AFILES_SIZE_SPACE}
             <br>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: {per1}%;" aria-valuenow="{per1}" aria-valuemin="0" aria-valuemax="100">{per1}%</div>
+            <div class="progress" style="width: 100%">
+                <div class="progress-bar" role="progressbar" aria-valuenow="{per1}" aria-valuemin="0" aria-valuemax="100">{per1}%</div>
             </div>
         </li>
 

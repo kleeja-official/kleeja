@@ -47,7 +47,6 @@ if (! file_exists(PATH . KLEEJA_CONFIG_FILE))
 
 //there is a config
 require_once PATH . KLEEJA_CONFIG_FILE;
-$customadminpath = $customadminpath ?? 'admin';
 
 
 //admin files path
@@ -59,10 +58,10 @@ error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 
 /**
 * functions for start
- * @param mixed $error_number
- * @param mixed $error_string
- * @param mixed $error_file
- * @param mixed $error_line
+* @param mixed $error_number
+* @param mixed $error_string
+* @param mixed $error_file
+* @param mixed $error_line
 */
 function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
 {
@@ -77,7 +76,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
                 kleeja_log('[' . $error_name . '] ' . basename($error_file) . ':' . $error_line . ' ' . $error_string);
             }
 
-            break;
+        break;
 
         default:
             header('HTTP/1.1 503 Service Temporarily Unavailable');
@@ -87,7 +86,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
             echo '.error {color: #333;background:#ffebe8;float:left;width:73%;text-align:left;margin-top:10px;border: 1px solid #dd3c10; padding: 10px;font-family:tahoma,arial;font-size: 12px;}' . "\n";
             echo "</style>\n</head>\n<body>\n\t" . '<div class="error">' . "\n\n\t\t<h2>Kleeja error  : </h2><br />" . "\n";
             echo "\n\t\t<strong> [ " . $error_number . ':' . basename($error_file) . ':' . $error_line . ' ] </strong><br /><br />' . "\n\t\t" . $error_string . "\n\t";
-            echo "\n\t\t" . '<br /><br /><small>Visit <a href="https://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
+            echo "\n\t\t" . '<br /><br /><small>Visit <a href="http://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' . "\n\t";
             echo "</div>\n</body>\n</html>";
             global $SQL;
 
@@ -98,7 +97,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
 
             exit;
 
-            break;
+        break;
     }
 }
 set_error_handler('kleeja_show_error');
@@ -125,7 +124,7 @@ $starttm = get_microtime();
 
 if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
 {
-    if (function_exists('ini_set'))
+    if(function_exists('ini_set'))
     {
         ini_set('session.use_cookies', 1);
         ini_set('session.lazy_write', 1);
@@ -135,12 +134,9 @@ if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
     }
 
 
-    if (! session_start())
+    if(! session_start())
     {
-        // big_error is not defined yet, and the file *function_display.php* is not included yet
-        kleeja_show_error('', 'Session Error!', 'There is a problem with PHP session. We can not start it.');
-
-        exit;
+        big_error('Session Error!', 'There is a problem with PHP session. We can not start it.');
     }
 }
 
@@ -148,21 +144,7 @@ if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
 //no enough data
 if ((empty($dbname) || empty($dbuser)) && ($dbtype !== 'sqlite'))
 {
-    $install_file_url = (defined('IN_ADMIN') ? '.' : '') . './install/index.php';
-
-    if (file_exists(PATH . '/install/index.php'))
-    {
-        header("Location: {$install_file_url}");
-
-        exit;
-    }
-
-    kleeja_show_error(
-        '',
-        'There is no (install) folder, and the config file is not correct',
-        'includes/common.php',
-        __LINE__
-    );
+    header('Location: ./install/index.php');
 
     exit;
 }
@@ -194,34 +176,6 @@ include PATH . 'includes/FetchFile.php';
 
 if (defined('IN_ADMIN'))
 {
-    $currentDirectoryPath      = dirname($_SERVER['PHP_SELF']);
-    $currentDirectoryPathParts = explode('/', $currentDirectoryPath);
-    $currentDir                = array_pop($currentDirectoryPathParts);
-    $adminDirErrorMsg          = '';
-
-    if ($customadminpath == 'admin' && $currentDir != $customadminpath)
-    {
-        $adminDirErrorMsg = 'You are trying to access the admin area through a directory that is not configured. Please either revert to the default admin directory name, or see our documentation for customizing the admin directory.';
-    }
-    else
-    {
-        if ($currentDir != $customadminpath)
-        {
-            $adminDirErrorMsg = 'You are trying to access the admin area through a directory different from the one configured. Please refer to the Customize Administrator\'s Guide documentation for instructions on how to update it.';
-        }
-        else
-        {
-            if ($customadminpath != 'admin' && is_dir(PATH . 'admin'))
-            {
-                $adminDirErrorMsg = 'You are trying to access the admin area through a custom directory, but we also detected that there is a default directory \'admin\'. This may indicate that files from a recent update were uploaded to the default admin path location instead of the custom location, resulting in these files becoming outdated. Please make sure your custom admin folder contains the latest files, and delete the default admin directory to continue.';
-            }
-        }
-    }
-
-    if ($adminDirErrorMsg)
-    {
-        kleeja_show_error('', 'Critical Error', $adminDirErrorMsg);
-    }
     include PATH . 'includes/functions_adm.php';
 }
 
@@ -270,7 +224,7 @@ $config = array_merge($config, (array) $d_groups[$usrcp->group_id()]['configs'])
 
 
 //admin path
-define('ADMIN_PATH', rtrim($config['siteurl'], '/') . '/' . $customadminpath . '/index.php');
+define('ADMIN_PATH', rtrim($config['siteurl'], '/') . '/admin/index.php');
 
 
 //no tpl caching in dev stage
@@ -361,10 +315,10 @@ define('ACP_STYLE_NAME', 'Masmak');
 $STYLE_PATH                         = $config['siteurl'] . 'styles/' . (trim($config['style_depend_on']) == '' ? $config['style'] : $config['style_depend_on']) . '/';
 $THIS_STYLE_PATH                    = $config['siteurl'] . 'styles/' . $config['style'] . '/';
 $THIS_STYLE_PATH_ABS                = PATH . 'styles/' . $config['style'] . '/';
-$STYLE_PATH_ADMIN                   = $config['siteurl'] . $customadminpath . '/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME : ACP_STYLE_NAME) . '/';
-$STYLE_PATH_ADMIN_ABS               = PATH . $customadminpath . '/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME . '/' : ACP_STYLE_NAME . '/');
-$DEFAULT_PATH_ADMIN_ABS             = PATH . $customadminpath . '/' . ACP_STYLE_NAME . '/';
-$DEFAULT_PATH_ADMIN                 = $config['siteurl'] . $customadminpath . '/' . ACP_STYLE_NAME . '/';
+$STYLE_PATH_ADMIN                   = $config['siteurl'] . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME : ACP_STYLE_NAME) . '/';
+$STYLE_PATH_ADMIN_ABS               = PATH . 'admin/' . (is_browser('mobile') || defined('IN_MOBILE') ? ACP_STYLE_NAME . '/' : ACP_STYLE_NAME . '/');
+$DEFAULT_PATH_ADMIN_ABS             = PATH . 'admin/' . ACP_STYLE_NAME . '/';
+$DEFAULT_PATH_ADMIN                 = $config['siteurl'] . 'admin/' . ACP_STYLE_NAME . '/';
 
 
 //get languge of common
@@ -380,10 +334,10 @@ if (isset($_GET['go']) && $_GET['go'] == 'login')
 
 //install.php exists
 if (
-    file_exists(PATH . 'install')                        &&
-    ! defined('IN_ADMIN')                                &&
-    ! defined('IN_LOGIN')                                &&
-    ! defined('DEV_STAGE')                               &&
+    file_exists(PATH . 'install')  &&
+    ! defined('IN_ADMIN') &&
+    ! defined('IN_LOGIN') &&
+    ! defined('DEV_STAGE') &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login']))
 ) {
@@ -396,18 +350,18 @@ if (
 $login_page = '';
 
 if (
-    $config['siteclose'] == '1'                          &&
-    ! user_can('enter_acp')                              &&
-    ! defined('IN_LOGIN')                                &&
-    ! defined('IN_ADMIN')                                &&
+    $config['siteclose'] == '1' &&
+    ! user_can('enter_acp') &&
+    ! defined('IN_LOGIN') &&
+    ! defined('IN_ADMIN') &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login', 'register', 'logout']))
-) {
+    ) {
     //if download, images ?
     if (
         (defined('IN_DOWNLOAD') && (ig('img') || ig('thmb') || ig('thmbf') || ig('imgf')))
         || g('go', 'str', '') == 'queue'
-    ) {
+        ) {
         @$SQL->close();
         $fullname = 'images/site_closed.jpg';
         $filesize = filesize($fullname);

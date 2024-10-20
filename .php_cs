@@ -5,13 +5,13 @@ $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
 ;
 
-return (new PhpCsFixer\Config())
+return PhpCsFixer\Config::create()
     ->setRules([
       'binary_operator_spaces' => ['default' => 'align'],
       'phpdoc_align' => true,
       'array_indentation' => true,
       'blank_line_before_statement' => ['statements' => [
-        'break', 'case', 'continue', 'default', 'exit', 'for', 'foreach', 'if']
+        'break', 'case', 'continue', 'default', 'die', 'for', 'foreach', 'if']
         ],
       'braces' => ['position_after_control_structures' => 'next'],
       'cast_spaces' => true,
@@ -22,7 +22,7 @@ return (new PhpCsFixer\Config())
       'include' => true,
       'indentation_type' => true,
       'array_syntax' => ['syntax' => 'short'],
-      'constant_case' => ['case' => 'lower'],
+      'lowercase_constants' => true,
       'method_chaining_indentation' => true,
       'method_argument_space' => true,
       'no_closing_tag' => true,

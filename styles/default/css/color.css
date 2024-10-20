@@ -1,0 +1,330 @@
+@charset "UTF-8";
+/*	--------------------------------------------------
+	Theme Name:		default V2
+	package:		Kleeja  copyright(c)2007-2012
+	version:		1.5
+	URL:			http://www.kleeja.com
+	Author:			Tar3Q+KLEEJA TEAM
+	--------------------------------------------------
+	$Id: color.css 1667 2010-09-28 12:41:22Z ALTAR3Q $
+	--------------------------------------------------
+	1. HTML Tags
+	2. Misc
+	3. group Infos & Alerts & Errors
+	4. Main Structure
+	5. Template & Header						> header.html
+	6. Template & Index							> index_body.html
+	7. Template & Downlod						> download.html
+	8. Template & stats							> stats.html	
+	9. Template & Rules							> rules.html
+   10. Template & Footer						> footer.html
+   11. Template & login							> login.html
+   12. Template & Users Files					> fileuser.html
+   13. Template & Register						> register.html 
+   14. Template & Contact Us					> call.html
+   15. Template & Password Recovery				> get_pass.html
+   16. Template & Report a File					> report.html
+   17. Template & Profile						> profile.html
+   18. Template & File Manager users			> filecp.html
+   19. Template & List of allowed file			> guide.html
+   20. Template & Copy the links after upload	> up_boxes.html
+ 
+	# --------------------------------------------------
+	1. HTML Tags
+	-------------------------------------------------- */
+	body {color:#474747;}
+	h1, h2, h3, h4, h5, h6 { color: #333;}
+	h1 { color:#8EC1DA;}
+	h6 { color:#8EC1DA;}
+	strong {color: #62B4E8;}
+	small {color: #444;; }
+	hr {border:solid #ddd; }
+	code, pre { color: #e33100; }
+	address { color: #333;}
+	abbr, acronym {color: #222; border-bottom: 1px solid #ddd;}
+	
+	/* @Lists -------------------- */
+	dt {color: #333; }
+	
+	/* @group Forms -------------- */
+	label {color:#222;}
+	textarea ,select {border:1px solid #aaa;}
+	textarea {color:black;}
+	input[type="text"], input[type="password"]{border: 1px solid #AFAEAA;border-top-color:#AFAEAA;border-right-color: #D5D5C8;border-bottom-color: #D5D5C8;}
+	input[type="text"]:hover, input[type="password"]:hover, textarea:hover, select:hover{border: 1px solid #888;}
+	select:focus, textarea:focus, input[type="password"]:focus, input[type="text"]:focus ,
+	select.remme:hover,select.remme:focus{background-color:#f7f7f7;border: 1px solid #f7f7f7;}
+	input[type="submit"]:hover  {color:#62B4E8;}
+
+	/* @Links -------------------- */
+	a:link, a:visited{color: #474747;}
+	a:hover, a:active {color:#62B4E8;}
+	h1 a, h2 a, h3 a {color: #333;}
+	h3 a:hover { color: #FF5502; }
+/* @end */
+	
+/*	--------------------------------------------------
+	2. Misc
+	-------------------------------------------------- */
+	.dot {background: url("../images/bg_dots.gif") repeat-x;}
+	.line {background:url("../images/line.png") repeat-x right top;}
+	.FooterLine{background:white;}
+
+	/* debug kleeja */
+	.debug_kleeja{background-color:white;border:1px #666 solid;}
+	
+	/* group Pagination */
+	a.paginate {color:#333;background:url("../images/pagination.png") 0 0 no-repeat; border:none;}
+	a.paginate > span {background:url("../images/pagination.png") 100% 0 no-repeat; }
+	a.paginate:hover, a.paginate:focus{ color:white;background-position:0 -90px; }
+	a.paginate:hover > span, a.paginate:focus > span { background-position:100% -90px; }
+	a.dots { background:url("../images/pagination.png") 0 0 no-repeat;}
+	a.dots > span { background-position:100% 0;}
+	a.dots:hover, a.dots:focus{ color:#333;background-position:0 0; }
+	a.dots:hover > span, a.dots:focus > span	{ background-position:100% 0; }
+	a.current { background:url("../images/pagination.png") 0 -90px no-repeat; color:white;}
+	a.current > span { background-position:100% -90px;}
+	a.current:hover, a.current:focus{background-position:0 -90px; }
+	a.current:hover > span, a.current:focus > span { background-position:100% -90px;}
+	a.phover { background:url("../images/pagination.png") 0 -150px no-repeat; color:white;}
+	a.phover > span { background-position:100% -150px;}
+	a.phover:hover, a.phover:focus {color:white; background-position:0 -90px; }
+	a.phover:hover > span, a.phover:focus > span { background-position:100% -90px;}
+
+	
+	/* verification code */
+	.safe_code {	border:1px solid #BED9ED;background:#F9F9F0 url("../images/saf3_code01.gif") no-repeat 0% 50%;}
+	.safe_code p {color:#62B4E8;}
+	p.explain {color:#666;}
+
+/* @end */
+
+/*	--------------------------------------------------
+	3. group Infos & Alerts & Errors
+	-------------------------------------------------- */
+	/* box ,System Message */
+	ul.index_info, ul.index_err {border-top: 1px solid white;border-bottom: 1px solid white;}
+		
+	/* Infos */
+	dd.info ul { border-top: 3px solid #62B4E8;border-bottom: 3px solid #62B4E8;background-color: #BED9ED; }
+	dd.info  ul li { color: #333;background: url("../images/info.png") no-repeat right top; }
+	
+	/* Errors */
+	dd.error ul {background-color: #E6C0C0;border-top:3px solid #DE7A7B;border-bottom: 3px solid #DE7A7B;}
+	dd.error ul li{color:#c00;background: url("../images/error.png") no-repeat right top;}
+	dd.error ul li strong{color:#c00;}
+
+	/* Only Index */
+	ul.index_info {border-top: 3px solid #62B4E8;border-bottom: 3px solid #62B4E8;background:#BED9ED;}
+	ul.index_info  li {background:url("../images/info_f.gif") no-repeat right top;}
+	
+	ul.index_err {border-top: 3px solid #DE7A7B;border-bottom: 3px solid #DE7A7B;color:#c00;background:#E6C0C0;}
+	ul.index_err li {background: url("../images/err.gif") no-repeat right top;}
+/* @end */
+
+/*	--------------------------------------------------
+	4. Main Structure
+	-------------------------------------------------- */
+	body {background: #ececec url("../images/bg_body.png") repeat-x top center;}
+
+	#main {background:#ececec url("../images/bg_main_mobile.png") no-repeat top right;}
+	@media (min-width: 992px) {
+		#main {background:url("../images/bg_main.png") no-repeat top right;}
+	}
+	#content, #content_index  {background:#F8F8F8;border:1px solid #C9C9C9;}
+	#content_index {background-color:transparent;background-image:none;border:none;}
+/* @end */
+	
+/*	--------------------------------------------------
+	5. Template & Header > header.html
+	-------------------------------------------------- */
+	/* @Logo -------------------- */  
+	#header .logo {background:transparent url("../images/logo.png") right center no-repeat;}
+	/* @Top Navigation -------------------- */       
+	.top_nav {background:url("../images/menu-bg.gif")}
+	.top_nav .menu li a {color: #444;}
+	.top_nav .menu li a:hover {color:#8EC1DA;background:url("../images/hover.png") repeat-x top left;}
+	.top_nav .menu li a.current {color:#4B4F52;background:url("../images/current-bg.gif") top left repeat-x;}
+	/* @right menu -------------------- */
+    #sidebar{background:#f7f7f7 url(../images/sidebar.png) 0 bottom no-repeat;}
+    #sidebar_box{background: #F8F8F8;border: 1px solid #DFDFDF;}
+    #sidebar_box .menu li a{background:#8EC1DA 35px 0 repeat-x;color:#000;}
+    #sidebar_box .menu a:hover{background:#4B4F52;color:#fff;}
+
+	@media (min-width: 992px) {
+		.top_nav {background:url("../images/menu-bg.gif") repeat-x top left;}
+	}
+/* @end */
+
+/*	--------------------------------------------------
+	6. Template & Index > index_body.html
+	-------------------------------------------------- */
+	.zx a:hover, .zl a:hover {background:#FEEA00;}
+	.url {color:#62B4E8;}
+	.inum {color:#888;}
+	input.input_num {background:white;border: 1px solid #B3B9C4;outline:1px solid #ccc;}
+	.waitloading{color:#8EC1DA;}
+
+	/*	ONLINE -------------------- */
+	.onlineall, .onlinevisitor, 
+	.onlineusers, .name_users {background:#FAFAE7 url("../images/bg_onlineall.gif") repeat-x center left;border:1px solid white;color:#4E4E07;}
+	.name_users{background:#F9E5E5 url("../images/bg_onlinevisitor.gif") repeat-x center left;color:#D20C0C;}
+/* @end */
+
+/*	--------------------------------------------------
+	7. Template & Downlod > download.html
+	-------------------------------------------------- */
+	.data_file .tit {background:#8C8C8C url("../images/bg_tile.gif") repeat-x bottom;border:1px solid #727272;color:white;}
+	.data_file .data_menu tr{background:white;border-top:1px solid #C7C7C7;border-bottom:1px solid #bbb;}
+	.data_file .data_menu td{border:none;}
+	.data_file .data_menu .td  {background:#BED9ED url("../images/headline_bg.png") repeat-x top right;color:#333;}
+	.data_file .filereport {background:url("../images/bg_onlinevisitor.gif") repeat-x bottom left;border-top:1px solid #D88181;border-bottom:1px solid #D88181;color:#D80000;}
+	.data_file .filereport:hover {background:#F9B6C1;border-color:#B14F4F;}
+	.data_file_down .wait {color:#4B4F52;}
+	.download a{background:#8EC1DA url("../images/bg_animated.gif") repeat;border:1px solid #fff;color:#4B4F52;}
+	.download a:hover {border-color:white;color:#222;}
+	.download span{color:#777;}
+/* @end */
+
+/*	--------------------------------------------------
+	8. Template & Stats > stats.html
+	-------------------------------------------------- */
+	.stats  {color:#333;background: url("../images/stats.gif") no-repeat 2% 40%;}
+	.stats  ul li {background:transparent url("../images/list_stat.gif") no-repeat right center;}
+	.st i{background:white;color: #62B4E8;border-top:1px solid #BED9ED;border-bottom:1px solid #BED9ED;}
+/* @end */
+
+/*	--------------------------------------------------
+	10. Template & Rules > rules.html
+	-------------------------------------------------- */
+	#rules {color:#555;}
+	#rules .rut {color:red;}
+/* @end */
+
+/*	--------------------------------------------------
+	10. Template & Footer > footer.html
+	-------------------------------------------------- */
+	#footer{background:#EBEBEB url("../images/bg_footer.gif") repeat;border-top:1px solid #D8D8D8;}
+	#footer .footer_inner{color:#474747;}
+	#footer .admin_cp_link span{background:url("../images/admin_cp.gif") no-repeat center left;border:1px solid white;color:#4B4F52;}
+	#footer .admin_cp_link span:hover {color:#111;}
+	#footer .footer_stats, #footer .footer_stats strong {color:#777;}
+	#footer a:link, #footer a:active, #footer a:visited{color:#474747;}
+	#footer a:hover{color:#8EC1DA;}
+/* @end */
+
+/*	--------------------------------------------------
+	11. Template & login > login.html
+	-------------------------------------------------- */
+	.login {background:transparent url("../images/login.gif") no-repeat 0% 50%;}
+	.title_login {background:#fff url("../images/title_login.gif") no-repeat 99% 50%;color:#8EC1DA;}
+	input.username{background:white url("../images/username.gif") no-repeat 2px 2px;}
+	input.password{background:white url("../images/password.gif") no-repeat 2px 2px;}
+	.forget_pass {background:white url("../images/forget_pass.png") no-repeat 96% 50%;}
+	.forget_pass  a{color:#444;}
+	.forget_pass a:hover {color:#8EC1DA;}
+/* @end */
+
+/*	--------------------------------------------------
+	12. Template & Users Files > fileuser.html
+	-------------------------------------------------- */
+	#boxfileuser .box_user, #boxfileuser .us3r_n4me {background:white url("../images/bg_box_1.gif") repeat-x top left;border:1px solid white;}
+	#boxfileuser .public {background:#8C8C8C url("../images/bg_tile.gif") repeat-x bottom;color:white;border-top:1px dashed #EEE;border-bottom:1px dashed #EEE;}
+	#boxfileuser .uname, #boxfileuser .nums{color:#62B4E8;}
+	#filecplink fieldset{border: 1px solid #aaa;}
+	#filecplink  input.link_user {color:#8EC1DA;}
+	#filecplink legend.copylink {color:black;}
+	.xthumbs {background:#E6E6E6 url("../images/bg_user_box.gif") repeat-x top left;}
+
+/* @end */
+
+/*	--------------------------------------------------
+	13. Template & Register > register.html
+	-------------------------------------------------- */
+	.register {background:transparent url("../images/register.gif") no-repeat 0% 50%;}
+/* @end */
+
+/*	--------------------------------------------------
+	14. Template & Contact Us > call.html
+	-------------------------------------------------- */
+	.call{background:transparent url("../images/call.gif") no-repeat 0% 50%;}
+/* @end */
+
+/*	--------------------------------------------------
+	15. Template & Password Recovery > get_pass.html
+	-------------------------------------------------- */
+	.get_password{background:transparent url("../images/get_password.gif") no-repeat 4% 50%;}
+	.get_password p{background:white;border:1px solid #ECCEBB;color:#D80000;}
+/* @end */
+
+/*	--------------------------------------------------
+	16. Template & Report a File > report.html
+	-------------------------------------------------- */
+	.rebort{background:transparent url("../images/file_rebort.gif") no-repeat 2% 50%;}
+	input.urlcolor{background:#FFDFDF !important;	border:1px solid #D88D8D !important;}
+	input.urlnoncolor{background:#fff !important;	border:1px solid #D88D8D !important;}
+	input.urlcolor:focus,input.urlcolor:hover,input.urlnoncolor:hover{background:#FFDFDF !important;border-color:#D88D8D !important;}
+/* @end */      
+
+/*	--------------------------------------------------
+	17. Template & Profile > profile.html
+	-------------------------------------------------- */
+	#profile  select, #profile  option{background:#BED9ED;color:black;}
+	#profile .boxdata{border:1px solid white;background:white url("../images/bg_tabbertab.png") repeat-x bottom left;}
+	#profile .boxdata .tit{background:#8EC1DA url("../images/bg_tile_tab.png") repeat-x bottom left;color:white;}
+	#profile .boxdata .boxdata_inner input, #profile .boxdata .boxdata_inner select  {color:#4B4F52;}
+/* @end */
+
+/*	--------------------------------------------------
+	18. Template & File Manager users > filecp.html
+	-------------------------------------------------- */
+	.file_cp {background:#ECECEC url("../images/table_file_cp.gif") no-repeat 40% 45%;color:#444;border:1px solid white;}
+	.file_cp .nbr  {color:black;}
+	.file_cp thead th, .file_cp tfoot th, .file_cp tbody td {border: 1px solid #aaa;border-top-color: white;border-left-color: white;border-bottom-color: #aaa;}
+	.file_cp thead th{background:#8EC1DA url("../images/bg_tile_tab.png") repeat-x top left;color:white;border:none;}
+	.file_cp thead th a:link{color:white;}
+	.file_cp tfoot th{background:#ECECEC url("../images/bg_footer.gif") repeat-x center right;}
+	.file_cp tbody tr:hover td{border-top-color:#aaa;border-bottom-color:white;}
+	.file_cp tbody tr:hover td a{color:black;}
+	.file_cp  a:link {color:#444;}
+	.file_cp a:visited {color:black;}
+	.file_cp  a:hover {color:#D2691E;}
+	.checkall a:link{color:#62B4E8;}
+	.ored,.ored:hover,.ored a:link, .ored a:hover, .ored a:visited {background:#FFE1E2;color:red !important;}
+	.ored td,.ored:hover td{border-top-color:#aaa !important;border-bottom-color:white !important;}
+/* @end */
+
+/*	--------------------------------------------------
+	19. Template & List of allowed file upload > guide.html
+	-------------------------------------------------- */
+	.guide_right_th, .guide_left_th{color:white;border: 1px solid #62B4E8;}
+	.guide_right_th  {background:#767676 url("../images/bg_tile.gif") repeat-x bottom right;border-color:#727272;}
+	.guide_left_th {background:#62B4E8 url("../images/bg_tile_tab.png") repeat-x bottom left;}
+	.guide_right_box{background:white url("../images/bg_box_1.gif") repeat-x top left;border-right:1px solid white;border-left:1px solid white;}
+	.guide_right_img,.guide_right_n4me, .guide_left_img {color:#333;}
+	.guide_right_img {background-color:white;border:1px solid #DBDBDB;}
+	.guide_right_ext{background:#F9F9F9 url("../images/headline_bg.png") repeat-x top right;border-bottom: 1px solid #EFEFEF;border-top: 1px solid #DBDBDB;}
+	.guide_right_ext_color{color:#222;}
+	.guide_right_ext_lang{color:black;}
+	.guide_left_box{background:white url("../images/bg_box.gif") repeat-x top left;border-right:1px solid white;border-left:1px solid white;}
+	.guide_left_img {background-color:white;border: 1px solid #62B4E8;}
+	.guide_left_n4me{color:#F45E13;}
+	.guide_left_ext{background:#DFEDF8 url("../images/headline_bg.png") repeat-x top right;border-bottom: 1px solid #62B4E8;border-top: 1px solid #62B4E8;}
+	.guide_left_ext_color{color:#333;}
+	.guide_left_ext_lang{color:black;}
+	.guide_right_ext:hover{background-color:white;}
+/* @end */
+
+/*	--------------------------------------------------
+	20. Template & Copy the links after upload > up_boxes.html
+	-------------------------------------------------- */
+	.thumb_img a img{background:white;border:2px solid #62B4E8;}
+	.thumb_img a img:hover{border-color:#FEA53D;}
+	.up_box_input {border: 1px solid white;background:#ECECEC;}
+	td.btitle ,td.all_box_link{border:1px solid #62B4E8;}
+	td.btitle {color:#333;border-left:none;}
+	td.all_box_link {border-right:none;}
+	textarea.up_input {color:#54270A;}
+/* @end */
+
+

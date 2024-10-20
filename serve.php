@@ -47,7 +47,7 @@ if (file_exists('plugins_rules.php'))
 }
 
 $base_folder = str_replace('/serve.php', '', parse_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'], PHP_URL_PATH));
-$request_uri = preg_replace('/^' . preg_quote($base_folder, '/') . '\//', '', strtok($_SERVER['REQUEST_URI'], '?'));
+$request_uri = preg_replace('/^'. preg_quote($base_folder, '/') . '\//', '', strtok($_SERVER['REQUEST_URI'], '?'));
 
 foreach ($rules as $rule_regex => $rule_result)
 {

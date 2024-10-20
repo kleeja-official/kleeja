@@ -51,7 +51,7 @@
                 <td>
                         <select name="time_zone" id="time_zone" style="text-align:left;direction:ltr">
                             {{foreach(time_zones() as $z=>$t):}}
-                                <option value="{{echo $z}}" {{if($z=='Asia/Buraydah'):}}selected="selected"{{endif;}}>{{echo $z}} (GMT{{echo $t < 0 ? $t : '+' . $t}})</option>
+                                <option value="{{echo $z}}" {{if($z=='Asia/Buraydah'):}}selected="selected"{{endif;}}>{{echo $z}} (GMT{{echo $t < 0 ? $t : '+' . $t}}</option>
                             {{endforeach}}
                         </select>
                 </td>

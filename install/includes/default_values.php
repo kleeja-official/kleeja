@@ -37,7 +37,6 @@ $config_values[] = ['user_system', '1', '<select id=\"user_system\" name=\"user_
 $config_values[] = ['register', '1', '<label>{lang.YES}<input type=\"radio\" id=\"register\" name=\"register\" value=\"1\"  <IF NAME=\"con.register==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"register\" name=\"register\" value=\"0\"  <IF NAME=\"con.register==0\"> checked=\"checked\"</IF> /></label>', 10, 'general', 0, 0];
 $config_values[] = ['enable_userfile', '1', '<label>{lang.YES}<input type=\"radio\" id=\"enable_userfile\" name=\"enable_userfile\" value=\"1\"  <IF NAME=\"con.enable_userfile==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"enable_userfile\" name=\"enable_userfile\" value=\"0\"  <IF NAME=\"con.enable_userfile==0\"> checked=\"checked\"</IF> /></label>', 11, 'groups', 0, 0];
 $config_values[] = ['mod_writer', '0', '<label>{lang.YES}<input type=\"radio\" id=\"mod_writer\" name=\"mod_writer\" value=\"1\"  <IF NAME=\"con.mod_writer==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"mod_writer\" name=\"mod_writer\" value=\"0\"  <IF NAME=\"con.mod_writer==0\"> checked=\"checked\"</IF> /></label>\r\n   [ {lang.MOD_WRITER_EX} ]', 12, 'advanced', 0, 0];
-$config_values[] = ['max_storage', '0', '<input type=\"text\" id=\"max_storage\" name=\"max_storage\" value=\"{con.max_storage}\" size=\"20\" style=\"direction:ltr\" />', 11, 'groups', 0, 0];
 
 // Cookies settings
 $cookie_data     = get_cookies_settings();
@@ -61,7 +60,6 @@ $config_values[] = ['thumbs_imgs', '1', '<input type=\"text\" id=\"thmb_dim_w\" 
 $config_values[] = ['write_imgs', '0' , '<label>{lang.YES}<input type=\"radio\" id=\"write_imgs\" name=\"write_imgs\" value=\"1\"  <IF NAME=\"con.write_imgs==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"write_imgs\" name=\"write_imgs\" value=\"0\"  <IF NAME=\"con.write_imgs==0\"> checked=\"checked\"</IF> /></label>\r\n <br /><img src=\"{STAMP_IMG_URL}\" alt=\"Seal photo\" style=\"margin-top:4px;border:1px groove #FF865E;\" />\r\n ', 28, 'groups', 0, 0];
 $config_values[] = ['livexts', 'swf', '<input type=\"text\" id=\"livexts\" name=\"livexts\" value=\"{con.livexts}\" size=\"62\" style=\"direction:ltr\" />{lang.COMMA_X}', '29', 'upload', 0, 0];
 $config_values[] = ['usersectoupload', '10', '<input type=\"text\" id=\"usersectoupload\" name=\"usersectoupload\" value=\"{con.usersectoupload}\" size=\"10\" />', 44, 'groups', 0, 0];
-$config_values[] = ['enable_multipart', '1' , '<label>{lang.YES}<input type=\"radio\" id=\"enable_multipart\" name=\"enable_multipart\" value=\"1\"  <IF NAME=\"con.enable_multipart==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"enable_multipart\" name=\"enable_multipart\" value=\"0\"  <IF NAME=\"con.enable_multipart==0\"> checked=\"checked\"</IF> /></label>', 45, 'groups', 0, 0];
 $config_values[] = ['filesnum_show', '1', '<label>{lang.YES}<input type=\"radio\" id=\"filesnum_show\" name=\"filesnum_show\" value=\"1\"  <IF NAME=\"con.filesnum_show==1\"> checked=\"checked\"</IF> /></label>\r\n <label>{lang.NO}<input type=\"radio\" id=\"filesnum_show\" name=\"filesnum_show\" value=\"0\"  <IF NAME=\"con.filesnum_show==0\"> checked=\"checked\"</IF> /></label>', 22, 'upload', 0, 0];
 
 //KLIVE
@@ -83,15 +81,15 @@ $config_values[] = ['thmb_dims', '100*100', '', 0, 0, 0];
 $config_values[] = ['style', 'bootstrap', '', 0, '0', 0, 0];
 $config_values[] = ['new_version', '', '', 0, 0, 0];
 $config_values[] = ['db_version', KLEEJA_DB_VERSION, '', 0, 0, 0];
-$config_values[] = ['last_online_time_update', time(), '', 0, 0, 0];
-$config_values[] = ['klj_clean_files_from', '0', '', 0, 0, 0];
+$config_values[] = ['last_online_time_update', time(), '', 0, 0, 1];
+$config_values[] = ['klj_clean_files_from', '0', '', 0, 0, 1];
 $config_values[] = ['style_depend_on', '', '', 0, 0, 0];
-$config_values[] = ['most_user_online_ever', '', '', 0, 0, 0];
-$config_values[] = ['expand_menu', '0', '', 0, 0, 0];
-$config_values[] = ['firstime', '0', '', 0, 0, 0];
+$config_values[] = ['most_user_online_ever', '', '', 0, 0, 1];
+$config_values[] = ['expand_menu', '0', '', 0, 0, 1];
+$config_values[] = ['firstime', '0', '', 0, 0, 1];
 $config_values[] = ['ftp_info', '', '', 0, 0, 0];
-$config_values[] = ['queue', '', '', 0, 0, 0];
-$config_values[] = ['default_group', '3', '', 0, 0, 0];
+$config_values[] = ['queue', '', '', 0, 0, 1];
+$config_values[] = ['default_group', '3', '', 0, 0, 1];
 
 //
 // Extensions

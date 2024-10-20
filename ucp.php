@@ -115,7 +115,7 @@ switch (g('go'))
         //
         //register page
         //
-    case 'register' :
+        case 'register' :
 
         //page info
         $stylee         = 'register';
@@ -253,9 +253,9 @@ switch (g('go'))
         //
         //logout action
         //
-    case 'logout' :
+        case 'logout' :
 
-        is_array($plugin_run_result = Plugins::getInstance()->run('begin_logout', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+            is_array($plugin_run_result = Plugins::getInstance()->run('begin_logout', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         if ($usrcp->logout())
         {
@@ -267,16 +267,16 @@ switch (g('go'))
             kleeja_err($lang['LOGOUT_ERROR']);
         }
 
-        is_array($plugin_run_result = Plugins::getInstance()->run('end_logout', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+            is_array($plugin_run_result = Plugins::getInstance()->run('end_logout', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         break;
 
         //
         //files user page
         //
-    case 'fileuser' :
+        case 'fileuser' :
 
-        is_array($plugin_run_result = Plugins::getInstance()->run('begin_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+         is_array($plugin_run_result = Plugins::getInstance()->run('begin_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         $stylee         = 'fileuser';
         $H_FORM_KEYS    = kleeja_add_form_key('fileuser');
@@ -321,7 +321,7 @@ switch (g('go'))
             kleeja_err($lang['NOT_EXSIT_USER'], $lang['PLACE_NO_YOU']);
         }
 
-        //this user closed his folder, and it's not the current user folder
+            //this user closed his folder, and it's not the current user folder
         if (! $data_user['show_my_filecp'] && ($usrcp->id() != $user_id) && ! user_can('enter_acp'))
         {
             kleeja_info($lang['USERFILE_CLOSED'], $lang['CLOSED_FEATURE']);
@@ -343,29 +343,12 @@ switch (g('go'))
         $start                = $Pager->getStartRow();
 
         $your_fileuser       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $usrcp->id() . '.html' : 'ucp.php?go=fileuser&amp;id=' . $usrcp->id());
-
-        if($user_himself)
-        {
-            $used_storage        = $userinfo['storage_size'];
-            $max_storage         = $d_groups[$usrcp->group_id()]['configs']['max_storage'];
-            $is_limited          = $max_storage>0;
-
-            if($is_limited)
-            {
-                $storage_per         = ($used_storage*100)/$max_storage;
-                $storage_per         = round($storage_per, 2);
-                $storage_per         = min($storage_per, 100);
-                $max_storage         = readable_size($max_storage);
-            }
-            $used_storage        = readable_size($used_storage);
-            $storage_usage_str   = sprintf($lang['STORAGE_USAGE'], $used_storage, $is_limited ? $max_storage : '∞');
-        }
         $total_pages         = $Pager->getTotalPages();
         $linkgoto            = $config['siteurl'] . (
-            $config['mod_writer']
-            ?  'fileuser-' . $user_id . '.html'
-            : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null)
-        );
+                                    $config['mod_writer']
+                                    ?  'fileuser-' . $user_id . ($currentPage > 1  && $currentPage <= $total_pages ? '-' . $currentPage : '') . '.html'
+                                    : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null)
+                            );
 
         $page_nums        = $Pager->print_nums(str_replace('.html', '', $linkgoto));
 
@@ -380,7 +363,6 @@ switch (g('go'))
 
         //set page title
         $titlee    = $lang['FILEUSER'] . ': ' . $user_name;
-
         //there is result ? show them
         if ($nums_rows != 0)
         {
@@ -396,7 +378,7 @@ switch (g('go'))
             $result    = $SQL->build($query);
 
             $i      = ($currentPage * $perpage) - $perpage;
-            $tdnumi = $num = $files_num = $imgs_num = $sizes = 0;
+            $tdnumi = $num = $files_num = $imgs_num = 0;
             while ($row=$SQL->fetch_array($result))
             {
                 ++$i;
@@ -441,7 +423,7 @@ switch (g('go'))
                         kleeja_info($lang['INVALID_FORM_KEY']);
                     }
 
-                    if (isset($_POST['del_' . $row['id']]))
+                    if ($_POST['del_' . $row['id']])
                     {
                         //delete from folder ..
                         @kleeja_unlink($row['folder'] . '/' . $row['name']);
@@ -472,26 +454,29 @@ switch (g('go'))
                     is_array($plugin_run_result = Plugins::getInstance()->run('submit_in_all_fileuser', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
                     //delete all files
-                    @kleeja_unlink($row['folder'] . '/' . $row['name']);
-
-                    //delete thumb
-                    if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
+                    foreach ($arr as $row)
                     {
-                        @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
-                    }
+                        @kleeja_unlink($row['folder'] . '/' . $row['name']);
 
-                    $ids[] = $row['id'];
+                        //delete thumb
+                        if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
+                        {
+                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
+                        }
 
-                    if ($is_image)
-                    {
-                        $imgs_num++;
-                    }
-                    else
-                    {
-                        $files_num++;
-                    }
+                        $ids[] = $row['id'];
 
-                    $sizes += $row['size'];
+                        if ($is_image)
+                        {
+                            $imgs_num++;
+                        }
+                        else
+                        {
+                            $files_num++;
+                        }
+
+                        $sizes += $r['size'];
+                    }
                 }
             }
 
@@ -520,15 +505,6 @@ switch (g('go'))
                         $update_query    = [
                             'UPDATE'       => "{$dbprefix}stats",
                             'SET'          => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
-                        ];
-
-                        $SQL->build($update_query);
-
-                        //update storage
-                        $update_query    = [
-                            'UPDATE'       => "{$dbprefix}users",
-                            'SET'          => "storage_size=storage_size-$sizes",
-                            'WHERE'        => "id=$user_id",
                         ];
 
                         $SQL->build($update_query);
@@ -566,15 +542,6 @@ switch (g('go'))
                         ];
 
                         $SQL->build($update_query);
-
-                        //update storage
-                        $update_query    = [
-                            'UPDATE'       => "{$dbprefix}users",
-                            'SET'          => "storage_size=storage_size-$sizes",
-                            'WHERE'        => "id=$user_id",
-                        ];
-
-                        $SQL->build($update_query);
                     }
 
 
@@ -600,7 +567,7 @@ switch (g('go'))
 
         break;
 
-    case 'profile' :
+        case 'profile' :
 
         //not a user
         if (! $usrcp->name())
@@ -691,8 +658,7 @@ switch (g('go'))
                 $user_salt        = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
                 $mail             = $new_mail ? "mail='" . $SQL->escape(strtolower(trim(p('pmail')))) . "'" : '';
                 $showmyfile       = p('show_my_filecp', 'int') != $show_my_filecp ?  ($mail == '' ? '': ',') . "show_my_filecp='" . p('show_my_filecp', 'int') . "'" : '';
-                $insertnewpass    = $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt);
-                $pass             = ! empty(p('ppass_new')) ? ($showmyfile != ''  || $mail != '' ? ',' : '') . "password='" . $insertnewpass .
+                $pass             = ! empty(p('ppass_new')) ? ($showmyfile != ''  || $mail != '' ? ',' : '') . "password='" . $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt) .
                                 "', password_salt='" . $user_salt . "'" : '';
                 $id            = (int) $usrcp->id();
 
@@ -712,15 +678,6 @@ switch (g('go'))
                 {
                     $text = $lang['DATA_CHANGED_O_LO'];
                     $SQL->build($update_query);
-
-                    //Need to update cookies
-                    $prev_cookie    = @explode('|', $usrcp->en_de_crypt($usrcp->kleeja_get_cookie('ulogu'), 2));
-                    $prev_cookie[1] = ! empty(p('ppass_new')) ? $insertnewpass : $prev_cookie[1];
-                    $prev_cookie[3] = sha1(md5($config['h_key'] . $prev_cookie[1]) . $prev_cookie[2]);
-                    $usinfo         = unserialize(base64_decode($prev_cookie[5]));
-                    $mail           = $new_mail ? $SQL->escape(strtolower(trim(p('pmail')))) : $usinfo['mail'];
-                    $prev_cookie[5] = base64_encode(serialize(['id'=>$prev_cookie[0], 'name'=>$usinfo['name'], 'mail'=>$mail, 'last_visit'=>$usinfo['last_visit']]));
-                    $usrcp->kleeja_set_cookie('ulogu', $usrcp->en_de_crypt(implode('|', $prev_cookie)), $prev_cookie[2]);
                 }
 
                 kleeja_info($text, '', true, $action);
@@ -734,7 +691,7 @@ switch (g('go'))
         //
         //reset password page
         //
-    case 'get_pass' :
+        case 'get_pass' :
 
         //if not default system, let's give him a link for integrated script
         if ((int) $config['user_system'] != 1)
@@ -819,7 +776,6 @@ switch (g('go'))
             $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
             //check for form key
             if (! kleeja_check_form_key('get_pass'))
             {
@@ -906,32 +862,31 @@ switch (g('go'))
             }
         }
 
-        is_array($plugin_run_result = Plugins::getInstance()->run('end_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+            is_array($plugin_run_result = Plugins::getInstance()->run('end_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         break;
 
         //
         // Wrapper for captcha file
         //
-    case 'captcha':
-        include PATH . 'includes/captcha.php';
+        case 'captcha':
+            include PATH . 'includes/captcha.php';
 
         exit;
 
-        break;
-        ;
+        break;;
 
         //
         //add your own code here
         //
-    default:
+        default:
 
         $no_request = true;
 
-        is_array($plugin_run_result = Plugins::getInstance()->run('default_usrcp_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+            is_array($plugin_run_result = Plugins::getInstance()->run('default_usrcp_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
         if ($no_request):
-            kleeja_err($lang['ERROR_NAVIGATATION']);
+        kleeja_err($lang['ERROR_NAVIGATATION']);
         endif;
 
         break;

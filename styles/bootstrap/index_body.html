@@ -3,9 +3,7 @@
 
     <!-- welcome -->
     <div class="jumbotron">
-        <h5><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> {lang.WELCOME} <IF NAME="user_is">[
-                {username} ]</IF>
-        </h5>
+        <h5><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>  {lang.WELCOME} <IF NAME="user_is">[ {username} ]</IF></h5>
         <p>{welcome_msg}</p>
     </div>
 
@@ -21,254 +19,104 @@
                         <li class="list-group-item">
                             {{message_content}}
                         </li>
-                        <ELSE>
-                            <!-- error -->
-                            <li class="list-group-item  list-group-item-danger">
-                                <strong>{lang.INFORMATION}</strong> : {{message_content}}
-                            </li>
+                    <ELSE>
+                        <!-- error -->
+                        <li class="list-group-item  list-group-item-danger">
+                            <strong>{lang.INFORMATION}</strong> : {{message_content}}
+                        </li>
                     </IF>
                 </LOOP>
             </ul>
         </div>
     </IF>
 
-    <INCLUDE NAME="progress">
 
 
-        <!-- form upload -->
-        <form id="uploader" action="{action}" method="post" enctype="multipart/form-data">
+
+    <!-- form upload -->
+    <form id="uploader" action="{action}" method="post" enctype="multipart/form-data">
 
 
-            <div class="card text-center">
-                <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" href="#fileUpload"
-                                role="tab">{lang.DOWNLOAD_F}</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body tab-content">
-
-                    <IF NAME="config.safe_code">
-                        <!-- verification code -->
-                        <div class="safe_code card">
-                            <div class="card-body">
-                                <h4 class="card-title">{lang.VERTY_CODE}</h4>
-                                <h6 class="card-subtitle mb-2 text-muted">{lang.NOTE_CODE}</h6>
-                                <p class="card-text">
-                                    <img style="vertical-align:middle;" id="kleeja_img_captcha"
-                                        src="{captcha_file_path}" alt="{lang.REFRESH_CAPTCHA}"
-                                        title="{lang.REFRESH_CAPTCHA}"
-                                        onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
-                                    <input type="text" name="kleeja_code_answer" id="kleeja_code_answer" />
-                                </p>
-                            </div>
-                        </div>
-                    </IF>
-
-
-                    <!-- files upload  -->
-                    <div class="tab-pane active" id="fileUpload" role="tabpanel">
-
-                        <LOOP NAME=FILES_NUM_LOOP>
-
-                            <div class="input-group mb-2" style="{{show}}" id="file-block-{{i}}"
-                                onclick="document.getElementById('file{{i}}').click();">
-                                <span class="input-group-prepend">
-                                    <div class="btn btn-primary file-button-browse">
-                                        <img src="{STYLE_PATH}images/folder.png" width="20" height="20">
-                                        <span class="image-preview-input-title">{lang.OPEN}</span>
-                                    </div>
-                                </span>
-                                <input type="file" name="file_{{i}}_" id="file{{i}}" data-number="{{i}}"
-                                    style="display:none">
-                                <input type="text" id="file-text{{i}}" disabled="disabled"
-                                    placeholder="{lang.NO_FILE_SELECTED}" class="form-control">
-                            </div>
-
-                        </LOOP>
-
-                        <div>
-                            <br>
-                            <div class="agree text-muted"><small>{terms_msg}</small></div>
-                            <input type="submit" id="submitr" name="submitr" value="{lang.DOWNLOAD_F}"
-                                class="btn btn-outline-primary">
-                        </div>
-
-                    </div>
-                </div>
+        <div class="card text-center">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#fileUpload" role="tab">{lang.DOWNLOAD_F}</a>
+                    </li>
+                </ul>
             </div>
+            <div class="card-body tab-content">
 
-        </form>
+                <IF NAME="config.safe_code">
+                    <!-- verification code -->
+                    <div class="safe_code card">
+                        <div class="card-body">
+                            <h4 class="card-title">{lang.VERTY_CODE}</h4>
+                            <h6 class="card-subtitle mb-2 text-muted">{lang.NOTE_CODE}</h6>
+                            <p class="card-text">
+                                <img style="vertical-align:middle;" id="kleeja_img_captcha" src="{captcha_file_path}" alt="{lang.REFRESH_CAPTCHA}" title="{lang.REFRESH_CAPTCHA}" onclick="javascript:update_kleeja_captcha('{captcha_file_path}', 'kleeja_code_answer');" />
+                                <input type="text" name="kleeja_code_answer" id="kleeja_code_answer" />
+                            </p>
+                        </div>
+                    </div>
+                </IF>
 
-        <!-- box loading -->
-        <div id="loadbox" class="card">
-            <div class="card-body">
-                {lang.WAIT_LOADING}
-                <br>
-                <img src="{STYLE_PATH}images/loading.gif" alt="{lang.LOADING}" />
+
+                <!-- files upload  -->
+                <div class="tab-pane active" id="fileUpload" role="tabpanel">
+
+                    <LOOP NAME=FILES_NUM_LOOP>
+
+                    <div class="input-group mb-2" style="{{show}}" id="file-block-{{i}}" onclick="document.getElementById('file{{i}}').click();">
+                        <span class="input-group-prepend">
+                            <div class="btn btn-primary file-button-browse">
+                                <img src="{STYLE_PATH}images/folder.png" width="20" height="20">
+                                <span class="image-preview-input-title">{lang.OPEN}</span>
+                            </div>
+                        </span>
+                        <input type="file" name="file_{{i}}_" id="file{{i}}" data-number="{{i}}" style="display:none">
+                        <input type="text" id="file-text{{i}}" disabled="disabled" placeholder="{lang.NO_FILE_SELECTED}" class="form-control">
+                    </div>
+
+                    </LOOP>
+
+                    <div>
+                        <br>
+                        <div class="agree text-muted"><small>{terms_msg}</small></div>
+                        <input type="submit" id="submitr" name="submitr" value="{lang.DOWNLOAD_F}" class="btn btn-outline-primary">
+                    </div>
+
+                </div>
             </div>
         </div>
 
+    </form>
+
+    <!-- box loading -->
+    <div id="loadbox" class="card">
+        <div class="card-body">
+            {lang.WAIT_LOADING}
+            <br>
+            <img src="{STYLE_PATH}images/loading.gif" alt="{lang.LOADING}" />
+        </div>
+    </div>
 
 
-        <IF NAME="show_online">
-            <!-- who's onLine -->
-            <div class="card who-online">
-                <div class="card-header">
-                    {lang.NUMBER_ONLINE}: <b>{current_online_users}</b>
-                </div>
 
-                <IF NAME="show_names">
-                    <div class="card-body">
-                        <LOOP NAME="show_names">
-                            <span class="badge badge-pill badge-default">{{name}}</span>
-                        </LOOP>
-                    </div>
-                </IF>
+    <IF NAME="show_online">
+        <!-- who's onLine -->
+        <div class="card who-online">
+            <div class="card-header">
+                {lang.NUMBER_ONLINE}: <b>{current_online_users}</b>
             </div>
-        </IF>
+
+            <IF NAME="show_names">
+                <div class="card-body">
+                <LOOP NAME="show_names">
+                    <span class="badge badge-pill badge-default">{{name}}</span>
+                </LOOP>
+                </div>
+            </IF>
+        </div>
+    </IF>
 </div>
-<script>
-	function copyText(e) {
-		const button = e.target;
-		const copyText = button.closest('.form-group').querySelector('textarea');
-		copyText.select();
-		document.execCommand("copy");
-
-		// Store original button text
-		const originalButtonText = button.textContent;
-
-		// Disable button while text is being copied
-		button.disabled = true;
-
-		// Change button text to "Copied!"
-		button.textContent = "✔️";
-
-		// Wait for 3 seconds and then change button text back to original
-		setTimeout(function() {
-			button.textContent = originalButtonText;
-			button.disabled = false;
-		}, 3000);
-	}
-	
-    function convertSize(size) {
-        if (size > 1024 * 1024 * 1024) {
-            size = Math.round(size / (1024 * 1024 * 1024) * 10) / 10 + " Gb";
-        } else if (size > 1024 * 1024) {
-            size = Math.round(size / (1024 * 1024) * 10) / 10 + '';
-            if (!size.match(/\./)) size += '.0';
-            size += ' Mb';
-        } else if (size > 1024) {
-            size = Math.round(size / 1024 * 10) / 10 + " Kb";
-        } else {
-            size = size + " Bytes";
-        }
-        return size;
-    }
-    
-    let uploadForm = document.getElementById('uploader');
-    let uploadProgress = document.getElementById('uploadProgress');
-    let progressHolder = document.getElementById('progressHolder');
-    let loadbox = document.getElementById('loadbox');
-    let fileCount = {config.filesnum};
-    let uploaded = 0, uploadSpeed = 0, lastUploadTime = 0;
-    let stats = document.getElementById('uploaderstats');
-    let speed = document.getElementById('uploaderspeed');
-
-    uploadForm.onsubmit = e => {
-        e.preventDefault();
-        let haveFiles = false;
-        for (let f = 0; f < fileCount; f++) {
-            let i = document.getElementById('file' + (f + 1));
-            if (i.value !== '')
-            {
-                haveFiles = true;
-            }
-        }
-        if (! haveFiles) {
-            return false;
-        }
-        
-        var xhttp = new XMLHttpRequest();
-        
-        xhttp.onerror = e=> {
-            uploadProgress.classList.add("bg-danger");
-            loadbox.innerHTML = "{lang.ERROR_TRY_AGAIN}";
-        }
-
-        xhttp.upload.onprogress = e => {
-            if (!lastUploadTime) lastUploadTime = Date.now();
-            let elapsed = Date.now() - lastUploadTime;
-            const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
-            uploadProgress.style.width = percent.toFixed(2) + '%';
-            uploadProgress.textContent = percent.toFixed(2) + '%';
-            uploadProgress.setAttribute("aria-valuenow", percent.toFixed(0));
-            if (elapsed > 1000) {
-                uploadSpeed = (e.loaded - uploaded);
-                speed.innerHTML = convertSize(uploadSpeed)+"/s";
-                uploaded = e.loaded;
-                lastUploadTime = Date.now();
-            }
-			let humanSent = convertSize(e.loaded);
-			let humanSize = convertSize(e.total);
-			self.humanSize = humanSize;
-			let newHTML = humanSent + " / " + humanSize + " (" + percent.toFixed(2) + "%) complete";
-			stats.innerHTML = newHTML;
-        };
-
-        xhttp.onreadystatechange = function (e) {
-            if (this.readyState == 4 && this.status == 200) {
-                speed.style.display = 'none';
-                try {
-                    var response = JSON.parse(this.response);
-                } catch (err) {
-                    stats.style.display = 'none';
-                    console.error("Server returned some ugly/empty JSON");
-                    return xhttp.onerror(e);
-                }
-                uploadProgress.classList.add("bg-success");
-                let newHTML = self.humanSize + " complete";
-                stats.innerHTML = newHTML;
-                html = "<div class=\"card mb-5\">\n<ul class=\"list-group list-group-flush\">\n";
-                loadbox.remove();
-                response.forEach(element => {
-                    typeclass = element.t == 'index_info' ? '' : ' list-group-item-danger';
-                    html += "<li class=\"list-group-item"+typeclass+"\">\n"+element.i+"</li>";
-                });
-                html += "</ul>";
-                speed.insertAdjacentHTML("afterend", html);
-				
-                // Add buttons after the new textareas
-                const formGroups = document.querySelectorAll(".form-group");
-                formGroups.forEach(formGroup => {
-                    const textarea = formGroup.querySelector("textarea");
-                    if (textarea) {
-                        const button = document.createElement("button");
-                        button.innerHTML = "📋";
-                        button.classList.add("btn", "btn-primary", "btn-sm", "mt-2");
-                        button.addEventListener("click", copyText);
-                        textarea.insertAdjacentElement("afterend", button);
-                    }
-                });
-            }
-            else if (this.readyState == 4 && this.status != 200)
-    		{
-				speed.style.display = stats.style.display = 'none';
-				console.error("Server returned bad status");
-				return xhttp.onerror(e);
-    		}
-        };
-
-        let formd = new FormData(uploadForm);
-        formd.append('submitr', true);
-        formd.append('ajax', true);
-        progressHolder.style.display = stats.style.display = speed.style.display = '';
-        xhttp.open("POST", "{action}", true);
-        xhttp.send(formd);
-        return false;
-    }
-    
-
-</script>

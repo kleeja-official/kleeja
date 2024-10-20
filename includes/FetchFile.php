@@ -127,14 +127,13 @@ class FetchFile
 
             if ($result === false)
             {
-                $error = true;
                 kleeja_log(sprintf("cUrl error (#%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
             }
 
             curl_close($ch);
             fclose($out);
 
-            return isset($error) ? false : true;
+            return true;
         }
         else
         {
@@ -142,13 +141,11 @@ class FetchFile
 
             if ($data === false)
             {
-                $error = true;
                 kleeja_log(sprintf("FetchFile error (curl: #%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
             }
-
             curl_close($ch);
 
-            return isset($error) ? false : $data;
+            return $data;
         }
     }
 

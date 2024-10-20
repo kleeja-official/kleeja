@@ -3,24 +3,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
-## 3.1.7
-* add the ability to toggle multipart download for groups
-* introduce custom admin path option
-* compatibility with PHP 8.X
-* add group max storage limit feature
-* add the ability to delete files by extension
-* change the default style to Bootstrap
-* fix pagination issue with incorrect link generation
-* introduce ajax upload (show upload progress bar and upload speed)
-* fix the issue where correct username, password, and security code still shows "The security code is incorrect!"
-* various bug fixes and improvements
-
-## 3.1.6
-* compatibility with `m3u` files
-* change dashboard box colors
-* fix rtl issue in bootstrap template
-* kleeja new domain is `kleeja.net`
-
 ## 3.1.5
 * fix hiding error msgs when updating kleeja
 * hide update all buttun , when empty update's list
