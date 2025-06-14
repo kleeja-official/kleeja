@@ -28,7 +28,7 @@ class KleejaDatabase
     private $dbname                   = '';
     public $query_num                 = 0;
     private $in_transaction           = 0;
-    public $debugr                    = false;
+    public $debugr                    = [];
     private $show_errors              = true;
 
 
@@ -372,7 +372,7 @@ class KleejaDatabase
      * @param  mysqli_result $query_id
      * @return array
      */
-    public function fetch_array($query_id = 0)
+    public function fetch_array($query_id = 0): array | false | null
     {
         if (! $query_id)
         {
@@ -415,7 +415,7 @@ class KleejaDatabase
      * @param  string $msg
      * @return string
      */
-    public function escape($msg)
+    public function escape(string $msg)
     {
         $msg = htmlspecialchars($msg, ENT_QUOTES);
         //$msg = (!get_magic_quotes_gpc()) ? addslashes ($msg) : $msg;

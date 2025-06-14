@@ -429,7 +429,7 @@ class KleejaDatabase
      * @param  string $msg
      * @return string
      */
-    public function escape($msg)
+    public function escape(string $msg)
     {
         $msg = htmlspecialchars($msg, ENT_QUOTES);
         $msg = $this->real_escape($msg);

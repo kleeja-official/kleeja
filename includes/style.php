@@ -26,7 +26,7 @@ class kleeja_style
      * @param $template_name
      * @param null|mixed $style_path
      */
-    protected function _load_template($template_name, $style_path = null)
+    protected function _load_template($template_name, string $style_path = '')
     {
         global $config, $THIS_STYLE_PATH_ABS, $STYLE_PATH_ADMIN_ABS, $DEFAULT_PATH_ADMIN_ABS;
 
@@ -57,9 +57,9 @@ class kleeja_style
     /**
      * check if a template exists or not
      * @param $template_name
-     * @param null $style_path
+     * @param string $style_path
      */
-    public function template_exists($template_name, $style_path  = null)
+    public function template_exists($template_name, string $style_path = '')
     {
         global $config, $STYLE_PATH_ADMIN_ABS, $THIS_STYLE_PATH_ABS, $DEFAULT_PATH_ADMIN_ABS;
 
@@ -324,14 +324,14 @@ class kleeja_style
     /**
      * load parser and return page content
      * @param $template_name
-     * @param  null         $style_path optional, good for plugins
+     * @param  string         $style_path optional, good for plugins
      * @return mixed|string
      */
-    public function display($template_name, $style_path = null)
+    public function display($template_name, string $style_path = '')
     {
         global $config;
 
-        $this->vars = &$GLOBALS;
+        $this->vars = $GLOBALS;
 
         //is there ?
         if (! file_exists(PATH . 'cache/tpl_' . $this->re_name_tpl($template_name, $style_path) . '.php') || ! $this->caching)
@@ -354,7 +354,7 @@ class kleeja_style
      */
     public function admindisplayoption($html)
     {
-        $this->vars = &$GLOBALS;
+        $this->vars = $GLOBALS;
 
         $eval_on = false;
         eval('$eval_on = true;');

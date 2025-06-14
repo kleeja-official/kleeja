@@ -22,7 +22,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('begin_usrcp_page', ge
 
 $extra      = '';
 $show_style = true;
-$styleePath = null;
+$styleePath = '';
 
 switch (g('go'))
 {

@@ -892,7 +892,7 @@ function delete_config($name)
 //
 //update words to lang
 //
-function update_olang($name, $lang = 'en', $value)
+function update_olang($name, $value, $lang = 'en')
 {
     global $SQL, $dbprefix, $olang;
 
@@ -942,7 +942,7 @@ function add_olang($words = [], $lang = 'en', $plg_id = '0')
 //
 /**
  * @param  string|array $words  language terms to use a in $olang[word] or olang.word
- * @param  string       $lang   langauge of given word
+ * @param  string      $lang   langauge of given word
  * @param  string       $plg_id plugin id associated with these words, optional
  * @return bool
  */

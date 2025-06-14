@@ -373,7 +373,7 @@ foreach ($adm_extensions as $m)
 $assigned_klj_ver = preg_replace('!#([a-z0-9]+)!', '', KLEEJA_VERSION);
 
 //for plugins
-$styleePath = null;
+$styleePath = '';
 
 //get it
 if (file_exists(ADM_FILES_PATH . '/' . $go_to . '.php'))
