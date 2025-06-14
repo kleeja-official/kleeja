@@ -26,7 +26,7 @@ $SQL->set_utf8();
 //this codes, it's just a sample and usefull for
 //some time ..
 //
-class cache
+class KleejaCache
 {
     public function get($name)
     {
@@ -94,7 +94,7 @@ class cache
     }
 }
 
-$cache = new cache;
+$cache = new KleejaCache;
 
 
 
@@ -394,3 +394,13 @@ if (! ($d_groups = $cache->get('data_groups')))
 
 // ummm, does this useful here
 is_array($plugin_run_result = Plugins::getInstance()->run('in_cache_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
+
+function cache(): KleejaCache {
+    static $cache = null;
+
+    if (is_null($cache)) {
+        $cache = new KleejaCache;
+    }
+    return $cache;
+}
