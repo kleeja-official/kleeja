@@ -146,7 +146,7 @@ class usrcp
                 if (! $hashed && ! $loginadm)
                 {
                     $hash_key_expire = sha1(md5($config['h_key'] . $row['password']) . $expire);
-                    $this->kleeja_set_cookie('ulogu', $this->en_de_crypt($row['id'] . '|' . $row['password'] . '|' . $expire . '|' . $hash_key_expire . '|' . $row['group_id'] . '|' . $user_y), $expire);
+                    cookie()->set('ulogu', $this->en_de_crypt($row['id'] . '|' . $row['password'] . '|' . $expire . '|' . $hash_key_expire . '|' . $row['group_id'] . '|' . $user_y), $expire);
                 }
 
                 //if last visit > 1 minute then update it
@@ -247,7 +247,7 @@ class usrcp
         }
 
         //is ther any cookies
-        $this->kleeja_set_cookie('ulogu', '', time() - 31536000);//31536000 = year
+        cookie()->set('ulogu', '', time() - 31536000);//31536000 = year
 
         return true;
     }
@@ -310,38 +310,8 @@ class usrcp
     //kleeja cookie
     public function kleeja_set_cookie($name, $value, $expire)
     {
-        global $config;
-
-        is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_set_cookie_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-        //
-        //when user add cookie_* in config this will replace the current ones
-        //
-        global $config_cookie_name, $config_cookie_domain, $config_cookie_secure, $config_cookie_path;
-        $config['cookie_name']         = isset($config_cookie_name) ? $config_cookie_name : $config['cookie_name'];
-        $config['cookie_domain']       = isset($config_cookie_domain) ? $config_cookie_domain : $config['cookie_domain'];
-        $config['cookie_secure']       = isset($config_cookie_secure) ? $config_cookie_secure : $config['cookie_secure'];
-        $config['cookie_path']         = isset($config_cookie_path) ? $config_cookie_path : $config['cookie_path'];
-
-        //
-        //when user add define('FORCE_COOKIES', true) in config.php we will make our settings of cookies
-        //
-        if (defined('FORCE_COOKIES'))
-        {
-            $config['cookie_domain'] = ! empty($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : (! empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : @getenv('SERVER_NAME'));
-            $config['cookie_domain'] = str_replace('www.', '.', substr($config['cookie_domain'], 0, strpos($config['cookie_domain'], ':')));
-            $config['cookie_path']   = '/';
-            $config['cookie_secure'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
-        }
-
-        // Enable sending of a P3P header
-        header('P3P: CP="CUR ADM"');
-
-        $name_data = rawurlencode($config['cookie_name'] . '_' . $name) . '=' . rawurlencode($value);
-        $rexpire   = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $expire);
-        $domain    = (! $config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain'];
-
-        header('Set-Cookie: ' . $name_data . ($expire ? '; expires=' . $rexpire : '') . '; path=' . $config['cookie_path'] . $domain . (! $config['cookie_secure'] ? '' : '; secure') . '; HttpOnly', false);
+        // for plugins that are still using the old version of kleeja
+        return cookie()->set($name, $value, $expire);
     }
 
     //encrypt and decrypt any data with our function
@@ -395,10 +365,8 @@ class usrcp
     //
     public function kleeja_get_cookie($name)
     {
-        global $config;
-        is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_get_cookie_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-
-        return $_COOKIE[$config['cookie_name'] . '_' . $name] ?? false;
+        // for plugins that are still using old version of kleeja
+        return cookie()->get($name);
     }
 
     //check if user is admin or not
@@ -416,11 +384,11 @@ class usrcp
         ];
 
         //if login up
-        if ($this->kleeja_get_cookie('ulogu'))
+        if (cookie()->get('ulogu'))
         {
             $user_data = false;
 
-            list($user_id, $hashed_password, $expire_at, $hashed_expire, $group_id, $u_info) =  @explode('|', $this->en_de_crypt($this->kleeja_get_cookie('ulogu'), 2));
+            list($user_id, $hashed_password, $expire_at, $hashed_expire, $group_id, $u_info) =  @explode('|', $this->en_de_crypt(cookie()->get('ulogu'), 2));
 
             //if not expire
             if (($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at)) && ($expire_at > time()))

@@ -172,6 +172,7 @@ include PATH . 'includes/functions.php';
 include PATH . 'includes/functions_display.php';
 include PATH . 'includes/plugins.php';
 include PATH . 'includes/FetchFile.php';
+include PATH . 'includes/cookie.php';
 
 
 if (defined('IN_ADMIN'))

@@ -173,7 +173,7 @@ if (ig('change_theme'))
 
     if (in_array($admin_theme_color, ['dark', 'light']))
     {
-        $usrcp->kleeja_set_cookie('klj_adm_theme_color', $admin_theme_color, time() + 31536000);
+        cookie()->set('klj_adm_theme_color', $admin_theme_color, time() + 31536000);
     }
     else
     {
@@ -182,7 +182,7 @@ if (ig('change_theme'))
 }
 else
 {
-    if (! ($admin_theme_color = $usrcp->kleeja_get_cookie('klj_adm_theme_color')))
+    if (! ($admin_theme_color = cookie()->get('klj_adm_theme_color')))
     {
         $admin_theme_color = 'dark';
     }
