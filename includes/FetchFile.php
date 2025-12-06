@@ -131,7 +131,12 @@ class FetchFile
                 kleeja_log(sprintf("cUrl error (#%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
             }
 
-            curl_close($ch);
+            // curl_close() has no effect since PHP 8.0
+            // Only call it for PHP < 8.0 where it actually closes the handle
+            if (PHP_VERSION_ID < 80000)
+            {
+                curl_close($ch);
+            }
             fclose($out);
 
             return isset($error) ? false : true;
@@ -146,7 +151,12 @@ class FetchFile
                 kleeja_log(sprintf("FetchFile error (curl: #%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
             }
 
-            curl_close($ch);
+            // curl_close() has no effect since PHP 8.0
+            // Only call it for PHP < 8.0 where it actually closes the handle
+            if (PHP_VERSION_ID < 80000)
+            {
+                curl_close($ch);
+            }
 
             return isset($error) ? false : $data;
         }

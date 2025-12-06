@@ -101,7 +101,12 @@ function kleeja_cpatcha_image()
     imagepng($image);
 
     //Free up resources
-    imagedestroy($image);
+    // imagedestroy() has no effect since PHP 8.0
+    // Only call it for PHP < 8.0 where it actually frees memory
+    if (PHP_VERSION_ID < 80000)
+    {
+        imagedestroy($image);
+    }
 }
 
 //<--- EOF

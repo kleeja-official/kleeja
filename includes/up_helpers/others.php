@@ -226,7 +226,12 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
         {
             $f_info = finfo_open(FILEINFO_MIME_TYPE);
             $mime   = finfo_file($f_info, $file_path);
-            finfo_close($f_info);
+            // finfo_close() has no effect since PHP 8.0
+            // Only call it for PHP < 8.0 where it actually closes the resource
+            if (PHP_VERSION_ID < 80000)
+            {
+                finfo_close($f_info);
+            }
         }
     }
     elseif (! empty($given_file_mime))

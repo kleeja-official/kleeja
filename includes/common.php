@@ -66,9 +66,15 @@ error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 */
 function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
 {
+    // Check if error reporting is disabled (happens with @ operator)
+    if (!(error_reporting() & $error_number))
+    {
+        return false;
+    }
+
     switch ($error_number)
     {
-        case E_NOTICE: case E_WARNING: case E_USER_WARNING: case E_USER_NOTICE: case E_STRICT:
+        case E_NOTICE: case E_WARNING: case E_USER_WARNING: case E_USER_NOTICE: case 2048: // E_STRICT (deprecated in PHP 8.4, using numeric value for compatibility)
             if (function_exists('kleeja_log'))
             {
                 $error_name = [
@@ -81,6 +87,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
 
         default:
             header('HTTP/1.1 503 Service Temporarily Unavailable');
+            echo '<!DOCTYPE html>' . "\n";
             echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">' . "\n<head>\n";
             echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' . "\n";
             echo '<title>Kleeja Error</title>' . "\n" . '<style type="text/css">' . "\n\t";

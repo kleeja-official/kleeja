@@ -178,8 +178,13 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
             $return = false;
     }
 
-    @imagedestroy($desired_gdim);
-    @imagedestroy($source_gdim);
+    // imagedestroy() has no effect since PHP 8.0
+    // Only call it for PHP < 8.0 where it actually frees memory
+    if (PHP_VERSION_ID < 80000)
+    {
+        imagedestroy($desired_gdim);
+        imagedestroy($source_gdim);
+    }
 
     return $return;
 }

@@ -94,10 +94,9 @@ if (! defined('SQL_LAYER')):
 
         public function is_connected()
         {
-            return ! (is_resource($this->connect_id) || empty($this->connect_id));
+            return is_object($this->connect_id);
         }
 
-        // close the connection
         public function close()
         {
             if (! $this->is_connected())
@@ -114,12 +113,16 @@ if (! defined('SQL_LAYER')):
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-            if (! is_resource($this->connect_id))
+            // Close the mysqli connection only once.
+            // After closing, reset $this->connect_id so subsequent calls are no-ops.
+            $result = @mysqli_close($this->connect_id);
+
+            if ($result)
             {
-                return true;
+                $this->connect_id = null;
             }
 
-            return @mysqli_close($this->connect_id);
+            return $result;
         }
 
         // encoding functions
@@ -130,11 +133,21 @@ if (! defined('SQL_LAYER')):
 
         public function set_names($charset)
         {
+            if (! $this->is_connected())
+            {
+                return false;
+            }
+
             @mysqli_set_charset($this->connect_id, $charset);
         }
 
         public function client_encoding()
         {
+            if (! $this->is_connected())
+            {
+                return false;
+            }
+
             return mysqli_character_set_name($this->connect_id);
         }
 

@@ -335,6 +335,7 @@ function kleeja_debug()
 function big_error($error_title, $msg_text, $error = true)
 {
     global $SQL;
+    echo '<!DOCTYPE html>' . "\n";
     echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">' . "\n";
     echo '<head>' . "\n";
     echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' . "\n";

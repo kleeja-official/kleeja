@@ -91,7 +91,7 @@ if (! defined('SQL_LAYER')):
 
         public function is_connected()
         {
-            return ! (is_null($this->connect_id) || empty($this->connect_id));
+            return is_object($this->connect_id);
         }
 
         // close the connection
@@ -111,12 +111,16 @@ if (! defined('SQL_LAYER')):
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-            if (! is_resource($this->connect_id))
+            // Close the SQLite3 connection only once.
+            // After closing, reset $this->connect_id so subsequent calls are no-ops.
+            $result = @$this->connect_id->close();
+
+            if ($result)
             {
-                return true;
+                $this->connect_id = null;
             }
 
-            return @mysqli_close($this->connect_id);
+            return $result;
         }
 
         // encoding functions
