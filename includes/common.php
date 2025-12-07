@@ -67,7 +67,7 @@ error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
 {
     // Check if error reporting is disabled (happens with @ operator)
-    if (!(error_reporting() & $error_number))
+    if (! (error_reporting() & $error_number))
     {
         return false;
     }
