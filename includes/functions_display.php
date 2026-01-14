@@ -143,18 +143,14 @@ function Saafooter()
 
     if (strlen($config['googleanalytics']) > 4)
     {
-        $googleanalytics .= '<script type="text/javascript">' . "\n";
-        $googleanalytics .= '<!--' . "\n";
-        $googleanalytics .= 'var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");' . "\n";
-        $googleanalytics .= 'document.write("\<script src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'>\<\/script>" );' . "\n";
-        $googleanalytics .= '-->' . "\n";
-        $googleanalytics .= '</script>' . "\n";
-        $googleanalytics .= '<script type="text/javascript">' . "\n";
-        $googleanalytics .= '<!--' . "\n";
-        $googleanalytics .= 'var pageTracker = _gat._getTracker("' . $config['googleanalytics'] . '");' . "\n";
-        $googleanalytics .= 'pageTracker._initData();' . "\n";
-        $googleanalytics .= 'pageTracker._trackPageview();' . "\n";
-        $googleanalytics .= '-->' . "\n";
+        $googleanalytics .= '<!-- Google tag (gtag.js) -->' . "\n";
+        $googleanalytics .= '<script async src="https://www.googletagmanager.com/gtag/js?id=' . $config['googleanalytics'] . '"></script>' . "\n";
+        $googleanalytics .= '<script>' . "\n";
+        $googleanalytics .= 'window.dataLayer = window.dataLayer || [];' . "\n";
+        $googleanalytics .= 'function gtag(){dataLayer.push(arguments);}' . "\n";
+        $googleanalytics .= "gtag('js', new Date());" . "\n";
+        $googleanalytics .= "\n";
+        $googleanalytics .= "gtag('config', '" . $config['googleanalytics'] . "');" . "\n";
         $googleanalytics .= '</script>' . "\n";
     }
 
