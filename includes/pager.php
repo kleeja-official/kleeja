@@ -107,8 +107,8 @@ class Pagination
 
         $link_plus .= $link_plus != '' ? ' ' : '';
 
-        $re = '<nav aria-label="Page navigation example">';
-        $re = '<ul id="pagination" class="pagination">';
+        $re = '<nav aria-label="Page navigation">';
+        $re .= '<ul id="pagination" class="pagination">';
 
         // Add a previous page link
         if ($this->totalPages > 1 && $this->currentPage > 1)
