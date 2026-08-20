@@ -47,8 +47,8 @@ class KleejaDatabase
 
         if (strpos($host, ':') !== false)
         {
-            $host = substr($host, 0, strpos($host, ':'));
-            $port = (int) substr($host, strpos($host, ':')+1);
+            [$host, $host_port] = explode(':', $host, 2);
+            $port               = (int) $host_port ?: $port;
         }
 
         $this->dbprefix        = $dbprefix;

@@ -16,7 +16,7 @@ if (! defined('IN_COMMON'))
 
 class kleeja_style
 {
-    protected $vars; //Reference to $GLOBALS
+    protected array $vars; //Reference to $GLOBALS
     protected $loop = [];
     protected $reg  = ['var' => '/([{]{1,2})+([A-Z0-9_\.]+)[}]{1,2}/i'];
     public $caching = true; //save templates as caches to not compiled a lot of times
@@ -26,7 +26,7 @@ class kleeja_style
      * @param $template_name
      * @param null|mixed $style_path
      */
-    protected function _load_template($template_name, string $style_path = '')
+    protected function _load_template(string $template_name, string $style_path = '')
     {
         global $config, $THIS_STYLE_PATH_ABS, $STYLE_PATH_ADMIN_ABS, $DEFAULT_PATH_ADMIN_ABS;
 
@@ -59,7 +59,7 @@ class kleeja_style
      * @param $template_name
      * @param string $style_path
      */
-    public function template_exists($template_name, string $style_path = '')
+    public function template_exists(string $template_name, string $style_path = '')
     {
         global $config, $STYLE_PATH_ADMIN_ABS, $THIS_STYLE_PATH_ABS, $DEFAULT_PATH_ADMIN_ABS;
 
@@ -166,7 +166,7 @@ class kleeja_style
      * @param $matches
      * @return string
      */
-    protected function _if_callback($matches)
+    protected function _if_callback(array $matches)
     {
         $atts      = call_user_func(['kleeja_style', '_get_attributes'], $matches[0]);
         $condition = '';
@@ -191,7 +191,7 @@ class kleeja_style
               : (strtoupper($matches[1]) == 'UNLESS' ? '<?php if(!(' . $condition . ')){ ?>' : '<?php }elseif(' . $condition . '){ ?>');
     }
 
-    protected function parse_condition($condition, $is_loop)
+    protected function parse_condition(string $condition, bool $is_loop)
     {
         $char = [' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>'];
         $reps = ['==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>'];
@@ -232,7 +232,7 @@ class kleeja_style
      * @param $matches
      * @return string
      */
-    protected function _vars_callback($matches)
+    protected function _vars_callback(array $matches)
     {
         $variable = call_user_func(['kleeja_style', '_var_callback'], $matches);
 
@@ -250,7 +250,7 @@ class kleeja_style
      * @param $matches
      * @return string
      */
-    protected function _var_callback($matches)
+    protected function _var_callback(array | string $matches)
     {
         if (! is_array($matches))
         {
@@ -272,7 +272,7 @@ class kleeja_style
      * @param $matches
      * @return string
      */
-    protected function _var_callback_att($matches)
+    protected function _var_callback_att(array | string $matches)
     {
         return trim($matches[1]) == '{' ? $this->_var_callback($matches) : '{' . $this->_var_callback($matches) . '}';
     }
@@ -283,7 +283,7 @@ class kleeja_style
      * @param $var
      * @return mixed
      */
-    protected function reg($var)
+    protected function reg(array | string $var)
     {
         $vars = get_class_vars(__CLASS__);
         return $vars['reg'][$var];
@@ -295,7 +295,7 @@ class kleeja_style
      * @param $tag
      * @return array
      */
-    protected function _get_attributes($tag)
+    protected function _get_attributes(string $tag)
     {
         preg_match_all('/([a-z]+)="(.+)?"/iU', $tag, $attribute);
 
@@ -315,7 +315,7 @@ class kleeja_style
      * @param $var
      * @param $to
      */
-    public function assign($var, $to)
+    public function assign(string $var, mixed $to)
     {
         $GLOBALS[$var] = $to;
     }
@@ -327,7 +327,7 @@ class kleeja_style
      * @param  string         $style_path optional, good for plugins
      * @return mixed|string
      */
-    public function display($template_name, string $style_path = '')
+    public function display(string $template_name, string $style_path = '')
     {
         global $config;
 
@@ -352,7 +352,7 @@ class kleeja_style
      * @param $html
      * @return string
      */
-    public function admindisplayoption($html)
+    public function admindisplayoption(string $html)
     {
         $this->vars = $GLOBALS;
 
@@ -386,7 +386,7 @@ class kleeja_style
      * @param  null|mixed $style_path
      * @return mixed
      */
-    protected function re_name_tpl($name, $style_path = null)
+    protected function re_name_tpl(string $name, $style_path = null)
     {
         return preg_replace('/[^a-z0-9-_]/', '-', strtolower($name)) .
             (! empty($style_path) ? md5($style_path) : '');

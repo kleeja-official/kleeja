@@ -29,7 +29,8 @@ workspace.xml
 Project_Default.xml
 .buildpath
 .project
-.vscode/launch.json
+.vscode/*
+!.vscode/extensions.json
 .htaccess
 .php_cs.cache
 kleeja.db
