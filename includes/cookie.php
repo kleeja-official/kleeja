@@ -49,7 +49,7 @@ class KleejaCookie {
         header('Set-Cookie: ' . $name_data . ($expire ? '; expires=' . $rexpire : '') . '; path=' . $config['cookie_path'] . $domain . (! $config['cookie_secure'] ? '' : '; secure') . '; HttpOnly', false);
     }
 
-    public function get(string $name): string | false {
+    public function get(string $name) {
         global $config;
         is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_get_cookie_func_usr_class', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 

@@ -372,7 +372,7 @@ class KleejaDatabase
      * @param  mysqli_result $query_id
      * @return array
      */
-    public function fetch_array($query_id = 0): array | false | null
+    public function fetch_array($query_id = 0)
     {
         if (! $query_id)
         {
