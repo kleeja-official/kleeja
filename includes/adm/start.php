@@ -231,7 +231,6 @@ $go_menu = [
     'general' => ['name'=>$lang['GENERAL_STAT'], 'link'=> basename(ADMIN_PATH) . '?cp=start&amp;smt=general', 'goto'=>'general', 'current'=> $current_smt == 'general'],
     'other'   => ['name'=>$lang['OTHER_INFO'], 'link'=> basename(ADMIN_PATH) . '?cp=start&amp;smt=other', 'goto'=>'other', 'current'=> $current_smt == 'other'],
     'team'    => ['name'=>$lang['KLEEJA_TEAM'], 'link'=> basename(ADMIN_PATH) . '?cp=start&amp;smt=team', 'goto'=>'team', 'current'=> $current_smt == 'team'],
-    'kj_news' => ['name'=> $lang['KJ_TWEETS'], 'link'=> basename(ADMIN_PATH) . '?cp=start&amp;smt=kj_tweets', 'goto'=>'kj_tweets', 'current'=> $current_smt == 'kj_tweets'],
 ];
 
 

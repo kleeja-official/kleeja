@@ -276,5 +276,4 @@ return [
     'UPDATE_ALL'                                  => 'Update All',
     'CANT_DEL_DEFAULT_STYLE'                      => 'You can not delete the current default style! choose another style to be the default then try again.',
     'NOTIFICATIONS'                               => 'Notifications',
-    'KJ_TWEETS'                                   => 'Kleeja Tweets',
 ];
