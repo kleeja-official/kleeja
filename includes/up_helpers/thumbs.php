@@ -135,8 +135,8 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     );
 
     // Copy cropped region from temporary image into the desired GD image
-    $x0 = ($temp_width - $dw)  / 2;
-    $y0 = ($temp_height - $dh) / 2;
+    $x0 = (int) (($temp_width - $dw)  / 2);
+    $y0 = (int) (($temp_height - $dh) / 2);
 
     $desired_gdim = imagecreatetruecolor($dw, $dh);
     imagecopy(
@@ -188,7 +188,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
 
 /**
  * generating thumb from image using Imagick
- * 
+ *
  * @param mixed $x
  * @param mixed $y
  * @param mixed $cx
@@ -236,7 +236,7 @@ function scale_image_imagick($x, $y, $cx, $cy)
 
 function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
 {
-    //intiating the Imagick lib    
+    //intiating the Imagick lib
     $im = new Imagick($name);
 
     //guess the right thumb height, weights
@@ -251,12 +251,12 @@ function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
     if ($ext == 'gif')
     {
         $i = 0;
-        //$gif_new = new Imagick(); 
+        //$gif_new = new Imagick();
         foreach ($im as $frame)
         {
             $frame->thumbnailImage($thumb_w, $thumb_h);
             $frame->setImagePage($thumb_w, $thumb_h, 0, 0);
-            //    $gif_new->addImage($frame->getImage()); 
+            //    $gif_new->addImage($frame->getImage());
             if ($i >= 10)
             {
                 // more than 10 frames, quit it
