@@ -85,7 +85,7 @@ if ($nums_rows > 0)
             'id'              => $row['id'],
             'name'            => $row['name'],
             'mail'            => $row['mail'],
-            'text'            => htmlspecialchars($row['text']),
+            'text'            => htmlspecialchars($row["TEXT"] ?? $row["text"]),
             'human_time'      => kleeja_date($row['time']),
             'time'            => kleeja_date($row['time'], false),
             'ip'              => $row['ip'],
@@ -112,7 +112,7 @@ if ($nums_rows > 0)
             {
                 $to      = $row['mail'];
                 $subject = $lang['REPLY_CALL'] . ':' . $config['sitename'];
-                $message = "\n " . $lang['REPLY_CALL'] . ' ' . $row['name'] . "\r\n " . $lang['REPLIED_ON_CAL'] . ' : ' . $config['sitename'] . 
+                $message = "\n " . $lang['REPLY_CALL'] . ' ' . $row['name'] . "\r\n " . $lang['REPLIED_ON_CAL'] . ' : ' . $config['sitename'] .
                             "\r\n " . $lang['BY_EMAIL'] . ': ' . $row['mail'] . "\r\n" . $lang['ADMIN_REPLIED'] . "\r\n" . $sen[$row['id']] . "\r\n\r\n Kleeja.com ";
 
                 $send =  send_mail($to, $message, $subject, $config['sitemail'], $config['sitename']);
@@ -120,7 +120,7 @@ if ($nums_rows > 0)
                 if ($send)
                 {
                     //
-                    //We will redirect to pages of results and show info msg there ! 
+                    //We will redirect to pages of results and show info msg there !
                     //
                     kleeja_admin_info($lang['IS_SEND_MAIL'], true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&page=' . (ig('page') ? g('page', 'int') : 1) . '&sent=' . $row['id']);
                 }
@@ -149,8 +149,8 @@ if (sizeof($del_nums))
     $SQL->build($query_del);
 }
 
-$total_pages       = $Pager->getTotalPages(); 
-$page_nums         = $Pager->print_nums(basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'), 'onclick="javascript:get_kleeja_link($(this).attr(\'href\'), \'#content\'); return false;"'); 
+$total_pages       = $Pager->getTotalPages();
+$page_nums         = $Pager->print_nums(basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'), 'onclick="javascript:get_kleeja_link($(this).attr(\'href\'), \'#content\'); return false;"');
 
 //after submit
 if (ip('submit'))
