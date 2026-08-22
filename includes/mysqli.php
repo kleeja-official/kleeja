@@ -415,8 +415,11 @@ class KleejaDatabase
      * @param  string $msg
      * @return string
      */
-    public function escape(string $msg)
+    public function escape($msg)
     {
+        if (!$msg) {
+            return;
+        }
         $msg = htmlspecialchars($msg, ENT_QUOTES);
         //$msg = (!get_magic_quotes_gpc()) ? addslashes ($msg) : $msg;
         $msg = $this->real_escape($msg);

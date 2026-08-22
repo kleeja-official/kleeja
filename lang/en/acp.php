@@ -276,4 +276,6 @@ return [
     'UPDATE_ALL'                                  => 'Update All',
     'CANT_DEL_DEFAULT_STYLE'                      => 'You can not delete the current default style! choose another style to be the default then try again.',
     'NOTIFICATIONS'                               => 'Notifications',
+    'PHP_8_REQUIRED'                              => 'PHP 8 is required to upgrade to the next versions',
+    'PDO_EXT_REQUIRED'                            => 'PDO Extension is required to upgrade to next versions'
 ];
