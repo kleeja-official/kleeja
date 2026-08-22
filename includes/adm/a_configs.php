@@ -18,10 +18,10 @@ if (! defined('IN_ADMIN'))
 $stylee            = 'admin_configs';
 $current_smt       = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
 //words
-$action           = basename(ADMIN_PATH) . '?cp=options&amp;smt=' . $current_smt;
+$base_action      = basename(ADMIN_PATH) . '?cp=options';
+$action           = $base_action . '&amp;smt=' . $current_smt;
 $n_submit         = $lang['UPDATE_CONFIG'];
 $options          = '';
-//$current_type    = ig('type') ? g('type') : 'general';
 $CONFIGEXTEND    = false;
 $H_FORM_KEYS     = kleeja_add_form_key('adm_configs');
 
@@ -54,10 +54,10 @@ while ($row = $SQL->fetch_array($result))
     }
 
     $name                  = ! empty($lang['CONFIG_KLJ_MENUS_' . strtoupper($row['type'])]) ? $lang['CONFIG_KLJ_MENUS_' . strtoupper($row['type'])] : (! empty($olang['CONFIG_KLJ_MENUS_' . strtoupper($row['type'])]) ? $olang['CONFIG_KLJ_MENUS_' . strtoupper($row['type'])] : $lang['CONFIG_KLJ_MENUS_OTHER']);
-    $go_menu[$row['type']] = ['name'=>$name, 'link'=>$action . '&amp;smt=' . $row['type'], 'goto'=>$row['type'], 'current'=> $current_smt == $row['type']];
+    $go_menu[$row['type']] = ['name'=>$name, 'link'=>$base_action . '&amp;smt=' . $row['type'], 'goto'=>$row['type'], 'current'=> $current_smt == $row['type']];
 }
 
-$go_menu['all'] = ['name'=>$lang['CONFIG_KLJ_MENUS_ALL'], 'link'=>$action . '&amp;smt=all', 'goto'=>'all', 'current'=> $current_smt == 'all'];
+$go_menu['all'] = ['name'=>$lang['CONFIG_KLJ_MENUS_ALL'], 'link'=>$base_action . '&amp;smt=all', 'goto'=>'all', 'current'=> $current_smt == 'all'];
 
 //
 // Check form key
@@ -73,7 +73,6 @@ if (ip('submit'))
 
 
 //general varaibles
-//$action        = basename(ADMIN_PATH) . '?cp=options&amp;type=' .$current_type;
 $STAMP_IMG_URL        = file_exists(PATH . 'images/watermark.gif') ? PATH . 'images/watermark.gif' : PATH . 'images/watermark.png';
 $stylfiles            = $lngfiles            = $authtypes         =  $time_zones         = '';
 $optionss             = [];

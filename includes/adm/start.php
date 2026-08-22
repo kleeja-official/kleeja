@@ -243,7 +243,7 @@ $image_last_visit = filter_exists('i_lastvisit', 'filter_uid', 'lastvisit', $use
 
 
 //hurry, hurry section, get languages
-$hurry_lang_link     = basename(ADMIN_PATH) . '?cp=g_users&smt=general&amp;smt=group_data&' . $GET_FORM_KEY . '&amp;lang_change=';
+$hurry_lang_link     = basename(ADMIN_PATH) . '?cp=g_users&amp;smt=group_data&amp;' . $GET_FORM_KEY . '&amp;lang_change=';
 $hurry_langs_list    = '';
 
 if ($dh = @opendir(PATH . 'lang'))
