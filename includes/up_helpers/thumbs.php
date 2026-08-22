@@ -48,6 +48,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     if (function_exists('phpversion') && phpversion('imagick'))
     {
         helper_thumb_imagick($source_path, $ext, $dest_image, $dw, $dh);
+
         return null;
     }
 
@@ -115,8 +116,7 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
         $temp_height = $dh;
         $temp_width  = (int) ($dh * $source_aspect_ratio);
     }
-    else
-    {
+    else {
         // Triggered otherwise (i.e. source image is similar or taller)
         $temp_width  = $dw;
         $temp_height = (int) ($dw / $source_aspect_ratio);
@@ -128,10 +128,14 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     imagecopyresampled(
         $temp_gdim,
         $source_gdim,
-        0, 0,
-        0, 0,
-        $temp_width, $temp_height,
-        $source_width, $source_height
+        0,
+        0,
+        0,
+        0,
+        $temp_width,
+        $temp_height,
+        $source_width,
+        $source_height
     );
 
     // Copy cropped region from temporary image into the desired GD image
@@ -142,9 +146,12 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
     imagecopy(
         $desired_gdim,
         $temp_gdim,
-        0, 0,
-        $x0, $y0,
-        $dw, $dh
+        0,
+        0,
+        $x0,
+        $y0,
+        $dw,
+        $dh
     );
 
     // Create thumbnail
@@ -220,8 +227,7 @@ function scale_image_imagick($x, $y, $cx, $cy)
         {
             $r = $ry;
         }
-        else
-        {
+        else {
             $r = $rx;
         }
 
@@ -241,21 +247,24 @@ function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
 
     //guess the right thumb height, weights
     list($thumb_w, $thumb_h) = scale_image_imagick(
-                    $im->getImageWidth(),
-                    $im->getImageHeight(),
-                    $new_w,
-                    $new_h);
+        $im->getImageWidth(),
+        $im->getImageHeight(),
+        $new_w,
+        $new_h
+    );
 
     //an exception for gif image
     //generating thumb with 10 frames only, big gif is a devil
     if ($ext == 'gif')
     {
         $i = 0;
+
         //$gif_new = new Imagick();
         foreach ($im as $frame)
         {
             $frame->thumbnailImage($thumb_w, $thumb_h);
             $frame->setImagePage($thumb_w, $thumb_h, 0, 0);
+
             //    $gif_new->addImage($frame->getImage());
             if ($i >= 10)
             {
@@ -265,6 +274,7 @@ function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
             $i++;
         }
         $im->writeImages($filename, true);
+
         return;
     }
 

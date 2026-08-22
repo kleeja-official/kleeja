@@ -63,6 +63,7 @@ if (ip('submit'))
         {
             //delete from folder ..
             @kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
+
             //delete thumb
             if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
             {
@@ -112,8 +113,7 @@ if (ip('submit'))
 
     $stylee    = 'admin_info';
 }
-else
-{
+else {
     $query    = [
         'SELECT'         => 'COUNT(f.id) AS total_files',
         'FROM'           => "{$dbprefix}files f",
@@ -148,8 +148,7 @@ else
     {
         $query['WHERE']    .= ' AND f.time > ' . g('last_visit', 'int');
     }
-    else
-    {
+    else {
         $do_not_query_total_files = true;
     }
 
@@ -163,8 +162,7 @@ else
     {
         $nums_rows = get_actual_stats('imgs');
     }
-    else
-    {
+    else {
         $result_p  = $SQL->build($query);
         $n_fetch   = $SQL->fetch_array($result_p);
         $nums_rows = $n_fetch['total_files'];
@@ -206,8 +204,7 @@ else
                     $row['username']             = $usrcp->usernamebyid($row['user']);
                     $ids_and_names[$row['user']] = $row['username'];
                 }
-                else
-                {
+                else {
                     $row['username'] = $ids_and_names[$row['user']];
                 }
             }
@@ -241,8 +238,7 @@ else
 
         $SQL->freeresult($result);
     }
-    else
-    {
+    else {
         $no_results = true;
     }
 
@@ -253,8 +249,7 @@ else
         {
             update_filter('i_lastvisit', time(), 'lastvisit', false, $userinfo['id']);
         }
-        else
-        {
+        else {
             insert_filter('i_lastvisit', time(), 'lastvisit', time(), $userinfo['id']);
         }
     }

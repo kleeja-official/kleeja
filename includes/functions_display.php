@@ -74,8 +74,7 @@ function Saaheader($title = '', $extra = '')
         $tpl->assign('user_avatar', 'https://www.gravatar.com/avatar/' .
             md5(strtolower(trim($userinfo['mail']))) . '?s=100&amp;d=' . urlencode($default_avatar));
     }
-    else
-    {
+    else {
         $tpl->assign('user_avatar', $default_avatar);
     }
 
@@ -195,13 +194,14 @@ function readable_size($size)
     }
     $result    =     round($size, 2) . $ext;
     is_array($plugin_run_result = Plugins::getInstance()->run('func_readable_size', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
-    return  $result;
+
+    return $result;
 }
 
 /**
  * show an error message
  *
- * @param $message
+ * @param             $message
  * @param string      $title
  * @param bool        $exit
  * @param bool|string $redirect          a link to redirect after showing the message, or false
@@ -236,7 +236,7 @@ function kleeja_err($message, $title = '', $exit = true, $redirect = false, $rs 
 /**
  * show an information message
  *
- * @param $message
+ * @param             $message
  * @param string      $title
  * @param bool        $exit
  * @param bool|string $redirect          a link to redirect after showing the message, or false
@@ -299,8 +299,7 @@ function kleeja_debug()
             echo '<br /><br />';
         }
     }
-    else
-    {
+    else {
         echo '<p><strong>NO SQLs</strong></p>';
     }
 
@@ -312,8 +311,7 @@ function kleeja_debug()
         echo '<textarea style="font-family:\'Courier New\',monospace;width:99%; background:#F4F4F4" rows="20" cols="10">' . var_export(Plugins::getInstance()->getDebugInfo(), true) . '';
         echo '</textarea>    <br />';
     }
-    else
-    {
+    else {
         echo '<p><strong>...</strong></p>';
     }
 
@@ -375,8 +373,7 @@ function redirect($url, $header = true, $exit = true, $sec = 0, $return = false)
     {
         header('Location: ' . str_replace(['&amp;'], ['&'], $url));
     }
-    else
-    {
+    else {
         $gre = '<script type="text/javascript"> setTimeout("window.location.href = \'' . str_replace(['&amp;'], ['&'], $url) . '\'", ' . $sec*1000 . '); </script>' .
             '<noscript><meta http-equiv="refresh" content="' . $sec . ';url=' . $url . '" /></noscript>';
 
@@ -413,6 +410,7 @@ function kleeja_add_form_key_get($request_id)
     $return = 'formkey=' . substr(sha1($config['h_key'] . date('H-d-m') . $request_id), 0, 20);
 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_add_form_key_get_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -431,6 +429,7 @@ function kleeja_check_form_key_get($request_id)
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_check_form_key_get_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -446,6 +445,7 @@ function kleeja_add_form_key($form_name)
     $return = '<input type="hidden" name="k_form_key" value="' . sha1($config['h_key'] . $form_name . $now) . '" /><input type="hidden" name="k_form_time" value="' . $now . '" />' . "\n";
 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_add_form_key_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -484,6 +484,7 @@ function kleeja_check_form_key($form_name, $require_time = 300)
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_check_form_key_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -491,11 +492,11 @@ function kleeja_check_form_key($form_name, $require_time = 300)
  * Link generator
  * TODO to be edited
  * Files can be many links styles, so this will generate the current style of link
- * @param $pid
+ * @param         $pid
  * @param  array  $extra
  * @return string
  */
-function kleeja_get_link ($pid, $extra = [])
+function kleeja_get_link($pid, $extra = [])
 {
     global $config;
 
@@ -584,8 +585,7 @@ function get_up_tpl_box($box_name, $extra = [])
             {
                 $depend_on = $config['style_depend_on'];
             }
-            else
-            {
+            else {
                 $depend_on = 'default';
             }
 
@@ -667,6 +667,7 @@ function kleeja_style_info($style_name)
         }
 
         $t = array_map('trim', @explode('=', $m, 2));
+
         // ':' mean something secondary as in sub-array
         if (strpos($t[0], ':') !== false)
         {
@@ -674,8 +675,7 @@ function kleeja_style_info($style_name)
             $t_t0                      = array_map('trim', $subInfo);
             $inf_r[$t_t0[0]][$t_t0[1]] = $t[1];
         }
-        else
-        {
+        else {
             if (! empty($t[0]))
             {
                 $inf_r[$t[0]] = empty($t[1]) ? '' : $t[1];
@@ -721,6 +721,7 @@ function is_browser($b)
     $r       = trim(preg_replace('/[a-z]/', '', $b));
 
     $return = false;
+
     switch ($t)
     {
         case 'ie':
@@ -792,6 +793,7 @@ function is_browser($b)
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('is_browser_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -843,15 +845,14 @@ function kleeja_date($time, $human_time = true, $format = false)
 
     if (! empty($config['time_zone']) && strpos($config['time_zone'], '/') !== false)
     {
-        if(strpos($config['time_zone'], 'Buraydah') !== false)
+        if (strpos($config['time_zone'], 'Buraydah') !== false)
         {
             $config['time_zone'] = 'Asia/Riyadh';
         }
 
         $timezone_offset = timezone_offset_get(new DateTimeZone($config['time_zone']), new DateTime);
     }
-    else
-    {
+    else {
         $timezone_offset = intval($config['time_zone']) * 60 * 60;
     }
 
@@ -859,6 +860,7 @@ function kleeja_date($time, $human_time = true, $format = false)
     {
         $format    = ! $format ? TIME_FORMAT : $format;
         $time      = $time + $timezone_offset;
+
         return str_replace(['am', 'pm'], [$lang['TIME_AM'], $lang['TIME_PM']], gmdate($format, $time));
     }
 
@@ -883,13 +885,11 @@ function kleeja_date($time, $human_time = true, $format = false)
         {
             $return = $lang['W_PERIODS_DP_' . $j];
         }
-        else
-        {
+        else {
             $return = $difference . ' ' . ($difference > 10 ? $lang['W_PERIODS_' . $j] :  $lang['W_PERIODS_P_' . $j]);
         }
     }
-    else
-    {
+    else {
         $return = '1 ' . $lang['W_PERIODS_' . $j];
     }
 
@@ -990,8 +990,7 @@ function shorten_text($text, $until = 30)
             ? (mb_substr($text, 0, $until-4, 'UTF-8') . ' ... ' . mb_substr($text, -4, null, 'UTF-8'))
             : substr($text, 0, $until-4) . ' ... ' . substr($text, -4);
     }
-    else
-    {
+    else {
         $return = $text;
     }
 

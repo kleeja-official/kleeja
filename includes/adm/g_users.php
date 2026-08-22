@@ -136,6 +136,7 @@ if (ig('deleteuserfile'))
     {
         //delete from folder ..
         kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
+
         //delete thumb
         if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
         {
@@ -152,8 +153,7 @@ if (ig('deleteuserfile'))
     {
         kleeja_admin_err($lang['ADMIN_DELETE_NO_FILE'], true, '', true, $action_all, 2);
     }
-    else
-    {
+    else {
         //update number of stats
         $update_query    = [
             'UPDATE'       => "{$dbprefix}stats",
@@ -178,6 +178,7 @@ if (ig('deleteuserfile'))
         kleeja_admin_info($lang['ADMIN_DELETE_FILE_OK'], true, '', true, $action_all, 3);
     }
 }
+
 //
 //Delete a user
 //
@@ -270,8 +271,7 @@ elseif (ip('newuser'))
         //User added ..
         kleeja_admin_info($lang['USER_ADDED'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users', 3);
     }
-    else
-    {
+    else {
         $errs =    '';
 
         foreach ($ERRORS as $r)
@@ -373,13 +373,11 @@ if (ip('edituser'))
         {
             kleeja_admin_info($lang['USER_UPDATED'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users&smt=show_group&qg=' . p('l_qg', 'int') . '&page=' . p('l_page', 'int'), 2);
         }
-        else
-        {
+        else {
             kleeja_admin_info($lang['NO_UP_CHANGE_S'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users&smt=show_group&qg=' . p('l_qg', 'int') . '&page=' . p('l_page', 'int'), 2);
         }
     }
-    else
-    {
+    else {
         $errs =    '';
 
         foreach ($ERRORS as $r)
@@ -506,8 +504,7 @@ if (ip('newgroup'))
         delete_cache('data_groups');
         kleeja_admin_info(sprintf($lang['GROUP_ADDED'], p('gname')), true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
     }
-    else
-    {
+    else {
         $errs =    '';
 
         foreach ($ERRORS as $r)
@@ -589,12 +586,16 @@ if (ip('delgroup'))
     $SQL->build($update_query);
 
     //get those groups name
-    $group_name_from    = str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                                    [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                    $d_groups[$from_group]['data']['group_name']);
-    $group_name_to        =str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                $d_groups[$to_group]['data']['group_name']);
+    $group_name_from    = str_replace(
+        ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+        $d_groups[$from_group]['data']['group_name']
+    );
+    $group_name_to        =str_replace(
+        ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+        $d_groups[$to_group]['data']['group_name']
+    );
 
     //delete cache ..
     delete_cache('data_groups');
@@ -606,6 +607,7 @@ if (ip('delgroup'))
 //
 $query        = [];
 $show_results = false;
+
 switch ($current_smt):
 
 case 'general':
@@ -643,9 +645,11 @@ case 'general':
         {
             $r = [
                 'id'      => $row['group_id'],
-                'name'    => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                            [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                            $row['group_name']),
+                'name'    => str_replace(
+                    ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                    [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                    $row['group_name']
+                ),
                 'style' => ! empty($groups_background_color[$row['group_id']])
                                     ? $groups_background_color[$row['group_id']]
                                     : ['background' => 'secondary', 'icon' => ''],
@@ -656,8 +660,7 @@ case 'general':
             {
                 $e_groups[] = $r;
             }
-            else
-            {
+            else {
                 $c_groups[] = $r;
             }
         }
@@ -681,9 +684,11 @@ case 'group_acl':
         kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
     }
 
-    $group_name    = str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                $d_groups[$req_group]['data']['group_name']);
+    $group_name    = str_replace(
+        ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+        $d_groups[$req_group]['data']['group_name']
+    );
 
     $query = [
         'SELECT'         => 'acl_name, acl_can',
@@ -792,14 +797,13 @@ case 'group_data':
 
             $group_name = $lang['ALL'];
         }
-        else
-        {
+        else {
             update_config('language', $got_lang, true, $req_group);
             $group_name    = str_replace(
-                            ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                            [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                            $d_groups[$req_group]['data']['group_name']
-                            );
+                ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                $d_groups[$req_group]['data']['group_name']
+            );
         }
 
 
@@ -807,14 +811,21 @@ case 'group_data':
 
 
         //msg, done
-        kleeja_admin_info($lang['CONFIGS_UPDATED'] . ', ' . $lang['LANGUAGE'] . ':' . $got_lang . ' - ' . $lang['FOR'] . ':' . $group_name,
-                true, '', true, basename(ADMIN_PATH) . '?cp=start');
+        kleeja_admin_info(
+            $lang['CONFIGS_UPDATED'] . ', ' . $lang['LANGUAGE'] . ':' . $got_lang . ' - ' . $lang['FOR'] . ':' . $group_name,
+            true,
+            '',
+            true,
+            basename(ADMIN_PATH) . '?cp=start'
+        );
     }
 
 
-    $group_name    = str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                                    [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                    $d_groups[$req_group]['data']['group_name']);
+    $group_name    = str_replace(
+        ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+        $d_groups[$req_group]['data']['group_name']
+    );
     $gdata        = $d_groups[$req_group]['data'];
 
     $query = [
@@ -881,7 +892,8 @@ case 'group_data':
                 '<div class="form-group">' . "\n" .
                             '<label for="' . $row['name'] . '">' . (! empty($lang[strtoupper($row['name'])]) ? $lang[strtoupper($row['name'])] : $olang[strtoupper($row['name'])]) . '</label>' . "\n" .
                             '<div class="box">' . (empty($row['option']) ? '' : $tpl->admindisplayoption(preg_replace(['!{con.[a-z0-9_]+}!', '!NAME="con.!'], ['{cdata.' . $row['name'] . '}', 'NAME="cdata.'], $row['option']))) . '</div>' . "\n" .
-                            '</div>' . "\n" . '<div class="clearfix"></div>')
+                            '</div>' . "\n" . '<div class="clearfix"></div>'
+            )
 
         ];
     }
@@ -929,9 +941,11 @@ case 'group_exts':
         kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
     }
 
-    $group_name    =str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                        $d_groups[$req_group]['data']['group_name']);
+    $group_name    =str_replace(
+        ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+        $d_groups[$req_group]['data']['group_name']
+    );
 
 
 
@@ -1095,9 +1109,11 @@ case 'show_group':
     {
         $is_search     = true;
         $req_group     = ig('qg') ? g('qg', 'int') : 0;
-        $group_name    =str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                        $d_groups[$req_group]['data']['group_name']);
+        $group_name    =str_replace(
+            ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+            [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+            $d_groups[$req_group]['data']['group_name']
+        );
 
         $query['WHERE']    = "name != '' AND group_id =  " . $req_group;
     }
@@ -1139,29 +1155,30 @@ case 'users':
                 'name'                        => $row['name'],
                 'userfile_link'               => $userfile,
                 'delusrfile_link'             => $row['founder'] && (int) $userinfo['founder'] == 0 ? false : basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;deleteuserfile=' . $row['id'] . (ig('page') ? '&amp;page=' . g('page', 'int') : ''),
-                'delusr_link'                 => $userinfo['id'] == $row['id'] || ($row['founder'] && (int) $userinfo['founder'] == 0) ? false : basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;del_user=' . $row['id'] . (ig('page') ? '&amp;page=' . g('page', 'int') : ''),
+                'delusr_link'                 => $userinfo['id']                               == $row['id'] || ($row['founder'] && (int) $userinfo['founder'] == 0) ? false : basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;del_user=' . $row['id'] . (ig('page') ? '&amp;page=' . g('page', 'int') : ''),
                 'editusr_link'                => basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&amp;smt=edit_user&amp;uid=' . $row['id'] . (ig('page') ? '&amp;page=' . g('page', 'int') : ''),
                 'founder'                     => (int) $row['founder'],
                 'last_visit'                  => empty($row['last_visit']) ? $lang['NOT_YET'] : kleeja_date($row['last_visit']),
-                'group'                       => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                                            [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                            $d_groups[$row['group_id']]['data']['group_name'])
+                'group'                       => str_replace(
+                    ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                    [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                    $d_groups[$row['group_id']]['data']['group_name']
+                )
             ];
         }
 
         $SQL->freeresult($result);
     }
-    else
-    { //num rows
+    else { //num rows
         $no_results = true;
     }
 
     //pages
     $total_pages        = $Pager->getTotalPages();
     $page_nums          = $Pager->print_nums(
-                                basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . (ig('search_id') ? '&search_id=' . g('search_id') : '')
+        basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . (ig('search_id') ? '&search_id=' . g('search_id') : '')
                                 . (ig('qg') ? '&qg=' . g('qg', 'int') : '') . (ig('smt') ? '&smt=' . $current_smt : '')
-                            );
+    );
 
     $show_results = true;
 
@@ -1224,11 +1241,13 @@ case 'edit_user':
     {
         $u_groups[] = [
             'id'          => $id,
-            'name'        => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                            [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                            $d_groups[$id]['data']['group_name']),
+            'name'        => str_replace(
+                ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                $d_groups[$id]['data']['group_name']
+            ),
             'default'     => $config['default_group'] == $id ? true : false,
-            'selected'    => $id == $u_group
+            'selected'    => $id                      == $u_group
         ];
     }
 
@@ -1256,10 +1275,12 @@ case 'new_u':
     {
         $u_groups[] = [
             'id'          => $id,
-            'name'        => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                $d_groups[$id]['data']['group_name']),
-            'default'     => $config['default_group'] == $id ? true : false,
+            'name'        => str_replace(
+                ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                $d_groups[$id]['data']['group_name']
+            ),
+            'default'     => $config['default_group']   == $id ? true : false,
             'selected'    => ip('lgroup') ? p('lgroup') == $id : $id == $config['default_group']
         ];
     }

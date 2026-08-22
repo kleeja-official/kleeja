@@ -58,10 +58,10 @@ error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 
 /**
 * functions for start
-* @param mixed $error_number
-* @param mixed $error_string
-* @param mixed $error_file
-* @param mixed $error_line
+ * @param mixed $error_number
+ * @param mixed $error_string
+ * @param mixed $error_file
+ * @param mixed $error_line
 */
 function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
 {
@@ -106,6 +106,7 @@ set_error_handler('kleeja_show_error');
 function get_microtime()
 {
     list($usec, $sec) = explode(' ', microtime());
+
     return ((float) $usec + (float) $sec);
 }
 
@@ -116,6 +117,7 @@ function is_bot($bots = ['googlebot', 'bing' ,'msnbot'])
     {
         return preg_match('/(' . implode('|', $bots) . ')/i', ($_SERVER['HTTP_USER_AGENT'] ? $_SERVER['HTTP_USER_AGENT'] : @getenv('HTTP_USER_AGENT'))) ? true : false;
     }
+
     return false;
 }
 
@@ -124,7 +126,7 @@ $starttm = get_microtime();
 
 if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
 {
-    if(function_exists('ini_set'))
+    if (function_exists('ini_set'))
     {
         ini_set('session.use_cookies', 1);
         ini_set('session.lazy_write', 1);
@@ -134,7 +136,7 @@ if (! is_bot() && PHP_SESSION_ACTIVE !== session_status() && ! headers_sent())
     }
 
 
-    if(! session_start())
+    if (! session_start())
     {
         big_error('Session Error!', 'There is a problem with PHP session. We can not start it.');
     }
@@ -160,8 +162,7 @@ if (isset($dbtype) && $dbtype == 'sqlite')
 {
     include PATH . 'includes/sqlite.php';
 }
-else
-{
+else {
     include PATH . 'includes/mysqli.php';
 }
 
@@ -335,10 +336,10 @@ if (isset($_GET['go']) && $_GET['go'] == 'login')
 
 //install.php exists
 if (
-    file_exists(PATH . 'install')  &&
-    ! defined('IN_ADMIN') &&
-    ! defined('IN_LOGIN') &&
-    ! defined('DEV_STAGE') &&
+    file_exists(PATH . 'install')                        &&
+    ! defined('IN_ADMIN')                                &&
+    ! defined('IN_LOGIN')                                &&
+    ! defined('DEV_STAGE')                               &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login']))
 ) {
@@ -351,10 +352,10 @@ if (
 $login_page = '';
 
 if (
-    $config['siteclose'] == '1' &&
-    ! user_can('enter_acp') &&
-    ! defined('IN_LOGIN') &&
-    ! defined('IN_ADMIN') &&
+    $config['siteclose'] == '1'                          &&
+    ! user_can('enter_acp')                              &&
+    ! defined('IN_LOGIN')                                &&
+    ! defined('IN_ADMIN')                                &&
     ! (defined('IN_GO') && in_array(g('go'), ['queue'])) &&
     ! (defined('IN_UCP') && in_array(g('go'), ['captcha', 'login', 'register', 'logout']))
     ) {
@@ -409,7 +410,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('end_common', get_defi
 
 
 
-register_shutdown_function(function() {
+register_shutdown_function(function () {
     session_write_close();
 
     $err = error_get_last();

@@ -84,8 +84,7 @@ class PasswordHash
     {
         $output = '';
         $i      = 0;
-        do
-        {
+        do {
             $value = ord($input[$i++]);
             $output .= $this->itoa64[$value & 0x3f];
 
@@ -111,7 +110,8 @@ class PasswordHash
                 break;
             }
             $output .= $this->itoa64[($value >> 18) & 0x3f];
-        } while ($i < $count);
+        }
+        while ($i < $count);
 
         return $output;
     }
@@ -164,18 +164,17 @@ class PasswordHash
         if (PHP_VERSION >= '5')
         {
             $hash = md5($salt . $password, true);
-            do
-            {
+            do {
                 $hash = md5($hash . $password, true);
-            } while (--$count);
+            }
+            while (--$count);
         }
-        else
-        {
+        else {
             $hash = pack('H*', md5($salt . $password));
-            do
-            {
+            do {
                 $hash = pack('H*', md5($hash . $password));
-            } while (--$count);
+            }
+            while (--$count);
         }
 
         $output = substr($setting, 0, 12);
@@ -220,8 +219,7 @@ class PasswordHash
         $output .= '$';
 
         $i = 0;
-        do
-        {
+        do {
             $c1 = ord($input[$i++]);
             $output .= $itoa64[$c1 >> 2];
             $c1 = ($c1 & 0x03) << 4;
@@ -242,7 +240,8 @@ class PasswordHash
             $c1 |= $c2 >> 6;
             $output .= $itoa64[$c1];
             $output .= $itoa64[$c2 & 0x3f];
-        } while (1);
+        }
+        while (1);
 
         return $output;
     }
@@ -281,8 +280,10 @@ class PasswordHash
             $random = $this->get_random_bytes(6);
         }
         $hash =
-            $this->crypt_private($password,
-            $this->gensalt_private($random));
+            $this->crypt_private(
+                $password,
+                $this->gensalt_private($random)
+            );
 
         if (strlen($hash) == 34)
         {

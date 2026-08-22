@@ -76,6 +76,7 @@ if (ip('submit'))
         {
             //delete from folder ..
             @kleeja_unlink(PATH . $row['folder'] . '/' . $row['name']);
+
             //delete thumb
             if (file_exists(PATH . $row['folder'] . '/thumbs/' . $row['name']))
             {
@@ -90,8 +91,7 @@ if (ip('submit'))
             {
                 $imgs_num++;
             }
-            else
-            {
+            else {
                 $files_num++;
             }
             $sizes += $row['size'];
@@ -133,8 +133,7 @@ if (ip('submit'))
                 '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . str_replace('&amp;', '&', $action) . '\');", 2000);</script>' . "\n";
     $stylee    = 'admin_info';
 }
-else
-{
+else {
 
 //
 //Delete all user files [only one user]
@@ -184,8 +183,7 @@ else
             {
                 $imgs_num++;
             }
-            else
-            {
+            else {
                 $files_num++;
             }
             $sizes += $row['size'];
@@ -197,8 +195,7 @@ else
         {
             kleeja_admin_err($lang['ADMIN_DELETE_FILES_NOF']);
         }
-        else
-        {
+        else {
             //update number of stats
             $update_query    = [
                 'UPDATE'       => "{$dbprefix}stats",
@@ -268,8 +265,7 @@ else
     {
         $query['ORDER BY'] = 'f.' . $SQL->escape($_REQUEST['order_by']);
     }
-    else
-    {
+    else {
         $do_not_query_total_files = true;
     }
 
@@ -279,8 +275,7 @@ else
         $img_types      = ['gif','jpg','png','bmp','jpeg','GIF','JPG','PNG','BMP','JPEG'];
         $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') . "f.type NOT IN ('" . implode("', '", $img_types) . "')";
     }
-    else
-    {
+    else {
         $do_not_query_total_files = false;
     }
 
@@ -294,8 +289,7 @@ else
     {
         $nums_rows = get_actual_stats('files');
     }
-    else
-    {
+    else {
         $result_p  = $SQL->build($query);
         $n_fetch   = $SQL->fetch_array($result_p);
         $nums_rows = $n_fetch['total_files'];
@@ -343,8 +337,7 @@ else
                     $row['username']             = $usrcp->usernamebyid($row['user']);
                     $ids_and_names[$row['user']] = $row['username'];
                 }
-                else
-                {
+                else {
                     $row['username'] = $ids_and_names[$row['user']];
                 }
             }
@@ -378,8 +371,7 @@ else
 
         $SQL->freeresult($result);
     }
-    else
-    {
+    else {
         //no result ..
         $no_results = true;
     }
@@ -392,8 +384,7 @@ else
         {
             update_filter('f_lastvisit', time(), 'lastvisit', false, $userinfo['id']);
         }
-        else
-        {
+        else {
             insert_filter('f_lastvisit', time(), 'lastvisit', time(), $userinfo['id']);
         }
     }

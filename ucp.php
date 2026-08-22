@@ -90,8 +90,7 @@ switch (g('go'))
                 {
                     $ERRORS['login_check'] = $lang['LOGIN_ERROR'];
                 }
-                else
-                {
+                else {
                     $errorpage = true;
                     is_array($plugin_run_result = Plugins::getInstance()->run('login_data_no_error', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -157,8 +156,7 @@ switch (g('go'))
         {
             is_array($plugin_run_result = Plugins::getInstance()->run('register_no_submit', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         }
-        else
-        { // submit
+        else { // submit
             $ERRORS = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('register_submit', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -262,8 +260,7 @@ switch (g('go'))
             $text = $lang['LOGOUT_SUCCESFUL'] . '<br /> <a href="' . $config['siteurl'] . '">' . $lang['HOME'] . '</a>';
             kleeja_info($text, $lang['LOGOUT'], true, $config['siteurl'], 1);
         }
-        else
-        {
+        else {
             kleeja_err($lang['LOGOUT_ERROR']);
         }
 
@@ -345,10 +342,10 @@ switch (g('go'))
         $your_fileuser       = $config['siteurl'] . ($config['mod_writer'] ? 'fileuser-' . $usrcp->id() . '.html' : 'ucp.php?go=fileuser&amp;id=' . $usrcp->id());
         $total_pages         = $Pager->getTotalPages();
         $linkgoto            = $config['siteurl'] . (
-                                    $config['mod_writer']
+            $config['mod_writer']
                                     ?  'fileuser-' . $user_id . ($currentPage > 1  && $currentPage <= $total_pages ? '-' . $currentPage : '') . '.html'
                                     : 'ucp.php?go=fileuser' . (ig('id') ? (g('id', 'int') == $usrcp->id() ? '' : '&amp;id=' . g('id')) : null)
-                            );
+        );
 
         $page_nums        = $Pager->print_nums(str_replace('.html', '', $linkgoto));
 
@@ -363,6 +360,7 @@ switch (g('go'))
 
         //set page title
         $titlee    = $lang['FILEUSER'] . ': ' . $user_name;
+
         //there is result ? show them
         if ($nums_rows != 0)
         {
@@ -440,8 +438,7 @@ switch (g('go'))
                         {
                             $imgs_num++;
                         }
-                        else
-                        {
+                        else {
                             $files_num++;
                         }
 
@@ -470,8 +467,7 @@ switch (g('go'))
                         {
                             $imgs_num++;
                         }
-                        else
-                        {
+                        else {
                             $files_num++;
                         }
 
@@ -513,8 +509,7 @@ switch (g('go'))
                     //delete is ok, show msg
                     kleeja_info($lang['FILES_DELETED'], '', true, $linkgoto, 2);
                 }
-                else
-                {
+                else {
                     //no file selected, show msg
                     kleeja_info($lang['NO_FILE_SELECTED'], '', true, $linkgoto, 2);
                 }
@@ -555,8 +550,7 @@ switch (g('go'))
                     //delete all files , show msg
                     kleeja_info($lang['ALL_DELETED'], '', true, $linkgoto, 2);
                 }
-                else
-                {
+                else {
                     //no file selected, show msg
                     kleeja_info($lang['NO_FILES_DELETE'], '', true, $linkgoto, 2);
                 }
@@ -674,8 +668,7 @@ switch (g('go'))
                 {
                     $text = $lang['DATA_CHANGED_NO'];
                 }
-                else
-                {
+                else {
                     $text = $lang['DATA_CHANGED_O_LO'];
                     $SQL->build($update_query);
                 }
@@ -771,11 +764,11 @@ switch (g('go'))
         {
             is_array($plugin_run_result = Plugins::getInstance()->run('no_submit_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         }
-        else
-        { // submit
+        else { // submit
             $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_get_pass', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
             //check for form key
             if (! kleeja_check_form_key('get_pass'))
             {
@@ -851,8 +844,7 @@ switch (g('go'))
                 {
                     kleeja_err($lang['CANT_SEND_NEWPASS']);
                 }
-                else
-                {
+                else {
                     $text    = $lang['OK_SEND_NEWPASS'] . '<br /><a href="' . $config['siteurl'] . ($config['mod_writer'] ?  'login.html' : 'ucp.php?go=login') . '">' . $lang['LOGIN'] . '</a>';
                     kleeja_info($text);
                 }

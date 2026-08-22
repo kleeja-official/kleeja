@@ -73,8 +73,7 @@ function imagebmp(&$img, $filename = false)
 
         return true;
     }
-    else
-    {
+    else {
         foreach ($header AS $h)
         {
             echo $h;
@@ -145,6 +144,7 @@ function dwordize($str)
     $a = ord($str[0]);
     $b = ord($str[1]);
     $c = ord($str[2]);
+
     return $c*256*256 + $b*256 + $a;
 }
 

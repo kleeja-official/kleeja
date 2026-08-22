@@ -68,6 +68,7 @@ class KleejaDatabase
             //loggin -> no database -> close connection
             $this->close();
             $this->error_msg('We can not connect to the server ...');
+
             return false;
         }
 
@@ -142,6 +143,7 @@ class KleejaDatabase
         $vr = $this->query('SELECT VERSION() AS v');
         $vs = $this->fetch_array($vr);
         $vs = $vs['v'];
+
         return preg_replace('/^([^-]+).*$/', '\\1', $vs);
     }
 
@@ -192,14 +194,12 @@ class KleejaDatabase
             {
                 $this->error_msg('Error In query');
             }
-            else
-            {
+            else {
                 //let's debug it
                 kleeja_log('[Query] : --> ' . $query);
             }
         }
-        else
-        {
+        else {
             if ($this->in_transaction)
             {
                 $this->result = mysqli_commit($this->connect_id);
@@ -216,20 +216,22 @@ class KleejaDatabase
                 if (! mysqli_commit($this->connect_id))
                 {
                     mysqli_rollback($this->connect_id);
+
                     return false;
                 }
             }
 
             $this->query_num++;
+
             return $this->result;
         }
-        else
-        {
+        else {
             if ($this->in_transaction)
             {
                 mysqli_rollback($this->connect_id);
                 $this->in_transaction = false;
             }
+
             return false;
         }
     }
@@ -346,10 +348,10 @@ class KleejaDatabase
         if ($query_id)
         {
             mysqli_free_result($query_id);
+
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }
@@ -417,12 +419,13 @@ class KleejaDatabase
      */
     public function escape($msg)
     {
-        if (!$msg) {
+        if (! $msg) {
             return;
         }
         $msg = htmlspecialchars($msg, ENT_QUOTES);
         //$msg = (!get_magic_quotes_gpc()) ? addslashes ($msg) : $msg;
         $msg = $this->real_escape($msg);
+
         return $msg;
     }
 
@@ -472,6 +475,7 @@ class KleejaDatabase
         if (! $this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')))
         {
             kleeja_log('MySQL: ' . $msg);
+
             return false;
         }
 
@@ -481,19 +485,19 @@ class KleejaDatabase
         //some ppl want hide their table names
         if (! defined('DEV_STAGE'))
         {
-            $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function($m) {
+            $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function ($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_sql);
-            $error_msg = preg_replace_callback("#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#", function($m) {
+            $error_msg = preg_replace_callback("#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#", function ($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_msg);
-            $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+            $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function ($m) {
                 return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
             }, $error_sql);
-            $error_msg = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+            $error_msg = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function ($m) {
                 return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
             }, $error_msg);
-            $error_msg = preg_replace_callback("#\s'([^']+)'@'([^']+)'#i", function($m) {
+            $error_msg = preg_replace_callback("#\s'([^']+)'@'([^']+)'#i", function ($m) {
                 return ' <span style="color:blue">hidden</span>@' . $m[2] . ' ';
             }, $error_msg);
             $error_sql = preg_replace("#password\s*=\s*'[^']+'#i", "password='<span style=\"color:blue\">hidden</span>'", $error_sql);
@@ -554,8 +558,7 @@ class KleejaDatabase
         {
             return [@mysqli_errno($this->connect_id), @mysqli_error($this->connect_id)];
         }
-        else
-        {
+        else {
             return [@mysqli_connect_errno(), @mysqli_connect_error()];
         }
     }

@@ -76,8 +76,7 @@ if ($config['filesnum'] > 0)
         $FILES_NUM_LOOP[] = ['i' => $i, 'show'=>($i == 1 || (! empty($config['filesnum_show']) && (int) $config['filesnum_show'] == 1) ? '' : 'display: none')];
     }
 }
-else
-{
+else {
     $text = $lang['PLACE_NO_YOU'];
 }
 
@@ -164,8 +163,7 @@ if ($show_online)
         $most_online = $current_online_users;
         $online_time = time();
     }
-    else
-    {
+    else {
         list($most_online, $online_time) = @explode(':', $config['most_user_online_ever']);
     }
 

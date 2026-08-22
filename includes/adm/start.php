@@ -131,8 +131,7 @@ if (! empty($d_groups) && is_array($d_groups))
     {
         $upload_max_filesize_s = ((int) trim(str_replace('G', '', $upload_max_filesize))) * 1073741824;
     }
-    else
-    {
+    else {
         $upload_max_filesize_s = $upload_max_filesize;
     }
 
@@ -155,8 +154,7 @@ if (! empty($d_groups) && is_array($d_groups))
     {
         $post_max_size_s = ((int) trim(str_replace('G', '', $post_max_size))) * 1073741824;
     }
-    else
-    {
+    else {
         $post_max_size_s = $post_max_size;
     }
 
@@ -264,9 +262,11 @@ $hurry_groups_list .= '<option value="' . $config['default_group'] . '">' . $lan
 foreach ($d_groups as $id=>$ddt)
 {
     $hurry_groups_list .= '<option value="' . $id . '">' .
-            str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-            [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-            $d_groups[$id]['data']['group_name']) .
+            str_replace(
+                ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                $d_groups[$id]['data']['group_name']
+            ) .
              '</option>';
 }
 
@@ -323,8 +323,7 @@ if ($cf_num > 3)
 
             $todayIsGone = true;
         }
-        else
-        {
+        else {
             $day = $prev_date;
         }
 

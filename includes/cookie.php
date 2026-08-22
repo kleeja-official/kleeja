@@ -14,7 +14,8 @@ if (! defined('IN_COMMON')) {
 }
 
 
-class KleejaCookie {
+class KleejaCookie
+{
     public function set(string $name, string $value, string $expire) {
         global $config;
 
@@ -68,5 +69,6 @@ function cookie(): KleejaCookie {
     if (is_null($cookie)) {
         $cookie = new KleejaCookie;
     }
+
     return $cookie;
 }

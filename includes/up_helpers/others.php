@@ -41,8 +41,7 @@ function ext_check_safe($filename)
     {
         return false;
     }
-    else
-    {
+    else {
         return true;
     }
 }
@@ -160,8 +159,7 @@ function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
         $return = substr($filename, 0, -(strlen($ext)+1)) . '_' . substr(md5(microtime(true) . $i_loop), rand(0, 20), 5) . '.' . $ext;
     }
     //nothing
-    else
-    {
+    else {
         $filename = substr($filename, 0, -(strlen($ext)+1));
         $return   = preg_replace('/[,.?\/*&^\\\$%#@()_!|"\~\'><=+}{; ]/', '-', $filename) . '.' . $ext;
         $return   = preg_replace('/-+/', '-', $return);
@@ -222,8 +220,7 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
         {
             $mime = @mime_content_type($file_path);
         }
-        else
-        {
+        else {
             $f_info = finfo_open(FILEINFO_MIME_TYPE);
             $mime   = finfo_file($f_info, $file_path);
             finfo_close($f_info);

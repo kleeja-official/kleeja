@@ -55,12 +55,14 @@ if ($case == 'del' && ig('k'))
 
     $to_delete = g('k');
 
-    $banned_items = array_filter($banned_items, function($item) use ($to_delete, $lang, &$show_message) {
+    $banned_items = array_filter($banned_items, function ($item) use ($to_delete, $lang, &$show_message) {
         if (md5($item) == $to_delete)
         {
             $show_message = sprintf($lang['ITEM_DELETED'], $item);
+
             return false;
         }
+
         return true;
     });
 

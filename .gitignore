@@ -34,3 +34,5 @@ Project_Default.xml
 .htaccess
 .php_cs.cache
 kleeja.db
+php-cs-fixer
+.php-cs-fixer.cache

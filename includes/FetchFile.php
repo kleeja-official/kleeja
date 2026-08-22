@@ -35,24 +35,28 @@ class FetchFile
     public function setTimeOut($seconds)
     {
         $this->timeout = $seconds;
+
         return $this;
     }
 
     public function setDestinationPath($path)
     {
         $this->destinationPath = $path;
+
         return $this;
     }
 
     public function setMaxRedirects($limit)
     {
         $this->maxRedirects = $limit;
+
         return $this;
     }
 
     public function isBinaryFile($val)
     {
         $this->binary = $val;
+
         return $this;
     }
 
@@ -135,8 +139,7 @@ class FetchFile
 
             return true;
         }
-        else
-        {
+        else {
             $data = curl_exec($ch);
 
             if ($data === false)
@@ -175,13 +178,13 @@ class FetchFile
                 @fwrite($fp2, $content);
                 @fclose($fp2);
                 unset($content);
+
                 return true;
             }
 
             return $content;
         }
-        else
-        {
+        else {
             $error = error_get_last();
             kleeja_log(sprintf("FetchFile error (stream: #%s): %s\n", $error['type'], $error['message']));
         }

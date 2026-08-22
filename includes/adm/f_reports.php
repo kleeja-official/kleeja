@@ -41,8 +41,7 @@ if ($current_smt == 'del_d30' || $current_smt == 'del_all')
     {
         kleeja_admin_err($lang['DELETE_PROCESS_IN_WORK'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'), 1);
     }
-    else
-    {
+    else {
         update_config('queue', $config['queue'] . ':' . $current_smt . 'reports:');
         kleeja_admin_info($lang['DELETE_PROCESS_QUEUED'], true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php'));
     }
@@ -123,8 +122,7 @@ if ($nums_rows > 0)
                     //
                     kleeja_admin_info($lang['IS_SEND_MAIL'], true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&page=' . (ig('page') ? g('page', 'int') : 1) . '&sent=' . $row['id']);
                 }
-                else
-                {
+                else {
                     kleeja_admin_err($lang['ERR_SEND_MAIL'], true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__file__, '.php') . '&page=' . (ig('page') ? g('page', 'int') : 1) . '&sent=' . $row['id']);
                 }
             }
@@ -132,8 +130,7 @@ if ($nums_rows > 0)
     }
     $SQL->freeresult($result);
 }
-else
-{ //num rows
+else { //num rows
     $no_results = true;
 }
 

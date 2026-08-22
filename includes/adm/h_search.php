@@ -53,7 +53,7 @@ if (ip('search_file'))
     //delete all searches greater than 3 days
     $query_del    = [
         'DELETE'       => "{$dbprefix}filters",
-        'WHERE'        => "filter_type='file_search' AND filter_user=" . $userinfo['id'] . " AND filter_time > " . (time() - 3600 * 24 * 3)
+        'WHERE'        => "filter_type='file_search' AND filter_user=" . $userinfo['id'] . ' AND filter_time > ' . (time() - 3600 * 24 * 3)
     ];
 
     $SQL->build($query_del);
@@ -79,8 +79,7 @@ if (ip('search_file'))
         $filter = get_filter($search_id, 'file_search');
         redirect(basename(ADMIN_PATH) . '?cp=c_files&search_id=' . $filter['filter_uid'], false);
     }
-    else
-    {
+    else {
         kleeja_admin_err($lang['ERROR_TRY_AGAIN'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=h_search', 1);
     }
 }
@@ -96,7 +95,7 @@ if (ip('search_user'))
     //delete all searches greater than 3 days
     $query_del    = [
         'DELETE'       => "{$dbprefix}filters",
-        'WHERE'        => "filter_type='user_search' AND filter_user=" . $userinfo['id'] . " AND filter_time > " . (time() - 3600 * 24 * 3)
+        'WHERE'        => "filter_type='user_search' AND filter_user=" . $userinfo['id'] . ' AND filter_time > ' . (time() - 3600 * 24 * 3)
     ];
 
         $SQL->build($query_del);
@@ -112,8 +111,7 @@ if (ip('search_user'))
         $filter = get_filter($search_id, 'user_search');
         redirect(basename(ADMIN_PATH) . '?cp=g_users&smt=show_su&search_id=' . $filter['filter_uid'], false);
     }
-    else
-    {
+    else {
         kleeja_admin_err($lang['ERROR_TRY_AGAIN'], true, $lang['ERROR'], true, basename(ADMIN_PATH) . '?cp=h_search&smt=users', 1);
     }
 }

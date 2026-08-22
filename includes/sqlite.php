@@ -44,14 +44,12 @@ class KleejaDatabase
      */
     public function __construct($location, $db_username, $db_password, $db_name, $dbprefix)
     {
-        try
-        {
+        try {
             if (class_exists('SQLite3'))
             {
                 $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
             }
-            else
-            {
+            else {
                 $this->error_msg('SQLite3 extension is not installed in your server!');
             }
         }
@@ -74,6 +72,7 @@ class KleejaDatabase
             //loggin -> no database -> close connection
             $this->close();
             $this->error_msg('We can not connect to the sqlite database, check location or existence of the SQLite dirver ...');
+
             return false;
         }
 
@@ -125,13 +124,9 @@ class KleejaDatabase
         //$this->set_names('utf8');
     }
 
-    public function set_names($charset)
-    {
-    }
+    public function set_names($charset) {}
 
-    public function client_encoding()
-    {
-    }
+    public function client_encoding() {}
 
     public function version()
     {
@@ -201,14 +196,12 @@ class KleejaDatabase
             {
                 $this->error_msg('Error In query');
             }
-            else
-            {
+            else {
                 //let's debug it
                 kleeja_log('[Query] : --> ' . $query);
             }
         }
-        else
-        {
+        else {
             if ($this->in_transaction)
             {
                 $this->result = $this->connect_id->query('COMMIT;');
@@ -225,20 +218,22 @@ class KleejaDatabase
                 if (! $this->connect_id->query('COMMIT;'))
                 {
                     $this->connect_id->query('ROLLBACK;');
+
                     return false;
                 }
             }
 
             $this->query_num++;
+
             return $this->result;
         }
-        else
-        {
+        else {
             if ($this->in_transaction)
             {
                 $this->connect_id->query('ROLLBACK;');
                 $this->in_transaction = false;
             }
+
             return false;
         }
     }
@@ -350,10 +345,10 @@ class KleejaDatabase
         if ($query_id)
         {
             $query_id->finalize();
+
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }
@@ -433,6 +428,7 @@ class KleejaDatabase
     {
         $msg = htmlspecialchars($msg, ENT_QUOTES);
         $msg = $this->real_escape($msg);
+
         return $msg;
     }
 
@@ -478,6 +474,7 @@ class KleejaDatabase
         if (! $this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')))
         {
             kleeja_log('SQLite3: ' . $msg);
+
             return false;
         }
 
@@ -487,19 +484,19 @@ class KleejaDatabase
         //some ppl want hide their table names
         if (! defined('DEV_STAGE'))
         {
-            $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function($m) {
+            $error_sql = preg_replace_callback("#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#", function ($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_sql);
-            $error_msg = preg_replace_callback("#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#", function($m) {
+            $error_msg = preg_replace_callback("#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#", function ($m) {
                 return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
             }, $error_msg);
-            $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+            $error_sql = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function ($m) {
                 return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
             }, $error_sql);
-            $error_msg = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function($m) {
+            $error_msg = preg_replace_callback("#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i", function ($m) {
                 return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
             }, $error_msg);
-            $error_msg = preg_replace_callback("#\s'([^']+)'@'([^']+)'#i", function($m) {
+            $error_msg = preg_replace_callback("#\s'([^']+)'@'([^']+)'#i", function ($m) {
                 return ' <span style="color:blue">hidden</span>@' . $m[2] . ' ';
             }, $error_msg);
             $error_sql = preg_replace("#password\s*=\s*'[^']+'#i", "password='<span style=\"color:blue\">hidden</span>'", $error_sql);
@@ -560,8 +557,7 @@ class KleejaDatabase
         {
             return [$this->connect_id->lastErrorCode(), $this->connect_id->lastErrorMsg()];
         }
-        else
-        {
+        else {
             return [0, 'uknown-error-not-connected'];
         }
     }

@@ -23,7 +23,7 @@ class kleeja_style
 
     /**
      * Function to load a template file.
-     * @param $template_name
+     * @param            $template_name
      * @param null|mixed $style_path
      */
     protected function _load_template($template_name, string $style_path = '')
@@ -54,7 +54,7 @@ class kleeja_style
 
     /**
      * check if a template exists or not
-     * @param $template_name
+     * @param        $template_name
      * @param string $style_path
      */
     public function template_exists($template_name, string $style_path = '')
@@ -70,7 +70,8 @@ class kleeja_style
         if (substr($template_name, 0, 6) == 'admin_') {
             $current_style_path = ! empty($style_path) ? $style_path : $STYLE_PATH_ADMIN_ABS;
             $is_admin_template  = true;
-        } else {
+        }
+        else {
             $current_style_path = ! empty($style_path) ? $style_path : $THIS_STYLE_PATH_ABS;
         }
 
@@ -90,10 +91,12 @@ class kleeja_style
                     $template_path = $template_path_alternative;
                     $is_tpl_exist  = true;
                 }
-            } elseif ($is_admin_template) {
+            }
+            elseif ($is_admin_template) {
                 $template_path = $DEFAULT_PATH_ADMIN_ABS . $template_name . '.html';
                 $is_tpl_exist  = true;
-            } elseif ($config['style'] != 'default' && ! $is_admin_template) {
+            }
+            elseif ($config['style'] != 'default' && ! $is_admin_template) {
                 $template_path_alternative = str_replace('/' . $config['style'] . '/', '/default/', $template_path);
 
                 if (file_exists($template_path_alternative)) {
@@ -150,7 +153,7 @@ class kleeja_style
 
     /**
      * if tag
-     * @param $matches
+     * @param         $matches
      * @return string
      */
     protected function _if_callback($matches)
@@ -160,10 +163,10 @@ class kleeja_style
 
         foreach (
             [
-                'NAME' => '',
-                'LOOP' => '',
-                'AND' => ' && ',
-                'OR' => ' || ',
+                'NAME'  => '',
+                'LOOP'  => '',
+                'AND'   => ' && ',
+                'OR'    => ' || ',
                 'ISSET' => ' isset',
                 'EMPTY' => ' empty'
             ] as $attribute => $separator
@@ -205,7 +208,8 @@ class kleeja_style
             }
 
             $con = "$var1 $opr $var2";
-        } elseif ($con[0] !== '$' && strpos($con, '(') === false) {
+        }
+        elseif ($con[0] !== '$' && strpos($con, '(') === false) {
             $con = call_user_func(['kleeja_style', '_var_callback'], (! $is_loop ? '{' . $con . '}' : '{{' . $con . '}}'));
         }
 
@@ -215,7 +219,7 @@ class kleeja_style
 
     /**
      * make variable printable
-     * @param $matches
+     * @param         $matches
      * @return string
      */
     protected function _vars_callback($matches)
@@ -232,7 +236,7 @@ class kleeja_style
 
     /**
      * variable replace
-     * @param $matches
+     * @param         $matches
      * @return string
      */
     protected function _var_callback($matches)
@@ -252,7 +256,7 @@ class kleeja_style
 
     /**
      * att variable replace
-     * @param $matches
+     * @param         $matches
      * @return string
      */
     protected function _var_callback_att($matches)
@@ -263,19 +267,20 @@ class kleeja_style
 
     /**
      * get reg var
-     * @param $var
+     * @param        $var
      * @return mixed
      */
     protected function reg($var)
     {
         $vars = get_class_vars(__CLASS__);
+
         return $vars['reg'][$var];
     }
 
 
     /**
      * get tag  attributes
-     * @param $tag
+     * @param        $tag
      * @return array
      */
     protected function _get_attributes($tag)
@@ -289,6 +294,7 @@ class kleeja_style
 
             $attributes[$att] = preg_replace_callback(kleeja_style::reg('var'), ['kleeja_style', '_var_callback'], $attribute[2][$i]);
         }
+
         return $attributes;
     }
 
@@ -305,8 +311,8 @@ class kleeja_style
 
     /**
      * load parser and return page content
-     * @param $template_name
-     * @param  string         $style_path optional, good for plugins
+     * @param               $template_name
+     * @param  string       $style_path    optional, good for plugins
      * @return mixed|string
      */
     public function display($template_name, string $style_path = '')
@@ -330,7 +336,7 @@ class kleeja_style
 
     /**
      * generate admin option block
-     * @param $html
+     * @param         $html
      * @return string
      */
     public function admindisplayoption($html)
@@ -346,7 +352,8 @@ class kleeja_style
 
         if ($eval_on) {
             eval(' ?' . '>' . $parsed_html . '<' . '?php ');
-        } else {
+        }
+        else {
             $path  = PATH . 'cache/tpl_' . md5($parsed_html) . '.php';
             file_put_contents($path, $parsed_html);
             include_once $path;
@@ -360,7 +367,7 @@ class kleeja_style
 
     /**
      * change name of template to be valid
-     * @param $name
+     * @param             $name
      * @param  null|mixed $style_path
      * @return mixed
      */

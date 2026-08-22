@@ -53,9 +53,11 @@ switch ($current_go_case)
                     'ext'          => $ext,
                     'size'         => readable_size($size),
                     'group'        => $gid,
-                    'group_name'   => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
-                                        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
-                                        $d_groups[$gid]['data']['group_name']),
+                    'group_name'   => str_replace(
+                        ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
+                        [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
+                        $d_groups[$gid]['data']['group_name']
+                    ),
                     'most_firstrow'   => $same_group == 0 ? true : false,
                     'firstrow'        => $same_group ==0 or $same_group != $gid ? true : false,
                     'rando'           => $rando,
@@ -108,8 +110,7 @@ switch ($current_go_case)
                 $row                  = $SQL->fetch_array($result);
                 $filename_for_show    = $row['real_filename'] == '' ? $row['name'] : $row['real_filename'];
             }
-            else
-            {
+            else {
                 is_array($plugin_run_result = Plugins::getInstance()->run('not_exists_qr_report_go_id', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
                 kleeja_err($lang['FILE_NO_FOUNDED']);
             }
@@ -129,8 +130,7 @@ switch ($current_go_case)
             // first
             is_array($plugin_run_result = Plugins::getInstance()->run('no_submit_report_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         }
-        else
-        {
+        else {
             $ERRORS    = [];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_report_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -355,8 +355,7 @@ switch ($current_go_case)
         {
             kleeja_err($lang['WRONG_URL']);
         }
-        else
-        {
+        else {
             //to check
             if (ig('sure') && g('sure') == 'ok')
             {
@@ -376,6 +375,7 @@ switch ($current_go_case)
                     while ($row=$SQL->fetch_array($result))
                     {
                         @kleeja_unlink($row['folder'] . '/' . $row['name']);
+
                         //delete thumb
                         if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                         {
@@ -404,8 +404,7 @@ switch ($current_go_case)
                             $SQL->build($update_query);
                             kleeja_info($lang['DELETE_SUCCESFUL']);
                         }
-                        else
-                        {
+                        else {
                             kleeja_info($lang['ERROR_TRY_AGAIN']);
                         }
 
@@ -415,8 +414,7 @@ switch ($current_go_case)
                     $SQL->freeresult($result);
                 }
             }
-            else
-            {
+            else {
                 //fix for IE+
                 $extra_codes = '<script type="text/javascript">
                         function confirm_from()
@@ -459,8 +457,7 @@ switch ($current_go_case)
             $most_online       = 1;// 1 == you
             $on_muoe           = time();
         }
-        else
-        {
+        else {
             list($most_online, $on_muoe) = @explode(':', $config['most_user_online_ever']);
         }
 
@@ -490,8 +487,7 @@ switch ($current_go_case)
         {
             $url_file = (int) $config['mod_writer'] == 1 ? $config['siteurl'] . 'download' . g('i', 'int') . '.html' : $config['siteurl'] . 'do.php?id=' . g('n', 'int');
         }
-        else
-        {
+        else {
             $url_file = $config['siteurl'];
         }
 
@@ -573,8 +569,7 @@ switch ($current_go_case)
             $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_FILES']);
             $link_to_go = './admin/?cp=r_repair#!cp=r_repair';
         }
-        else
-        {
+        else {
             $text       = $title       = sprintf($lang['SYNCING'], $lang['ALL_FILES']) . ' (' . (! $start ? 0 : $start) . '->' . (! $end  ? '?' : $end) . ')';
             $link_to_go = './go.php?go=resync&case=sync_files&start=' . $end;
         }
@@ -604,8 +599,7 @@ switch ($current_go_case)
             $text       = $title       = sprintf($lang['SYNCING_DONE'], $lang['ALL_IMAGES']) . ' (' . (! $start ? 0 : $start) . '->' . (! $end  ? '?' : $end) . ')';
             $link_to_go = './admin/?cp=r_repair#!cp=r_repair';
         }
-        else
-        {
+        else {
             $text       = $title       = sprintf($lang['SYNCING'], $lang['ALL_IMAGES']);
             $link_to_go = './go.php?go=resync&case=sync_images&start=' . $end;
         }

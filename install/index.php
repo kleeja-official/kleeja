@@ -52,8 +52,7 @@ if (isset($dbtype) && $dbtype == 'sqlite')
 {
     include PATH . 'includes/sqlite.php';
 }
-else
-{
+else {
     include PATH . 'includes/mysqli.php';
 }
 
