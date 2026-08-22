@@ -1,5 +1,6 @@
 <?php
 
+
 $finder = PhpCsFixer\Finder::create()
     ->exclude('cache')
     ->in(__DIR__)
