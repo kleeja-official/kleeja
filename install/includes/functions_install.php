@@ -29,7 +29,7 @@ $lang = array_merge($lang, require PATH . 'lang/' . getlang() . '/install.php');
 
 
 // Exceptions for development
-if (file_exists(PATH . '.git'))
+if (file_exists(PATH . '.git') && !defined('DEV_STAGE'))
 {
     define('DEV_STAGE', true);
 }
@@ -98,7 +98,7 @@ function is_eval_is_on()
     return $eval_on;
 }
 
-function kleeja_eval($code)
+function kleeja_eval(string $code)
 {
     $path  = PATH . 'cache/' . md5($code) . '.php';
     file_put_contents($path, $code);
