@@ -28,7 +28,7 @@ class KleejaDatabase
     private $dbname                   = '';
     public $query_num                 = 0;
     private $in_transaction           = 0;
-    public $debugr                    = false;
+    public $debugr                    = [];
     private $show_errors              = true;
 
 
@@ -47,8 +47,8 @@ class KleejaDatabase
 
         if (strpos($host, ':') !== false)
         {
-            $host = substr($host, 0, strpos($host, ':'));
-            $port = (int) substr($host, strpos($host, ':')+1);
+            [$host, $host_port] = explode(':', $host, 2);
+            $port               = (int) $host_port ?: $port;
         }
 
         $this->dbprefix        = $dbprefix;
@@ -417,6 +417,9 @@ class KleejaDatabase
      */
     public function escape($msg)
     {
+        if (!$msg) {
+            return;
+        }
         $msg = htmlspecialchars($msg, ENT_QUOTES);
         //$msg = (!get_magic_quotes_gpc()) ? addslashes ($msg) : $msg;
         $msg = $this->real_escape($msg);

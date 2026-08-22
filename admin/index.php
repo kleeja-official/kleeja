@@ -173,7 +173,7 @@ if (ig('change_theme'))
 
     if (in_array($admin_theme_color, ['dark', 'light']))
     {
-        $usrcp->kleeja_set_cookie('klj_adm_theme_color', $admin_theme_color, time() + 31536000);
+        cookie()->set('klj_adm_theme_color', $admin_theme_color, time() + 31536000);
     }
     else
     {
@@ -182,7 +182,7 @@ if (ig('change_theme'))
 }
 else
 {
-    if (! ($admin_theme_color = $usrcp->kleeja_get_cookie('klj_adm_theme_color')))
+    if (! ($admin_theme_color = cookie()->get('klj_adm_theme_color')))
     {
         $admin_theme_color = 'dark';
     }
@@ -373,7 +373,7 @@ foreach ($adm_extensions as $m)
 $assigned_klj_ver = preg_replace('!#([a-z0-9]+)!', '', KLEEJA_VERSION);
 
 //for plugins
-$styleePath = null;
+$styleePath = '';
 
 //get it
 if (file_exists(ADM_FILES_PATH . '/' . $go_to . '.php'))

@@ -22,7 +22,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('begin_usrcp_page', ge
 
 $extra      = '';
 $show_style = true;
-$styleePath = null;
+$styleePath = '';
 
 switch (g('go'))
 {
@@ -582,7 +582,7 @@ switch (g('go'))
         $mail          = $usrcp->mail();
         extract($usrcp->get_data('show_my_filecp, password_salt'));
         $data_forum        = (int) $config['user_system'] == 1;
-        $link_avater       = sprintf($lang['EDIT_U_AVATER_LINK'], '<a target="_blank" href="http://www.gravatar.com/">', '</a>');
+        $link_avater       = sprintf($lang['EDIT_U_AVATER_LINK'], '<a target="_blank" href="https://www.gravatar.com/">', '</a>');
         $H_FORM_KEYS       = kleeja_add_form_key('profile');
         //no error yet
         $ERRORS = false;

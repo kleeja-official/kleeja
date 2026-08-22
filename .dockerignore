@@ -1,0 +1,37 @@
+# Keep build context free of secrets, local state and VCS metadata.
+# Anything copied here lands in an image layer and survives later deletion.
+
+.git
+.github
+.gitignore
+.gitattributes
+
+# DB credentials, written by the installer at runtime
+config.php
+
+# Runtime state and logs
+cache/*
+!cache/index.html
+!cache/.htaccess
+
+# User uploads
+uploads/*
+!uploads/index.html
+!uploads/.htaccess
+!uploads/php.ini
+!uploads/thumbs
+uploads/thumbs/*
+!uploads/thumbs/index.html
+!uploads/thumbs/php.ini
+!uploads/thumbs/.htaccess
+
+# Not needed inside the image
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.override.yml
+kleeja.db
+.php_cs.cache
+.vscode
+.idea
+.DS_Store

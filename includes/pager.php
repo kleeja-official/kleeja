@@ -25,13 +25,13 @@ class Pagination
      */
     public function __construct($rowsPerPage, $numRows, $currentPage = 1)
     {
-        // Calculate the total number of pages 
+        // Calculate the total number of pages
         $this->setTotalPages(ceil($numRows/$rowsPerPage));
 
-        // Check that a valid page has been provided 
-        $this->currentPage = $currentPage < 1 ? 1 :  ($currentPage > $this->totalPages ? $this->totalPages : $currentPage); 
+        // Check that a valid page has been provided
+        $this->currentPage = $currentPage < 1 ? 1 :  ($currentPage > $this->totalPages ? $this->totalPages : $currentPage);
 
-        // Calculate the row to start the select with 
+        // Calculate the row to start the select with
         $this->startRow = ($this->currentPage - 1) * $rowsPerPage;
     }
 

@@ -82,7 +82,12 @@ if ($current_smt == 'check')
     }
     else
     {
-        if (version_compare(strtolower($current_version), strtolower($version_data['version']), '<'))
+        if (version_compare(PHP_VERSION, 8, '<')) {
+            $text    = $lang['PHP_8_REQUIRED'];
+        } else if (!extension_loaded('pdo')) {
+            $text    = $lang['PDO_EXT_REQUIRED'];
+        }
+        else if (version_compare(strtolower($current_version), strtolower($version_data['version']), '<'))
         {
             $text     = sprintf($lang['UPDATE_NOW_S'], $current_version, strtolower($version_data['version'])) .
                         '::--x--::' . $version_data['info'] . '::--x--::' . $version_data['date'];

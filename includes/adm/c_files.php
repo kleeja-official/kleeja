@@ -367,7 +367,7 @@ else
                 'folder'              => $row['folder'],
                 'report'              => $row['report'] > 4 ? '<span style="color:red;font-weight:bold">' . $row['report'] . '</span>':$row['report'],
                 'user'                => $row['user'] == '-1' ? $lang['GUST'] :  '<a href="' . $userfile . '" target="_blank">' . $row['username'] . '</a>',
-                'ip'                  => '<a href="http://www.ripe.net/whois?form_type=simple&amp;full_query_string=&amp;searchtext=' . $row['user_ip'] . '&amp;do_search=Search" target="_new">' . $row['user_ip'] . '</a>',
+                'ip'                  => '<a href="https://ipinfo.io/' . $row['user_ip'] . '" target="_new">' . $row['user_ip'] . '</a>',
                 'showfilesbyip'       => basename(ADMIN_PATH) . '?cp=h_search&amp;s_input=1&amp;s_value=' . $row['user_ip']
             ];
 

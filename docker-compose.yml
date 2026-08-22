@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  kleeja:
+    build:
+      context: ./
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    ports:
+      - 8080:80
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

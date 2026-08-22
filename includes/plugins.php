@@ -258,3 +258,7 @@ class Plugins
         ];
     }
 }
+
+function runHook(string $hookName, array $definedVariables) {
+    return Plugins::getInstance()->run($hookName, $definedVariables);
+}

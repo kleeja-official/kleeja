@@ -28,7 +28,7 @@ class KleejaDatabase
     private $dbname                   = '';
     public $query_num                 = 0;
     private $in_transaction           = 0;
-    public $debugr                    = false;
+    public $debugr                    = [];
     private $show_errors              = true;
 
 
@@ -429,7 +429,7 @@ class KleejaDatabase
      * @param  string $msg
      * @return string
      */
-    public function escape($msg)
+    public function escape(string $msg)
     {
         $msg = htmlspecialchars($msg, ENT_QUOTES);
         $msg = $this->real_escape($msg);

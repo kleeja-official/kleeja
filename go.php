@@ -19,7 +19,7 @@ require_once 'includes/common.php';
 
 $current_go_case = g('go');
 $show_style      = true;
-$styleePath      = null;
+$styleePath      = '';
 
 is_array($plugin_run_result = Plugins::getInstance()->run('begin_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -53,7 +53,7 @@ switch ($current_go_case)
                     'ext'          => $ext,
                     'size'         => readable_size($size),
                     'group'        => $gid,
-                    'group_name'   => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'], 
+                    'group_name'   => str_replace(['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
                                         [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
                                         $d_groups[$gid]['data']['group_name']),
                     'most_firstrow'   => $same_group == 0 ? true : false,
@@ -87,7 +87,7 @@ switch ($current_go_case)
         $url_id               = (int) $config['mod_writer'] == 1 ? $config['siteurl'] . 'download' . $id_d . '.html' : $config['siteurl'] . 'do.php?id=' . $id_d;
         $action               = $config['siteurl'] . 'go.php?go=report';
         $H_FORM_KEYS          = kleeja_add_form_key('report');
-        $NOT_USER             = ! $usrcp->name() ? true : false; 
+        $NOT_USER             = ! $usrcp->name() ? true : false;
         $s_url                = p('surl');
 
         //Does this file exists ?
@@ -116,7 +116,7 @@ switch ($current_go_case)
             $SQL->freeresult($result);
         }
 
-        //no error yet 
+        //no error yet
         $ERRORS = false;
 
         //_post
@@ -218,7 +218,7 @@ switch ($current_go_case)
 
         is_array($plugin_run_result = Plugins::getInstance()->run('report_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    break; 
+    break;
 
     //
     //Pages of rules
@@ -236,7 +236,7 @@ switch ($current_go_case)
     //
     //Page of call-us
     //
-    case 'call' : 
+    case 'call' :
 
         //Not allowed to access this page ?
         if (! user_can('access_call'))
@@ -250,8 +250,8 @@ switch ($current_go_case)
         $titlee         = $lang['CALL'];
         $action         = './go.php?go=call';
         $H_FORM_KEYS    = kleeja_add_form_key('call');
-        $NOT_USER       = ! $usrcp->name() ? true : false; 
-        //no error yet 
+        $NOT_USER       = ! $usrcp->name() ? true : false;
+        //no error yet
         $ERRORS = false;
 
         //_post
@@ -333,7 +333,7 @@ switch ($current_go_case)
     break;
 
     //
-    //Page for requesting delete file 
+    //Page for requesting delete file
     //
     case 'del' :
 
@@ -345,7 +345,7 @@ switch ($current_go_case)
             kleeja_info($lang['NO_DEL_F'], $lang['E_DEL_F']);
         }
 
-        //examples : 
+        //examples :
         //f2b3a82060a22a80283ed961d080b79f
         //aa92468375a456de21d7ca05ef945212
         //
@@ -456,7 +456,7 @@ switch ($current_go_case)
         //stats of most online users
         if (empty($config['most_user_online_ever']) || trim($config['most_user_online_ever']) == '')
         {
-            $most_online       = 1;// 1 == you 
+            $most_online       = 1;// 1 == you
             $on_muoe           = time();
         }
         else
@@ -477,7 +477,7 @@ switch ($current_go_case)
 
         is_array($plugin_run_result = Plugins::getInstance()->run('stats_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-    break; 
+    break;
 
     //
     // Page for redirect to downloading a file
@@ -561,7 +561,7 @@ switch ($current_go_case)
         //
         case 'sync_files':
 
-        //no start ? or there 
+        //no start ? or there
         $start = ! ig('start') ? false : g('start', 'int');
 
         $end = sync_total_files(true, $start);
@@ -592,7 +592,7 @@ switch ($current_go_case)
         //
         case 'sync_images':
 
-        //no start ? or there 
+        //no start ? or there
         $start = ! ig('start') ? false : g('start', 'int');
 
         $end = sync_total_files(false, $start);
@@ -682,7 +682,7 @@ switch ($current_go_case)
 
 is_array($plugin_run_result = Plugins::getInstance()->run('end_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
-//no template ? 
+//no template ?
 $stylee  = empty($stylee) ? 'info' : $stylee;
 $titlee  = empty($titlee) ? '' : $titlee;
 

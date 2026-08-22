@@ -18,7 +18,7 @@ require_once 'includes/common.php';
 
 
 
-is_array($plugin_run_result = Plugins::getInstance()->run('begin_download_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+extract(runHook('begin_download_page', get_defined_vars()));
 
 
 
@@ -292,7 +292,7 @@ elseif (ig('down') || ig('downf') ||
 
     $is_live = false;
     $pre_ext = ! empty($filename) && strpos($filename, '.') !== false ? explode('.', $filename) : [];
-    $pre_ext = array_pop($pre_ext);
+    $pre_ext = array_pop($pre_ext) || '';
 
 
     $is_image = in_array(strtolower(trim($pre_ext)), ['gif', 'jpg', 'jpeg', 'bmp', 'png']) ? true : false;
@@ -331,7 +331,7 @@ elseif (ig('down') || ig('downf') ||
 
 
         //check if the vistor is new in this page before updating kleeja counter
-        if (! preg_match('/,' . $ii . ',/i', $usrcp->kleeja_get_cookie('oldvistor')) && ! isset($_SERVER['HTTP_RANGE']))
+        if (! preg_match('/,' . $ii . ',/i', cookie()->get('oldvistor')) && ! isset($_SERVER['HTTP_RANGE']))
         {
             if ($usrcp->group_id() != 1)
             {
@@ -350,14 +350,14 @@ elseif (ig('down') || ig('downf') ||
                 //if this vistor has other views then add this view too
                 //old vistor just for 1 day
                 //
-                if ($usrcp->kleeja_get_cookie('oldvistor'))
+                if (cookie()->exists('oldvistor'))
                 {
-                    $usrcp->kleeja_set_cookie('oldvistor', $usrcp->kleeja_get_cookie('oldvistor') . $ii . ',', time() + 86400);
+                    cookie()->set('oldvistor', cookie()->get('oldvistor') . $ii . ',', time() + 86400);
                 }
                 else
                 {
                     //first time
-                    $usrcp->kleeja_set_cookie('oldvistor', ',' . $ii . ',', time() + 86400);
+                    cookie()->set('oldvistor', ',' . $ii . ',', time() + 86400);
                 }
             }
         }
