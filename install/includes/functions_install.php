@@ -29,7 +29,7 @@ $lang = array_merge($lang, require PATH . 'lang/' . getlang() . '/install.php');
 
 
 // Exceptions for development
-if (file_exists(PATH . '.git') && !defined('DEV_STAGE'))
+if (file_exists(PATH . '.git') && ! defined('DEV_STAGE'))
 {
     define('DEV_STAGE', true);
 }
@@ -40,7 +40,7 @@ if (file_exists(PATH . '.git') && !defined('DEV_STAGE'))
  * @param  bool         $link
  * @return mixed|string
  */
-function getlang ($link = false)
+function getlang($link = false)
 {
     $ln    = 'en';
 
@@ -65,7 +65,7 @@ function getjquerylink()
 
 /**
 * Parsing installing templates
-* @param mixed $tplname
+ * @param mixed $tplname
 */
 function gettpl($tplname)
 {
@@ -79,8 +79,7 @@ function gettpl($tplname)
     {
         eval('?> ' . $tpl . '<?php ');
     }
-    else
-    {
+    else {
         include_once kleeja_eval($tpl);
     }
 
@@ -102,17 +101,19 @@ function kleeja_eval(string $code)
 {
     $path  = PATH . 'cache/' . md5($code) . '.php';
     file_put_contents($path, $code);
+
     return $path;
 }
 
 
 /**
 * Export config
-* @param mixed $srv
-* @param mixed $usr
-* @param mixed $pass
-* @param mixed $nm
-* @param mixed $prf
+ * @param mixed $srv
+ * @param mixed $usr
+ * @param mixed $pass
+ * @param mixed $nm
+ * @param mixed $prf
+ * @param mixed $type
 */
 function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
 {
@@ -120,7 +121,7 @@ function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
     $data .= '//for more information about this file, visit: ' . "\n";
     $data .= '//https://github.com/kleeja-official/kleeja/wiki/config.php-file' . "\n\n";
 
-    if(!empty($type) && $type != 'mysql')
+    if (! empty($type) && $type != 'mysql')
     {
         if ($type == 'sqlite' && strpos($nm, '.') === false)
         {
@@ -163,12 +164,13 @@ function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
 function get_microtime()
 {
     list($usec, $sec) = explode(' ', microtime());
+
     return ((float) $usec + (float) $sec);
 }
 
 /**
 * Get config value from database directly, if not return false.
-* @param mixed $name
+ * @param mixed $name
 */
 function inst_get_config($name)
 {
@@ -183,7 +185,7 @@ function inst_get_config($name)
             return false;
         }
 
-        if(isset($dbtype) && $dbtype == 'sqlite')
+        if (isset($dbtype) && $dbtype == 'sqlite')
         {
             @touch(PATH . $dbname);
         }
@@ -203,9 +205,9 @@ function inst_get_config($name)
     {
         return false;
     }
-    else
-    {
+    else {
         $current_ver  = $SQL->fetch_array($result);
+
         return $current_ver['value'];
     }
 }

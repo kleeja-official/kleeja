@@ -30,8 +30,7 @@ if (isset($dbtype) && $dbtype == 'sqlite')
 {
     include PATH . 'includes/sqlite.php';
 }
-else
-{
+else {
     include PATH . 'includes/mysqli.php';
 }
 
@@ -50,8 +49,7 @@ if (file_exists(PATH . 'config.php'))
 {
     include_once PATH . 'config.php';
 }
-else
-{
+else {
     do_config_export('localhost', 'root', '', 'kleeja', 'klj_');
 
     exit('`config.php` was missing! so we created one for you, kindly edit the file with database information.');
@@ -231,8 +229,7 @@ if ($err > 0)
     echo $errors;
     echo CLI ? '' : '</textarea>';
 }
-else
-{
+else {
     echo CLI ? '' : '<span style="color:green">';
     echo 'Kleeja has been installed successfully, enjoy ...';
     echo CLI ? PHP_EOL : '</span><br><br>';

@@ -51,6 +51,7 @@ class usrcp
 
         //normal system
         $u = $this->get_data('name', $user_id);
+
         return $u['name'];
     }
 
@@ -74,8 +75,7 @@ class usrcp
         {
             $query['WHERE'] = 'id=' . intval($name) . " and password='" . $SQL->escape($pass) . "'";
         }
-        else
-        {
+        else {
             $query['WHERE'] = "clean_name='" . $SQL->real_escape($this->cleanusername($name)) . "'";
         }
 
@@ -98,6 +98,7 @@ class usrcp
                 if (strlen($row['password']) == '32' && empty($row['password_salt']) && defined('CONVERTED_SCRIPT'))
                 {
                     $passmd5 = md5($pass);
+
                     ////update old md5 hash to phpass hash
                     if ($row['password'] == $passmd5)
                     {
@@ -117,8 +118,7 @@ class usrcp
 
                         $SQL->build($update_query);
                     }
-                    else
-                    { //if the password is wrong
+                    else { //if the password is wrong
                         return false;
                     }
                 }
@@ -166,10 +166,10 @@ class usrcp
             $SQL->freeresult($result);
 
             unset($pass);
+
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }
@@ -289,6 +289,7 @@ class usrcp
         $uname = str_replace($arabic_t[0], $arabic_t[1], $uname); //replace confusable Arabic chars
         $uname = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $uname); //un-wanted utf8 control chars
         $uname = preg_replace('# {2,}#', ' ', $uname); //2+ spaces with one space
+
         return strtolower($uname);
     }
 
@@ -397,8 +398,7 @@ class usrcp
                 {
                     $user_data = $this->data($user_id, $hashed_password, true, $expire_at);
                 }
-                else
-                {
+                else {
                     if (! empty($u_info))
                     {
                         $userinfo             = unserialize(base64_decode($u_info));
@@ -419,13 +419,11 @@ class usrcp
             {
                 $this->logout();
             }
-            else
-            {
+            else {
                 return $user_data;
             }
         }
-        else
-        {
+        else {
             //guest
             define('USER_ID', $userinfo['id']);
             define('GROUP_ID', $userinfo['group_id']);

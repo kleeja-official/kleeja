@@ -123,8 +123,7 @@ function get_ban()
 
                     exit;
                 }
-                else
-                {
+                else {
                     kleeja_info($lang['U_R_BANNED'], $lang['U_R_BANNED'], true);
                 }
             }
@@ -137,7 +136,7 @@ function get_ban()
 
 /**
  * Check if the given plugin installed ?
- * @param $plugin_name
+ * @param       $plugin_name
  * @return bool
  */
 function kleeja_plugin_exists($plugin_name)
@@ -157,6 +156,7 @@ function kleeja_plugin_exists($plugin_name)
     {
         $d = $SQL->fetch($result);
         $SQL->freeresult();
+
         return $d['plg_id'];
     }
 
@@ -176,8 +176,7 @@ function kleeja_get_page()
     {
         $location = $_ENV['REQUEST_URI'];
     }
-    else
-    {
+    else {
         if (isset($_SERVER['PATH_INFO']))
         {
             $location = $_SERVER['PATH_INFO'];
@@ -190,8 +189,7 @@ function kleeja_get_page()
         {
             $location = $_ENV['PHP_SELF'];
         }
-        else
-        {
+        else {
             $location = $_SERVER['PHP_SELF'];
         }
 
@@ -206,12 +204,13 @@ function kleeja_get_page()
     }
 
     $return = str_replace(['&amp;'], ['&'], htmlspecialchars($location));
+
     return $return;
 }
 
 /**
  * Fix email string to be UTF8
- * @param $text
+ * @param         $text
  * @return string
  */
 function _sm_mk_utf8($text)
@@ -291,6 +290,7 @@ function delete_cache($name, $all=false)
         {
             delete_cache($n, false);
         }
+
         return true;
     }
 
@@ -312,8 +312,7 @@ function delete_cache($name, $all=false)
             @closedir($dh);
         }
     }
-    else
-    {
+    else {
         if (strpos($name, 'tpl_') !== false && strpos($name, '.html') !== false)
         {
             $name = str_replace('.html', '', $name);
@@ -364,15 +363,14 @@ function kleeja_unlink($filePath, $cache_file = false)
                 {
                     rmdir($file->getPathname());
                 }
-                else
-                {
+                else {
                     unlink($file->getPathname());
                 }
             }
+
             return rmdir($filePath);
         }
-        else
-        {
+        else {
             return unlink($filePath);
         }
     }
@@ -380,6 +378,7 @@ function kleeja_unlink($filePath, $cache_file = false)
     elseif (function_exists('rename') && $cache_file)
     {
         $new_name = substr($filePath, 0, strrpos($filePath, '/') + 1) . 'old_' . md5($filePath . time()) . '.php';
+
         return rename($filePath, $new_name);
     }
 
@@ -609,12 +608,12 @@ function get_mime_for_header($ext)
     {
         $return = $mime_types[$ext];
     }
-    else
-    {
+    else {
         $return = 'application/force-download';
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_mime_for_header_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -701,6 +700,7 @@ function get_config($name)
     $return       = $v['value'];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_config_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -758,6 +758,7 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
     {
         delete_cache('data_config');
         $config[$name] = $value;
+
         return true;
     }
 
@@ -766,7 +767,7 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
 
 /**
  * add an array of new configs
- * @param $configs
+ * @param       $configs
  * @return bool
  */
 function add_config_r($configs)
@@ -833,11 +834,13 @@ function update_config($name, $value, $escape = true, $group = false)
         {
             $d_groups[$userinfo['group_id']]['configs'][$name] = $value;
             delete_cache('data_groups');
+
             return true;
         }
 
         $config[$name] = $value;
         delete_cache('data_config');
+
         return true;
     }
 
@@ -910,6 +913,7 @@ function update_olang($name, $value, $lang = 'en')
     {
         delete_cache('data_lang' . $lang);
         $olang[$name] = htmlspecialchars($value);
+
         return true;
     }
 
@@ -942,7 +946,7 @@ function add_olang($words = [], $lang = 'en', $plg_id = '0')
 //
 /**
  * @param  string|array $words  language terms to use a in $olang[word] or olang.word
- * @param  string      $lang   langauge of given word
+ * @param  string       $lang   langauge of given word
  * @param  string       $plg_id plugin id associated with these words, optional
  * @return bool
  */
@@ -1054,6 +1058,7 @@ function klj_clean_old_files($from = 0)
             delete_cache('data_stats');
             update_config('klj_clean_files_from', '0');
             $SQL->freeresult($result);
+
             return;
         }
 
@@ -1106,6 +1111,7 @@ function klj_clean_old_files($from = 0)
                 {
                     @kleeja_unlink($row['folder'] . '/' . $row['name']);
                 }
+
                 //delete thumb
                 if (file_exists($row['folder'] . '/thumbs/' . $row['name']))
                 {
@@ -1118,8 +1124,7 @@ function klj_clean_old_files($from = 0)
                 {
                     $imgs_num++;
                 }
-                else
-                {
+                else {
                     $files_num++;
                 }
                 $sizes += $row['size'];
@@ -1195,6 +1200,7 @@ function klj_clean_old($table, $for = 'all')
         $t = $table == 'call' ? 'calls' : $table;
         update_config('queue', preg_match('/:del_' . $for . $t . ':/i', '', $config['queue']));
         $SQL->freeresult($result);
+
         return;
     }
 
@@ -1254,6 +1260,7 @@ function get_ip()
 
     $return = preg_replace('/[^0-9a-z.:]/i', '', $ip);
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_get_ip_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -1284,6 +1291,7 @@ function kleeja_check_captcha()
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_check_captcha_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+
     return $return;
 }
 
@@ -1309,8 +1317,8 @@ function kleeja_log($text)
 
 /**
  * Return the first and last seek of range to be flushed.
- * @param string $range
- * @param $fileSize
+ * @param  string $range
+ * @param         $fileSize
  * @return array
  */
 function kleeja_set_range($range, $fileSize)
@@ -1330,8 +1338,7 @@ function kleeja_set_range($range, $fileSize)
             $first = 0;
         }
     }
-    else
-    {
+    else {
         if (! $last || $last > $fileSize - 1)
         {
             $last = $fileSize - 1;
@@ -1366,8 +1373,7 @@ function kleeja_buffered_range($file, $bytes, $buffer_size = 1024)
         {
             $bytes_to_read = $buffer_size;
         }
-        else
-        {
+        else {
             $bytes_to_read = $bytes_left;
         }
 
@@ -1459,10 +1465,10 @@ function add_to_serve_rules($rules, $unique_id = '')
     }
 
     $current_serve_content = preg_replace(
-                        '/return\s{0,4}\[/',
-                        'return [' . PHP_EOL . $rules,
-                        $current_serve_content
-                    );
+        '/return\s{0,4}\[/',
+        'return [' . PHP_EOL . $rules,
+        $current_serve_content
+    );
 
 
     if (! is_writable(PATH . 'plugins_rules.php'))
@@ -1491,7 +1497,7 @@ function remove_from_serve_rules($unique_id)
         '/^#start_' . preg_quote($unique_id) . '.*' . '#end_' . preg_quote($unique_id) . '$/sm',
         '',
         $current_serve_content
-        );
+    );
 
     if ($new_serve_content === $current_serve_content)
     {
@@ -1539,8 +1545,7 @@ function parse_serve_rule($regex, $args, $is_unicode = false)
                         $_GET[$arg_key] = $matches[$match_number];
                     }
                 }
-                else
-                {
+                else {
                     $_GET[$arg_key] = $arg_value;
                 }
             }

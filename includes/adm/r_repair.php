@@ -197,8 +197,7 @@ case 'toggle_start_box':
         header('HTTP/1.1 405 Method Not Allowed');
         $adminAjaxContent = $lang['INVALID_FORM_KEY'];
     }
-    else
-    {
+    else {
         $items = explode(':', $config['hidden_start_boxes']);
         $items = array_filter($items);
 

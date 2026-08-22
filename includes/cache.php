@@ -40,10 +40,10 @@ class KleejaCache
         if (file_exists(PATH . 'cache/' . $name . '.php'))
         {
             include PATH . 'cache/' . $name . '.php';
-            return  empty($data) ? false : $data;
+
+            return empty($data) ? false : $data;
         }
-        else
-        {
+        else {
             return false;
         }
     }
@@ -86,6 +86,7 @@ class KleejaCache
             {
                 $this->clean($n);
             }
+
             return;
         }
 
@@ -105,7 +106,7 @@ $cache = new KleejaCache;
 if (! ($config = $cache->get('data_config')))
 {
     $config = [];
-    $query = [
+    $query  = [
         'SELECT'       => 'c.name, c.value',
         'FROM'         => "{$dbprefix}config c",
         'WHERE'        => 'c.dynamic = 0',
@@ -210,8 +211,7 @@ if (! ($stats = $cache->get('data_stats')))
             'WHERE'        => "filter_type='stats_for_acp' AND filter_uid = '" . date('d-n-Y') . "'"
         ];
     }
-    else
-    {
+    else {
         $f_query = [
             'INSERT'       => 'filter_uid, filter_type ,filter_value ,filter_time',
             'INTO'         => "{$dbprefix}filters",
@@ -402,5 +402,6 @@ function cache(): KleejaCache {
     if (is_null($cache)) {
         $cache = new KleejaCache;
     }
+
     return $cache;
 }

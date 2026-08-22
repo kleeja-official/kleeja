@@ -18,8 +18,8 @@ if (! defined('IN_COMMON'))
  * return nothing because if it work then ok , and if not then ok too :)
  * @todo text support
  *
- * @param $name
- * @param $ext
+ * @param            $name
+ * @param            $ext
  * @return bool|void
  */
 function helper_watermark($name, $ext)
@@ -62,6 +62,7 @@ function helper_watermark($name, $ext)
     if (function_exists('phpversion') && phpversion('imagick'))
     {
         helper_watermark_imagick($name, $ext, $logo_path);
+
         return;
     }
 
@@ -89,8 +90,7 @@ function helper_watermark($name, $ext)
 
         $src_img = imagecreatefrombmp($name);
     }
-    else
-    {
+    else {
         return;
     }
 
@@ -132,8 +132,7 @@ function helper_watermark($name, $ext)
             @imagebmp($src_img, $name);
         }
     }
-    else
-    {
+    else {
         //image is not big enough to watermark it
         return;
     }
@@ -176,6 +175,7 @@ function helper_watermark_imagick($name, $ext, $logo)
     if ($ext == 'gif')
     {
         $i = 0;
+
         //$gif_new = new Imagick();
         foreach ($im as $frame)
         {
@@ -190,6 +190,7 @@ function helper_watermark_imagick($name, $ext, $logo)
             $i++;
         }
         $im->writeImages($name, true);
+
         return;
     }
 

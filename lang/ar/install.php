@@ -105,8 +105,8 @@ return [
     'YES'                            => 'نعم',
     'NO'                             => 'لا',
 
-    'KLEEJA_TEAM_MSG_NAME'        => 'فريق تطوير كليجا',
-    'KLEEJA_TEAM_MSG_TEXT'        => "شكراً لاختيارك سكربت الرفع الأول كليجا\n نتمنى حقا ان تستمتع بالسكربت  .\nhttps://kleeja.net",
+    'KLEEJA_TEAM_MSG_NAME'          => 'فريق تطوير كليجا',
+    'KLEEJA_TEAM_MSG_TEXT'          => "شكراً لاختيارك سكربت الرفع الأول كليجا\n نتمنى حقا ان تستمتع بالسكربت  .\nhttps://kleeja.net",
     'EXTENSION_PDO_EXISTS'          => 'يُستخدم امتداد PDO للاتصال بقواعد بيانات متعددة باستخدام نفس الشيفرة البرمجية، وللتحقق من صحة استعلامات SQL قبل تنفيذها',
     'EXTENSION_IS_EXISTS'           => 'الامتداد %s مُفعَّل.',
     'EXTENSION_IS_NOT_EXISTS'       => 'الامتداد %s غير مُفعَّل.',

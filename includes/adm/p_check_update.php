@@ -80,14 +80,14 @@ if ($current_smt == 'check')
         $text  = $lang['ERROR_CHECK_VER'];
         $error = 1;
     }
-    else
-    {
+    else {
         if (version_compare(PHP_VERSION, 8, '<')) {
             $text    = $lang['PHP_8_REQUIRED'];
-        } else if (!extension_loaded('pdo')) {
+        }
+        elseif (! extension_loaded('pdo')) {
             $text    = $lang['PDO_EXT_REQUIRED'];
         }
-        else if (version_compare(strtolower($current_version), strtolower($version_data['version']), '<'))
+        elseif (version_compare(strtolower($current_version), strtolower($version_data['version']), '<'))
         {
             $text     = sprintf($lang['UPDATE_NOW_S'], $current_version, strtolower($version_data['version'])) .
                         '::--x--::' . $version_data['info'] . '::--x--::' . $version_data['date'];
@@ -101,8 +101,7 @@ if ($current_smt == 'check')
         {
             $text    = $lang['U_USE_PRE_RE'];
         }
-        else
-        {
+        else {
             $text = $lang['ERROR_CHECK_VER'] . ' [code: ' . htmlspecialchars($version_data['version']) . ']';
         }
     }
@@ -153,8 +152,7 @@ elseif ($current_smt == 'update1')
     {
         $adminAjaxContent = '940:::' . $lang['U_LAST_VER_KLJ'];
     }
-    else
-    {
+    else {
         // downloaded the last package to cache folder
         FetchFile::make(KLEEJA_LATEST_PACKAGE_LINK . $new_version)
             ->setDestinationPath(PATH . "cache/kleeja-{$new_version}.zip")
@@ -166,8 +164,7 @@ elseif ($current_smt == 'update1')
             $adminAjaxContent = '1:::';
             file_put_contents(PATH . 'cache/step1.done', time());
         }
-        else
-        {
+        else {
             $adminAjaxContent = '2:::' . $lang['UPDATE_ERR_FETCH_PACKAGE'];
         }
     }
@@ -344,8 +341,7 @@ elseif ($current_smt == 'update3')
 
         $adminAjaxContent = '1002:::' . $lang['UPDATE_PROCESS_FAILED'] . (defined('DEV_STAGE') ? '[failed files: ' . implode(', ', $failed_files) . ']' : '');
     }
-    else
-    {
+    else {
         // we will include what we want to do in this file , and kleeja will done
         if (file_exists($db_update_file = PATH . 'cache/update_schema.php'))
         {

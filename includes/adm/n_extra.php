@@ -56,8 +56,7 @@ if (ip('submit'))
         $ex_footer  = p('ex_footer', 'str');
         $update_sql = "ex_footer = '" . $SQL->real_escape(htmlspecialchars_decode($ex_footer)) . "'";
     }
-    else
-    {
+    else {
         $ex_header  = p('ex_header', 'str');
         $update_sql = "ex_header = '" . $SQL->real_escape(htmlspecialchars_decode($ex_header)) . "'";
     }
@@ -79,8 +78,7 @@ if (ip('submit'))
         delete_cache('data_extra');
     }
 }
-else
-{
+else {
     extract($extras);
 }
 

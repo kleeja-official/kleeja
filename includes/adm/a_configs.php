@@ -22,8 +22,8 @@ $base_action      = basename(ADMIN_PATH) . '?cp=options';
 $action           = $base_action . '&amp;smt=' . $current_smt;
 $n_submit         = $lang['UPDATE_CONFIG'];
 $options          = '';
-$CONFIGEXTEND    = false;
-$H_FORM_KEYS     = kleeja_add_form_key('adm_configs');
+$CONFIGEXTEND     = false;
+$H_FORM_KEYS      = kleeja_add_form_key('adm_configs');
 
 //secondary menu
 $query    = [
@@ -278,9 +278,10 @@ foreach ($types as $typekey => $type)
         if ($option['type'] == $typekey)
         {
             $options .= str_replace(
-                    ['<input ', '<select ', '<td>', '</td>', '<label>', '<tr>', '</tr>'],
-                    ['<input class="form-control" ', '<select class="form-control" ', '<div class="form-group">', '</div>', '<label class="form-check-label">', '', ''],
-                    $option['option']);
+                ['<input ', '<select ', '<td>', '</td>', '<label>', '<tr>', '</tr>'],
+                ['<input class="form-control" ', '<select class="form-control" ', '<div class="form-group">', '</div>', '<label class="form-check-label">', '', ''],
+                $option['option']
+            );
         }
     }
 }

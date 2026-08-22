@@ -34,8 +34,7 @@ if (isset($dbtype) && $dbtype == 'sqlite')
 {
     include PATH . 'includes/sqlite.php';
 }
-else
-{
+else {
     include PATH . 'includes/mysqli.php';
 }
 
@@ -73,8 +72,7 @@ if (ip('dbsubmit') && ! is_writable(PATH))
 {
     // soon
 }
-else
-{
+else {
     echo gettpl('header.html');
 }
 
@@ -125,7 +123,7 @@ case 'f':
         $advices = true;
     }
 
-    if (!extension_loaded('pdo')) {
+    if (! extension_loaded('pdo')) {
         $check_ok = false;
     }
 
@@ -169,8 +167,7 @@ case 'check':
         {
             $no_connection = true;
         }
-        else
-        {
+        else {
             if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli')
             {
                 if (! empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<'))
@@ -201,7 +198,7 @@ case 'data' :
     {
         //check data ...
         if (empty(p('sitename')) || empty(p('siteurl')) || empty(p('sitemail'))
-             || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')))
+                                 || empty(p('username')) || empty(p('password')) || empty(p('password2')) || empty(p('email')))
         {
             echo $lang['EMPTY_FIELDS'];
             echo $footer_inst;
@@ -314,13 +311,11 @@ case 'data' :
                 {
                     $sqls_done[] = $lang['INST_CRT_LNG'];
                 }
-                else
-                {
+                else {
                     $sqls_done[] = $name . '...';
                 }
             }
-            else
-            {
+            else {
                 $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
                 $sql_err[] = $lang['INST_SQL_ERR'] . ' : ' . $name . '[basic]';
                 $err++;
@@ -419,8 +414,7 @@ case 'data' :
 
         echo gettpl('sqls_done.html');
     }
-    else
-    {
+    else {
         $urlsite =  'https://' . $_SERVER['HTTP_HOST'] . str_replace('install', '', dirname($_SERVER['PHP_SELF']));
         echo gettpl('data.html');
     }
@@ -430,6 +424,7 @@ break;
 case 'end' :
 
         echo gettpl('end.html');
+
         //for safe ..
         //@rename("install.php", "install.lock");
 break;

@@ -79,7 +79,7 @@ switch ($case):
                 continue;
             }
 
-            if($case == 'check' && $row['plg_disabled'] == 1)
+            if ($case == 'check' && $row['plg_disabled'] == 1)
             {
                 continue;
             }
@@ -90,7 +90,7 @@ switch ($case):
 
             $installed_plugins[$row['plg_name']]['icon'] = file_exists(
                 PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/icon.png'
-                )
+            )
                 ? PATH . KLEEJA_PLUGINS_FOLDER . '/' . $row['plg_name'] . '/icon.png'
                 : $STYLE_PATH_ADMIN . 'images/plugin.png';
 
@@ -114,8 +114,7 @@ switch ($case):
                         $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
                             shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info]['en'], 100);
                     }
-                    else
-                    {
+                    else {
                         $installed_plugins[$row['plg_name']]['extra_info'][$localized_info] =
                             shorten_text($installed_plugins[$row['plg_name']]['extra_info'][$localized_info][0], 100);
                     }
@@ -189,8 +188,7 @@ switch ($case):
             {
                 $plugin_file = $plugin_info['file'];
             }
-            else
-            {
+            else {
                 continue;
             }
 
@@ -265,13 +263,11 @@ switch ($case):
                     }
                     $zip->close();
                 }
-                else
-                {
+                else {
                     $ERRORS[] = sprintf($lang['EXTRACT_ZIP_FAILED'], KLEEJA_PLUGINS_FOLDER);
                 }
             }
-            else
-            {
+            else {
                 $ERRORS[] = $lang['NO_ZIP_ARCHIVE'];
             }
         }
@@ -285,8 +281,7 @@ switch ($case):
         {
             kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], $action);
         }
-        else
-        {
+        else {
             kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), $action);
         }
 
@@ -313,8 +308,7 @@ switch ($case):
             //no plugin selected? back
             redirect(ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'));
         }
-        else
-        {
+        else {
             if (! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php'))
             {
                 if (defined('DEV_STAGE'))
@@ -369,12 +363,12 @@ switch ($case):
                 if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<'))
                 {
                     kleeja_admin_info(
-                    $lang['PACKAGE_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'],
-                    true,
-                    '',
-                    true,
-                    ADMIN_PATH . '?cp=' . basename(__FILE__, '.php')
-                );
+                        $lang['PACKAGE_N_CMPT_KLJ'] . '<br>k:' . KLEEJA_VERSION . '|<|p.min:' . $plugin_info['plugin_kleeja_version_min'],
+                        true,
+                        '',
+                        true,
+                        ADMIN_PATH . '?cp=' . basename(__FILE__, '.php')
+                    );
 
                     exit;
                 }
@@ -426,8 +420,7 @@ switch ($case):
                 $text .= $plugin_first_run;
                 $text .= '<br><hr><a href="' . ADMIN_PATH . '?cp=' . basename(__FILE__, '.php') . '" class="btn btn-primary btn-lg">' . $lang['GO_BACK_BROWSER'] . '</a>';
             }
-            else
-            {
+            else {
                 $text .= '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' . ADMIN_PATH . '?cp=' . basename(__FILE__, '.php') . '\');", 2000);</script>' . "\n";
             }
 
@@ -458,8 +451,7 @@ switch ($case):
             //no plugin selected? back
             redirect(ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'));
         }
-        else
-        {
+        else {
             if (! file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php'))
             {
                 if (defined('DEV_STAGE'))
@@ -539,8 +531,7 @@ switch ($case):
             //no plugin selected? back
             redirect(ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'));
         }
-        else
-        {
+        else {
             //update database
             $update_query = [
                 'UPDATE' => "{$dbprefix}plugins",
@@ -617,8 +608,7 @@ switch ($case):
                 {
                     $plugin_file = $plugin_info['file'];
                 }
-                else
-                {
+                else {
                     continue;
                 }
 
@@ -677,34 +667,28 @@ switch ($case):
                                         kleeja_unlink(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plugin_name . '_backup');
                                     }
                                 }
-                                else
-                                {
+                                else {
                                     $adminAjaxContent = '1003:::' . sprintf($lang['EXTRACT_ZIP_FAILED'], KLEEJA_PLUGINS_FOLDER);
                                 }
                             }
                         }
-                        else
-                        {
+                        else {
                             $adminAjaxContent = '1004:::' . $lang['DOWNLOADED_FILE_NOT_FOUND'];
                         }
                     }
-                    else
-                    {
+                    else {
                         $adminAjaxContent = '1005:::' . $lang['STORE_SERVER_ERROR'];
                     }
                 }
-                else
-                {
+                else {
                     $adminAjaxContent = '1006:::' . $lang['PACKAGE_N_CMPT_KLJ'];
                 }
             }
-            else
-            {
+            else {
                 $adminAjaxContent = '1007:::' . sprintf($lang['PACKAGE_REMOTE_FILE_MISSING'], $plugin_name);
             }
         }
-        else
-        {
+        else {
             $adminAjaxContent = '1008:::' . $lang['STORE_SERVER_ERROR'];
         }
 

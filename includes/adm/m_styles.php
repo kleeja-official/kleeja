@@ -83,8 +83,7 @@ case 'store':
                                     ? htmlspecialchars($style_info[$InfoKey][$config['language']])
                                     : htmlspecialchars($style_info[$InfoKey]['en']);
                             }
-                            else
-                            {
+                            else {
                                 $style_info_arr[$InfoKey] = htmlspecialchars($style_info[$InfoKey]);
                             }
                         }
@@ -283,13 +282,11 @@ case 'upload':
                 }
                 $zip->close();
             }
-            else
-            {
+            else {
                 $ERRORS[] =  sprintf($lang['EXTRACT_ZIP_FAILED'], 'styles');
             }
         }
-        else
-        {
+        else {
             $ERRORS[] = $lang['NO_ZIP_ARCHIVE'];
         }
     }
@@ -304,8 +301,7 @@ case 'upload':
     {
         kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], true, '', true, $action);
     }
-    else
-    {
+    else {
         kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), $action);
     }
 
@@ -418,9 +414,9 @@ case 'download':
                 $style_name_link = $store_styles[$style_name]['url'];
 
                 $style_archive = FetchFile::make($style_name_link)
-                                ->setDestinationPath(PATH . 'cache/' . $style_name . '.zip')
-                                ->isBinaryFile(true)
-                                ->get();
+                    ->setDestinationPath(PATH . 'cache/' . $style_name . '.zip')
+                    ->isBinaryFile(true)
+                    ->get();
 
                 if ($style_archive)
                 {
@@ -452,34 +448,28 @@ case 'download':
                                     kleeja_unlink(PATH . 'styles/' . $style_name . '_backup');
                                 }
                             }
-                            else
-                            {
+                            else {
                                 $adminAjaxContent = '1003:::' . sprintf($lang['EXTRACT_ZIP_FAILED'], PATH . 'styles');
                             }
                         }
                     }
-                    else
-                    {
+                    else {
                         $adminAjaxContent = '1004:::' . $lang['DOWNLOADED_FILE_NOT_FOUND'];
                     }
                 }
-                else
-                {
+                else {
                     $adminAjaxContent = '1005:::' . $lang['STORE_SERVER_ERROR'];
                 }
             }
-            else
-            {
+            else {
                 $adminAjaxContent = '1006:::' . $lang['PACKAGE_N_CMPT_KLJ'];
             }
         }
-        else
-        {
+        else {
             $adminAjaxContent = '1007:::' . sprintf($lang['PACKAGE_REMOTE_FILE_MISSING'], $style_name);
         }
     }
-    else
-    {
+    else {
         $adminAjaxContent = '1008:::' . $lang['STORE_SERVER_ERROR'];
     }
 

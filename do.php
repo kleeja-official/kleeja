@@ -56,13 +56,11 @@ if (ig('id') || ig('filename'))
         {
             $query['WHERE']    = "f.name='" . $filename_l . '.' . $SQL->escape(g('x')) . "'";
         }
-        else
-        {
+        else {
             $query['WHERE']    = "f.name='" . $filename_l . "'";
         }
     }
-    else
-    {
+    else {
         $id_l              = g('id', 'int');
         $query['WHERE']    = 'f.id=' . $id_l;
     }
@@ -96,8 +94,7 @@ if (ig('id') || ig('filename'))
         {
             $url_file    = $config['mod_writer'] ? $config['siteurl'] . 'downf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downf=' . $fname;
         }
-        else
-        {
+        else {
             $url_file    = $config['mod_writer'] ? $config['siteurl'] . 'down-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?down=' . $file_info['id'];
         }
 
@@ -111,8 +108,7 @@ if (ig('id') || ig('filename'))
                 {
                     $url_filex    = $config['mod_writer'] ? $config['siteurl'] . 'downexf-' . $fname2 . '.html' : $config['siteurl'] . 'do.php?downexf=' . $fname;
                 }
-                else
-                {
+                else {
                     $url_filex    = $config['mod_writer'] ? $config['siteurl'] . 'downex-' . $file_info['id'] . '.html' : $config['siteurl'] . 'do.php?downex=' . $file_info['id'];
                 }
 
@@ -129,8 +125,7 @@ if (ig('id') || ig('filename'))
         $sty                 = 'download';
         $title               =  $name . ' - ' . $lang['DOWNLAOD'];
     }
-    else
-    {
+    else {
         //file not exists
         is_array($plugin_run_result = Plugins::getInstance()->run('not_exists_qr_downlaod_file', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
         kleeja_err($lang['FILE_NO_FOUNDED']);
@@ -174,9 +169,9 @@ if (ig('id') || ig('filename'))
 // x : used only for html links, where x = extension, downf is filename without extension
 
 elseif (ig('down') || ig('downf') ||
-        ig('img') || ig('imgf') ||
+        ig('img')  || ig('imgf') ||
         ig('thmb') || ig('thmbf') ||
-    ig('downex') || ig('downexf'))
+    ig('downex')   || ig('downexf'))
 {
     is_array($plugin_run_result = Plugins::getInstance()->run('begin_down_go_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 
@@ -233,8 +228,7 @@ elseif (ig('down') || ig('downf') ||
             {
                 $go_to = $config['siteurl'] . ($config['mod_writer'] && ig('x') ? 'downloadf-' . g('downf') . '-' . g('x') . '.html' : 'do.php?filename=' . g('downf'));
             }
-            else
-            {
+            else {
                 $go_to = $config['siteurl'] . ($config['mod_writer'] ? 'download' . g('down') . '.html' : 'do.php?id=' . g('down'));
             }
 
@@ -262,13 +256,11 @@ elseif (ig('down') || ig('downf') ||
         {
             $filename = $SQL->escape(g($var)) . '.' . $SQL->escape(g('x'));
         }
-        else
-        {
+        else {
             $filename = $SQL->escape(g($var));
         }
     }
-    else
-    {
+    else {
         $id = ig('down') ? g('down', 'int') : (ig('img') ? g('img', 'int') : (ig('thmb') ? g('thmb', 'int') : (ig('downex') ? g('downex', 'int') : null)));
     }
 
@@ -354,16 +346,14 @@ elseif (ig('down') || ig('downf') ||
                 {
                     cookie()->set('oldvistor', cookie()->get('oldvistor') . $ii . ',', time() + 86400);
                 }
-                else
-                {
+                else {
                     //first time
                     cookie()->set('oldvistor', ',' . $ii . ',', time() + 86400);
                 }
             }
         }
     }
-    else
-    {
+    else {
         //not exists img or thumb
         if (ig('img') || ig('thmb') || ig('thmbf') || ig('imgf'))
         {
@@ -375,8 +365,7 @@ elseif (ig('down') || ig('downf') ||
             //set image condition on
             $is_image = true;
         }
-        else
-        {
+        else {
             //not exists file
             is_array($plugin_run_result = Plugins::getInstance()->run('not_exists_qr_down_file', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
             kleeja_err($lang['FILE_NO_FOUNDED']);
@@ -411,8 +400,7 @@ elseif (ig('down') || ig('downf') ||
         {
             $path_file = 'images/not_exists.jpg';
         }
-        else
-        {
+        else {
             big_error($lang['FILE_NO_FOUNDED'], $lang['NOT_FOUND']);
         }
     }
@@ -439,8 +427,7 @@ elseif (ig('down') || ig('downf') ||
     {
         $h_name = 'filename="' . str_replace('"', '', htmlspecialchars_decode($name)) . '"';
     }
-    else
-    {
+    else {
         $h_name = 'filename="' . rawurlencode(htmlspecialchars_decode($name)) . '"';
     }
 
@@ -533,8 +520,7 @@ elseif (ig('down') || ig('downf') ||
 
         fseek($fp, $range);
     }
-    else
-    {
+    else {
         header('HTTP/1.1 200 OK');
         $partial_length = $size;
         header("Content-Length: $partial_length");
@@ -547,7 +533,7 @@ elseif (ig('down') || ig('downf') ||
     while (! feof($fp) && (! connection_aborted()) && ($bytes_sent < $partial_length))
     {
         $buffer = fread($fp, $chunksize);
-        print($buffer);
+        print ($buffer);
         flush();
         $bytes_sent += strlen($buffer);
 
@@ -571,8 +557,7 @@ elseif (ig('down') || ig('downf') ||
 //
 //no one of above are there, you can use this hook to get more actions here
 //
-else
-{
+else {
     $error = true;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('err_navig_download_page', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook

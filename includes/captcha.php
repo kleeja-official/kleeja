@@ -71,8 +71,7 @@ function kleeja_cpatcha_image()
         imagettftext($image, 16, $angle, rand(50, $x), $y+rand(1, 3), $white, dirname(__FILE__) . '/arial.ttf', $security_code);
     //imagettftext ($image, 7, 0, $width-30, $height-4, $white,'./arial.ttf', 'Kleeja');
     }
-    else
-    {
+    else {
         imagestring($image, imageloadfont(dirname(__FILE__) . '/arial.gdf'), $x+rand(10, 15), $y-rand(10, 15), $security_code, $white);
         //imagestring ($image, 1, $width-35, $height-10, 'Kleeja', ImageColorAllocate($image, 200, 200, 200));
     }

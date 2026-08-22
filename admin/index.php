@@ -39,7 +39,7 @@ get_lang('acp');
 //
 if (
     (empty($_SESSION['ADMINLOGIN']) || $_SESSION['ADMINLOGIN'] != md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl'])) ||
-    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != KJ_SESSION) ||
+    (empty($_SESSION['USER_SESS']) || $_SESSION['USER_SESS'] != KJ_SESSION)                                                          ||
     (empty($_SESSION['ADMINLOGIN_T']) || $_SESSION['ADMINLOGIN_T'] < time())
 ) {
     if (ig('go') && g('go') == 'login')
@@ -90,8 +90,7 @@ if (
 
                     exit;
                 }
-                else
-                {
+                else {
                     //Wrong entries
                     $ERRORS[]                 = $lang['LOGIN_ERROR'];
                     $_SESSION['SHOW_CAPTCHA'] = function_exists('gd_info') && ! defined('STOP_CAPTCHA');
@@ -136,8 +135,7 @@ if (
     {
         echo_ajax(401, $lang['HV_NOT_PRVLG_ACCESS']);
     }
-    else
-    {
+    else {
         echo $tpl->display('admin_login');
     }
 
@@ -175,13 +173,11 @@ if (ig('change_theme'))
     {
         cookie()->set('klj_adm_theme_color', $admin_theme_color, time() + 31536000);
     }
-    else
-    {
+    else {
         $admin_theme_color = 'dark';
     }
 }
-else
-{
+else {
     if (! ($admin_theme_color = cookie()->get('klj_adm_theme_color')))
     {
         $admin_theme_color = 'dark';
@@ -389,8 +385,7 @@ if (file_exists(ADM_FILES_PATH . '/' . $go_to . '.php'))
 
     is_array($plugin_run_result = Plugins::getInstance()->run("require_admin_page_end_{$go_to}", get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
 }
-else
-{
+else {
     $include_alternative = null;
 
     is_array($plugin_run_result = Plugins::getInstance()->run("not_exists_{$go_to}", get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
@@ -399,8 +394,7 @@ else
     {
         include_once $include_alternative;
     }
-    else
-    {
+    else {
         if (ig('_ajax_'))
         {
             echo_ajax(888, 'Error while loading : ' . $go_to);
@@ -451,13 +445,13 @@ if (! ig('_ajax_'))
     $is_ajax = 'no';
     echo $tpl->display($stylee, $styleePath);
 }
-else
-{
+else {
     $is_ajax = 'yes';
 
-    echo_ajax(1,
-            empty($adminAjaxContent) ? $tpl->display($stylee, $styleePath) : $adminAjaxContent,
-            $go_menu_html
+    echo_ajax(
+        1,
+        empty($adminAjaxContent) ? $tpl->display($stylee, $styleePath) : $adminAjaxContent,
+        $go_menu_html
     );
 }
 
