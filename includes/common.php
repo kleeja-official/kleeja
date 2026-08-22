@@ -294,7 +294,7 @@ if (! $config['language'] || empty($config['language']))
 //check style
 if (is_null($config['style']) || empty($config['style']))
 {
-    $config['style'] = 'default';
+    $config['style'] = 'bootstrap';
 }
 
 //check h_kay, important for kleeja
