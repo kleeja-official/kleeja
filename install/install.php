@@ -421,7 +421,7 @@ case 'data' :
     }
     else
     {
-        $urlsite =  'http://' . $_SERVER['HTTP_HOST'] . str_replace('install', '', dirname($_SERVER['PHP_SELF']));
+        $urlsite =  'https://' . $_SERVER['HTTP_HOST'] . str_replace('install', '', dirname($_SERVER['PHP_SELF']));
         echo gettpl('data.html');
     }
 
