@@ -84,6 +84,9 @@ return [
     'FUNCTION_DISC_GD'              => 'The function imagecreatetruecolor is function of GD library that is used to create thumbnails & control photos.',
     'FUNCTION_DISC_FOPEN'           => 'The function fopen is used to control styles & files in kleeja.',
     'FUNCTION_DISC_MUF'             => 'The function move_uploaded_file is used to upload files and it\'s the most important function in the script.',
+    'EXTENSION_PDO_EXISTS'          => 'The PDO extenstion is used to connect to multi databases with the same code, and to\'s checking SQL before executing it',
+    'EXTENSION_IS_EXISTS'           => 'The extenstion %s is loaded.',
+    'EXTENSION_IS_NOT_EXISTS'       => 'The extenstion %s isn\'t loaded.',
 
     'ADVICES_CHECK'                   => 'Advanced check (Optional)',
     'ZIPARCHIVE_LIB'                  => '<span style="color:red;padding:0 6px">ZipArchive Lib is not available..!</span><br /> It is required to install plugins, styles and to upgrade to newer Kleeja versions!',

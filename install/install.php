@@ -125,6 +125,10 @@ case 'f':
         $advices = true;
     }
 
+    if (!extension_loaded('pdo')) {
+        $check_ok = false;
+    }
+
     echo gettpl('check.html');
 
 break;

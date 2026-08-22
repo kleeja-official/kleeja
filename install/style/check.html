@@ -50,6 +50,18 @@
             <p>[ {{echo $lang['FUNCTION_DISC_MUF']}} ]</p>
         </li>
         {{endif;}}
+
+        {{if(extension_loaded('pdo')):}}
+        <li class="YesCheck">
+            <h3><img src="style/images/ok.png" alt=" " class="img" /> {{echo sprintf($lang['EXTENSION_IS_EXISTS'], 'PDO')}}</h3>
+            <p>[ {{echo $lang['EXTENSION_PDO_EXISTS']}} ]</p>
+        </li>
+        {{else: $GLOBALS['check_ok'] = false;}}
+        <li class="NoCheck">
+            <h3><img src="style/images/error.png" alt=" " class="img" /> {{echo sprintf($lang['EXTENSION_IS_NOT_EXISTS'], 'PDO')}}</h3>
+            <p>[ {{echo $lang['EXTENSION_PDO_EXISTS']}} ]</p>
+        </li>
+        {{endif;}}
     </ul>
 
     <div class="hr"></div>
