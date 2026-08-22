@@ -90,7 +90,7 @@ if ($nums_rows > 0)
             'time'            => kleeja_date($row['time'], false),
             'ip'              => $row['ip'],
             'sent'            => $row['id'] == $msg_sent,
-            'ip_finder'       => 'http://www.ripe.net/whois?form_type=simple&full_query_string=&searchtext=' . $row['ip'] . '&do_search=Search'
+            'ip_finder'       => 'https://ipinfo.io/' . $row['ip']
         ];
 
         $del[$row['id']] = p('del_' . $row['id']);
