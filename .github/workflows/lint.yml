@@ -1,0 +1,26 @@
+name: Check Code Formatting
+
+on:
+  pull_request:
+    branches: [ master, dev, main ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHP CS Fixer check
+        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff

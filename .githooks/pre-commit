@@ -1,0 +1,36 @@
+#!/bin/sh
+
+PHP_CS_FIXER="./php-cs-fixer"
+
+if [ ! -f "$PHP_CS_FIXER" ]; then
+    PHP_CS_FIXER="./php-cs-fixer.phar"
+fi
+
+if [ ! -f "$PHP_CS_FIXER" ]; then
+    echo "Warning: php-cs-fixer executable not found. Skipping format check."
+    exit 0
+fi
+
+# جلب ملفات PHP المجهزة للـ Commit فقط
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.php$')
+
+if [ -n "$STAGED_FILES" ]; then
+    echo "Checking PHP code formatting..."
+
+    # تشغيل الفحص فقط مع إظهار الفروقات دون تعديل الملفات
+    php $PHP_CS_FIXER fix --dry-run --diff $STAGED_FILES
+
+    # التحقق من حالة خروج الأمر السابق
+    if [ $? -ne 0 ]; then
+        echo ""
+        echo "╔════════════════════════════════════════════════════════════╗"
+        echo "║           PHP Code Formatting Check Failed!                ║"
+        echo "╚════════════════════════════════════════════════════════════╝"
+        echo "Please format your code before committing."
+        echo "Run: php php-cs-fixer.phar fix"
+        echo ""
+        exit 1
+    fi
+fi
+
+exit 0

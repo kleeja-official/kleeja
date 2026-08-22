@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Enforces Conventional Commits: https://www.conventionalcommits.org
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Strip comment lines and leading/trailing whitespace
+msg=$(echo "$commit_msg" | grep -v '^\s*#' | sed '/^$/d' | head -1)
+
+# Conventional commits pattern using ERE
+pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_/.-]+\))?!?: .+$'
+
+if ! echo "$msg" | grep -qE "$pattern"; then
+  echo ""
+  echo "╔════════════════════════════════════════════════════════════╗"
+  echo "║           Invalid Conventional Commit message              ║"
+  echo "╚════════════════════════════════════════════════════════════╝"
+  echo ""
+  echo "  Your message: \"$msg\""
+  echo ""
+  echo "  Required format:"
+  echo "    <type>[optional scope]: <description>"
+  echo ""
+  echo "  Allowed types:"
+  echo "    feat     – A new feature"
+  echo "    fix      – A bug fix"
+  echo "    docs     – Documentation only changes"
+  echo "    style    – Formatting, missing semi-colons, etc (no logic change)"
+  echo "    refactor – Code change that neither fixes a bug nor adds a feature"
+  echo "    perf     – Performance improvements"
+  echo "    test     – Adding or fixing tests"
+  echo "    build    – Changes to build system or dependencies"
+  echo "    ci       – Changes to CI/CD configuration"
+  echo "    chore    – Other changes that don't modify src or test files"
+  echo "    revert   – Reverts a previous commit"
+  echo ""
+  echo "  Examples:"
+  echo "    feat: add user authentication"
+  echo "    fix(auth): handle token expiry correctly"
+  echo "    docs: update API documentation"
+  echo "    feat!: redesign payment flow (breaking change)"
+  echo ""
+  exit 1
+fi
+
+# Validate description is not empty after the colon
+description=$(echo "$msg" | sed -E 's/^[^:]+: //')
+if [ -z "$(echo "$description" | tr -d '[:space:]')" ]; then
+  echo ""
+  echo "  Error: commit description cannot be empty after the colon."
+  echo ""
+  exit 1
+fi
+
+exit 0
