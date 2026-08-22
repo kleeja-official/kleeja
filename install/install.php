@@ -86,18 +86,25 @@ switch (g('step'))
 default:
 case 'license':
 
-$contentof_license = 'GPL version 2
-GNU General Public License, Free Software Foundation
-The GNU General Public License is a Free Software license. Like any Free Software license, it grants to you the four following freedoms:
-1. The freedom to run the program for any purpose.
-2. The freedom to study how the program works and adapt it to your needs.
-3. The freedom to redistribute copies so you can help your neighbor.
-4. The freedom to improve the program and release your improvements to the public, so that the whole community benefits.
-You may exercise the freedoms specified here provided that you comply with the express conditions of this license. The principal conditions are:
-You must conspicuously and appropriately publish on each copy distributed an appropriate copyright notice and disclaimer of warranty and keep intact all the notices that refer to this License and to the absence of any warranty; and give any other recipients of the Program a copy of the GNU General Public License along with the Program. Any translation of the GNU General Public License must be accompanied by the GNU General Public License.
-If you modify your copy or copies of the program or any portion of it, or develop a program based upon it, you may distribute the resulting work provided you do so under the GNU General Public License. Any translation of the GNU General Public License must be accompanied by the GNU General Public License.
-If you copy or distribute the program, you must accompany it with the complete corresponding machine-readable source code or with a written offer, valid for at least three years, to furnish the complete corresponding machine-readable source code.
-Any of the above conditions can be waived if you get permission from the copyright holder.';
+$contentof_license = 'Copyright (c) [year] [copyright holder]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.';
 $contentof_license = nl2br($contentof_license);
 echo gettpl('license.html');
 
