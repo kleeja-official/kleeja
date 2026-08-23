@@ -30,6 +30,7 @@ Project_Default.xml
 .buildpath
 .project
 .vscode/*
+.idea/*
 !.vscode/extensions.json
 .htaccess
 .php_cs.cache

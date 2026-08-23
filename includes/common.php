@@ -56,14 +56,7 @@ define('ADM_FILES_PATH', PATH . 'includes/adm');
 error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 
 
-/**
-* functions for start
- * @param mixed $error_number
- * @param mixed $error_string
- * @param mixed $error_file
- * @param mixed $error_line
-*/
-function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
+function kleeja_show_error(int $error_number, string $error_string = '', string $error_file = '', string $error_line = '')
 {
     switch ($error_number)
     {

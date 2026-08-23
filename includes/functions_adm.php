@@ -15,21 +15,12 @@ if (! defined('IN_COMMON'))
 }
 
 /**
-* Print cp error function handler
-*
-* For admin
- * @param mixed $msg
- * @param mixed $navigation
- * @param mixed $title
- * @param mixed $exit
- * @param mixed $redirect
- * @param mixed $rs
- * @param mixed $style
-*/
-function kleeja_admin_err($msg, $navigation = true, $title='', $exit = true, $redirect = false, $rs = 3, $style = 'admin_err')
+ * Print cp error function handler
+ */
+function kleeja_admin_err(string $message, bool $navigation = true, string $title = '', bool $exit = true, bool $redirect = false, $redirect_in_m_second = 3, string $style = 'admin_err'): void
 {
     global $text, $tpl, $SHOW_LIST, $adm_extensions, $adm_extensions_menu;
-    global $STYLE_PATH_ADMIN, $lang, $olang, $SQL, $MINI_MENU;
+    global $STYLE_PATH_ADMIN, $lang, $SQL, $MINI_MENU;
 
 
     if (is_string($navigation))
@@ -42,7 +33,7 @@ function kleeja_admin_err($msg, $navigation = true, $title='', $exit = true, $re
     //Exception for ajax
     if (ig('_ajax_'))
     {
-        $text = $msg . ($redirect ? "\n" . '<script type="text/javascript">setTimeout("get_kleeja_link(\'' . str_replace('&amp;', '&', $redirect) . '\');", ' . ($rs * 1000) . ');</script>' : '');
+        $text = $message . ($redirect ? "\n" . '<script type="text/javascript">setTimeout("get_kleeja_link(\'' . str_replace('&amp;', '&', $redirect) . '\');", ' . ($redirect_in_m_second * 1000) . ');</script>' : '');
         echo_ajax(1, $tpl->display($style));
         $SQL->close();
 
@@ -50,7 +41,7 @@ function kleeja_admin_err($msg, $navigation = true, $title='', $exit = true, $re
     }
 
     // assign {text} in err template
-    $text            = $msg . ($redirect != false ? redirect($redirect, false, false, $rs, true) : '');
+    $text            = $message . ($redirect !== false ? redirect($redirect, false, false, $redirect_in_m_second, true) : '');
     $SHOW_LIST       = $navigation;
 
     //header
@@ -71,34 +62,18 @@ function kleeja_admin_err($msg, $navigation = true, $title='', $exit = true, $re
 
 /**
  * Print information message on admin panel
- *
- * @adm
- * @param string $msg        information message
- * @param bool   $navigation show navigation menu or not
- * @param string $title      information heading title
- * @param bool   $exit       if true, then halt after message
- * @param bool   $redirect   redirect after showing the message
- * @param int    $rs         delay the redirect in seconds
  */
-function kleeja_admin_info($msg, $navigation=true, $title='', $exit=true, $redirect = false, $rs = 2)
+function kleeja_admin_info(string $message, bool $navigation = true, string $title = '', bool $exit = true, bool $redirect = false, $redirect_in_m_second = 2): void
 {
-    is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_admin_info_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    extract(runHook('kleeja_admin_info_func', get_defined_vars()));
 
-    kleeja_admin_err($msg, $navigation, $title, $exit, $redirect, $rs, 'admin_info');
+    kleeja_admin_err($message, $navigation, $title, $exit, $redirect, $redirect_in_m_second, 'admin_info');
 }
 
 /**
  * generate a filter..
- * @adm
- * @param  string|integer  $type   filter_id or filter_uid
- * @param  string          $value  filter value
- * @param  bool            $time   filter time
- * @param  bool            $user   user Id
- * @param  string          $status filter status
- * @param  bool            $uid    filter unique id
- * @return bool|int|string
  */
-function insert_filter($type, $value, $time = false, $user = false, $status = '', $uid = false)
+function insert_filter(string $type, string $value, bool $time = false, bool $user = false, string $status = '', bool $uid = false)
 {
     global $SQL, $dbprefix, $userinfo;
 
@@ -121,16 +96,12 @@ function insert_filter($type, $value, $time = false, $user = false, $status = ''
 
 /**
  * Update filter value..
- *
- * @param  int|string  $id_or_uid     Number of filter_id or the unique id string of filter_uid
- * @param  string      $value         The modified value of filter
- * @param  string      $filter_type   if given, use it with sql where
- * @param  bool|string $filter_status if given, update the filter status
- * @param  bool        $user_id
- * @return bool
  */
-function update_filter($id_or_uid, $value, $filter_type = 'general', $filter_status = false, $user_id = false)
+function update_filter(string $id_or_uid, string $value, string $filter_type = 'general', bool $filter_status = false, bool $user_id = false): bool
 {
+    echo '<pre>';
+    print_r(get_defined_vars());
+    echo '</pre>';
     global $SQL, $dbprefix;
 
     $update_query = [

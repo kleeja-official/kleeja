@@ -28,7 +28,7 @@ $SQL->set_utf8();
 //
 class KleejaCache
 {
-    public function get($name)
+    public function get(string $name)
     {
         if (defined('DEV_STAGE'))
         {
@@ -43,12 +43,10 @@ class KleejaCache
 
             return empty($data) ? false : $data;
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
-    public function exists($name)
+    public function exists(string $name)
     {
         $name =  preg_replace('![^a-z0-9_]!', '_', $name);
 
@@ -58,7 +56,8 @@ class KleejaCache
         }
     }
 
-    public function save($name, $data, $time = 86400)
+    // todo: data type should be Mixed when we only support PHP 8
+    public function save(string $name, $data, $time = 86400)
     {
         $name          =  preg_replace('![^a-z0-9_]!i', '_', $name);
         $data_for_save = '<?' . 'php' . "\n";
@@ -74,11 +73,12 @@ class KleejaCache
             @flock($fd, LOCK_EX); // exlusive look
             @fwrite($fd, $data_for_save);
             @flock($fd, LOCK_UN);
-            @fclose($fd);
+            return @fclose($fd);
         }
+        return false;
     }
 
-    public function clean($name)
+    public function clean(string $name)
     {
         if (is_array($name))
         {

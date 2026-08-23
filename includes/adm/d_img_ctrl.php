@@ -247,10 +247,10 @@ else {
     {
         if (filter_exists('i_lastvisit', 'filter_uid', 'lastvisit', $userinfo['id']))
         {
-            update_filter('i_lastvisit', time(), 'lastvisit', false, $userinfo['id']);
+            update_filter('i_lastvisit', (string) time(), 'lastvisit', false, $userinfo['id']);
         }
         else {
-            insert_filter('i_lastvisit', time(), 'lastvisit', time(), $userinfo['id']);
+            insert_filter('i_lastvisit', (string) time(), 'lastvisit', time(), $userinfo['id']);
         }
     }
 
