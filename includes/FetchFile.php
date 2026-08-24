@@ -15,45 +15,45 @@ if (! defined('IN_COMMON'))
 
 class FetchFile
 {
-    private $url;
+    private string $url;
     private $timeout         = 60;
     private $destinationPath = '';
     private $maxRedirects    = 3;
     private $binary          = false;
 
 
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $this->url = $url;
     }
 
-    public static function make($url)
+    public static function make(string $url)
     {
         return new static($url);
     }
 
-    public function setTimeOut($seconds)
+    public function setTimeOut(int $seconds)
     {
         $this->timeout = $seconds;
 
         return $this;
     }
 
-    public function setDestinationPath($path)
+    public function setDestinationPath(string $path)
     {
         $this->destinationPath = $path;
 
         return $this;
     }
 
-    public function setMaxRedirects($limit)
+    public function setMaxRedirects(int $limit)
     {
         $this->maxRedirects = $limit;
 
         return $this;
     }
 
-    public function isBinaryFile($val)
+    public function isBinaryFile(bool $val)
     {
         $this->binary = $val;
 

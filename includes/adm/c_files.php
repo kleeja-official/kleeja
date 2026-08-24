@@ -382,10 +382,10 @@ else {
     {
         if (filter_exists('f_lastvisit', 'filter_uid', 'lastvisit', $userinfo['id']))
         {
-            update_filter('f_lastvisit', time(), 'lastvisit', false, $userinfo['id']);
+            update_filter('f_lastvisit', (string) time(), 'lastvisit', false, $userinfo['id']);
         }
         else {
-            insert_filter('f_lastvisit', time(), 'lastvisit', time(), $userinfo['id']);
+            insert_filter('f_lastvisit', (string) time(), 'lastvisit', time(), $userinfo['id']);
         }
     }
 
