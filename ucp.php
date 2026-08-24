@@ -524,25 +524,28 @@ switch (g('go')) {
                         ? extract($plugin_run_result)
                         : null; //run hook
 
-                    //delete all files
-                    foreach ($arr as $row) {
-                        @kleeja_unlink($row['folder'] . '/' . $row['name']);
-
-                        //delete thumb
-                        if (file_exists($row['folder'] . '/thumbs/' . $row['name'])) {
-                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
-                        }
-
-                        $ids[] = $row['id'];
-
-                        if ($is_image) {
-                            $imgs_num++;
-                        } else {
-                            $files_num++;
-                        }
-
-                        $sizes += $r['size'];
+                    //check for form key
+                    if (!kleeja_check_form_key('fileuser', 1800 /* half hour */)) {
+                        kleeja_info($lang['INVALID_FORM_KEY']);
                     }
+
+                    //delete all files
+                    @kleeja_unlink($row['folder'] . '/' . $row['name']);
+
+                    //delete thumb
+                    if (file_exists($row['folder'] . '/thumbs/' . $row['name'])) {
+                        @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
+                    }
+
+                    $ids[] = $row['id'];
+
+                    if ($is_image) {
+                        $imgs_num++;
+                    } else {
+                        $files_num++;
+                    }
+
+                    $sizes += $row['size'];
                 }
             }
 
