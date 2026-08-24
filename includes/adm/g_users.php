@@ -301,37 +301,48 @@ if (ip('edituser')) {
         )
     ) {
         $ERRORS[] = $lang['WRONG_EMAIL'];
-    } elseif ($udata['clean_name'] != $new_clean_name) {
-        $new_name = true;
+    }
 
-        if (strlen(trim(p('l_name'))) < 2 || strlen(trim(p('l_name'))) > 100) {
-            $ERRORS[] = str_replace('4', '2', $lang['WRONG_NAME']);
-        } elseif (
-            $SQL->num_rows($SQL->query("SELECT * FROM {$dbprefix}users WHERE clean_name='" . $new_clean_name . "'")) !=
-            0
-        ) {
-            $ERRORS[] = $lang['EXIST_NAME'];
-        }
-    } elseif ($udata['mail'] != trim(p('l_mail'))) {
-        $new_mail = true;
+    if (empty($ERRORS)) {
+        if ($udata['clean_name'] != $new_clean_name) {
+            $new_name = true;
 
-        if (
-            $SQL->num_rows(
-                $SQL->query(
-                    "SELECT * FROM {$dbprefix}users WHERE mail='" . trim($SQL->escape(strtolower(p('lmail')))) . "'",
-                ),
-            ) != 0
-        ) {
-            $ERRORS[] = $lang['EXIST_EMAIL'];
+            if (strlen(trim(p('l_name'))) < 2 || strlen(trim(p('l_name'))) > 100) {
+                $ERRORS[] = str_replace('4', '2', $lang['WRONG_NAME']);
+            } elseif (
+                $SQL->num_rows(
+                    $SQL->query("SELECT * FROM {$dbprefix}users WHERE clean_name='" . $new_clean_name . "'"),
+                ) != 0
+            ) {
+                $ERRORS[] = $lang['EXIST_NAME'];
+            }
         }
-    } elseif (trim(p('l_pass')) != '') {
-        $user_salt = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
-        $pass =
-            "password = '" .
-            $usrcp->kleeja_hash_password(trim(p('l_pass')) . $user_salt) .
-            "', password_salt='" .
-            $user_salt .
-            "',";
+
+        if ($udata['mail'] != trim(p('l_mail'))) {
+            $new_mail = true;
+
+            if (
+                $SQL->num_rows(
+                    $SQL->query(
+                        "SELECT * FROM {$dbprefix}users WHERE mail='" .
+                            trim($SQL->escape(strtolower(p('l_mail')))) .
+                            "'",
+                    ),
+                ) != 0
+            ) {
+                $ERRORS[] = $lang['EXIST_EMAIL'];
+            }
+        }
+
+        if (trim(p('l_pass')) != '') {
+            $user_salt = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
+            $pass =
+                "password = '" .
+                $usrcp->kleeja_hash_password(trim(p('l_pass')) . $user_salt) .
+                "', password_salt='" .
+                $user_salt .
+                "',";
+        }
     }
 
     //no errors, lets do process
@@ -400,7 +411,7 @@ if (ip('edituser')) {
 //add new group
 //
 if (ip('newgroup')) {
-    if (trim(p('gname')) == '' || trim(p('gname')) == '' || trim(p('gname')) == '') {
+    if (trim(p('gname')) == '') {
         $ERRORS[] = $lang['EMPTY_FIELDS'];
     } elseif (strlen(trim(p('gname'))) < 2 || strlen(trim(p('gname'))) > 100) {
         $ERRORS[] = str_replace('4', '1', $lang['WRONG_NAME']);
@@ -766,7 +777,7 @@ switch ($current_smt):
                 );
             }
 
-            $got_lang = preg_replace('[^a-zA-Z0-9]', '', g('lang_change'));
+            $got_lang = preg_replace('/[^a-zA-Z0-9]/', '', g('lang_change'));
 
             // -1 means all
             if ($req_group == -1) {

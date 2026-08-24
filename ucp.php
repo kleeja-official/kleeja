@@ -734,9 +734,9 @@ switch (g('go')) {
                     ) != 0
                 ) {
                     $ERRORS['mail_exists_before'] = $lang['EXIST_EMAIL'];
+                } else {
+                    $new_mail = true;
                 }
-
-                $new_mail = true;
             }
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_profile2', get_defined_vars()))
