@@ -104,7 +104,7 @@ function kleeja_cpatcha_image(): void
     header('Pragma: no-cache');
     header('Content-Type: image/png');
 
-    //Output the newly created image in jpeg format
+    //Output the newly created image in png format
     imagepng($image);
 
     //Free up resources
