@@ -138,7 +138,7 @@ class kleeja_style
         $rep =
             [
                 '/<\/(LOOP|IF|END|IS_BROWSER|UNLESS)>/i'                                           => '<?php } ?>',
-                '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*(PATH=\s*=*\s*"(.+)")?>/iU'                   => '<?php echo $this->display("\\2",  empty("\\4") ? null : "\\4"); ?>',
+                '/<INCLUDE(\s+NAME|)\s*=*\s*"(.+)"\s*(PATH=\s*=*\s*"(.+)")?>/iU'                   => '<?php echo $this->display("\\2",  empty("\\4") ? "" : "\\4"); ?>',
                 '/<IS_BROWSER\s*=\s*"([a-z0-9,]+)"\s*>/iU'                                         => '<?php if(is_browser("\\1")){ ?>',
                 '/<IS_BROWSER\s*\!=\s*"([a-z0-9,]+)"\s*>/iU'                                       => '<?php if(!is_browser("\\1")){ ?>',
                 '/(<ELSE>|<ELSE\s?\/>)/i'                                                          => '<?php }else{ ?>',
