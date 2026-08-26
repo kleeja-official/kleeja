@@ -443,7 +443,7 @@ switch (g('go')) {
             $result = $SQL->build($query);
 
             $i = $currentPage * $perpage - $perpage;
-            $tdnumi = $num = $files_num = $imgs_num = 0;
+            $tdnumi = $num = $files_num = $imgs_num = $sizes = 0;
             while ($row = $SQL->fetch_array($result)) {
                 ++$i;
                 $file_info = [
@@ -496,7 +496,7 @@ switch (g('go')) {
                         kleeja_info($lang['INVALID_FORM_KEY']);
                     }
 
-                    if ($_POST['del_' . $row['id']]) {
+                    if (ip('del_' . $row['id'])) {
                         //delete from folder ..
                         @kleeja_unlink($row['folder'] . '/' . $row['name']);
 
