@@ -1,24 +1,19 @@
 <?php
 /**
-*
-* @package Kleeja
-* @copyright (c) 2007 Kleeja.net
-* @license ./docs/license.txt
-*
-*/
-
+ *
+ * @package Kleeja
+ * @copyright (c) 2007 Kleeja.net
+ * @license ./docs/license.txt
+ *
+ */
 
 //no direct access
-if (! defined('IN_COMMON'))
-{
+if (!defined('IN_COMMON')) {
     exit();
 }
 
-
-
 interface KleejaUploader
 {
-
     /**
      * set the allowed extensions of uploaded files
      * @param  array $allowed_file_extensions an array of allowed extensions, and sizes ['gif'=>122, 'png'=>2421 ..]
@@ -26,13 +21,11 @@ interface KleejaUploader
      */
     public function setAllowedFileExtensions($allowed_file_extensions);
 
-
     /**
      * get the allowed extensions of uploaded files
      * @return array
      */
     public function getAllowedFileExtensions();
-
 
     /**
      * set the allowed limit of the uploaded files
@@ -46,7 +39,6 @@ interface KleejaUploader
      * @return int
      */
     public function getUploadFieldsLimit();
-
 
     /**
      * add an information message to output it to the user
@@ -75,14 +67,12 @@ interface KleejaUploader
      */
     public function saveToDatabase($fileInfo);
 
-
     /**
      * generate a box of the result and add it to addInfoMessage
      * @param  array $fileInfo
      * @return void
      */
     public function generateOutputBox($fileInfo);
-
 
     /**
      * here happens the magic, call this on upload submit

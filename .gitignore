@@ -32,7 +32,7 @@ Project_Default.xml
 .vscode/*
 !.vscode/extensions.json
 .htaccess
-.php_cs.cache
 kleeja.db
-php-cs-fixer
-.php-cs-fixer.cache
+
+# node / prettier toolchain
+node_modules/

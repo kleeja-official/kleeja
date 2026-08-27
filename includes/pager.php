@@ -1,22 +1,20 @@
 <?php
 /**
-*
-* @package Kleeja
-* @copyright (c) 2007 Kleeja.net
-* @license ./docs/license.txt
-*
-*/
-
+ *
+ * @package Kleeja
+ * @copyright (c) 2007 Kleeja.net
+ * @license ./docs/license.txt
+ *
+ */
 
 //no for directly open
-if (! defined('IN_COMMON'))
-{
+if (!defined('IN_COMMON')) {
     exit();
 }
 
 class Pagination
 {
-    protected $totalPages, $startRow , $currentPage;
+    protected $totalPages, $startRow, $currentPage;
 
     /**
      * @param     $rowsPerPage
@@ -26,10 +24,11 @@ class Pagination
     public function __construct($rowsPerPage, $numRows, $currentPage = 1)
     {
         // Calculate the total number of pages
-        $this->setTotalPages(ceil($numRows/$rowsPerPage));
+        $this->setTotalPages(ceil($numRows / $rowsPerPage));
 
         // Check that a valid page has been provided
-        $this->currentPage = $currentPage < 1 ? 1 :  ($currentPage > $this->totalPages ? $this->totalPages : $currentPage);
+        $this->currentPage =
+            $currentPage < 1 ? 1 : ($currentPage > $this->totalPages ? $this->totalPages : $currentPage);
 
         // Calculate the row to start the select with
         $this->startRow = ($this->currentPage - 1) * $rowsPerPage;
@@ -54,7 +53,6 @@ class Pagination
         return $this->totalPages = $totalPages;
     }
 
-
     /**
      * @return int
      */
@@ -71,7 +69,6 @@ class Pagination
         $this->currentPage = $currentPage;
     }
 
-
     /**
      * @return int
      */
@@ -80,7 +77,6 @@ class Pagination
         return $this->startRow;
     }
 
-
     /**
      * @param int $startRow
      */
@@ -88,7 +84,6 @@ class Pagination
     {
         $this->startRow = $startRow;
     }
-
 
     /**
      * @param         $link
@@ -100,8 +95,7 @@ class Pagination
         global $lang, $config;
 
         //if no page
-        if ($this->totalPages <= 1)
-        {
+        if ($this->totalPages <= 1) {
             return '';
         }
 
@@ -111,66 +105,140 @@ class Pagination
         $re .= '<ul id="pagination" class="pagination">';
 
         // Add a previous page link
-        if ($this->totalPages > 1 && $this->currentPage > 1)
-        {
+        if ($this->totalPages > 1 && $this->currentPage > 1) {
             $re .= '<li class="page-item">';
-            $re .= $config['mod_writer'] && ! defined('IN_ADMIN')
-                ? '<a class="paginate phover page-link" href="' . $link . '-' . ($this->currentPage-1) . '.html"' . $link_plus . '><span>' . $lang['PREV'] . '</span></a>'
-                : '<a class="paginate phover page-link" href="' . $link . '&amp;page=' . ($this->currentPage-1) . '"' . $link_plus . '><span>' . $lang['PREV'] . '</span></a>';
+            $re .=
+                $config['mod_writer'] && !defined('IN_ADMIN')
+                    ? '<a class="paginate phover page-link" href="' .
+                        $link .
+                        '-' .
+                        ($this->currentPage - 1) .
+                        '.html"' .
+                        $link_plus .
+                        '><span>' .
+                        $lang['PREV'] .
+                        '</span></a>'
+                    : '<a class="paginate phover page-link" href="' .
+                        $link .
+                        '&amp;page=' .
+                        ($this->currentPage - 1) .
+                        '"' .
+                        $link_plus .
+                        '><span>' .
+                        $lang['PREV'] .
+                        '</span></a>';
             $re .= '</li>';
         }
 
-        if ($this->currentPage > 3)
-        {
+        if ($this->currentPage > 3) {
             $re .= '<li class="page-item">';
-            $re .= $config['mod_writer'] && ! defined('IN_ADMIN')
-                ? '<a class="paginate page-link" href="' . $link . '-1.html"' . $link_plus . '><span>1</span></a>' . ($this->currentPage > 5 ? '<a class="paginate dots"><span>...</span></a>' : '')
-                : '<a class="paginate page-link" href="' . $link . '&amp;page=1"' . $link_plus . '><span>1</span></a>' . ($this->currentPage > 5 ? '<a class="paginate dots"><span>...</span></a>' : '');
+            $re .=
+                $config['mod_writer'] && !defined('IN_ADMIN')
+                    ? '<a class="paginate page-link" href="' .
+                        $link .
+                        '-1.html"' .
+                        $link_plus .
+                        '><span>1</span></a>' .
+                        ($this->currentPage > 5 ? '<a class="paginate dots"><span>...</span></a>' : '')
+                    : '<a class="paginate page-link" href="' .
+                        $link .
+                        '&amp;page=1"' .
+                        $link_plus .
+                        '><span>1</span></a>' .
+                        ($this->currentPage > 5 ? '<a class="paginate dots"><span>...</span></a>' : '');
             $re .= '</li>';
         }
 
-        for ($current = ($this->currentPage == 5) ? $this->currentPage - 3 : $this->currentPage - 2, $stop = ($this->currentPage + 4 == $this->totalPages) ? $this->currentPage + 4 : $this->currentPage + 3; $current < $stop; ++$current)
-        {
-            if ($current < 1 || $current > $this->totalPages)
-            {
+        for (
+            $current = $this->currentPage == 5 ? $this->currentPage - 3 : $this->currentPage - 2,
+            $stop = $this->currentPage + 4 == $this->totalPages ? $this->currentPage + 4 : $this->currentPage + 3;
+            $current < $stop;
+            ++$current
+        ) {
+            if ($current < 1 || $current > $this->totalPages) {
                 continue;
-            }
-            elseif ($current != $this->currentPage)
-            {
+            } elseif ($current != $this->currentPage) {
                 $re .= '<li class="page-item">';
-                $re .= $config['mod_writer'] && ! defined('IN_ADMIN')
-                    ? '<a class="paginate page-link" href="' . $link . '-' . $current . '.html"' . $link_plus . '><span>' . $current . '</span></a>'
-                    : '<a class="paginate page-link" href="' . $link . '&amp;page=' . $current . '"' . $link_plus . '><span>' . $current . '</span></a>';
+                $re .=
+                    $config['mod_writer'] && !defined('IN_ADMIN')
+                        ? '<a class="paginate page-link" href="' .
+                            $link .
+                            '-' .
+                            $current .
+                            '.html"' .
+                            $link_plus .
+                            '><span>' .
+                            $current .
+                            '</span></a>'
+                        : '<a class="paginate page-link" href="' .
+                            $link .
+                            '&amp;page=' .
+                            $current .
+                            '"' .
+                            $link_plus .
+                            '><span>' .
+                            $current .
+                            '</span></a>';
                 $re .= '</li>';
-            }
-            else {
+            } else {
                 $re .= '<li class="page-item">';
                 $re .= '<a class="paginate page-link current"><span>' . $current . '</span></a>';
                 $re .= '</li>';
             }
         }
 
-        if ($this->currentPage <= ($this->totalPages-3))
-        {
-            if ($this->currentPage != ($this->totalPages-3) && $this->currentPage != ($this->totalPages-4))
-            {
+        if ($this->currentPage <= $this->totalPages - 3) {
+            if ($this->currentPage != $this->totalPages - 3 && $this->currentPage != $this->totalPages - 4) {
                 $re .= '<li class="page-item"><a class="paginate page-link dots"><span>...</span></a></li>';
             }
 
             $re .= '<li class="page-item">';
-            $re .= $config['mod_writer'] && ! defined('IN_ADMIN')
-                ? '<a class="paginate page-link" href="' . $link . '-' . $this->totalPages . '.html"' . $link_plus . '><span>' . $this->totalPages . '</span></a>'
-                : '<a class="paginate page-link" href="' . $link . '&amp;page=' . $this->totalPages . '"' . $link_plus . '><span>' . $this->totalPages . '</span></a>';
+            $re .=
+                $config['mod_writer'] && !defined('IN_ADMIN')
+                    ? '<a class="paginate page-link" href="' .
+                        $link .
+                        '-' .
+                        $this->totalPages .
+                        '.html"' .
+                        $link_plus .
+                        '><span>' .
+                        $this->totalPages .
+                        '</span></a>'
+                    : '<a class="paginate page-link" href="' .
+                        $link .
+                        '&amp;page=' .
+                        $this->totalPages .
+                        '"' .
+                        $link_plus .
+                        '><span>' .
+                        $this->totalPages .
+                        '</span></a>';
             $re .= '</li>';
         }
 
         // Add a next page link
-        if ($this->totalPages > 1 && $this->currentPage < $this->totalPages)
-        {
+        if ($this->totalPages > 1 && $this->currentPage < $this->totalPages) {
             $re .= '<li class="page-item">';
-            $re .= $config['mod_writer'] && ! defined('IN_ADMIN')
-                ? '<a class="paginate page-link phover" href="' . $link . '-' . ($this->currentPage+1) . '.html"' . $link_plus . '><span>' . $lang['NEXT'] . '</span></a>'
-                : '<a class="paginate phover page-link" href="' . $link . '&amp;page=' . ($this->currentPage+1) . '"' . $link_plus . '><span>' . $lang['NEXT'] . '</span></a>';
+            $re .=
+                $config['mod_writer'] && !defined('IN_ADMIN')
+                    ? '<a class="paginate page-link phover" href="' .
+                        $link .
+                        '-' .
+                        ($this->currentPage + 1) .
+                        '.html"' .
+                        $link_plus .
+                        '><span>' .
+                        $lang['NEXT'] .
+                        '</span></a>'
+                    : '<a class="paginate phover page-link" href="' .
+                        $link .
+                        '&amp;page=' .
+                        ($this->currentPage + 1) .
+                        '"' .
+                        $link_plus .
+                        '><span>' .
+                        $lang['NEXT'] .
+                        '</span></a>';
             $re .= '</li>';
         }
 

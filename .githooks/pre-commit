@@ -1,36 +1,33 @@
 #!/bin/sh
+# Checks that staged files are formatted with prettier.
 
-PHP_CS_FIXER="./php-cs-fixer"
-
-if [ ! -f "$PHP_CS_FIXER" ]; then
-    PHP_CS_FIXER="./php-cs-fixer.phar"
-fi
-
-if [ ! -f "$PHP_CS_FIXER" ]; then
-    echo "Warning: php-cs-fixer executable not found. Skipping format check."
+if [ ! -d "node_modules/prettier" ]; then
+    echo "Warning: prettier is not installed. Run 'npm install'. Skipping format check."
     exit 0
 fi
 
-# جلب ملفات PHP المجهزة للـ Commit فقط
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.php$')
+# Only the files staged for this commit
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
 
-if [ -n "$STAGED_FILES" ]; then
-    echo "Checking PHP code formatting..."
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
 
-    # تشغيل الفحص فقط مع إظهار الفروقات دون تعديل الملفات
-    php $PHP_CS_FIXER fix --dry-run --diff $STAGED_FILES
+echo "Checking code formatting..."
 
-    # التحقق من حالة خروج الأمر السابق
-    if [ $? -ne 0 ]; then
-        echo ""
-        echo "╔════════════════════════════════════════════════════════════╗"
-        echo "║           PHP Code Formatting Check Failed!                ║"
-        echo "╚════════════════════════════════════════════════════════════╝"
-        echo "Please format your code before committing."
-        echo "Run: php php-cs-fixer.phar fix"
-        echo ""
-        exit 1
-    fi
+# --ignore-unknown skips binaries and any extension prettier has no parser for;
+# .prettierignore still applies, so vendored assets and templates are excluded.
+echo "$STAGED_FILES" | xargs npx prettier --check --ignore-unknown
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║                Code Formatting Check Failed!                ║"
+    echo "╚════════════════════════════════════════════════════════════╝"
+    echo "Please format your code before committing."
+    echo "Run: npm run format"
+    echo ""
+    exit 1
 fi
 
 exit 0
