@@ -12,7 +12,7 @@ if (!defined('IN_COMMON')) {
     exit();
 }
 
-define('KLEEJA_VERSION', '3.2.3');
+define('KLEEJA_VERSION', '3.2.4');
 define('KLEEJA_DB_VERSION', '9');
 
 // Kleeja min requirements
