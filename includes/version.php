@@ -1,20 +1,16 @@
 <?php
 /**
-*
-* @package Kleeja
-* @copyright (c) 2007 Kleeja.net
-* @license ./docs/license.txt
-*
-*/
-
+ *
+ * @package Kleeja
+ * @copyright (c) 2007 Kleeja.net
+ * @license ./docs/license.txt
+ *
+ */
 
 //no for directly open
-if (! defined('IN_COMMON'))
-{
+if (!defined('IN_COMMON')) {
     exit();
 }
-
-
 
 define('KLEEJA_VERSION', '3.2.3');
 define('KLEEJA_DB_VERSION', '9');

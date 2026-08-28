@@ -1,28 +1,24 @@
 <?php
 /**
-*
-* @package install
-* @copyright (c) 2007 Kleeja.net
-* @license ./docs/license.txt
-*
-*/
+ *
+ * @package install
+ * @copyright (c) 2007 Kleeja.net
+ * @license ./docs/license.txt
+ *
+ */
 
 // not for directly open
-if (! defined('IN_COMMON'))
-{
+if (!defined('IN_COMMON')) {
     exit();
 }
 
-
-if (empty($install_sqls) || ! is_array($install_sqls))
-{
+if (empty($install_sqls) || !is_array($install_sqls)) {
     $install_sqls = [];
 }
 
 $install_sqls['ALTER_DATABASE_UTF'] = "
 ALTER DATABASE `{$dbname}` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin
 ";
-
 
 $install_sqls['call'] = "
 CREATE TABLE `{$dbprefix}call` (
@@ -47,7 +43,6 @@ CREATE TABLE `{$dbprefix}reports` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 
-
 $install_sqls['stats'] = "
 CREATE TABLE `{$dbprefix}stats` (
   `files` int(11) unsigned NOT NULL DEFAULT '0',
@@ -71,7 +66,6 @@ CREATE TABLE `{$dbprefix}stats` (
   `lastuser` varchar(300) collate utf8_bin NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
-
 
 $install_sqls['users'] = "
 CREATE TABLE `{$dbprefix}users` (
@@ -119,8 +113,6 @@ CREATE TABLE `{$dbprefix}files` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
 
-
-
 $install_sqls['config'] = "
 CREATE TABLE `{$dbprefix}config` (
   `name` varchar(255) collate utf8_bin NOT NULL PRIMARY KEY,
@@ -134,7 +126,6 @@ CREATE TABLE `{$dbprefix}config` (
   KEY `plg_id` (`plg_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ";
-
 
 $install_sqls['plugins'] = "
 CREATE TABLE `{$dbprefix}plugins` (
@@ -216,10 +207,31 @@ CREATE TABLE `{$dbprefix}filters` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 ";
 
-$install_sqls['stats_insert']   = "INSERT INTO `{$dbprefix}stats`  VALUES (0,0,1,0,0," . time() . ",0,0,0,0,'',0,0,0,0,'','','','')";
-$install_sqls['users_insert']   = "INSERT INTO `{$dbprefix}users` (`id`,`name`,`group_id`,`password`,`password_salt`,`mail`,`founder`,`clean_name`) VALUES (1,'" . $user_name . "', 1, '" . $user_pass . "','" . $user_salt . "', '" . $user_mail . "', 1,'" . $clean_name . "')";
-$install_sqls['TeamMsg_insert'] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" . $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) . "', '" . $SQL->escape($lang['KLEEJA_TEAM_MSG_TEXT']) . "','info@kleeja.net', " . time() . ", '127.0.0.1')";
-$install_sqls['groups_insert']  = "INSERT INTO `{$dbprefix}groups` (`group_id`, `group_name`, `group_is_default`, `group_is_essential`) VALUES
+$install_sqls['stats_insert'] =
+    "INSERT INTO `{$dbprefix}stats`  VALUES (0,0,1,0,0," . time() . ",0,0,0,0,'',0,0,0,0,'','','','')";
+$install_sqls['users_insert'] =
+    "INSERT INTO `{$dbprefix}users` (`id`,`name`,`group_id`,`password`,`password_salt`,`mail`,`founder`,`clean_name`) VALUES (1,'" .
+    $user_name .
+    "', 1, '" .
+    $user_pass .
+    "','" .
+    $user_salt .
+    "', '" .
+    $user_mail .
+    "', 1,'" .
+    $clean_name .
+    "')";
+$install_sqls['TeamMsg_insert'] =
+    "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" .
+    $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) .
+    "', '" .
+    $SQL->escape($lang['KLEEJA_TEAM_MSG_TEXT']) .
+    "','info@kleeja.net', " .
+    time() .
+    ", '127.0.0.1')";
+$install_sqls[
+    'groups_insert'
+] = "INSERT INTO `{$dbprefix}groups` (`group_id`, `group_name`, `group_is_default`, `group_is_essential`) VALUES
 (1, '{lang.ADMINS}', 0, 1),
 (2, '{lang.GUESTS}', 0, 1),
 (3, '{lang.USERS}', 1, 1);";

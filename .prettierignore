@@ -1,0 +1,29 @@
+# --- build / runtime output -------------------------------------------------
+node_modules/
+vendor/
+cache/
+uploads/
+plugins/
+config.php
+kleeja.db
+
+# --- kleeja templates -------------------------------------------------------
+# .html files are kleeja templates using custom <IF>/<LOOP> tags and {var}
+# placeholders. Prettier's HTML parser does not understand them and would
+# reformat/indent them into broken markup.
+*.html
+
+# --- third-party / vendored assets ------------------------------------------
+*.min.js
+*.min.css
+admin/Masmak/css/
+admin/Masmak/js/
+styles/bootstrap/css/
+styles/bootstrap/js/
+styles/default/jquery.js
+install/style/
+
+# --- generated / non-source -------------------------------------------------
+package-lock.json
+CHANGELOG.md
+.php-cs-fixer.cache

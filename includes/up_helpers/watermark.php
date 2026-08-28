@@ -1,15 +1,14 @@
 <?php
 /**
-*
-* @package Kleeja_up_helpers
-* @copyright (c) 2007-2012 Kleeja.net
-* @license ./docs/license.txt
-*
-*/
+ *
+ * @package Kleeja_up_helpers
+ * @copyright (c) 2007-2012 Kleeja.net
+ * @license ./docs/license.txt
+ *
+ */
 
 //no for directly open
-if (! defined('IN_COMMON'))
-{
+if (!defined('IN_COMMON')) {
     exit();
 }
 
@@ -18,131 +17,105 @@ if (! defined('IN_COMMON'))
  * return nothing because if it work then ok , and if not then ok too :)
  * @todo text support
  *
- * @param            $name
- * @param            $ext
- * @return bool|void
+ * @param string $name
+ * @param string $ext
  */
-function helper_watermark($name, $ext)
+function helper_watermark(string $name, string $ext): void
 {
     $return = false;
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('helper_watermark_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('helper_watermark_func', get_defined_vars()))
+        ? extract($plugin_run_result)
+        : null; //run hook
 
-    if ($return)
-    {
+    if ($return) {
         return;
     }
 
     //is this file really exsits ?
-    if (! file_exists($name))
-    {
+    if (!file_exists($name)) {
         return;
     }
 
     $src_logo = $logo_path = false;
 
-    if (file_exists(dirname(__FILE__) . '/../../images/watermark.png'))
-    {
-        $logo_path= dirname(__FILE__) . '/../../images/watermark.png';
+    if (file_exists(dirname(__FILE__) . '/../../images/watermark.png')) {
+        $logo_path = dirname(__FILE__) . '/../../images/watermark.png';
         $src_logo = imagecreatefrompng($logo_path);
-    }
-    elseif (file_exists(dirname(__FILE__) . '/../../images/watermark.gif'))
-    {
-        $logo_path= dirname(__FILE__) . '/../../images/watermark.gif';
+    } elseif (file_exists(dirname(__FILE__) . '/../../images/watermark.gif')) {
+        $logo_path = dirname(__FILE__) . '/../../images/watermark.gif';
         $src_logo = imagecreatefromgif($logo_path);
     }
 
     //no watermark pic
-    if (! $src_logo)
-    {
+    if (!$src_logo) {
         return;
     }
 
     //if there is imagick lib, then we should use it
-    if (function_exists('phpversion') && phpversion('imagick'))
-    {
+    if (function_exists('phpversion') && phpversion('imagick')) {
         helper_watermark_imagick($name, $ext, $logo_path);
 
         return;
     }
 
     //now, lets work and detect our image extension
-    if (strpos($ext, 'jp') !== false)
-    {
+    if (strpos($ext, 'jp') !== false) {
         $src_img = @imagecreatefromjpeg($name);
-    }
-    elseif (strpos($ext, 'png') !== false)
-    {
+    } elseif (strpos($ext, 'png') !== false) {
         $src_img = @imagecreatefrompng($name);
-    }
-    elseif (strpos($ext, 'gif') !== false)
-    {
+    } elseif (strpos($ext, 'gif') !== false) {
         return;
-    //        $src_img = @imagecreatefromgif($name);
-    }
-    elseif (strpos($ext, 'bmp') !== false)
-    {
-        if (! defined('BMP_CLASS_INCLUDED'))
-        {
-            include dirname(__file__) . '/BMP.php';
+        //        $src_img = @imagecreatefromgif($name);
+    } elseif (strpos($ext, 'bmp') !== false) {
+        if (!defined('BMP_CLASS_INCLUDED')) {
+            include dirname(__FILE__) . '/BMP.php';
             define('BMP_CLASS_INCLUDED', true);
         }
 
         $src_img = imagecreatefrombmp($name);
-    }
-    else {
+    } else {
         return;
     }
 
     //detect width, height for the image
-    $bwidth  = @imagesx($src_img);
+    $bwidth = @imagesx($src_img);
     $bheight = @imagesy($src_img);
 
     //detect width, height for the watermark image
-    $lwidth  = @imagesx($src_logo);
+    $lwidth = @imagesx($src_logo);
     $lheight = @imagesy($src_logo);
 
-
-    if ($bwidth > $lwidth+5 &&  $bheight > $lheight+5)
-    {
+    if ($bwidth > $lwidth + 5 && $bheight > $lheight + 5) {
         //where exaxtly do we have to make the watermark ..
-        $src_x = $bwidth  - ($lwidth + 5);
+        $src_x = $bwidth - ($lwidth + 5);
         $src_y = $bheight - ($lheight + 5);
 
         //make it now, watermark it
         @imagealphablending($src_img, true);
         @imagecopy($src_img, $src_logo, $src_x, $src_y, 0, 0, $lwidth, $lheight);
 
-        if (strpos($ext, 'jp') !== false)
-        {
+        if (strpos($ext, 'jp') !== false) {
             //no compression, same quality
             @imagejpeg($src_img, $name, 100);
-        }
-        elseif (strpos($ext, 'png') !== false)
-        {
+        } elseif (strpos($ext, 'png') !== false) {
             //no compression, same quality
             @imagepng($src_img, $name, 0);
-        }
-        elseif (strpos($ext, 'gif') !== false)
-        {
+        } elseif (strpos($ext, 'gif') !== false) {
             @imagegif($src_img, $name);
-        }
-        elseif (strpos($ext, 'bmp') !== false)
-        {
+        } elseif (strpos($ext, 'bmp') !== false) {
             @imagebmp($src_img, $name);
         }
-    }
-    else {
+    } else {
         //image is not big enough to watermark it
         return;
     }
 }
 
-
 //
 // generate watermarked images by imagick
 //
-function helper_watermark_imagick($name, $ext, $logo)
+function helper_watermark_imagick(string $name, string $ext, string $logo): void
 {
     //Not just me babe, All the places misses you ..
     $im = new Imagick($name);
@@ -151,39 +124,35 @@ function helper_watermark_imagick($name, $ext, $logo)
     //$watermark->readImage($);
 
     //how big are the images?
-    $iWidth    = $im->getImageWidth();
-    $iHeight   = $im->getImageHeight();
-    $wWidth    = $watermark->getImageWidth();
-    $wHeight   = $watermark->getImageHeight();
+    $iWidth = $im->getImageWidth();
+    $iHeight = $im->getImageHeight();
+    $wWidth = $watermark->getImageWidth();
+    $wHeight = $watermark->getImageHeight();
 
-    if ($iHeight < $wHeight || $iWidth < $wWidth)
-    {
+    if ($iHeight < $wHeight || $iWidth < $wWidth) {
         //resize the watermark
         $watermark->scaleImage($iWidth, $iHeight);
 
         //get new size
-        $wWidth  = $watermark->getImageWidth();
+        $wWidth = $watermark->getImageWidth();
         $wHeight = $watermark->getImageHeight();
     }
 
     //calculate the position
-    $x = $iWidth  - ($wWidth - 5);
+    $x = $iWidth - ($wWidth - 5);
     $y = $iHeight - ($wHeight - 5);
 
     //an exception for gif image
     //generating thumb with 10 frames only, big gif is a devil
-    if ($ext == 'gif')
-    {
+    if ($ext == 'gif') {
         $i = 0;
 
         //$gif_new = new Imagick();
-        foreach ($im as $frame)
-        {
+        foreach ($im as $frame) {
             $frame->compositeImage($watermark, imagick::COMPOSITE_OVER, $x, $y);
 
             //    $gif_new->addImage($frame->getImage());
-            if ($i >= 10)
-            {
+            if ($i >= 10) {
                 // more than 10 frames, quit it
                 break;
             }

@@ -1,74 +1,84 @@
 <?php
 /**
-*
-* @package Kleeja_up_helpers
-* @copyright (c) 2007-2012 Kleeja.net
-* @license ./docs/license.txt
-*
-*/
+ *
+ * @package Kleeja_up_helpers
+ * @copyright (c) 2007-2012 Kleeja.net
+ * @license ./docs/license.txt
+ *
+ */
 
 //no for directly open
-if (! defined('IN_COMMON'))
-{
+if (!defined('IN_COMMON')) {
     exit();
 }
-
-
 
 /**
  * checking the safety and validity of sub-extension of given file
  *
- * @param mixed $filename
+ * @param  string $filename
+ * @return bool
  */
-function ext_check_safe($filename)
+function ext_check_safe(string $filename): bool
 {
     //bad files extensions
-    $not_allowed =    ['php', 'php3' ,'php5', 'php4', 'asp' ,'shtml' , 'html' ,'htm' ,'xhtml' ,'phtml', 'pl', 'cgi', 'htaccess', 'ini'];
+    $not_allowed = [
+        'php',
+        'php3',
+        'php5',
+        'php4',
+        'asp',
+        'shtml',
+        'html',
+        'htm',
+        'xhtml',
+        'phtml',
+        'pl',
+        'cgi',
+        'htaccess',
+        'ini',
+    ];
 
     //let split the file name, suppose it filename.gif.php
-    $tmp    = explode('.', $filename);
+    $tmp = explode('.', $filename);
 
     //if it's less than 3, that its means normal
-    if (sizeof($tmp) < 3)
-    {
+    if (sizeof($tmp) < 3) {
         return true;
     }
 
-    $before_last_ext = $tmp[sizeof($tmp)-2];
+    $before_last_ext = $tmp[sizeof($tmp) - 2];
 
     //in the bad extenion, return false to tell him
-    if (in_array(strtolower($before_last_ext), $not_allowed))
-    {
+    if (in_array(strtolower($before_last_ext), $not_allowed)) {
         return false;
-    }
-    else {
+    } else {
         return true;
     }
 }
 
-
 /**
  * create htaccess files for uploading folder
- * @param mixed $folder
+ * @param string $folder
  */
-function generate_safety_htaccess($folder)
+function generate_safety_htaccess(string $folder): void
 {
     $return = false;
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('generate_safety_htaccess_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('generate_safety_htaccess_func', get_defined_vars()))
+        ? extract($plugin_run_result)
+        : null; //run hook
 
-
-    if ($return)
-    {
-        return true;
+    if ($return) {
+        return;
     }
 
     //data for the htaccess
-    $htaccess_data = "<Files ~ \"^.*\.(php|php*|cgi|pl|phtml|shtml|sql|asp|aspx)\">\nOrder allow,deny\nDeny from all\n</Files>\n<IfModule mod_php4.c>\nphp_flag engine off\n</IfModule>\n<IfModule mod_php5.c>\nphp_flag engine off\n</IfModule>\nRemoveType .php .php* .phtml .pl .cgi .asp .aspx .sql";
+    $htaccess_data =
+        "<Files ~ \"^.*\.(php|php*|cgi|pl|phtml|shtml|sql|asp|aspx)\">\nOrder allow,deny\nDeny from all\n</Files>\n<IfModule mod_php4.c>\nphp_flag engine off\n</IfModule>\n<IfModule mod_php5.c>\nphp_flag engine off\n</IfModule>\nRemoveType .php .php* .phtml .pl .cgi .asp .aspx .sql";
 
     //generate the htaccess
-    $fi        = @fopen($folder . '/.htaccess', 'w');
-    $fi2       = @fopen($folder . '/thumbs/.htaccess', 'w');
+    $fi = @fopen($folder . '/.htaccess', 'w');
+    $fi2 = @fopen($folder . '/thumbs/.htaccess', 'w');
     @fwrite($fi, $htaccess_data);
     @fwrite($fi2, $htaccess_data);
 }
@@ -78,30 +88,26 @@ function generate_safety_htaccess($folder)
  * @param  string $folder
  * @return bool
  */
-function make_folder($folder)
+function make_folder(string $folder): bool
 {
     $return = false;
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('make_folder_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('make_folder_func', get_defined_vars()))
+        ? extract($plugin_run_result)
+        : null; //run hook
 
-
-    if ($return)
-    {
+    if ($return) {
         return true;
     }
 
-
     $folders = explode('/', $folder);
-
 
     $path = '';
 
-    foreach ($folders as $sub_folder)
-    {
+    foreach ($folders as $sub_folder) {
         //try to make a new upload folder
         @mkdir($path . $sub_folder);
         @mkdir($path . $sub_folder . '/thumbs');
-
 
         //then try to chmod it to 0755
         @chmod($path . $sub_folder, 0755);
@@ -111,7 +117,7 @@ function make_folder($folder)
         generate_safety_htaccess($path . $sub_folder);
 
         //create empty index so nobody can see the contents
-        $fo  = @fopen($path . $sub_folder . '/index.html', 'w');
+        $fo = @fopen($path . $sub_folder . '/index.html', 'w');
         $fo2 = @fopen($path . $sub_folder . '/thumbs/index.html', 'w');
         @fwrite($fo, '<a href="https://kleeja.com"><p>KLEEJA ..</p></a>');
         @fwrite($fo2, '<a href="https://kleeja.com"><p>KLEEJA ..</p></a>');
@@ -124,12 +130,13 @@ function make_folder($folder)
 
 /**
  * Change the file name depend on given decoding type
- * @param mixed $filename
- * @param mixed $i_loop
- * @param mixed $ext
- * @param mixed $decoding_type
+ * @param  string $filename
+ * @param  int    $i_loop
+ * @param  string $ext
+ * @param  string $decoding_type
+ * @return string
  */
-function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
+function change_filename_decoding(string $filename, int $i_loop, string $ext, string $decoding_type = ''): string
 {
     global $config;
 
@@ -137,111 +144,105 @@ function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
 
     $decoding_type = empty($decoding_type) ? $config['decode'] : $decoding_type;
 
-
     //change it, time..
-    if ($decoding_type == 'time' || $decoding_type == 1)
-    {
-        list($usec, $sec) = explode(' ', microtime());
-        $extra            = str_replace('.', '', (float) $usec + (float) $sec);
-        $return           = $extra . $i_loop . '.' . $ext;
+    if ($decoding_type == 'time' || $decoding_type == 1) {
+        [$usec, $sec] = explode(' ', microtime());
+        $extra = str_replace('.', '', (float) $usec + (float) $sec);
+        $return = $extra . $i_loop . '.' . $ext;
     }
     // md5
-    elseif ($decoding_type == 'md5' || $decoding_type == 2)
-    {
-        list($usec, $sec)    = explode(' ', microtime());
-        $extra               = md5(((float) $usec + (float) $sec) . $filename);
-        $extra               = substr($extra, 0, 12);
-        $return              = $extra . $i_loop . '.' . $ext;
+    elseif ($decoding_type == 'md5' || $decoding_type == 2) {
+        [$usec, $sec] = explode(' ', microtime());
+        $extra = md5((float) $usec + (float) $sec . $filename);
+        $extra = substr($extra, 0, 12);
+        $return = $extra . $i_loop . '.' . $ext;
     }
     // exists before, change it a little
-    elseif ($decoding_type == 'exists')
-    {
-        $return = substr($filename, 0, -(strlen($ext)+1)) . '_' . substr(md5(microtime(true) . $i_loop), rand(0, 20), 5) . '.' . $ext;
+    elseif ($decoding_type == 'exists') {
+        $return =
+            substr($filename, 0, -(strlen($ext) + 1)) .
+            '_' .
+            substr(md5(microtime(true) . $i_loop), rand(0, 20), 5) .
+            '.' .
+            $ext;
     }
     //nothing
     else {
-        $filename = substr($filename, 0, -(strlen($ext)+1));
-        $return   = preg_replace('/[,.?\/*&^\\\$%#@()_!|"\~\'><=+}{; ]/', '-', $filename) . '.' . $ext;
-        $return   = preg_replace('/-+/', '-', $return);
+        $filename = substr($filename, 0, -(strlen($ext) + 1));
+        $return = preg_replace('/[,.?\/*&^\\\$%#@()_!|"\~\'><=+}{; ]/', '-', $filename) . '.' . $ext;
+        $return = preg_replace('/-+/', '-', $return);
     }
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('change_filename_decoding_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('change_filename_decoding_func', get_defined_vars()))
+        ? extract($plugin_run_result)
+        : null; //run hook
 
     return $return;
 }
 
 /**
  * Change the file name depend on used templates {rand:..} {date:..}
- * @param mixed $filename
+ * @param  string $filename
+ * @return string
  */
-function change_filename_templates($filename)
+function change_filename_templates(string $filename): string
 {
     //random number...
-    if (preg_match('/{rand:([0-9]+)}/i', $filename, $m))
-    {
+    if (preg_match('/{rand:([0-9]+)}/i', $filename, $m)) {
         $filename = preg_replace('/{rand:([0-9]+)}/i', substr(md5(time()), 0, $m[1]), $filename);
     }
 
     //current date
-    if (preg_match('/{date:([a-zA-Z-_]+)}/i', $filename, $m))
-    {
+    if (preg_match('/{date:([a-zA-Z-_]+)}/i', $filename, $m)) {
         $filename = preg_replace('/{date:([a-zA-Z-_]+)}/i', date($m[1]), $filename);
     }
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('change_filename_templates_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('change_filename_templates_func', get_defined_vars()))
+        ? extract($plugin_run_result)
+        : null; //run hook
 
     return $filename;
 }
 
 /**
  * check mime type of uploaded file
+ * @param  string $given_file_mime
+ * @param  string $file_ext
+ * @param  string $file_path
  * @return bool
- * @param  mixed $given_file_mime
- * @param  mixed $file_ext
- * @param  mixed $file_path
  */
-function check_mime_type($given_file_mime, $file_ext, $file_path)
+function check_mime_type(string $given_file_mime, string $file_ext, string $file_path): bool
 {
     $return = '';
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_check_mime_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run hook
+    is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_check_mime_func', get_defined_vars()))
+        ? extract($plugin_run_result)
+        : null; //run hook
 
-    if ($return !== '')
-    {
+    if ($return !== '') {
         return $return;
     }
 
-
     $mime = '';
 
-    if (function_exists('finfo_open') || function_exists('mime_content_type'))
-    {
-        if (function_exists('mime_content_type'))
-        {
+    if (function_exists('finfo_open') || function_exists('mime_content_type')) {
+        if (function_exists('mime_content_type')) {
             $mime = @mime_content_type($file_path);
-        }
-        else {
+        } else {
             $f_info = finfo_open(FILEINFO_MIME_TYPE);
-            $mime   = finfo_file($f_info, $file_path);
+            $mime = finfo_file($f_info, $file_path);
             finfo_close($f_info);
         }
-    }
-    elseif (! empty($given_file_mime))
-    {
+    } elseif (!empty($given_file_mime)) {
         $mime = $given_file_mime;
     }
 
-
-    if (! empty($mime))
-    {
+    if (!empty($mime)) {
         $supposed_mime = explode('/', get_mime_for_header($file_ext), 2);
 
-        if (is_array($supposed_mime))
-        {
-            foreach ($supposed_mime as $s_mime)
-            {
-                if (strpos($mime, $s_mime) !== false)
-                {
+        if (is_array($supposed_mime)) {
+            foreach ($supposed_mime as $s_mime) {
+                if (strpos($mime, $s_mime) !== false) {
                     return true;
                 }
             }
@@ -250,11 +251,9 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
         }
     }
 
-
     //if normal checks failed!
 
-    if (@filesize($file_path) > 6*(1000*1024))
-    {
+    if (@filesize($file_path) > 6 * (1000 * 1024)) {
         return true;
     }
 
@@ -262,60 +261,54 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
     //<.? i cant add it here cuz alot of files contain it
     $maybe_bad_codes_are = ['<' . 'script', 'zend', 'base64_decode', '<' . '?' . 'php', '<' . '?' . '='];
 
-    if (! ($data = @file_get_contents($file_path)))
-    {
+    if (!($data = @file_get_contents($file_path))) {
         return true;
     }
 
-
-    foreach ($maybe_bad_codes_are as $i)
-    {
-        if (strpos(strtolower($data), $i) !== false)
-        {
+    foreach ($maybe_bad_codes_are as $i) {
+        if (strpos(strtolower($data), $i) !== false) {
             return false;
         }
     }
 
-
     return true;
 }
 
-
 /**
  * to prevent flooding at uploading
- * @param mixed $user_id
+ * @param  int  $user_id
+ * @return bool
  */
-function user_is_flooding($user_id = '-1')
+function user_is_flooding(int $user_id = -1): bool
 {
     global $SQL, $dbprefix, $config;
 
     $return = 'empty';
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('user_is_flooding_func', get_defined_vars())) ? extract($plugin_run_result) : null; //run
+    is_array($plugin_run_result = Plugins::getInstance()->run('user_is_flooding_func', get_defined_vars()))
+        ? extract($plugin_run_result)
+        : null; //run
 
-    if ($return != 'empty')
-    {
+    if ($return != 'empty') {
         return $return;
     }
 
     //if the value is zero (means that the function is disabled) then return false immediately
-    if (($user_id == '-1' && $config['guestsectoupload'] == 0) || $user_id != '-1' && $config['usersectoupload'] == 0)
-    {
+    if (($user_id == -1 && $config['guestsectoupload'] == 0) || ($user_id != -1 && $config['usersectoupload'] == 0)) {
         return false;
     }
 
     //In my point of view I see 30 seconds is not bad rate to stop flooding ..
     //even though this minimum rate sometime isn't enough to protect Kleeja from flooding attacks
-    $time = time() - ($user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']);
+    $time = time() - ($user_id == -1 ? $config['guestsectoupload'] : $config['usersectoupload']);
 
     $query = [
-        'SELECT'          => 'f.time',
-        'FROM'            => "{$dbprefix}files f",
-        'WHERE'           => 'f.time >= ' . $time . ' AND f.user_ip = \'' . $SQL->escape(get_ip()) . '\'',
+        'SELECT' => 'f.time',
+        'FROM' => "{$dbprefix}files f",
+        'WHERE' => 'f.time >= ' . $time . ' AND f.user_ip = \'' . $SQL->escape(get_ip()) . '\'',
     ];
 
-    if ($SQL->num_rows($SQL->build($query)))
-    {
+    if ($SQL->num_rows($SQL->build($query))) {
         return true;
     }
 
