@@ -554,9 +554,9 @@ switch ($current_go_case) {
 
         //do some of the queue ..
         if (preg_match('/:del_[a-z0-9]{0,3}calls:/i', $config['queue'])) {
-            klj_clean_old('call', strpos(':del_allcalls:', $config['queue']) !== false ? 'all' : 30);
+            klj_clean_old('call', strpos(':del_allcalls:', $config['queue']) !== false ? 'all' : '30');
         } elseif (preg_match('/:del_[a-z0-9]{0,3}reports:/i', $config['queue'])) {
-            klj_clean_old('reports', strpos(':del_allreports:', $config['queue']) !== false ? 'all' : 30);
+            klj_clean_old('reports', strpos(':del_allreports:', $config['queue']) !== false ? 'all' : '30');
         } elseif ((int) $config['del_f_day'] > 0) {
             klj_clean_old_files($config['klj_clean_files_from']);
         }
@@ -593,7 +593,7 @@ switch ($current_go_case) {
             //
             case 'sync_files':
                 //no start ? or there
-                $start = !ig('start') ? false : g('start', 'int');
+                $start = !ig('start') ? 0 : g('start', 'int');
 
                 $end = sync_total_files(true, $start);
 
@@ -629,7 +629,7 @@ switch ($current_go_case) {
             //
             case 'sync_images':
                 //no start ? or there
-                $start = !ig('start') ? false : g('start', 'int');
+                $start = !ig('start') ? 0 : g('start', 'int');
 
                 $end = sync_total_files(false, $start);
 

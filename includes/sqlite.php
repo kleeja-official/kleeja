@@ -17,16 +17,15 @@ if (!defined('SQL_LAYER')):
 
     class KleejaDatabase
     {
-        /** @var SQLITE3 */
-        private $connect_id = null;
-        /** @var SQLite3Result */
+        private ?SQLite3 $connect_id = null;
+        /** @var SQLite3Result|bool unset between queries, so it stays untyped */
         private $result = null;
-        public $dbprefix = '';
-        private $dbname = '';
-        public $query_num = 0;
-        private $in_transaction = 0;
-        public $debugr = [];
-        private $show_errors = true;
+        public string $dbprefix = '';
+        private string $dbname = '';
+        public int $query_num = 0;
+        private bool $in_transaction = false;
+        public array $debugr = [];
+        private bool $show_errors = true;
 
         /**
          * connect
@@ -37,8 +36,13 @@ if (!defined('SQL_LAYER')):
          * @param string $db_name     not needed
          * @param string $dbprefix    tables prefix
          */
-        public function __construct($location, $db_username, $db_password, $db_name, $dbprefix)
-        {
+        public function __construct(
+            string $location,
+            string $db_username,
+            string $db_password,
+            string $db_name,
+            string $dbprefix,
+        ) {
             try {
                 if (class_exists('SQLite3')) {
                     $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
@@ -78,13 +82,13 @@ if (!defined('SQL_LAYER')):
             $this->close();
         }
 
-        public function is_connected()
+        public function is_connected(): bool
         {
             return !(is_null($this->connect_id) || empty($this->connect_id));
         }
 
         // close the connection
-        public function close()
+        public function close(): bool
         {
             if (!$this->is_connected()) {
                 return true;
@@ -106,16 +110,16 @@ if (!defined('SQL_LAYER')):
         }
 
         // encoding functions
-        public function set_utf8()
+        public function set_utf8(): void
         {
             //$this->set_names('utf8');
         }
 
-        public function set_names($charset) {}
+        public function set_names(string $charset): void {}
 
         public function client_encoding() {}
 
-        public function version()
+        public function version(): string
         {
             return SQLite3::version()['versionString'];
         }
@@ -127,7 +131,7 @@ if (!defined('SQL_LAYER')):
          * @param  boolean $transaction
          * @return bool
          */
-        public function query($query, $transaction = false)
+        public function query(string $query, bool $transaction = false)
         {
             //no connection
             if (!$this->is_connected()) {
@@ -218,7 +222,7 @@ if (!defined('SQL_LAYER')):
          * @param  array  $query
          * @return string
          */
-        public function build($query)
+        public function build(array $query)
         {
             $sql = '';
 
@@ -289,7 +293,7 @@ if (!defined('SQL_LAYER')):
          * @param  SQLite3Result $query_id optional
          * @return bool
          */
-        public function freeresult($query_id = 0)
+        public function freeresult($query_id = 0): bool
         {
             if (!$query_id) {
                 $query_id = $this->result;
@@ -369,8 +373,11 @@ if (!defined('SQL_LAYER')):
          * @param  string $msg
          * @return string
          */
-        public function escape(string $msg)
+        public function escape(?string $msg): string
         {
+            if (!$msg) {
+                return '';
+            }
             $msg = htmlspecialchars($msg, ENT_QUOTES);
             $msg = $this->real_escape($msg);
 
@@ -379,11 +386,10 @@ if (!defined('SQL_LAYER')):
 
         /**
          * escape
-         * @param  string     $msg
-         * @return int|string
+         * @param  string $msg
+         * @return string
          */
-
-        public function real_escape($msg)
+        public function real_escape(string $msg): string
         {
             return SQLite3::escapeString($msg);
         }
@@ -403,7 +409,7 @@ if (!defined('SQL_LAYER')):
          *
          * @return string
          */
-        public function server_info()
+        public function server_info(): string
         {
             return 'SQLite3 ' . $this->version();
         }
@@ -414,12 +420,12 @@ if (!defined('SQL_LAYER')):
          * @param  string $msg
          * @return void
          */
-        private function error_msg($msg)
+        private function error_msg(string $msg): void
         {
             if (!$this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS'))) {
                 kleeja_log('SQLite3: ' . $msg);
 
-                return false;
+                return;
             }
 
             [$error_no, $error_msg] = $this->get_error();
@@ -519,7 +525,7 @@ if (!defined('SQL_LAYER')):
          *
          * @return array
          */
-        public function get_error()
+        public function get_error(): array
         {
             if ($this->connect_id) {
                 return [$this->connect_id->lastErrorCode(), $this->connect_id->lastErrorMsg()];

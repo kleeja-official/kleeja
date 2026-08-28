@@ -24,18 +24,18 @@ class Plugins
     /**
      * List of loaded plugins
      */
-    private $plugins = [];
+    private array $plugins = [];
 
     /**
      * All hooks from all plugins listed in this variable
      */
-    private $all_plugins_hooks = [];
-    private $installed_plugins = [];
-    private $installed_plugins_info = [];
+    private array $all_plugins_hooks = [];
+    private array $installed_plugins = [];
+    private array $installed_plugins_info = [];
 
-    private $plugin_path = PATH . 'plugins';
+    private string $plugin_path = PATH . 'plugins';
 
-    private static $instance;
+    private static ?Plugins $instance = null;
 
     /**
      * Initiating the class
@@ -74,7 +74,7 @@ class Plugins
      * Load the plugins from root/plugins folder
      * @return void
      */
-    private function load_enabled_plugins()
+    private function load_enabled_plugins(): void
     {
         $dh = opendir($this->plugin_path);
 
@@ -97,7 +97,7 @@ class Plugins
      * @param  string $plugin_name
      * @return bool
      */
-    private function fetch_plugin($plugin_name)
+    private function fetch_plugin(string $plugin_name): bool
     {
         //load the plugin
         @include_once $this->plugin_path . '/' . $plugin_name . '/init.php';
@@ -166,7 +166,7 @@ class Plugins
      * @param  string $plugin_name
      * @return array
      */
-    public function installed_plugin_info($plugin_name)
+    public function installed_plugin_info(string $plugin_name): array
     {
         if (!empty($this->installed_plugins_info[$plugin_name])) {
             return $this->installed_plugins_info[$plugin_name];
@@ -182,7 +182,7 @@ class Plugins
      * @param  array  $args
      * @return array
      */
-    public function run($hook_name, $args = [])
+    public function run(string $hook_name, array $args = []): array
     {
         $return_value = $to_be_returned = [];
 
@@ -209,7 +209,7 @@ class Plugins
      *
      * @return Plugins
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
@@ -222,7 +222,7 @@ class Plugins
      * return debug info about plugins system
      * @return array
      */
-    public function getDebugInfo()
+    public function getDebugInfo(): array
     {
         if (!defined('DEV_STAGE')) {
             return [];
@@ -235,7 +235,7 @@ class Plugins
     }
 }
 
-function runHook(string $hookName, array $definedVariables)
+function runHook(string $hookName, array $definedVariables): array
 {
     return Plugins::getInstance()->run($hookName, $definedVariables);
 }

@@ -33,12 +33,12 @@ if (!defined('IN_COMMON')) {
 
 class PasswordHash
 {
-    public $itoa64;
-    public $iteration_count_log2;
-    public $portable_hashes;
-    public $random_state;
+    public string $itoa64;
+    public int $iteration_count_log2;
+    public bool $portable_hashes;
+    public string $random_state;
 
-    public function __construct($iteration_count_log2, $portable_hashes)
+    public function __construct(int $iteration_count_log2, bool $portable_hashes)
     {
         $this->itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
@@ -52,7 +52,7 @@ class PasswordHash
         $this->random_state = microtime() . getmypid();
     }
 
-    public function get_random_bytes($count)
+    public function get_random_bytes(int $count): string
     {
         $output = '';
 
@@ -75,7 +75,7 @@ class PasswordHash
         return $output;
     }
 
-    public function encode64($input, $count)
+    public function encode64(string $input, int $count): string
     {
         $output = '';
         $i = 0;
@@ -106,7 +106,7 @@ class PasswordHash
         return $output;
     }
 
-    public function gensalt_private($input)
+    public function gensalt_private(string $input): string
     {
         $output = '$P$';
         $output .= $this->itoa64[min($this->iteration_count_log2 + (PHP_VERSION >= '5' ? 5 : 3), 30)];
@@ -115,7 +115,7 @@ class PasswordHash
         return $output;
     }
 
-    public function crypt_private($password, $setting)
+    public function crypt_private(string $password, string $setting): string
     {
         $output = '*0';
 
@@ -165,7 +165,7 @@ class PasswordHash
         return $output;
     }
 
-    public function gensalt_extended($input)
+    public function gensalt_extended(string $input): string
     {
         $count_log2 = min($this->iteration_count_log2 + 8, 24);
         // This should be odd to not reveal weak DES keys, and the
@@ -183,7 +183,7 @@ class PasswordHash
         return $output;
     }
 
-    public function gensalt_blowfish($input)
+    public function gensalt_blowfish(string $input): string
     {
         // This one needs to use a different order of characters and a
         // different encoding scheme from the one in encode64() above.
@@ -226,7 +226,7 @@ class PasswordHash
         return $output;
     }
 
-    public function HashPassword($password)
+    public function HashPassword(string $password): string
     {
         $random = '';
 
@@ -265,7 +265,7 @@ class PasswordHash
         return '*';
     }
 
-    public function CheckPassword($password, $stored_hash)
+    public function CheckPassword(string $password, string $stored_hash): bool
     {
         $hash = $this->crypt_private($password, $stored_hash);
 

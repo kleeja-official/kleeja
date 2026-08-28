@@ -22,7 +22,7 @@ if (!defined('IN_COMMON')) {
  * @param  int       $dh
  * @return bool|null
  */
-function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
+function helper_thumb(string $source_path, string $ext, string $dest_image, int $dw, int $dh): ?bool
 {
     //no file, quit it
     if (!file_exists($source_path)) {
@@ -159,12 +159,13 @@ function helper_thumb($source_path, $ext, $dest_image, $dw, $dh)
 /**
  * generating thumb from image using Imagick
  *
- * @param mixed $x
- * @param mixed $y
- * @param mixed $cx
- * @param mixed $cy
+ * @param  int   $x
+ * @param  int   $y
+ * @param  int   $cx
+ * @param  int   $cy
+ * @return array
  */
-function scale_image_imagick($x, $y, $cx, $cy)
+function scale_image_imagick(int $x, int $y, int $cx, int $cy): array
 {
     //Set the default NEW values to be the old, in case it doesn't even need scaling
     [$nx, $ny] = [$x, $y];
@@ -198,7 +199,7 @@ function scale_image_imagick($x, $y, $cx, $cy)
     return [$nx, $ny];
 }
 
-function helper_thumb_imagick($name, $ext, $filename, $new_w, $new_h)
+function helper_thumb_imagick(string $name, string $ext, string $filename, int $new_w, int $new_h): void
 {
     //intiating the Imagick lib
     $im = new Imagick($name);

@@ -14,44 +14,44 @@ if (!defined('IN_COMMON')) {
 
 class FetchFile
 {
-    private $url;
-    private $timeout = 60;
-    private $destinationPath = '';
-    private $maxRedirects = 3;
-    private $binary = false;
+    private string $url;
+    private int $timeout = 60;
+    private string $destinationPath = '';
+    private int $maxRedirects = 3;
+    private bool $binary = false;
 
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $this->url = $url;
     }
 
-    public static function make($url)
+    public static function make(string $url): self
     {
         return new static($url);
     }
 
-    public function setTimeOut($seconds)
+    public function setTimeOut(int $seconds): self
     {
         $this->timeout = $seconds;
 
         return $this;
     }
 
-    public function setDestinationPath($path)
+    public function setDestinationPath(string $path): self
     {
         $this->destinationPath = $path;
 
         return $this;
     }
 
-    public function setMaxRedirects($limit)
+    public function setMaxRedirects(int $limit): self
     {
         $this->maxRedirects = $limit;
 
         return $this;
     }
 
-    public function isBinaryFile($val)
+    public function isBinaryFile(bool $val): self
     {
         $this->binary = $val;
 
@@ -89,7 +89,7 @@ class FetchFile
         return $result;
     }
 
-    protected function finishUp()
+    protected function finishUp(): void
     {
         if (defined('KJ_SESSION')) {
             session_id(constant('KJ_SESSION'));

@@ -23,7 +23,7 @@ exit();
 //this function will just make an image
 //source : http://webcheatsheet.com/php/create_captcha_protection.php
 //
-function kleeja_cpatcha_image()
+function kleeja_cpatcha_image(): void
 {
     //Let's generate a totally random string using md5
     $md5_hash = md5(rand(0, 999));

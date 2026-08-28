@@ -17,11 +17,10 @@ if (!defined('IN_COMMON')) {
  * return nothing because if it work then ok , and if not then ok too :)
  * @todo text support
  *
- * @param            $name
- * @param            $ext
- * @return bool|void
+ * @param string $name
+ * @param string $ext
  */
-function helper_watermark($name, $ext)
+function helper_watermark(string $name, string $ext): void
 {
     $return = false;
 
@@ -116,7 +115,7 @@ function helper_watermark($name, $ext)
 //
 // generate watermarked images by imagick
 //
-function helper_watermark_imagick($name, $ext, $logo)
+function helper_watermark_imagick(string $name, string $ext, string $logo): void
 {
     //Not just me babe, All the places misses you ..
     $im = new Imagick($name);

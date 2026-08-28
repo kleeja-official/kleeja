@@ -15,7 +15,7 @@ if (!defined('IN_COMMON')) {
 
 class KleejaCookie
 {
-    public function set(string $name, string $value, string $expire)
+    public function set(string $name, string $value, int $expire): void
     {
         global $config;
 

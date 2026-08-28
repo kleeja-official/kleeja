@@ -25,7 +25,7 @@ $SQL->set_utf8();
 //
 class KleejaCache
 {
-    public function get($name)
+    public function get(string $name)
     {
         if (defined('DEV_STAGE')) {
             return false;
@@ -42,16 +42,14 @@ class KleejaCache
         }
     }
 
-    public function exists($name)
+    public function exists(string $name): bool
     {
         $name = preg_replace('![^a-z0-9_]!', '_', $name);
 
-        if (file_exists(PATH . 'cache/' . $name . '.php')) {
-            return true;
-        }
+        return file_exists(PATH . 'cache/' . $name . '.php');
     }
 
-    public function save($name, $data, $time = 86400)
+    public function save(string $name, $data, int $time = 86400): void
     {
         $name = preg_replace('![^a-z0-9_]!i', '_', $name);
         $data_for_save = '<?' . 'php' . "\n";
@@ -70,7 +68,7 @@ class KleejaCache
         }
     }
 
-    public function clean($name)
+    public function clean($name): void
     {
         if (is_array($name)) {
             foreach ($name as $n) {

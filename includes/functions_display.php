@@ -17,7 +17,7 @@ if (!defined('IN_COMMON')) {
  * @param string $title
  * @param string $extra append html code to head tag
  */
-function Saaheader($title = '', $extra = '')
+function Saaheader(string $title = '', string $extra = ''): void
 {
     global $tpl, $usrcp, $lang, $olang, $user_is, $username, $config;
     global $extras, $script_encoding, $errorpage, $userinfo, $charset;
@@ -165,7 +165,7 @@ function Saaheader($title = '', $extra = '')
 /**
  * print kleeja footer
  */
-function Saafooter()
+function Saafooter(): void
 {
     global $tpl, $SQL, $starttm, $config, $usrcp, $lang, $olang;
     global $do_gzip_compress, $script_encoding, $errorpage, $extras, $userinfo;
@@ -258,7 +258,7 @@ function Saafooter()
  * @param  int    $size in bytes
  * @return string
  */
-function readable_size($size)
+function readable_size(int $size): string
 {
     $sizes = [' B', ' KB', ' MB', ' GB', ' TB', 'PB', ' EB'];
     $ext = $sizes[0];
@@ -278,7 +278,7 @@ function readable_size($size)
 /**
  * show an error message
  *
- * @param             $message
+ * @param string      $message
  * @param string      $title
  * @param bool        $exit
  * @param bool|string $redirect          a link to redirect after showing the message, or false
@@ -287,14 +287,14 @@ function readable_size($size)
  * @param string      $style             is err or info, set by default, no need to fill
  */
 function kleeja_err(
-    $message,
-    $title = '',
-    $exit = true,
+    string $message,
+    string $title = '',
+    bool $exit = true,
     $redirect = false,
-    $rs = 2,
-    $extra_code_header = '',
-    $style = 'err',
-) {
+    int $rs = 2,
+    string $extra_code_header = '',
+    string $style = 'err',
+): void {
     global $text, $tpl, $SQL;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_err_func', get_defined_vars()))
@@ -320,15 +320,21 @@ function kleeja_err(
 /**
  * show an information message
  *
- * @param             $message
+ * @param string      $message
  * @param string      $title
  * @param bool        $exit
  * @param bool|string $redirect          a link to redirect after showing the message, or false
  * @param int         $rs                delay in seconds if redirect parameter is set
  * @param string      $extra_code_header to append a code to head tag
  */
-function kleeja_info($message, $title = '', $exit = true, $redirect = false, $rs = 5, $extra_code_header = '')
-{
+function kleeja_info(
+    string $message,
+    string $title = '',
+    bool $exit = true,
+    $redirect = false,
+    int $rs = 5,
+    string $extra_code_header = '',
+): void {
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_info_func', get_defined_vars()))
         ? extract($plugin_run_result)
         : null; //run hook
@@ -339,7 +345,7 @@ function kleeja_info($message, $title = '', $exit = true, $redirect = false, $rs
 /**
  * Show debug information
  */
-function kleeja_debug()
+function kleeja_debug(): void
 {
     global $SQL, $do_gzip_compress, $all_plg_hooks;
 
@@ -416,7 +422,7 @@ function kleeja_debug()
  * @param string $msg_text    content
  * @param bool   $error       is it an error or an info message
  */
-function big_error($error_title, $msg_text, $error = true)
+function big_error(string $error_title, string $msg_text, bool $error = true): void
 {
     global $SQL;
     echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">' . "\n";
@@ -456,7 +462,7 @@ function big_error($error_title, $msg_text, $error = true)
  * @return mixed
  *
  */
-function redirect($url, $header = true, $exit = true, $sec = 0, $return = false)
+function redirect(string $url, bool $header = true, bool $exit = true, int $sec = 0, bool $return = false)
 {
     global $SQL;
 
@@ -503,7 +509,7 @@ function redirect($url, $header = true, $exit = true, $sec = 0, $return = false)
  * @param  string $request_id
  * @return string
  */
-function kleeja_add_form_key_get($request_id)
+function kleeja_add_form_key_get(string $request_id): string
 {
     global $config;
 
@@ -516,7 +522,7 @@ function kleeja_add_form_key_get($request_id)
     return $return;
 }
 
-function kleeja_check_form_key_get($request_id)
+function kleeja_check_form_key_get(string $request_id): bool
 {
     global $config;
 
@@ -540,7 +546,7 @@ function kleeja_check_form_key_get($request_id)
  * @param  string $form_name
  * @return string
  */
-function kleeja_add_form_key($form_name)
+function kleeja_add_form_key(string $form_name): string
 {
     global $config;
     $now = time();
@@ -565,7 +571,7 @@ function kleeja_add_form_key($form_name)
  * @param  int    $require_time in seconds
  * @return bool
  */
-function kleeja_check_form_key($form_name, $require_time = 300)
+function kleeja_check_form_key(string $form_name, int $require_time = 300): bool
 {
     global $config;
 
@@ -600,11 +606,11 @@ function kleeja_check_form_key($form_name, $require_time = 300)
  * Link generator
  * TODO to be edited
  * Files can be many links styles, so this will generate the current style of link
- * @param         $pid
+ * @param  string $pid
  * @param  array  $extra
  * @return string
  */
-function kleeja_get_link($pid, $extra = [])
+function kleeja_get_link(string $pid, array $extra = []): string
 {
     global $config;
 
@@ -670,7 +676,7 @@ function kleeja_get_link($pid, $extra = [])
  * @param  array  $extra    variables to pass to the html block
  * @return mixed
  */
-function get_up_tpl_box($box_name, $extra = [])
+function get_up_tpl_box(string $box_name, array $extra = []): string
 {
     global $THIS_STYLE_PATH_ABS, $config;
     static $boxes;
@@ -736,7 +742,7 @@ function get_up_tpl_box($box_name, $extra = [])
  * @param  string     $style_name
  * @return array|bool
  */
-function kleeja_style_info($style_name)
+function kleeja_style_info(string $style_name)
 {
     $inf_path = PATH . 'styles/' . $style_name . '/info.txt';
 
@@ -790,7 +796,7 @@ function kleeja_style_info($style_name)
  * @param  string $b browser name, like mozilla
  * @return bool
  */
-function is_browser($b)
+function is_browser(string $b): bool
 {
     //is there , which mean -OR-
     if (strpos($b, ',') !== false) {
@@ -918,7 +924,7 @@ function is_browser($b)
  * @param string $content
  * @param string $menu
  */
-function echo_ajax($code_number, $content, $menu = '')
+function echo_ajax(int $code_number, string $content, string $menu = ''): void
 {
     global $SQL;
     $SQL->close();
@@ -930,7 +936,7 @@ function echo_ajax($code_number, $content, $menu = '')
  * Send an answer for ajax request [ARRAY]
  * @param array $array
  */
-function echo_array_ajax($array)
+function echo_array_ajax(array $array): void
 {
     global $SQL;
     $SQL->close();
@@ -942,10 +948,10 @@ function echo_array_ajax($array)
  * show date in a human-readable-text
  * @param  int    $time       timestamp
  * @param  bool   $human_time return a readable time, like today, 1 hour ago
- * @param  bool   $format     date format like d-m-y
+ * @param  string $format     date format like d-m-y
  * @return string
  */
-function kleeja_date($time, $human_time = true, $format = false)
+function kleeja_date(int $time, bool $human_time = true, string $format = ''): string
 {
     global $lang, $config;
 
@@ -1009,7 +1015,7 @@ function kleeja_date($time, $human_time = true, $format = false)
  * World Time Zones
  * @return array
  */
-function time_zones()
+function time_zones(): array
 {
     static $regions = [
         DateTimeZone::AFRICA,
@@ -1045,7 +1051,7 @@ function time_zones()
  * @param  array  $select_options in case of select type, provide options array ([[title=>value], [title=>value]]
  * @return string input html
  */
-function configField($name, $type = 'text', $select_options = [])
+function configField(string $name, string $type = 'text', array $select_options = []): string
 {
     switch ($type) {
         default:
@@ -1103,7 +1109,7 @@ function configField($name, $type = 'text', $select_options = [])
  * @param  int    $until
  * @return string Short string
  */
-function shorten_text($text, $until = 30)
+function shorten_text(string $text, int $until = 30): string
 {
     $until = $until < 4 ? 4 : $until;
 

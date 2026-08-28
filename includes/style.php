@@ -15,17 +15,17 @@ if (!defined('IN_COMMON')) {
 
 class kleeja_style
 {
-    protected $vars; //Reference to $GLOBALS
-    protected $loop = [];
-    protected $reg = ['var' => '/([{]{1,2})+([A-Z0-9_\.]+)[}]{1,2}/i'];
-    public $caching = true; //save templates as caches to not compiled a lot of times
+    protected array $vars = []; //Reference to $GLOBALS
+    protected array $loop = [];
+    protected array $reg = ['var' => '/([{]{1,2})+([A-Z0-9_\.]+)[}]{1,2}/i'];
+    public bool $caching = true; //save templates as caches to not compiled a lot of times
 
     /**
      * Function to load a template file.
-     * @param            $template_name
-     * @param null|mixed $style_path
+     * @param string $template_name
+     * @param string $style_path
      */
-    protected function _load_template($template_name, string $style_path = '')
+    protected function _load_template(string $template_name, string $style_path = ''): void
     {
         global $config, $THIS_STYLE_PATH_ABS, $STYLE_PATH_ADMIN_ABS, $DEFAULT_PATH_ADMIN_ABS;
 
@@ -53,10 +53,11 @@ class kleeja_style
 
     /**
      * check if a template exists or not
-     * @param        $template_name
-     * @param string $style_path
+     * @param  string       $template_name
+     * @param  string       $style_path
+     * @return string|false the template path, or false when it does not exist
      */
-    public function template_exists($template_name, string $style_path = '')
+    public function template_exists(string $template_name, string $style_path = '')
     {
         global $config, $STYLE_PATH_ADMIN_ABS, $THIS_STYLE_PATH_ABS, $DEFAULT_PATH_ADMIN_ABS;
 
@@ -107,10 +108,10 @@ class kleeja_style
 
     /**
      * Function to parse the Template Tags
-     * @param mixed $html
-     * @param mixed $template_name
+     * @param string $html
+     * @param string $template_name
      */
-    protected function _parse($html, $template_name = '')
+    protected function _parse(string $html, string $template_name = ''): string
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('style_parse_func', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -179,10 +180,10 @@ class kleeja_style
 
     /**
      * if tag
-     * @param         $matches
+     * @param  array  $matches
      * @return string
      */
-    protected function _if_callback($matches)
+    protected function _if_callback(array $matches): string
     {
         $atts = call_user_func(['kleeja_style', '_get_attributes'], $matches[0]);
         $condition = '';
@@ -216,7 +217,7 @@ class kleeja_style
                 : '<?php }elseif(' . $condition . '){ ?>');
     }
 
-    protected function parse_condition($condition, $is_loop)
+    protected function parse_condition(string $condition, bool $is_loop): string
     {
         $char = [' eq ', ' lt ', ' gt ', ' lte ', ' gte ', ' neq ', '==', '!=', '>=', '<=', '<', '>'];
         $reps = ['==', '<', '>', '<=', '>=', '!=', '==', '!=', '>=', '<=', '<', '>'];
@@ -254,10 +255,10 @@ class kleeja_style
 
     /**
      * make variable printable
-     * @param         $matches
+     * @param  array  $matches
      * @return string
      */
-    protected function _vars_callback($matches)
+    protected function _vars_callback(array $matches): string
     {
         $variable = call_user_func(['kleeja_style', '_var_callback'], $matches);
 
@@ -270,10 +271,10 @@ class kleeja_style
 
     /**
      * variable replace
-     * @param         $matches
+     * @param  array|string $matches
      * @return string
      */
-    protected function _var_callback($matches)
+    protected function _var_callback($matches): string
     {
         if (!is_array($matches)) {
             preg_match(kleeja_style::reg('var'), $matches, $matches);
@@ -292,20 +293,20 @@ class kleeja_style
 
     /**
      * att variable replace
-     * @param         $matches
+     * @param  array  $matches
      * @return string
      */
-    protected function _var_callback_att($matches)
+    protected function _var_callback_att(array $matches): string
     {
         return trim($matches[1]) == '{' ? $this->_var_callback($matches) : '{' . $this->_var_callback($matches) . '}';
     }
 
     /**
      * get reg var
-     * @param        $var
-     * @return mixed
+     * @param  string $var
+     * @return string
      */
-    protected function reg($var)
+    protected function reg(string $var): string
     {
         $vars = get_class_vars(__CLASS__);
 
@@ -314,10 +315,10 @@ class kleeja_style
 
     /**
      * get tag  attributes
-     * @param        $tag
+     * @param  string $tag
      * @return array
      */
-    protected function _get_attributes($tag)
+    protected function _get_attributes(string $tag): array
     {
         preg_match_all('/([a-z]+)="(.+)?"/iU', $tag, $attribute);
 
@@ -338,21 +339,21 @@ class kleeja_style
 
     /**
      * Assign Variables
-     * @param $var
-     * @param $to
+     * @param string $var
+     * @param mixed  $to
      */
-    public function assign($var, $to)
+    public function assign(string $var, $to): void
     {
         $GLOBALS[$var] = $to;
     }
 
     /**
      * load parser and return page content
-     * @param               $template_name
-     * @param  string       $style_path    optional, good for plugins
-     * @return mixed|string
+     * @param  string $template_name
+     * @param  string $style_path    optional, good for plugins
+     * @return string
      */
-    public function display($template_name, string $style_path = '')
+    public function display(string $template_name, string $style_path = ''): string
     {
         global $config;
 
@@ -376,10 +377,10 @@ class kleeja_style
 
     /**
      * generate admin option block
-     * @param         $html
+     * @param  string $html
      * @return string
      */
-    public function admindisplayoption($html)
+    public function admindisplayoption(string $html): string
     {
         $this->vars = $GLOBALS;
 
@@ -406,11 +407,11 @@ class kleeja_style
 
     /**
      * change name of template to be valid
-     * @param             $name
-     * @param  null|mixed $style_path
-     * @return mixed
+     * @param  string      $name
+     * @param  null|string $style_path
+     * @return string
      */
-    protected function re_name_tpl($name, $style_path = null)
+    protected function re_name_tpl(string $name, ?string $style_path = null): string
     {
         return preg_replace('/[^a-z0-9-_]/', '-', strtolower($name)) . (!empty($style_path) ? md5($style_path) : '');
     }

@@ -30,10 +30,10 @@ if (file_exists(PATH . '.git') && !defined('DEV_STAGE')) {
 
 /**
  * Return current language of installing wizard
- * @param  bool         $link
- * @return mixed|string
+ * @param  bool   $link
+ * @return string
  */
-function getlang($link = false)
+function getlang(bool $link = false): string
 {
     $ln = 'en';
 
@@ -45,7 +45,7 @@ function getlang($link = false)
     return $link ? 'lang=' . $ln : $ln;
 }
 
-function getjquerylink()
+function getjquerylink(): string
 {
     if (file_exists(PATH . 'admin/Masmak/js/jquery.min.js')) {
         return PATH . 'admin/Masmak/js/jquery.min.js';
@@ -56,9 +56,10 @@ function getjquerylink()
 
 /**
  * Parsing installing templates
- * @param mixed $tplname
+ * @param  string $tplname
+ * @return string
  */
-function gettpl($tplname)
+function gettpl(string $tplname): string
 {
     global $lang;
 
@@ -78,7 +79,7 @@ function gettpl($tplname)
     return $stpl;
 }
 
-function is_eval_is_on()
+function is_eval_is_on(): bool
 {
     $eval_on = false;
     eval('$eval_on = true;');
@@ -86,7 +87,7 @@ function is_eval_is_on()
     return $eval_on;
 }
 
-function kleeja_eval(string $code)
+function kleeja_eval(string $code): string
 {
     $path = PATH . 'cache/' . md5($code) . '.php';
     file_put_contents($path, $code);
@@ -96,14 +97,15 @@ function kleeja_eval(string $code)
 
 /**
  * Export config
- * @param mixed $srv
- * @param mixed $usr
- * @param mixed $pass
- * @param mixed $nm
- * @param mixed $prf
- * @param mixed $type
+ * @param  string $srv
+ * @param  string $usr
+ * @param  string $pass
+ * @param  string $nm
+ * @param  string $prf
+ * @param  string $type
+ * @return bool
  */
-function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
+function do_config_export(string $srv, string $usr, string $pass, string $nm, string $prf, string $type = 'mysql'): bool
 {
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
     $data .= '//for more information about this file, visit: ' . "\n";
@@ -142,7 +144,7 @@ function do_config_export($srv, $usr, $pass, $nm, $prf, $type = 'mysql')
 /**
  * Usefull to caluculte time of execution
  */
-function get_microtime()
+function get_microtime(): float
 {
     [$usec, $sec] = explode(' ', microtime());
 
@@ -151,9 +153,10 @@ function get_microtime()
 
 /**
  * Get config value from database directly, if not return false.
- * @param mixed $name
+ * @param  string       $name
+ * @return string|false
  */
-function inst_get_config($name)
+function inst_get_config(string $name)
 {
     global $SQL, $dbprefix;
 
@@ -189,8 +192,9 @@ function inst_get_config($name)
 
 /**
  * trying to detect cookies settings
+ * @return array
  */
-function get_cookies_settings()
+function get_cookies_settings(): array
 {
     $server_port = !empty($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : (int) @getenv('SERVER_PORT');
     $server_name = $server_name = !empty($_SERVER['HTTP_HOST'])

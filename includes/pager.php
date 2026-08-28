@@ -14,17 +14,19 @@ if (!defined('IN_COMMON')) {
 
 class Pagination
 {
-    protected $totalPages, $startRow, $currentPage;
+    protected int $totalPages;
+    protected int $startRow;
+    protected int $currentPage;
 
     /**
-     * @param     $rowsPerPage
-     * @param     $numRows
+     * @param int $rowsPerPage
+     * @param int $numRows
      * @param int $currentPage
      */
-    public function __construct($rowsPerPage, $numRows, $currentPage = 1)
+    public function __construct(int $rowsPerPage, int $numRows, int $currentPage = 1)
     {
         // Calculate the total number of pages
-        $this->setTotalPages(ceil($numRows / $rowsPerPage));
+        $this->setTotalPages((int) ceil($numRows / $rowsPerPage));
 
         // Check that a valid page has been provided
         $this->currentPage =
@@ -36,9 +38,9 @@ class Pagination
 
     /**
      * Get the total pages
-     * @return float
+     * @return int
      */
-    public function getTotalPages()
+    public function getTotalPages(): int
     {
         return $this->totalPages;
     }
@@ -48,7 +50,7 @@ class Pagination
      * @param  int $totalPages
      * @return int
      */
-    public function setTotalPages($totalPages = 0)
+    public function setTotalPages(int $totalPages = 0): int
     {
         return $this->totalPages = $totalPages;
     }
@@ -56,7 +58,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getCurrentPage()
+    public function getCurrentPage(): int
     {
         return $this->currentPage;
     }
@@ -64,7 +66,7 @@ class Pagination
     /**
      * @param int $currentPage
      */
-    public function setCurrentPage($currentPage)
+    public function setCurrentPage(int $currentPage): void
     {
         $this->currentPage = $currentPage;
     }
@@ -72,7 +74,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getStartRow()
+    public function getStartRow(): int
     {
         return $this->startRow;
     }
@@ -80,17 +82,17 @@ class Pagination
     /**
      * @param int $startRow
      */
-    public function setStartRow($startRow)
+    public function setStartRow(int $startRow): void
     {
         $this->startRow = $startRow;
     }
 
     /**
-     * @param         $link
+     * @param  string $link
      * @param  string $link_plus
      * @return string
      */
-    public function print_nums($link, $link_plus = '')
+    public function print_nums(string $link, string $link_plus = ''): string
     {
         global $lang, $config;
 

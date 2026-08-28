@@ -15,9 +15,10 @@ if (!defined('IN_COMMON')) {
 /**
  * checking the safety and validity of sub-extension of given file
  *
- * @param mixed $filename
+ * @param  string $filename
+ * @return bool
  */
-function ext_check_safe($filename)
+function ext_check_safe(string $filename): bool
 {
     //bad files extensions
     $not_allowed = [
@@ -57,9 +58,9 @@ function ext_check_safe($filename)
 
 /**
  * create htaccess files for uploading folder
- * @param mixed $folder
+ * @param string $folder
  */
-function generate_safety_htaccess($folder)
+function generate_safety_htaccess(string $folder): void
 {
     $return = false;
 
@@ -68,7 +69,7 @@ function generate_safety_htaccess($folder)
         : null; //run hook
 
     if ($return) {
-        return true;
+        return;
     }
 
     //data for the htaccess
@@ -87,7 +88,7 @@ function generate_safety_htaccess($folder)
  * @param  string $folder
  * @return bool
  */
-function make_folder($folder)
+function make_folder(string $folder): bool
 {
     $return = false;
 
@@ -129,12 +130,13 @@ function make_folder($folder)
 
 /**
  * Change the file name depend on given decoding type
- * @param mixed $filename
- * @param mixed $i_loop
- * @param mixed $ext
- * @param mixed $decoding_type
+ * @param  string $filename
+ * @param  int    $i_loop
+ * @param  string $ext
+ * @param  string $decoding_type
+ * @return string
  */
-function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
+function change_filename_decoding(string $filename, int $i_loop, string $ext, string $decoding_type = ''): string
 {
     global $config;
 
@@ -180,9 +182,10 @@ function change_filename_decoding($filename, $i_loop, $ext, $decoding_type = '')
 
 /**
  * Change the file name depend on used templates {rand:..} {date:..}
- * @param mixed $filename
+ * @param  string $filename
+ * @return string
  */
-function change_filename_templates($filename)
+function change_filename_templates(string $filename): string
 {
     //random number...
     if (preg_match('/{rand:([0-9]+)}/i', $filename, $m)) {
@@ -203,12 +206,12 @@ function change_filename_templates($filename)
 
 /**
  * check mime type of uploaded file
+ * @param  string $given_file_mime
+ * @param  string $file_ext
+ * @param  string $file_path
  * @return bool
- * @param  mixed $given_file_mime
- * @param  mixed $file_ext
- * @param  mixed $file_path
  */
-function check_mime_type($given_file_mime, $file_ext, $file_path)
+function check_mime_type(string $given_file_mime, string $file_ext, string $file_path): bool
 {
     $return = '';
 
@@ -273,9 +276,10 @@ function check_mime_type($given_file_mime, $file_ext, $file_path)
 
 /**
  * to prevent flooding at uploading
- * @param mixed $user_id
+ * @param  int  $user_id
+ * @return bool
  */
-function user_is_flooding($user_id = '-1')
+function user_is_flooding(int $user_id = -1): bool
 {
     global $SQL, $dbprefix, $config;
 
@@ -290,16 +294,13 @@ function user_is_flooding($user_id = '-1')
     }
 
     //if the value is zero (means that the function is disabled) then return false immediately
-    if (
-        ($user_id == '-1' && $config['guestsectoupload'] == 0) ||
-        ($user_id != '-1' && $config['usersectoupload'] == 0)
-    ) {
+    if (($user_id == -1 && $config['guestsectoupload'] == 0) || ($user_id != -1 && $config['usersectoupload'] == 0)) {
         return false;
     }
 
     //In my point of view I see 30 seconds is not bad rate to stop flooding ..
     //even though this minimum rate sometime isn't enough to protect Kleeja from flooding attacks
-    $time = time() - ($user_id == '-1' ? $config['guestsectoupload'] : $config['usersectoupload']);
+    $time = time() - ($user_id == -1 ? $config['guestsectoupload'] : $config['usersectoupload']);
 
     $query = [
         'SELECT' => 'f.time',

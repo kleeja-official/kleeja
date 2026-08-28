@@ -14,8 +14,13 @@ if (!defined('IN_COMMON')) {
 
 class usrcp
 {
-    public function data($name, $pass, $hashed = false, $expire = 86400, $loginadm = false)
-    {
+    public function data(
+        string $name,
+        string $pass,
+        bool $hashed = false,
+        int $expire = 86400,
+        bool $loginadm = false,
+    ): bool {
         //expire
         $expire = time() + ((int) $expire ? intval($expire) : 86400);
         $name = trim($name);
@@ -36,7 +41,7 @@ class usrcp
     }
 
     //get username by id
-    public function usernamebyid($user_id)
+    public function usernamebyid(int $user_id)
     {
         $return_now = $auth_status = false;
 
@@ -55,7 +60,7 @@ class usrcp
     }
 
     //now our table, normal user system
-    public function normal($name, $pass, $expire, $hashed = false, $loginadm = false)
+    public function normal(string $name, string $pass, int $expire, bool $hashed = false, bool $loginadm = false): bool
     {
         global $SQL, $dbprefix, $config, $userinfo;
 
@@ -207,7 +212,7 @@ class usrcp
         get user data
         new function:1rc5+
     */
-    public function get_data($type = '*', $user_id = false)
+    public function get_data(string $type = '*', int $user_id = 0)
     {
         global $dbprefix, $SQL;
 
@@ -274,7 +279,7 @@ class usrcp
     }
 
     // logout func
-    public function logout()
+    public function logout(): bool
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('logout_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -292,7 +297,7 @@ class usrcp
     }
 
     // logut just from acp
-    public function logout_cp()
+    public function logout_cp(): bool
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('logout_cp_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -306,7 +311,7 @@ class usrcp
     }
 
     //clean usernames
-    public function cleanusername($uname)
+    public function cleanusername(string $uname): string
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('cleanusername_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -437,7 +442,7 @@ class usrcp
     }
 
     //depand on phpass class
-    public function kleeja_hash_password($password, $check_pass = false)
+    public function kleeja_hash_password(string $password, string $check_pass = '')
     {
         include_once 'phpass.php';
 
@@ -455,14 +460,14 @@ class usrcp
     }
 
     //kleeja cookie
-    public function kleeja_set_cookie($name, $value, $expire)
+    public function kleeja_set_cookie(string $name, string $value, int $expire): void
     {
         // for plugins that are still using the old version of kleeja
-        return cookie()->set($name, $value, $expire);
+        cookie()->set($name, $value, $expire);
     }
 
     //encrypt and decrypt any data with our function
-    public function en_de_crypt($data, $type = 1)
+    public function en_de_crypt(string $data, int $type = 1): string
     {
         global $config;
         static $txt = [];
@@ -504,7 +509,7 @@ class usrcp
     //
     //get cookie
     //
-    public function kleeja_get_cookie($name)
+    public function kleeja_get_cookie(string $name)
     {
         // for plugins that are still using old version of kleeja
         return cookie()->get($name);
@@ -512,7 +517,7 @@ class usrcp
 
     //check if user is admin or not
     //return : mean return true or false, but if return is false will show msg
-    public function kleeja_check_user()
+    public function kleeja_check_user(): bool
     {
         global $config, $userinfo;
 

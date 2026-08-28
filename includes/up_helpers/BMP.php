@@ -13,18 +13,18 @@ if (!defined('IN_COMMON')) {
 
 class BMP
 {
-    public static function imagebmp(&$img, $filename = false)
+    public static function imagebmp(&$img, string $filename = ''): bool
     {
         return imagebmp($img, $filename);
     }
 
-    public static function imagecreatefrombmp($filename)
+    public static function imagecreatefrombmp(string $filename)
     {
         return imagecreatefrombmp($filename);
     }
 }
 
-function imagebmp(&$img, $filename = false)
+function imagebmp(&$img, string $filename = ''): bool
 {
     $wid = imagesx($img);
     $hei = imagesy($img);
@@ -85,7 +85,7 @@ function imagebmp(&$img, $filename = false)
     }
 }
 
-function imagecreatefrombmp($filename)
+function imagecreatefrombmp(string $filename)
 {
     $f = fopen($filename, 'rb');
 
@@ -129,7 +129,7 @@ function imagecreatefrombmp($filename)
     return $img;
 }
 
-function dwordize($str)
+function dwordize(string $str): int
 {
     $a = ord($str[0]);
     $b = ord($str[1]);
@@ -138,15 +138,15 @@ function dwordize($str)
     return $c * 256 * 256 + $b * 256 + $a;
 }
 
-function byte3($n)
+function byte3(int $n): string
 {
     return chr($n & 255) . chr(($n >> 8) & 255) . chr(($n >> 16) & 255);
 }
-function dword($n)
+function dword(int $n): string
 {
     return pack('V', $n);
 }
-function word($n)
+function word(int $n): string
 {
     return pack('v', $n);
 }

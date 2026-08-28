@@ -15,12 +15,12 @@ if (!defined('IN_COMMON')) {
 /**
  *  Detect a bot activity an record it
  */
-function kleeja_detecting_bots()
+function kleeja_detecting_bots(): void
 {
     global $SQL, $dbprefix, $config;
 
     // get information ..
-    $agent = $SQL->escape($_SERVER['HTTP_USER_AGENT']);
+    $agent = $SQL->escape($_SERVER['HTTP_USER_AGENT'] ?? '');
     $time = time();
 
     //for stats
@@ -64,7 +64,7 @@ function kleeja_detecting_bots()
 /**
  * Ban system
  */
-function get_ban()
+function get_ban(): void
 {
     global $banss, $lang, $SQL, $usrcp;
 
@@ -128,10 +128,10 @@ function get_ban()
 
 /**
  * Check if the given plugin installed ?
- * @param       $plugin_name
- * @return bool
+ * @param  string $plugin_name
+ * @return string|false the plugin id, or false when it is not installed
  */
-function kleeja_plugin_exists($plugin_name)
+function kleeja_plugin_exists(string $plugin_name)
 {
     global $SQL, $dbprefix;
 
@@ -157,7 +157,7 @@ function kleeja_plugin_exists($plugin_name)
 /**
  * Return current page url
  */
-function kleeja_get_page()
+function kleeja_get_page(): string
 {
     if (isset($_SERVER['REQUEST_URI'])) {
         $location = $_SERVER['REQUEST_URI'];
@@ -188,10 +188,10 @@ function kleeja_get_page()
 
 /**
  * Fix email string to be UTF8
- * @param         $text
+ * @param  string $text
  * @return string
  */
-function _sm_mk_utf8($text)
+function _sm_mk_utf8(string $text): string
 {
     return '=?UTF-8?B?' . base64_encode($text) . '?=';
 }
@@ -206,8 +206,14 @@ function _sm_mk_utf8($text)
  * @param  string $bcc
  * @return bool
  */
-function send_mail($to, $body, $subject, $fromAddress, $fromName, $bcc = '')
-{
+function send_mail(
+    string $to,
+    string $body,
+    string $subject,
+    string $fromAddress,
+    string $fromName,
+    string $bcc = '',
+): bool {
     $eol = "\r\n";
     $headers = '';
     $headers .=
@@ -262,7 +268,7 @@ function send_mail($to, $body, $subject, $fromAddress, $fromName, $bcc = '')
  * @param  bool   $all  if true, all cache in cache folder will be deleted
  * @return bool
  */
-function delete_cache($name, $all = false)
+function delete_cache($name, bool $all = false): bool
 {
     //Those files are exceptions and not for deletion
     $exceptions = ['.htaccess', 'index.html', 'php.ini', 'web.config'];
@@ -321,7 +327,7 @@ function delete_cache($name, $all = false)
  * @param  bool   $cache_file
  * @return bool
  */
-function kleeja_unlink($filePath, $cache_file = false)
+function kleeja_unlink(string $filePath, bool $cache_file = false): bool
 {
     $return = false;
 
@@ -367,7 +373,7 @@ function kleeja_unlink($filePath, $cache_file = false)
  * @param  string $ext file extension
  * @return string mime
  */
-function get_mime_for_header($ext)
+function get_mime_for_header(string $ext): string
 {
     $mime_types = [
         '323' => 'text/h323',
@@ -600,7 +606,7 @@ function get_mime_for_header($ext)
  * @param  string $folder
  * @return bool
  */
-function get_lang($name, $folder = '')
+function get_lang(string $name, string $folder = ''): bool
 {
     global $config, $lang;
 
@@ -648,7 +654,7 @@ function get_lang($name, $folder = '')
  * some time cache doesn't not work as well, so some important
  * events need fresh version of config values ...
  */
-function get_config($name)
+function get_config(string $name): ?string
 {
     global $dbprefix, $SQL, $d_groups, $userinfo;
 
@@ -686,8 +692,15 @@ function get_config($name)
  * dynamic: every refresh of the page, the config data will be brought from db, not from the cache !
  * plg_id: if this config belong to plugin .. see devKit.
  */
-function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_id = '0', $dynamic = false)
-{
+function add_config(
+    string $name,
+    string $value,
+    int $order = 0,
+    string $html = '',
+    string $type = '0',
+    int $plg_id = 0,
+    bool $dynamic = false,
+): bool {
     global $dbprefix, $SQL, $config, $d_groups;
 
     if (get_config($name)) {
@@ -761,15 +774,11 @@ function add_config($name, $value, $order = '0', $html = '', $type = '0', $plg_i
 
 /**
  * add an array of new configs
- * @param       $configs
+ * @param  array $configs
  * @return bool
  */
-function add_config_r($configs)
+function add_config_r(array $configs): bool
 {
-    if (!is_array($configs)) {
-        return false;
-    }
-
     //array(name=>array(value=>,order=>,html=>),...);
     foreach ($configs as $n => $m) {
         add_config(
@@ -786,7 +795,7 @@ function add_config_r($configs)
     return true;
 }
 
-function update_config($name, $value, $escape = true, $group = false)
+function update_config(string $name, string $value, bool $escape = true, int $group = 0): bool
 {
     global $SQL, $dbprefix, $d_groups, $userinfo, $config;
 
@@ -836,14 +845,14 @@ function update_config($name, $value, $escape = true, $group = false)
 }
 
 // Delete config
-function delete_config($name)
+function delete_config($name): bool
 {
     if (is_array($name)) {
         foreach ($name as $n) {
             delete_config($n);
         }
 
-        return;
+        return true;
     }
 
     global $dbprefix, $SQL, $d_groups, $userinfo;
@@ -883,7 +892,7 @@ function delete_config($name)
 //
 //update words to lang
 //
-function update_olang($name, $value, $lang = 'en')
+function update_olang(string $name, string $value, string $lang = 'en'): bool
 {
     global $SQL, $dbprefix, $olang;
 
@@ -911,7 +920,7 @@ function update_olang($name, $value, $lang = 'en')
 //
 //add words to lang
 //
-function add_olang($words = [], $lang = 'en', $plg_id = '0')
+function add_olang(array $words = [], string $lang = 'en', int $plg_id = 0): void
 {
     global $dbprefix, $SQL;
 
@@ -948,7 +957,7 @@ function add_olang($words = [], $lang = 'en', $plg_id = '0')
  * @param  string       $plg_id plugin id associated with these words, optional
  * @return bool
  */
-function delete_olang($words = '', $lang = 'en', $plg_id = 0)
+function delete_olang($words = '', $lang = 'en', int $plg_id = 0): bool
 {
     global $dbprefix, $SQL;
 
@@ -966,11 +975,9 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
     ];
 
     if (!empty($lang)) {
-        $lang_sql = "lang_id = '" . $SQL->escape($lang) . "'";
-
-        if (is_array($lang)) {
-            $lang_sql = "(lang_id = '" . implode("' AND lang_id = '", $SQL->escape($lang)) . "')";
-        }
+        $lang_sql = is_array($lang)
+            ? "(lang_id = '" . implode("' AND lang_id = '", array_map([$SQL, 'escape'], $lang)) . "')"
+            : "lang_id = '" . $SQL->escape($lang) . "'";
 
         $delete_query['WHERE'] .= (empty($delete_query['WHERE']) ? '' : ' AND ') . $lang_sql;
     }
@@ -998,7 +1005,7 @@ function delete_olang($words = '', $lang = 'en', $plg_id = 0)
  * last_down - $config[del_f_day]
  * @param int $from
  */
-function klj_clean_old_files($from = 0)
+function klj_clean_old_files(int $from = 0): void
 {
     global $config, $SQL, $stat_last_f_del, $dbprefix;
 
@@ -1173,9 +1180,9 @@ function klj_clean_old_files($from = 0)
 /**
  * klj_clean_old
  * @param string         $table database table
- * @param string|integer $for   can be 'all, or a number of days like 30'
+ * @param string $for   can be 'all, or a number of days like 30'
  */
-function klj_clean_old($table, $for = 'all')
+function klj_clean_old(string $table, string $for = 'all'): void
 {
     global $SQL, $config, $dbprefix;
 
@@ -1229,7 +1236,7 @@ function klj_clean_old($table, $for = 'all')
 /**
  * get_ip() for the user
  */
-function get_ip()
+function get_ip(): string
 {
     $ip = '';
 
@@ -1267,7 +1274,7 @@ function get_ip()
  * Check and verify captcha field after submit
  * @return bool
  */
-function kleeja_check_captcha()
+function kleeja_check_captcha(): bool
 {
     global $config;
 
@@ -1295,7 +1302,7 @@ function kleeja_check_captcha()
  * For logging and testing, enabled only for DEV_STAGE!
  * @param string $text a string to log
  */
-function kleeja_log($text)
+function kleeja_log(string $text): void
 {
     if (!defined('DEV_STAGE')) {
         return;
@@ -1311,10 +1318,10 @@ function kleeja_log($text)
 /**
  * Return the first and last seek of range to be flushed.
  * @param  string $range
- * @param         $fileSize
+ * @param  int    $fileSize
  * @return array
  */
-function kleeja_set_range($range, $fileSize)
+function kleeja_set_range(string $range, int $fileSize): array
 {
     $dash = strpos($range, '-');
     $first = trim(substr($range, 0, $dash));
@@ -1352,7 +1359,7 @@ function kleeja_set_range($range, $fileSize)
  * @param integer  $bytes
  * @param integer  $buffer_size
  */
-function kleeja_buffered_range($file, $bytes, $buffer_size = 1024)
+function kleeja_buffered_range($file, int $bytes, int $buffer_size = 1024): void
 {
     $bytes_left = $bytes;
     while ($bytes_left > 0 && !feof($file)) {
@@ -1376,7 +1383,7 @@ function kleeja_buffered_range($file, $bytes, $buffer_size = 1024)
  * @param  int    $group_id
  * @return bool
  */
-function user_can($acl_name, $group_id = 0)
+function user_can(string $acl_name, int $group_id = 0): bool
 {
     global $d_groups, $userinfo;
 
@@ -1387,17 +1394,17 @@ function user_can($acl_name, $group_id = 0)
     return (bool) $d_groups[$group_id]['acls'][$acl_name];
 }
 
-function ig($name)
+function ig(string $name): bool
 {
     return isset($_GET[$name]);
 }
 
-function ip($name)
+function ip(string $name): bool
 {
     return isset($_POST[$name]);
 }
 
-function g($name, $type = 'str', $default = '')
+function g(string $name, string $type = 'str', string $default = '')
 {
     if (isset($_GET[$name])) {
         return $type == 'str' ? htmlspecialchars($_GET[$name], ENT_QUOTES) : intval($_GET[$name]);
@@ -1406,7 +1413,7 @@ function g($name, $type = 'str', $default = '')
     return $type == 'str' ? htmlspecialchars($default, ENT_QUOTES) : intval($default);
 }
 
-function p($name, $type = 'str', $default = '')
+function p(string $name, string $type = 'str', string $default = '')
 {
     if (isset($_POST[$name])) {
         return $type == 'str'
@@ -1423,7 +1430,7 @@ function p($name, $type = 'str', $default = '')
  * @param  string       $unique_id useful for the deletion later
  * @return bool
  */
-function add_to_serve_rules($rules, $unique_id = '')
+function add_to_serve_rules($rules, string $unique_id = ''): bool
 {
     if (!file_exists(PATH . 'plugins_rules.php')) {
         if (!is_writable(PATH)) {
@@ -1457,7 +1464,7 @@ function add_to_serve_rules($rules, $unique_id = '')
  * @param  string $unique_id
  * @return bool
  */
-function remove_from_serve_rules($unique_id)
+function remove_from_serve_rules(string $unique_id): bool
 {
     $file = PATH . 'plugins_rules.php';
 
@@ -1485,11 +1492,11 @@ function remove_from_serve_rules($unique_id)
 /**
  * parse rewrite rule. currently added separately for plugins
  * @param  string $regex
- * @param  array  $args
+ * @param  string $args
  * @param  bool   $is_unicode
  * @return bool
  */
-function parse_serve_rule($regex, $args, $is_unicode = false)
+function parse_serve_rule(string $regex, string $args, bool $is_unicode = false): bool
 {
     $request_uri = urldecode(trim(strtok($_SERVER['REQUEST_URI'], '?'), '/'));
 

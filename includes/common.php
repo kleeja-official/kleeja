@@ -48,13 +48,17 @@ error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
 
 /**
  * functions for start
- * @param mixed $error_number
- * @param mixed $error_string
- * @param mixed $error_file
- * @param mixed $error_line
+ * @param int    $error_number
+ * @param string $error_string
+ * @param string $error_file
+ * @param int    $error_line
  */
-function kleeja_show_error($error_number, $error_string = '', $error_file = '', $error_line = '')
-{
+function kleeja_show_error(
+    int $error_number,
+    string $error_string = '',
+    string $error_file = '',
+    int $error_line = 0,
+): void {
     switch ($error_number) {
         case E_NOTICE:
         case E_WARNING:
@@ -113,7 +117,7 @@ function kleeja_show_error($error_number, $error_string = '', $error_file = '', 
 set_error_handler('kleeja_show_error');
 
 //time of start and end and whatever
-function get_microtime()
+function get_microtime(): float
 {
     [$usec, $sec] = explode(' ', microtime());
 
@@ -121,7 +125,7 @@ function get_microtime()
 }
 
 //is bot ?
-function is_bot($bots = ['googlebot', 'bing', 'msnbot'])
+function is_bot(array $bots = ['googlebot', 'bing', 'msnbot']): bool
 {
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
         return preg_match(

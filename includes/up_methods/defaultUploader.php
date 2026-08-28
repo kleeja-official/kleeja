@@ -23,19 +23,19 @@ include_once dirname(__FILE__) . '/../up_helpers/watermark.php';
  */
 class defaultUploader implements KleejaUploader
 {
-    protected $messages = [];
+    protected array $messages = [];
 
-    protected $allowed_file_extensions = [];
+    protected array $allowed_file_extensions = [];
 
-    protected $upload_fields_limit = 0;
+    protected int $upload_fields_limit = 0;
 
-    protected $total_uploaded_files = 0;
+    protected int $total_uploaded_files = 0;
 
     /**
      * set the allowed extensions of uploaded files
      * @param array $allowed_file_extensions an array of allowed extensions ['gif', 'png' ..]
      */
-    public function setAllowedFileExtensions($allowed_file_extensions)
+    public function setAllowedFileExtensions(array $allowed_file_extensions): void
     {
         $this->allowed_file_extensions = $allowed_file_extensions;
     }
@@ -44,7 +44,7 @@ class defaultUploader implements KleejaUploader
      * get the allowed extensions of uploaded files
      * @return array
      */
-    public function getAllowedFileExtensions()
+    public function getAllowedFileExtensions(): array
     {
         return $this->allowed_file_extensions;
     }
@@ -53,7 +53,7 @@ class defaultUploader implements KleejaUploader
      * set the allowed limit of the uploaded files
      * @param int $limit
      */
-    public function setUploadFieldsLimit($limit)
+    public function setUploadFieldsLimit(int $limit): void
     {
         $this->upload_fields_limit = $limit;
     }
@@ -62,7 +62,7 @@ class defaultUploader implements KleejaUploader
      *  get the allowed limit of the uploaded files
      * @return int
      */
-    public function getUploadFieldsLimit()
+    public function getUploadFieldsLimit(): int
     {
         return $this->upload_fields_limit;
     }
@@ -72,7 +72,7 @@ class defaultUploader implements KleejaUploader
      * @param  string $message
      * @return void
      */
-    public function addInfoMessage($message)
+    public function addInfoMessage(string $message): void
     {
         array_push($this->messages, [$message, 'info']);
     }
@@ -82,7 +82,7 @@ class defaultUploader implements KleejaUploader
      * @param  string $message
      * @return void
      */
-    public function addErrorMessage($message)
+    public function addErrorMessage(string $message): void
     {
         array_push($this->messages, [$message, 'error']);
     }
@@ -91,7 +91,7 @@ class defaultUploader implements KleejaUploader
      * get all the messages
      * @return array
      */
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->messages;
     }
@@ -101,7 +101,7 @@ class defaultUploader implements KleejaUploader
      * @param  array $fileInfo
      * @return void
      */
-    public function saveToDatabase($fileInfo)
+    public function saveToDatabase(array $fileInfo): void
     {
         global $SQL, $dbprefix, $config;
 
@@ -175,7 +175,7 @@ class defaultUploader implements KleejaUploader
      * @param  array $fileInfo
      * @return void
      */
-    public function generateOutputBox($fileInfo)
+    public function generateOutputBox(array $fileInfo): void
     {
         global $config, $lang;
 
@@ -316,7 +316,7 @@ class defaultUploader implements KleejaUploader
      * here happens the magic, call this on upload submit
      * @return void
      */
-    public function upload()
+    public function upload(): void
     {
         global $usrcp, $config, $lang;
 
@@ -324,7 +324,7 @@ class defaultUploader implements KleejaUploader
         $current_uploading_folder = $config['foldername'];
 
         //current user id
-        $current_user_id = $usrcp->name() ? $usrcp->id() : '-1';
+        $current_user_id = $usrcp->name() ? (int) $usrcp->id() : -1;
 
         //is captcha is on?
         $captcha_enabled = intval($config['safe_code']);
@@ -475,10 +475,10 @@ class defaultUploader implements KleejaUploader
     /**
      * upload a file from $_FILES
      * @param integer $fieldNumber              as in file[i]
-     * @param         $current_uploading_folder
-     * @param         $current_user_id
+     * @param string  $current_uploading_folder
+     * @param integer $current_user_id
      */
-    public function uploadTypeFile($fieldNumber, $current_uploading_folder, $current_user_id)
+    public function uploadTypeFile(int $fieldNumber, string $current_uploading_folder, int $current_user_id): void
     {
         global $config, $lang;
 

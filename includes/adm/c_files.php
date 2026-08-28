@@ -383,9 +383,9 @@ if (ip('submit')) {
     //update f_lastvisit
     if (!$is_search) {
         if (filter_exists('f_lastvisit', 'filter_uid', 'lastvisit', $userinfo['id'])) {
-            update_filter('f_lastvisit', time(), 'lastvisit', false, $userinfo['id']);
+            update_filter('f_lastvisit', time(), 'lastvisit', '', $userinfo['id']);
         } else {
-            insert_filter('f_lastvisit', time(), 'lastvisit', time(), $userinfo['id']);
+            insert_filter('lastvisit', time(), time(), $userinfo['id'], '', 'f_lastvisit');
         }
     }
 

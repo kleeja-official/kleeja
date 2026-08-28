@@ -17,22 +17,22 @@ if (!defined('IN_COMMON')) {
  *
  * For admin
  * @param mixed $msg
- * @param mixed $navigation
- * @param mixed $title
- * @param mixed $exit
- * @param mixed $redirect
- * @param mixed $rs
- * @param mixed $style
+ * @param bool|string $navigation show navigation menu, or a link to redirect to
+ * @param string      $title
+ * @param bool        $exit
+ * @param bool|string $redirect
+ * @param int         $rs
+ * @param string      $style
  */
 function kleeja_admin_err(
-    $msg,
+    string $msg,
     $navigation = true,
-    $title = '',
-    $exit = true,
+    string $title = '',
+    bool $exit = true,
     $redirect = false,
-    $rs = 3,
-    $style = 'admin_err',
-) {
+    int $rs = 3,
+    string $style = 'admin_err',
+): void {
     global $text, $tpl, $SHOW_LIST, $adm_extensions, $adm_extensions_menu;
     global $STYLE_PATH_ADMIN, $lang, $olang, $SQL, $MINI_MENU;
 
@@ -91,8 +91,14 @@ function kleeja_admin_err(
  * @param bool   $redirect   redirect after showing the message
  * @param int    $rs         delay the redirect in seconds
  */
-function kleeja_admin_info($msg, $navigation = true, $title = '', $exit = true, $redirect = false, $rs = 2)
-{
+function kleeja_admin_info(
+    string $msg,
+    $navigation = true,
+    string $title = '',
+    bool $exit = true,
+    $redirect = false,
+    int $rs = 2,
+): void {
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_admin_info_func', get_defined_vars()))
         ? extract($plugin_run_result)
         : null; //run hook
@@ -103,15 +109,15 @@ function kleeja_admin_info($msg, $navigation = true, $title = '', $exit = true, 
 /**
  * generate a filter..
  * @adm
- * @param  string|integer  $type   filter_id or filter_uid
- * @param  string          $value  filter value
- * @param  bool            $time   filter time
- * @param  bool            $user   user Id
- * @param  string          $status filter status
- * @param  bool            $uid    filter unique id
- * @return bool|int|string
+ * @param  string       $type   filter type
+ * @param  string       $value  filter value
+ * @param  int          $time   filter time, 0 for now
+ * @param  int          $user   user Id, 0 for the current user
+ * @param  string       $status filter status
+ * @param  string       $uid    filter unique id, empty to generate one
+ * @return string|false the filter unique id, or false when the insertion failed
  */
-function insert_filter($type, $value, $time = false, $user = false, $status = '', $uid = false)
+function insert_filter(string $type, string $value, int $time = 0, int $user = 0, string $status = '', string $uid = '')
 {
     global $SQL, $dbprefix, $userinfo;
 
@@ -149,15 +155,20 @@ function insert_filter($type, $value, $time = false, $user = false, $status = ''
 /**
  * Update filter value..
  *
- * @param  int|string  $id_or_uid     Number of filter_id or the unique id string of filter_uid
- * @param  string      $value         The modified value of filter
- * @param  string      $filter_type   if given, use it with sql where
- * @param  bool|string $filter_status if given, update the filter status
- * @param  bool        $user_id
+ * @param  int|string $id_or_uid     Number of filter_id or the unique id string of filter_uid
+ * @param  string     $value         The modified value of filter
+ * @param  string     $filter_type   if given, use it with sql where
+ * @param  string     $filter_status if given, update the filter status
+ * @param  int        $user_id
  * @return bool
  */
-function update_filter($id_or_uid, $value, $filter_type = 'general', $filter_status = false, $user_id = false)
-{
+function update_filter(
+    $id_or_uid,
+    string $value,
+    string $filter_type = 'general',
+    string $filter_status = '',
+    int $user_id = 0,
+): bool {
     global $SQL, $dbprefix;
 
     $update_query = [
@@ -191,15 +202,20 @@ function update_filter($id_or_uid, $value, $filter_type = 'general', $filter_sta
 /**
  * Get filter from db..
  *
- * @param  string|int  $item        The value of $get_by, to get the filter depend on it
- * @param  bool|string $filter_type if given, use it with sql where
- * @param  bool        $just_value  If true the return value should be just filter_value otherwise all filter rows
- * @param  string      $get_by      The name of filter column we want to get the filter value from
- * @param  bool        $user_id
+ * @param  string $item        The value of $get_by, to get the filter depend on it
+ * @param  string $filter_type if given, use it with sql where
+ * @param  bool   $just_value  If true the return value should be just filter_value otherwise all filter rows
+ * @param  string $get_by      The name of filter column we want to get the filter value from
+ * @param  int    $user_id
  * @return mixed
  */
-function get_filter($item, $filter_type = false, $just_value = false, $get_by = 'filter_uid', $user_id = false)
-{
+function get_filter(
+    string $item,
+    string $filter_type = '',
+    bool $just_value = false,
+    string $get_by = 'filter_uid',
+    int $user_id = 0,
+) {
     global $dbprefix, $SQL;
 
     $valid_filter_columns = ['filter_id', 'filter_uid', 'filter_user', 'filter_status'];
@@ -239,13 +255,13 @@ function get_filter($item, $filter_type = false, $just_value = false, $get_by = 
 /**
  * check if filter exists or not
  *
- * @param  string|int $item        The value of $get_by, to find the filter depend on it
- * @param  string     $get_by      The name of filter column we want to get the filter from
- * @param  bool       $filter_type
- * @param  bool       $user_id
- * @return bool|int
+ * @param  string    $item        The value of $get_by, to find the filter depend on it
+ * @param  string    $get_by      The name of filter column we want to get the filter from
+ * @param  string    $filter_type
+ * @param  int       $user_id
+ * @return int|false
  */
-function filter_exists($item, $get_by = 'filter_id', $filter_type = false, $user_id = false)
+function filter_exists(string $item, string $get_by = 'filter_id', string $filter_type = '', int $user_id = 0)
 {
     global $dbprefix, $SQL;
 
@@ -276,7 +292,7 @@ function filter_exists($item, $get_by = 'filter_id', $filter_type = false, $user
  * @param  array  $search Search options
  * @return string
  */
-function build_search_query($search)
+function build_search_query($search): string
 {
     if (!is_array($search)) {
         return '';
@@ -360,11 +376,11 @@ function build_search_query($search)
 
 /**
  * To re-count the total files, without making the server goes down haha
- * @param  bool     $files
- * @param  bool     $start
- * @return bool|int
+ * @param  bool      $files
+ * @param  int       $start
+ * @return int|false
  */
-function sync_total_files($files = true, $start = false)
+function sync_total_files(bool $files = true, int $start = 0)
 {
     global $SQL, $dbprefix;
 
@@ -432,7 +448,7 @@ function sync_total_files($files = true, $start = false)
  * @param  string $name Stat name
  * @return int
  */
-function get_actual_stats($name)
+function get_actual_stats(string $name): int
 {
     global $dbprefix, $SQL;
 
@@ -458,7 +474,7 @@ function get_actual_stats($name)
  * @param  string $name box name
  * @return bool
  */
-function adm_is_start_box_hidden($name)
+function adm_is_start_box_hidden(string $name): bool
 {
     global $config;
 

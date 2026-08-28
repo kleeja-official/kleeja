@@ -152,7 +152,7 @@ if (!empty($d_groups) && is_array($d_groups)) {
     } elseif (strpos($upload_max_filesize, 'G') !== false) {
         $upload_max_filesize_s = ((int) trim(str_replace('G', '', $upload_max_filesize))) * 1073741824;
     } else {
-        $upload_max_filesize_s = $upload_max_filesize;
+        $upload_max_filesize_s = (int) $upload_max_filesize;
     }
 
     if (!empty($upload_max_filesize) && $upload_max_filesize_s < $biggest_size) {
@@ -174,7 +174,7 @@ if (!empty($d_groups) && is_array($d_groups)) {
     } elseif (strpos($post_max_size, 'G') !== false) {
         $post_max_size_s = ((int) trim(str_replace('G', '', $post_max_size))) * 1073741824;
     } else {
-        $post_max_size_s = $post_max_size;
+        $post_max_size_s = (int) $post_max_size;
     }
 
     $post_max_size_s_must_be = $config['filesnum'] * $biggest_size + 5242880; //+ 5 mega to make sure it's ok

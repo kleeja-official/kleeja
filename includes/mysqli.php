@@ -17,16 +17,15 @@ if (!defined('SQL_LAYER')):
 
     class KleejaDatabase
     {
-        /** @var mysqli */
-        private $connect_id = null;
-        /** @var mysqli_result */
+        private ?mysqli $connect_id = null;
+        /** @var mysqli_result|bool unset between queries, so it stays untyped */
         private $result = null;
-        public $dbprefix = '';
-        private $dbname = '';
-        public $query_num = 0;
-        private $in_transaction = 0;
-        public $debugr = [];
-        private $show_errors = true;
+        public string $dbprefix = '';
+        private string $dbname = '';
+        public int $query_num = 0;
+        private bool $in_transaction = false;
+        public array $debugr = [];
+        private bool $show_errors = true;
 
         /**
          * connect
@@ -37,8 +36,13 @@ if (!defined('SQL_LAYER')):
          * @param string $db_name
          * @param string $dbprefix
          */
-        public function __construct($host, $db_username, $db_password, $db_name, $dbprefix)
-        {
+        public function __construct(
+            string $host,
+            string $db_username,
+            string $db_password,
+            string $db_name,
+            string $dbprefix,
+        ) {
             $port = 3306;
 
             if (strpos($host, ':') !== false) {
@@ -49,7 +53,8 @@ if (!defined('SQL_LAYER')):
             $this->dbprefix = $dbprefix;
             $this->dbname = $db_name;
 
-            $this->connect_id = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
+            $connection = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
+            $this->connect_id = $connection === false ? null : $connection;
 
             //no error
             if (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')) {
@@ -81,13 +86,13 @@ if (!defined('SQL_LAYER')):
             $this->close();
         }
 
-        public function is_connected()
+        public function is_connected(): bool
         {
             return !(is_resource($this->connect_id) || empty($this->connect_id));
         }
 
         // close the connection
-        public function close()
+        public function close(): bool
         {
             if (!$this->is_connected()) {
                 return true;
@@ -109,12 +114,12 @@ if (!defined('SQL_LAYER')):
         }
 
         // encoding functions
-        public function set_utf8()
+        public function set_utf8(): void
         {
             $this->set_names('utf8');
         }
 
-        public function set_names($charset)
+        public function set_names(string $charset): void
         {
             @mysqli_set_charset($this->connect_id, $charset);
         }
@@ -124,7 +129,7 @@ if (!defined('SQL_LAYER')):
             return mysqli_character_set_name($this->connect_id);
         }
 
-        public function version()
+        public function version(): string
         {
             $vr = $this->query('SELECT VERSION() AS v');
             $vs = $this->fetch_array($vr);
@@ -140,7 +145,7 @@ if (!defined('SQL_LAYER')):
          * @param  boolean $transaction
          * @return bool
          */
-        public function query($query, $transaction = false)
+        public function query(string $query, bool $transaction = false)
         {
             //no connection
             if (!$this->is_connected()) {
@@ -214,7 +219,7 @@ if (!defined('SQL_LAYER')):
          * @param  array  $query
          * @return string
          */
-        public function build($query)
+        public function build(array $query)
         {
             $sql = '';
 
@@ -289,7 +294,7 @@ if (!defined('SQL_LAYER')):
          * @param  integer $query_id optional
          * @return bool
          */
-        public function freeresult($query_id = 0)
+        public function freeresult($query_id = 0): bool
         {
             if (!$query_id) {
                 $query_id = $this->result;
@@ -361,10 +366,10 @@ if (!defined('SQL_LAYER')):
          * @param  string $msg
          * @return string
          */
-        public function escape($msg)
+        public function escape(?string $msg): string
         {
             if (!$msg) {
-                return;
+                return '';
             }
             $msg = htmlspecialchars($msg, ENT_QUOTES);
             //$msg = (!get_magic_quotes_gpc()) ? addslashes ($msg) : $msg;
@@ -375,13 +380,13 @@ if (!defined('SQL_LAYER')):
 
         /**
          * escape
-         * @param  string     $msg
-         * @return int|string
+         * @param  string $msg
+         * @return string
          */
-        public function real_escape($msg)
+        public function real_escape(string $msg): string
         {
             if (!$this->is_connected()) {
-                return false;
+                return '';
             }
 
             return mysqli_real_escape_string($this->connect_id, $msg);
@@ -402,7 +407,7 @@ if (!defined('SQL_LAYER')):
          *
          * @return string
          */
-        public function server_info()
+        public function server_info(): string
         {
             return 'MySQLi ' . $this->version();
         }
@@ -413,12 +418,12 @@ if (!defined('SQL_LAYER')):
          * @param  string $msg
          * @return void
          */
-        private function error_msg($msg)
+        private function error_msg(string $msg): void
         {
             if (!$this->show_errors || (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS'))) {
                 kleeja_log('MySQL: ' . $msg);
 
-                return false;
+                return;
             }
 
             [$error_no, $error_msg] = $this->get_error();
@@ -518,7 +523,7 @@ if (!defined('SQL_LAYER')):
          *
          * @return array
          */
-        public function get_error()
+        public function get_error(): array
         {
             if ($this->is_connected()) {
                 return [@mysqli_errno($this->connect_id), @mysqli_error($this->connect_id)];
