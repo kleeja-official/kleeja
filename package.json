@@ -1,6 +1,5 @@
 {
   "name": "kleeja",
-  "version": "1.0.0",
   "private": true,
   "description": "The powerful and easiest way to run File Upload/sharing Service on your website. Trusted by thousands of webmasters since 2007.",
   "repository": {
@@ -11,7 +10,7 @@
     "url": "https://github.com/kleeja-official/kleeja/issues"
   },
   "homepage": "https://github.com/kleeja-official/kleeja#readme",
-  "license": "GPL-2.0-or-later",
+  "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check ."
