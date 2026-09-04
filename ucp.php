@@ -443,7 +443,7 @@ switch (g('go')) {
             $result = $SQL->build($query);
 
             $i = $currentPage * $perpage - $perpage;
-            $tdnumi = $num = $files_num = $imgs_num = 0;
+            $tdnumi = $num = $files_num = $imgs_num = $sizes = 0;
             while ($row = $SQL->fetch_array($result)) {
                 ++$i;
                 $file_info = [
@@ -496,7 +496,7 @@ switch (g('go')) {
                         kleeja_info($lang['INVALID_FORM_KEY']);
                     }
 
-                    if ($_POST['del_' . $row['id']]) {
+                    if (ip('del_' . $row['id'])) {
                         //delete from folder ..
                         @kleeja_unlink($row['folder'] . '/' . $row['name']);
 
@@ -524,25 +524,28 @@ switch (g('go')) {
                         ? extract($plugin_run_result)
                         : null; //run hook
 
-                    //delete all files
-                    foreach ($arr as $row) {
-                        @kleeja_unlink($row['folder'] . '/' . $row['name']);
-
-                        //delete thumb
-                        if (file_exists($row['folder'] . '/thumbs/' . $row['name'])) {
-                            @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
-                        }
-
-                        $ids[] = $row['id'];
-
-                        if ($is_image) {
-                            $imgs_num++;
-                        } else {
-                            $files_num++;
-                        }
-
-                        $sizes += $r['size'];
+                    //check for form key
+                    if (!kleeja_check_form_key('fileuser', 1800 /* half hour */)) {
+                        kleeja_info($lang['INVALID_FORM_KEY']);
                     }
+
+                    //delete all files
+                    @kleeja_unlink($row['folder'] . '/' . $row['name']);
+
+                    //delete thumb
+                    if (file_exists($row['folder'] . '/thumbs/' . $row['name'])) {
+                        @kleeja_unlink($row['folder'] . '/thumbs/' . $row['name']);
+                    }
+
+                    $ids[] = $row['id'];
+
+                    if ($is_image) {
+                        $imgs_num++;
+                    } else {
+                        $files_num++;
+                    }
+
+                    $sizes += $row['size'];
                 }
             }
 
@@ -734,9 +737,9 @@ switch (g('go')) {
                     ) != 0
                 ) {
                     $ERRORS['mail_exists_before'] = $lang['EXIST_EMAIL'];
+                } else {
+                    $new_mail = true;
                 }
-
-                $new_mail = true;
             }
 
             is_array($plugin_run_result = Plugins::getInstance()->run('submit_profile2', get_defined_vars()))
