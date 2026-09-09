@@ -229,7 +229,7 @@ function get_cookies_settings()
 
 
     $cookie_secure    = isset($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] == 'on' ? true : false;
-    $cookie_name      = 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(md5(mt_rand()), 16, 35)), 0, 5));
+    $cookie_name      = 'klj_' . strtolower(substr(str_replace('0', 'z', base_convert(substr(md5(mt_rand()), 0, 7), 16, 35)), 0, 5));
 
     $name = (! empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
 

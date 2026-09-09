@@ -69,7 +69,7 @@ if (! defined('SQL_LAYER')):
                 //loggin -> no database -> close connection
                 $this->close();
                 $this->error_msg('We can not connect to the server ...');
-                return false;
+                return;
             }
 
             //connecting
@@ -83,8 +83,6 @@ if (! defined('SQL_LAYER')):
                     kleeja_log('[Set to UTF8] : --> ');
                 }
             }
-
-            return $this->connect_id;
         }
 
         public function __destruct()

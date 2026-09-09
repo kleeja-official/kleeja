@@ -74,14 +74,11 @@ if (! defined('SQL_LAYER')):
                 //loggin -> no database -> close connection
                 $this->close();
                 $this->error_msg('We can not connect to the sqlite database, check location or existence of the SQLite dirver ...');
-                return false;
+                return;
             }
 
             //connecting
             kleeja_log('[Connected] : ' . kleeja_get_page());
-
-
-            return $this->connect_id;
         }
 
         public function __destruct()
