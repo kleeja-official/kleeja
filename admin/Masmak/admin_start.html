@@ -437,7 +437,7 @@ function toggleStartBox(name, hide, current) {
             <div class="d-flex w-40 justify-content-between">
                 <img src="%avatarUrl%" alt="" class="img-thumbnail mx-2 rounded" style="width: 48px; height: 48px"> <a href="%htmlUrl%" target="_tab"><h5 class="mb-1">%login%</h5></a>
             </div>
-            <small><a href="https://github.com/awssat/kleeja/graphs/contributors" target="_blank">%contributions% <i class="fa fa-fw fa-code"></i></a></small>
+            <small><a href="https://github.com/kleeja-official/kleeja/graphs/contributors" target="_blank">%contributions% <i class="fa fa-fw fa-code"></i></a></small>
         </li>
     </ul>
 
@@ -450,7 +450,7 @@ function toggleStartBox(name, hide, current) {
 
     <hr>
     <p style="direction: ltr">
-<small>You can support Kleeja by reporting or fixing a bug, designing a style, building a plugin (see <a href="https://github.com/awssat/kleeja" target="_tab">github.com/awssat/kleeja</a>)</small>
+<small>You can support Kleeja by reporting or fixing a bug, designing a style, building a plugin (see <a href="https://github.com/kleeja-official/kleeja" target="_tab">github.com/kleeja-official/kleeja</a>)</small>
     </p>
 
     <br>
@@ -460,7 +460,7 @@ function toggleStartBox(name, hide, current) {
 <script type="text/javascript">
     setTimeout(function() {
         $.ajax({
-            url: "https://api.github.com/repos/awssat/kleeja/contributors",
+            url: "https://api.github.com/repos/kleeja-official/kleeja/contributors",
             dataType: 'json'})
             .done(function (data) {
                 var template = $('#ghTemplate')[0].outerHTML;
