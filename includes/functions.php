@@ -214,6 +214,16 @@ function send_mail(
     string $fromName,
     string $bcc = '',
 ): bool {
+    $sending_mail_handled = false;
+    $mail_sent = false;
+
+    extract(runHook('kleeja_begin_send_mail_func', get_defined_vars()));
+
+    // handling email sending does not mean that it's successfully sent :)
+    if ($sending_mail_handled) {
+        return $mail_sent;
+    }
+
     $eol = "\r\n";
     $headers = '';
     $headers .=
@@ -239,9 +249,7 @@ function send_mail(
         $headers .= 'Bcc: ' . trim(preg_replace('#[\n\r:]+#s', '', $bcc)) . $eol;
     }
 
-    is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_send_mail', get_defined_vars()))
-        ? extract($plugin_run_result)
-        : null; //run hook
+    extract(runHook('kleeja_send_mail', get_defined_vars()));
 
     $body = str_replace(["\n", "\0"], ["\r\n", ''], $body);
 
@@ -250,6 +258,12 @@ function send_mail(
         $headers = str_replace("\r\n", "\r", $headers);
     } elseif (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
         $headers = str_replace("\r\n", "\n", $headers);
+    }
+
+    extract(runHook('kleeja_send_mail_handle', get_defined_vars()));
+
+    if ($sending_mail_handled) {
+        return $mail_sent;
     }
 
     $mail_sent = @mail(
