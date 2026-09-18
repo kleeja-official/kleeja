@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   kleeja:
     build:
@@ -13,6 +11,8 @@ services:
       - ./:/var/www/html
     depends_on:
       - mysql
+    networks:
+      - kleeja-network
 
   mysql:
     image: mysql:8.0
@@ -26,6 +26,24 @@ services:
       MYSQL_PASSWORD: apppass
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - kleeja-network
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    environment:
+      MP_WEBROOT: mailpit
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - kleeja-network
 
 volumes:
   mysql_data:
+
+networks:
+  kleeja-network:
+    driver: bridge
