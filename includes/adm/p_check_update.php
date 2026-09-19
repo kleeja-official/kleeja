@@ -15,7 +15,7 @@ if (!defined('IN_ADMIN')) {
 set_time_limit(0);
 
 $current_version = KLEEJA_VERSION;
-$new_version = unserialize($config['new_version']);
+$new_version = unserialize($config['new_version'], ['allowed_classes' => false]);
 $new_version = empty($new_version['version_number']) ? KLEEJA_VERSION : $new_version['version_number'];
 $backup_archive_path = PATH . 'cache/backup.zip';
 $GET_FORM_KEY = kleeja_add_form_key_get('UPDATER_FORM_KEY');
