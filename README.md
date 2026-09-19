@@ -1,5 +1,7 @@
 <div align="center">
 
+**English** · [العربية](README.ar.md)
+
 # Kleeja
 
 **The easiest way to run your own file upload and sharing service.**
