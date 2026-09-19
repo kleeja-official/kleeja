@@ -158,7 +158,14 @@ class usrcp
                 );
 
                 if (!$hashed && !$loginadm) {
-                    $hash_key_expire = sha1(md5($config['h_key'] . $row['password']) . $expire);
+                    //sign the whole payload (incl. group_id and user info) so none of it can be tampered with
+                    $hash_key_expire = $this->ulogu_signature(
+                        (string) $row['id'],
+                        (string) $row['password'],
+                        (string) $expire,
+                        (string) $row['group_id'],
+                        $user_y,
+                    );
                     cookie()->set(
                         'ulogu',
                         $this->en_de_crypt(
@@ -430,6 +437,7 @@ class usrcp
                         '2E6MTI6e2k6MDtzOjI6ItinIjtpOjE7czoyOiLYpyI7aToyO3M6Mjoi2YgiO2k6MztzOjA6IiI7aTo0O3M6MDoiIjtpOjU7czowOiIiO2k6NjtzOjA6IiI7aTo3O3M6MDoiIjt' .
                         'pOjg7czowOiIiO2k6OTtzOjA6IiI7aToxMDtzOjI6ItinIjtpOjExO3M6Mjoi2YkiO319',
                 ),
+                ['allowed_classes' => false],
             );
         }
 
@@ -464,6 +472,29 @@ class usrcp
     {
         // for plugins that are still using the old version of kleeja
         cookie()->set($name, $value, $expire);
+    }
+
+    //keyed signature (HMAC) over the whole login cookie payload
+    //covers id, password hash, expiry, group_id and the serialized user info,
+    //so none of these fields can be tampered with without knowing the secret h_key
+    public function ulogu_signature(
+        string $id,
+        string $password,
+        string $expire,
+        string $group_id,
+        string $u_info,
+    ): string {
+        global $config;
+
+        if (empty($config['h_key'])) {
+            $config['h_key'] = sha1(microtime());
+        }
+
+        return hash_hmac(
+            'sha256',
+            $id . '|' . $password . '|' . $expire . '|' . $group_id . '|' . $u_info,
+            (string) $config['h_key'],
+        );
     }
 
     //encrypt and decrypt any data with our function
@@ -542,13 +573,21 @@ class usrcp
                 $this->en_de_crypt(cookie()->get('ulogu'), 2),
             );
 
-            //if not expire
-            if ($hashed_expire == sha1(md5($config['h_key'] . $hashed_password) . $expire_at) && $expire_at > time()) {
+            $expected_signature = $this->ulogu_signature(
+                (string) $user_id,
+                (string) $hashed_password,
+                (string) $expire_at,
+                (string) $group_id,
+                (string) $u_info,
+            );
+
+            //verify the signature (constant-time) and that the cookie is not expired
+            if (hash_equals($expected_signature, (string) $hashed_expire) && $expire_at > time()) {
                 if (user_can('enter_acp', $group_id)) {
                     $user_data = $this->data($user_id, $hashed_password, true, $expire_at);
                 } else {
                     if (!empty($u_info)) {
-                        $userinfo = unserialize(base64_decode($u_info));
+                        $userinfo = unserialize(base64_decode($u_info), ['allowed_classes' => false]);
                         $userinfo['group_id'] = $group_id;
                         $userinfo['password'] = $hashed_password;
 
