@@ -1147,7 +1147,7 @@ switch ($current_smt):
             );
         }
 
-        $search = unserialize(htmlspecialchars_decode($filter['filter_value']));
+        $search = unserialize(htmlspecialchars_decode($filter['filter_value']), ['allowed_classes' => false]);
 
         $usernamee =
             $search['username'] != ''

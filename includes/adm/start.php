@@ -109,7 +109,7 @@ if (!file_exists(PATH . '.htaccess') && (int) $config['mod_writer'] == 1) {
 }
 
 //updating
-$v = @unserialize($config['new_version']);
+$v = @unserialize($config['new_version'], ['allowed_classes' => false]);
 
 if (version_compare(strtolower(KLEEJA_VERSION), strtolower($v['version_number'] || 0), '<')) {
     $ADM_NOTIFICATIONS['up_ver_klj'] = [

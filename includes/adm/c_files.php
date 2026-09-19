@@ -143,7 +143,9 @@ if (ip('submit')) {
             kleeja_admin_err($lang['ADMIN_DELETE_FILES_NOF']);
         }
 
-        $query['WHERE'] = build_search_query(unserialize(htmlspecialchars_decode($filter['filter_value'])));
+        $query['WHERE'] = build_search_query(
+            unserialize(htmlspecialchars_decode($filter['filter_value']), ['allowed_classes' => false]),
+        );
 
         if ($query['WHERE'] == '') {
             kleeja_admin_err($lang['ADMIN_DELETE_FILES_NOF']);
@@ -231,7 +233,9 @@ if (ip('submit')) {
         $filter = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
         $deletelink = basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php') . '&deletefiles=' . g('search_id');
         $is_search = true;
-        $query['WHERE'] = build_search_query(unserialize(htmlspecialchars_decode($filter['filter_value'])));
+        $query['WHERE'] = build_search_query(
+            unserialize(htmlspecialchars_decode($filter['filter_value']), ['allowed_classes' => false]),
+        );
     } elseif (isset($_REQUEST['last_visit'])) {
         $query['WHERE'] = 'f.time > ' . intval($_REQUEST['last_visit']);
     }
