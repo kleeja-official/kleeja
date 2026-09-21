@@ -33,6 +33,7 @@ Project_Default.xml
 !.vscode/extensions.json
 .htaccess
 kleeja.db
+.claude
 
 # node / prettier toolchain
 node_modules/
