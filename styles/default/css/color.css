@@ -139,7 +139,7 @@
 	5. Template & Header > header.html
 	-------------------------------------------------- */
 	/* @Logo -------------------- */  
-	#header .logo {background:transparent url("../images/logo.png") right center no-repeat;}
+	#header .logo {background:transparent url("../images/logo.png") right center no-repeat;background-size:contain;}
 	/* @Top Navigation -------------------- */       
 	.top_nav {background:url("../images/menu-bg.gif")}
 	.top_nav .menu li a {color: #444;}
