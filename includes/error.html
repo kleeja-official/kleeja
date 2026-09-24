@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Kleeja Error</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        :root {
+            --kj-coral: #F45B69;
+            --kj-coral-600: #C84B56;
+            --kj-coral-100: #FEEBED;
+            --kj-coral-800: #7F2F37;
+            --kj-navy: #0B1F3A;
+            --kj-navy-50: #F6F7F8;
+            --kj-navy-200: #D9DCE0;
+            --kj-navy-600: #546275;
+            --kj-error: #C2323F;
+
+            --kj-bg: var(--kj-navy-50);
+            --kj-surface: #FFFFFF;
+            --kj-border: var(--kj-navy-200);
+            --kj-text: var(--kj-navy);
+            --kj-muted: var(--kj-navy-600);
+            --kj-link: var(--kj-coral-600);
+            --kj-code-bg: var(--kj-navy-50);
+            --kj-badge-bg: var(--kj-coral-100);
+            --kj-badge-text: var(--kj-coral-800);
+            --kj-danger: var(--kj-error);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --kj-bg: var(--kj-navy);
+                --kj-surface: #23354E;
+                --kj-border: #3C4C61;
+                --kj-text: #FFFFFF;
+                --kj-muted: #BBC0C8;
+                --kj-link: var(--kj-coral);
+                --kj-code-bg: var(--kj-navy);
+                --kj-badge-bg: #582126;
+                --kj-badge-text: #FCD4D8;
+                --kj-danger: #F78C96;
+            }
+        }
+
+        body {
+            background: var(--kj-bg);
+            color: var(--kj-text);
+            font-family: "Inter", "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+            min-height: 100vh;
+        }
+
+        .kj-card {
+            background: var(--kj-surface);
+            border: 1px solid var(--kj-border);
+            border-top: 4px solid var(--kj-coral);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(11, 31, 58, .12);
+        }
+
+        .kj-muted { color: var(--kj-muted); }
+
+        .kj-badge {
+            background: var(--kj-badge-bg);
+            color: var(--kj-badge-text);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+
+        .kj-message {
+            border-inline-start: 4px solid var(--kj-danger);
+            background: var(--kj-code-bg);
+            border-radius: 4px;
+            padding: 12px 16px;
+            font-size: 1.05rem;
+            overflow-wrap: anywhere;
+        }
+
+        .kj-details {
+            --bs-table-bg: transparent;
+            --bs-table-color: var(--kj-text);
+            --bs-table-border-color: var(--kj-border);
+        }
+
+        .kj-details th {
+            color: var(--kj-muted);
+            font-weight: 500;
+            white-space: nowrap;
+            width: 1%;
+        }
+
+        .kj-details code {
+            color: var(--kj-text);
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+            overflow-wrap: anywhere;
+        }
+
+        .kj-link {
+            color: var(--kj-link);
+            text-underline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center py-5">
+    <!--
+        Rendered by kleeja_show_error() in includes/common.php.
+        Placeholders, written as {NAME} in the markup below (values are HTML-escaped):
+            ERROR_NAME    error type name, e.g. E_USER_ERROR
+            ERROR_NUMBER  $error_number
+            ERROR_STRING  $error_string
+            ERROR_FILE    basename($error_file)
+            ERROR_LINE    $error_line
+    -->
+    <main class="container" style="max-width: 720px;">
+        <div class="kj-card p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <picture>
+                    <source srcset="https://kleeja.net/images/logo-light.svg" media="(prefers-color-scheme: dark)">
+                    <img src="https://kleeja.net/images/logo.svg" alt="Kleeja" width="48" height="48">
+                </picture>
+                <div>
+                    <h1 class="h4 fw-bold mb-1">Kleeja Error</h1>
+                    <span class="kj-badge">HTTP 503 · Service Temporarily Unavailable</span>
+                </div>
+            </div>
+
+            <p class="kj-muted mb-3">
+                Something went wrong while processing your request. The details below can help the site
+                administrator fix the problem.
+            </p>
+
+            <div class="kj-message mb-4" dir="auto">
+                {ERROR_STRING}
+            </div>
+
+            <table class="table kj-details mb-4">
+                <tbody>
+                    <tr>
+                        <th scope="row">Type</th>
+                        <td><code>{ERROR_NAME}</code> <span class="kj-muted">({ERROR_NUMBER})</span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">File</th>
+                        <td><code>{ERROR_FILE}</code></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Line</th>
+                        <td><code>{ERROR_LINE}</code></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Reference</th>
+                        <td><code>[ {ERROR_NUMBER}:{ERROR_FILE}:{ERROR_LINE} ]</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 small kj-muted">
+                <span>
+                    Visit the <a class="kj-link" href="https://kleeja.net/" target="_blank" rel="noopener">Kleeja</a>
+                    website for more details, or
+                    <a class="kj-link" href="https://github.com/kleeja/kleeja/issues" target="_blank"
+                        rel="noopener">report this issue on GitHub</a>.
+                </span>
+                <a class="kj-link" href="https://kleeja.net" target="_blank" rel="noopener">Powered by Kleeja</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
