@@ -113,9 +113,12 @@ function kleeja_show_error(
                     nl2br($escape($error_string));
             } else {
                 echo strtr($error_template, [
+                    '{TITLE}' => 'Kleeja Error',
+                    '{BADGE}' => 'HTTP 503 · Service Temporarily Unavailable',
+                    '{TYPE}' => 'error',
+                    '{MESSAGE}' => nl2br($escape($error_string)),
                     '{ERROR_NAME}' => $error_name,
                     '{ERROR_NUMBER}' => $error_number,
-                    '{ERROR_STRING}' => nl2br($escape($error_string)),
                     '{ERROR_FILE}' => $escape(basename($error_file)),
                     '{ERROR_LINE}' => $error_line,
                 ]);

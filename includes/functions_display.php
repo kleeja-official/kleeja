@@ -433,29 +433,32 @@ function kleeja_debug(): void
 function big_error(string $error_title, string $msg_text, bool $error = true): void
 {
     global $SQL;
-    echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">' . "\n";
-    echo '<head>' . "\n";
-    echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' . "\n";
-    echo '<title>' . htmlspecialchars($error_title) . '</title>' . "\n";
-    echo '<style type="text/css">' . "\n\t";
-    echo '* { margin: 0; padding: 0; direction:ltr}' . "\n\t";
-    echo '.error {color: #333;background:#ffebe8;float:left;width:73%;text-align:left;margin-top:10px;border: 1px solid #dd3c10;} .info {color: #333;background:#fff9d7;border: 1px solid #e2c822;}' .
-        "\n\t";
-    echo '.error,.info {padding: 10px;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size: 12px;}' .
-        "\n";
-    echo '</style>' . "\n";
-    echo '</head>' . "\n";
-    echo '<body>' . "\n\t";
-    echo '<div class="' . ($error ? 'error' : 'info') . '">' . "\n";
-    echo "\n\t\t<h2>Kleeja " . ($error ? 'error' : 'information message') . ': </h2><br />' . "\n";
-    echo "\n\t\t<strong> [ " . $error_title . ' ] </strong><br /><br />' . "\n\t\t" . $msg_text . "\n\t";
-    echo "\n\t\t" .
-        '<br /><br /><small>Visit <a href="https://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' .
-        "\n\t";
-    echo '</div>' . "\n";
-    echo '</body>' . "\n";
-    echo '</html>';
-    @$SQL->close();
+
+    $error_title = htmlspecialchars($error_title, ENT_QUOTES, 'UTF-8');
+    $error_template = @file_get_contents(__DIR__ . '/error.html');
+
+    if ($error_template === false) {
+        echo '<strong>Kleeja ' .
+            ($error ? 'error' : 'information message') .
+            ': [ ' .
+            $error_title .
+            ' ]</strong><br />' .
+            $msg_text;
+    } else {
+        //the details blocks are for PHP errors shown by kleeja_show_error() only
+        $error_template = preg_replace('/<!-- BEGIN DETAILS -->.*?<!-- END DETAILS -->/s', '', $error_template);
+
+        echo strtr($error_template, [
+            '{TITLE}' => $error_title,
+            '{BADGE}' => $error ? 'Kleeja Error' : 'Kleeja Information',
+            '{TYPE}' => $error ? 'error' : 'info',
+            '{MESSAGE}' => $msg_text,
+        ]);
+    }
+
+    if (isset($SQL)) {
+        @$SQL->close();
+    }
 
     exit();
 }
