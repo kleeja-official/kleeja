@@ -134,6 +134,15 @@ function kleeja_show_error(
 }
 set_error_handler('kleeja_show_error');
 
+include PATH . 'includes/version.php';
+
+if (version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
+    trigger_error(
+        'You are using an old PHP version (' . PHP_VERSION_ID . '), to run Kleeja you should use PHP 8.0 or above.',
+        E_USER_ERROR,
+    );
+}
+
 //time of start and end and whatever
 function get_microtime(): float
 {
@@ -185,7 +194,6 @@ define('K_FILE_CHMOD', defined('HAS_SUEXEC') ? 0644 & ~umask() : 0644);
 define('K_DIR_CHMOD', defined('HAS_SUEXEC') ? 0755 & ~umask() : 0755);
 
 include PATH . 'includes/functions_alternative.php';
-include PATH . 'includes/version.php';
 
 if (isset($dbtype) && $dbtype == 'sqlite') {
     include PATH . 'includes/sqlite.php';
