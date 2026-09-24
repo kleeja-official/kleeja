@@ -244,8 +244,8 @@ function Saafooter(): void
 
     echo $footer;
 
-    //page analysis
-    if (ig('debug') && user_can('enter_acp')) {
+    //page analysis, its data are collected only in DEV_STAGE
+    if (defined('DEV_STAGE') && ig('debug') && user_can('enter_acp')) {
         kleeja_debug();
     }
 
@@ -343,84 +343,314 @@ function kleeja_info(
 }
 
 /**
- * Show debug information
+ * Show debug information of the current page, for admins who add ?debug to the url while DEV_STAGE is defined
  */
 function kleeja_debug(): void
 {
-    global $SQL, $do_gzip_compress, $all_plg_hooks;
+    global $SQL, $starttm, $config, $STYLE_PATH_ADMIN;
 
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_debug_func', get_defined_vars()))
         ? extract($plugin_run_result)
         : null; //run hook
 
-    $debug_output = '';
+    $escape = fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    $ms = fn(float $seconds): string => number_format($seconds * 1000, 2) . ' ms';
 
-    //get memory usage
-    if (function_exists('memory_get_usage')) {
-        if ($memory_usage = memory_get_usage()) {
-            $base_memory_usage = 0;
-            $memory_usage -= $base_memory_usage;
-            $memory_usage =
-                $memory_usage >= 1048576
-                    ? round(round(($memory_usage / 1048576) * 100) / 100, 2) . ' MB'
-                    : ($memory_usage >= 1024
-                        ? round(round(($memory_usage / 1024) * 100) / 100, 2) . ' KB'
-                        : $memory_usage . ' BYTES');
-            $debug_output = 'Memory Usage : <em>' . $memory_usage . '</em>';
+    $page_time = get_microtime() - $starttm;
+    $durations = array_map(fn(array $query): float => (float) $query[1], $SQL->debugr);
+    $sql_time = array_sum($durations);
+    $slowest = $durations ? max($durations) : 0.0;
+    //marking the slowest one is useful only if there is more than one query
+    $slowest_key = count($durations) > 1 ? array_search($slowest, $durations, true) : null;
+    $plugins_info = Plugins::getInstance()->getDebugInfo();
+    $installed_plugins = $plugins_info['installed_plugins'] ?? [];
+    $hooks_plugins = $plugins_info['hooks_plugins'] ?? [];
+    ksort($hooks_plugins);
+
+    //the same icon of the plugin in the admin panel, file_exists() results are cached by PHP for the repeated ones
+    $plugin_label = fn(string $name): string => '<span class="kj-debug-plugin"><img src="' .
+        $escape(
+            file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $name . '/icon.png')
+                ? $config['siteurl'] . KLEEJA_PLUGINS_FOLDER . '/' . rawurlencode($name) . '/icon.png'
+                : $STYLE_PATH_ADMIN . 'images/plugin.png',
+        ) .
+        '" alt="" width="24" height="24" loading="lazy">' .
+        $escape($name) .
+        '</span>';
+
+    //[label, value, note]
+    $stats = [
+        ['Generation time', $ms($page_time), 'until this panel'],
+        ['Queries', $SQL->query_num, $slowest > 0 ? 'slowest ' . $ms($slowest) : ''],
+        [
+            'SQL time',
+            $ms($sql_time),
+            $page_time > 0 ? round(($sql_time / $page_time) * 100) . '% of generation time' : '',
+        ],
+        ['Memory', readable_size(memory_get_usage()), 'peak ' . readable_size(memory_get_peak_usage())],
+        ['PHP', PHP_VERSION, PHP_OS_FAMILY],
+        ['Database', $SQL->driver ?? '-', 'PDO'],
+        [
+            'Gzip',
+            in_array(strtolower((string) ini_get('zlib.output_compression')), ['', '0', 'off'], true)
+                ? 'Disabled'
+                : 'Enabled',
+            'zlib.output_compression',
+        ],
+        [
+            'Hook system',
+            defined('STOP_PLUGINS') ? 'Disabled' : 'Enabled',
+            count($installed_plugins) . ' plugins, ' . count($hooks_plugins) . ' hooks',
+        ],
+    ];
+
+    $stats_html = '';
+
+    foreach ($stats as [$label, $value, $note]) {
+        $stats_html .=
+            '<div class="kj-debug-stat"><dt>' .
+            $label .
+            '</dt><dd class="kj-debug-stat-value">' .
+            $escape($value) .
+            '</dd>' .
+            ($note !== '' ? '<dd class="kj-debug-stat-note">' . $escape($note) . '</dd>' : '') .
+            '</div>';
+    }
+
+    $queries_html = '';
+
+    foreach ($SQL->debugr as $key => [$query, , $params]) {
+        $values_html = '';
+
+        //values of the placeholders
+        foreach ($params as $name => $value) {
+            $values_html .=
+                '<dt>' .
+                $escape(is_int($name) ? '?' . ($name + 1) : ':' . ltrim($name, ':')) .
+                '</dt><dd>' .
+                $escape(
+                    json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE),
+                ) .
+                '</dd>';
+        }
+
+        $queries_html .=
+            '<li class="kj-debug-query"><div class="kj-debug-query-head">' .
+            '<span class="kj-debug-query-num">#' .
+            $key .
+            '</span>' .
+            '<span class="kj-debug-meter" aria-hidden="true" title="' .
+            number_format($durations[$key] * 1000, 3) .
+            ' ms"><span style="width: ' .
+            ($slowest > 0 ? round(($durations[$key] / $slowest) * 100, 1) : 0) .
+            '%"></span></span>' .
+            '<span class="kj-debug-query-time">' .
+            $ms($durations[$key]) .
+            '</span>' .
+            ($key === $slowest_key ? '<span class="kj-debug-badge">Slowest</span>' : '') .
+            '</div><pre class="kj-debug-code"><code>' .
+            $escape(trim($query)) .
+            '</code></pre>' .
+            ($values_html !== '' ? '<dl class="kj-debug-values">' . $values_html . '</dl>' : '') .
+            '</li>';
+    }
+
+    $plugins_html = '';
+
+    foreach ($installed_plugins as $name => $version) {
+        $plugins_html .= '<tr><td>' . $plugin_label($name) . '</td><td>' . $escape($version) . '</td></tr>';
+    }
+
+    $hooks_html = '';
+
+    foreach ($hooks_plugins as $hook => $priorities) {
+        $hooks_html .=
+            '<tr><td><code>' .
+            $escape($hook) .
+            '</code></td><td><div class="kj-debug-plugins">' .
+            implode('', array_map($plugin_label, array_merge(...array_values($priorities)))) .
+            '</div></td><td class="kj-debug-num" data-label="Priorities">' .
+            $escape(implode(', ', array_keys($priorities))) .
+            '</td></tr>';
+    }
+
+    echo '<div class="kj-debug" dir="ltr"><style>' . kleeja_debug_css() . '</style>';
+    echo '<div class="kj-debug-head"><picture>' .
+        '<source srcset="https://kleeja.net/images/logo-light.svg" media="(prefers-color-scheme: dark)">' .
+        '<img src="https://kleeja.net/images/logo.svg" alt="Kleeja" width="32" height="32"></picture>' .
+        '<div><h2 class="kj-debug-title">Page analysis</h2>' .
+        '<p class="kj-debug-subtitle">Debug information of this request, shown to administrators only.</p></div></div>';
+    echo '<dl class="kj-debug-stats">' . $stats_html . '</dl>';
+
+    echo '<details class="kj-debug-section" open><summary>SQL queries <span class="kj-debug-count">' .
+        count($SQL->debugr) .
+        '</span></summary>' .
+        ($queries_html !== ''
+            ? '<ol class="kj-debug-queries">' . $queries_html . '</ol>'
+            : '<p class="kj-debug-empty">No queries were run.</p>') .
+        '</details>';
+
+    echo '<details class="kj-debug-section" open><summary>Plugins <span class="kj-debug-count">' .
+        count($installed_plugins) .
+        '</span></summary>';
+
+    echo '<h3 class="kj-debug-subhead">Installed plugins</h3>' .
+        ($plugins_html !== ''
+            ? '<table class="kj-debug-table"><thead><tr><th>Name</th><th>Version</th></tr></thead><tbody>' .
+                $plugins_html .
+                '</tbody></table>'
+            : '<p class="kj-debug-empty">No plugins are installed.</p>');
+    echo '<h3 class="kj-debug-subhead">Hooks</h3>' .
+        ($hooks_html !== ''
+            ? '<table class="kj-debug-table kj-debug-table-stack"><thead><tr><th>Hook</th><th>Plugins (run order)</th>' .
+                '<th class="kj-debug-num">Priorities</th></tr></thead><tbody>' .
+                $hooks_html .
+                '</tbody></table>'
+            : '<p class="kj-debug-empty">No hooks are registered.</p>');
+
+    echo '</details></div>';
+}
+
+/**
+ * Styles of kleeja_debug() panel, scoped to .kj-debug since it is printed inside the page of the current style
+ * @return string
+ */
+function kleeja_debug_css(): string
+{
+    return <<<'CSS'
+    .kj-debug {
+        --kjd-bg: #FFFFFF;
+        --kjd-surface: #F6F7F8;
+        --kjd-border: #D9DCE0;
+        --kjd-text: #0B1F3A;
+        --kjd-muted: #546275;
+        --kjd-accent: #F45B69;
+        --kjd-track: #D9DCE0;
+        --kjd-badge-bg: #FEEBED;
+        --kjd-badge-text: #7F2F37;
+        display: block;
+        box-sizing: border-box;
+        width: calc(100% - 32px);
+        max-width: 1100px;
+        margin: 32px auto;
+        padding: 24px;
+        background: var(--kjd-bg);
+        color: var(--kjd-text);
+        border: 1px solid var(--kjd-border);
+        border-top: 4px solid var(--kjd-accent);
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(11, 31, 58, .12);
+        font: 14px/1.5 "Inter", "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+        text-align: left;
+        direction: ltr;
+    }
+    @media (prefers-color-scheme: dark) {
+        .kj-debug {
+            --kjd-bg: #0B1F3A;
+            --kjd-surface: #23354E;
+            --kjd-border: #3C4C61;
+            --kjd-text: #FFFFFF;
+            --kjd-muted: #BBC0C8;
+            --kjd-track: #3C4C61;
+            --kjd-badge-bg: #582126;
+            --kjd-badge-text: #FCD4D8;
+            box-shadow: none;
         }
     }
-
-    //then show it
-    echo '<div class="debug_kleeja">';
-    echo '<fieldset  dir="ltr"><legend><br /><br /><em style="font-family: Tahoma,serif; color:red">[Page Analysis]</em></legend>';
-    echo '<p>&nbsp;</p>';
-    echo '<p><h2><strong>General Information :</strong></h2></p>';
-    echo '<p>Gzip : <em>' . ($do_gzip_compress != 0 ? 'Enabled' : 'Disabled') . '</em></p>';
-    echo '<p>Queries Number :<em> ' . $SQL->query_num . ' </i></p>';
-    echo '<p>Hook System :<em> ' . (!defined('STOP_PLUGINS') ? 'Enabled' : 'Disabled') . ' </em></p>';
-    echo '<p>' . $debug_output . '</p>';
-    echo '<p>&nbsp;</p>';
-    echo '<p><h2><strong><em>SQL</em> Information :</strong></h2></p> ';
-
-    if (is_array($SQL->debugr)) {
-        foreach ($SQL->debugr as $key => $val) {
-            echo '<fieldset name="sql"  dir="ltr" style="background:white"><legend><em>Query # [' .
-                $key .
-                '</em>]</legend> ';
-            echo '<textarea style="font-family:Courier New,monospace;width:99%; background:#F4F4F4" rows="5" cols="10">' .
-                $val[0] .
-                '';
-            echo '</textarea>    <br />';
-
-            //values of the placeholders, they are kept only in DEV_STAGE
-            if (!empty($val[2])) {
-                echo 'Values :' .
-                    htmlspecialchars(json_encode($val[2], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE)) .
-                    '<br />';
-            }
-
-            echo 'Duration :' . $val[1] . '';
-            echo '</fieldset>';
-            echo '<br /><br />';
+    /* the style of the page can set the direction of all elements, like * { direction: rtl } */
+    .kj-debug *, .kj-debug *::before, .kj-debug *::after { box-sizing: border-box; direction: ltr; }
+    .kj-debug-head { display: flex; align-items: center; gap: 12px; margin: 0 0 24px; }
+    .kj-debug-head img { display: block; width: 32px; height: 32px; }
+    .kj-debug .kj-debug-title, .kj-debug .kj-debug-subhead {
+        margin: 0; padding: 0; border: 0; background: none;
+        font-family: inherit; letter-spacing: normal; text-transform: none;
+    }
+    .kj-debug .kj-debug-title { font-size: 20px; font-weight: 700; line-height: 1.3; color: var(--kjd-text); }
+    .kj-debug .kj-debug-subhead { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--kjd-muted); }
+    .kj-debug-subtitle { margin: 2px 0 0; color: var(--kjd-muted); font-size: 13px; }
+    .kj-debug-stats {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px;
+        margin: 0 0 24px; padding: 0;
+    }
+    .kj-debug-stat {
+        min-width: 0; padding: 12px 16px;
+        background: var(--kjd-surface); border: 1px solid var(--kjd-border); border-radius: 8px;
+    }
+    .kj-debug-stat dt { margin: 0; color: var(--kjd-muted); font-size: 12px; font-weight: 500; }
+    .kj-debug-stat dd { margin: 0; overflow-wrap: anywhere; }
+    .kj-debug-stat-value { font-size: 20px; font-weight: 600; line-height: 1.4; font-variant-numeric: tabular-nums; }
+    .kj-debug-stat-note { color: var(--kjd-muted); font-size: 12px; }
+    .kj-debug-section { margin: 0; padding: 16px 0 0; border-top: 1px solid var(--kjd-border); }
+    .kj-debug-section + .kj-debug-section { margin-top: 16px; }
+    .kj-debug-section > summary { margin: 0 0 12px; cursor: pointer; font-size: 16px; font-weight: 600; }
+    .kj-debug-section:not([open]) > summary { margin: 0; }
+    .kj-debug-count {
+        display: inline-block; margin-left: 8px; padding: 0 8px; vertical-align: 1px;
+        background: var(--kjd-surface); border: 1px solid var(--kjd-border); border-radius: 999px;
+        color: var(--kjd-muted); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums;
+    }
+    .kj-debug-queries { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .kj-debug-query {
+        margin: 0; padding: 12px 16px;
+        background: var(--kjd-surface); border: 1px solid var(--kjd-border); border-radius: 8px;
+    }
+    .kj-debug-query-head {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 8px;
+        font-variant-numeric: tabular-nums;
+    }
+    .kj-debug-query-num { min-width: 32px; color: var(--kjd-muted); font-weight: 600; }
+    .kj-debug-meter { flex: 0 1 200px; height: 6px; background: var(--kjd-track); }
+    .kj-debug-meter > span {
+        display: block; height: 100%; min-width: 4px;
+        background: var(--kjd-accent); border-radius: 0 3px 3px 0;
+    }
+    .kj-debug-query-time { font-weight: 600; }
+    .kj-debug-badge {
+        padding: 2px 10px; border-radius: 999px;
+        background: var(--kjd-badge-bg); color: var(--kjd-badge-text); font-size: 12px; font-weight: 600;
+    }
+    .kj-debug .kj-debug-code {
+        max-height: 240px; margin: 0; padding: 12px; overflow: auto;
+        background: var(--kjd-bg); color: var(--kjd-text); border: 1px solid var(--kjd-border); border-radius: 4px;
+        font: 13px/1.6 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .kj-debug code { padding: 0; background: none; color: inherit; font: inherit; }
+    .kj-debug-values {
+        display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 12px; margin: 8px 0 0;
+        font: 12px/1.5 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .kj-debug-values dt { margin: 0; color: var(--kjd-muted); }
+    .kj-debug-values dd { margin: 0; overflow-wrap: anywhere; unicode-bidi: plaintext; }
+    .kj-debug .kj-debug-table { width: 100%; margin: 0 0 16px; border-collapse: collapse; background: none; }
+    .kj-debug .kj-debug-table th, .kj-debug .kj-debug-table td {
+        padding: 8px 12px; background: none; color: var(--kjd-text);
+        border: 0; border-bottom: 1px solid var(--kjd-border); text-align: left; vertical-align: top;
+    }
+    .kj-debug .kj-debug-table th { color: var(--kjd-muted); font-size: 12px; font-weight: 600; }
+    .kj-debug .kj-debug-table .kj-debug-num { text-align: right; font-variant-numeric: tabular-nums; }
+    .kj-debug-table code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
+    .kj-debug .kj-debug-plugin { display: inline-flex; align-items: center; gap: 8px; }
+    .kj-debug .kj-debug-plugin img {
+        flex: none; width: 24px; height: 24px; max-width: none; margin: 0; padding: 1px;
+        background: #FFFFFF; border: 1px solid var(--kjd-border); border-radius: 4px; object-fit: contain;
+    }
+    .kj-debug-plugins { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+    .kj-debug-empty { margin: 0 0 12px; color: var(--kjd-muted); }
+    @media (max-width: 600px) {
+        .kj-debug { padding: 16px; }
+        .kj-debug-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .kj-debug-meter { flex-basis: 80px; }
+        /* one row under the other, the hook names are too long for columns */
+        .kj-debug .kj-debug-table-stack, .kj-debug .kj-debug-table-stack tbody { display: block; }
+        .kj-debug .kj-debug-table-stack thead { display: none; }
+        .kj-debug .kj-debug-table-stack tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--kjd-border); }
+        .kj-debug .kj-debug-table.kj-debug-table-stack td { display: block; padding: 4px 0; border: 0; text-align: left; }
+        .kj-debug-table-stack td[data-label]::before {
+            content: attr(data-label) " "; color: var(--kjd-muted); font-size: 12px; font-weight: 600;
         }
-    } else {
-        echo '<p><strong>NO SQLs</strong></p>';
     }
-
-    echo '<p>&nbsp;</p><p><h2><strong><em>Plugins</em> Information :</strong></h2></p> ';
-    echo '<ul>';
-
-    if (sizeof(Plugins::getInstance()->getDebugInfo()) > 0) {
-        echo '<textarea style="font-family:\'Courier New\',monospace;width:99%; background:#F4F4F4" rows="20" cols="10">' .
-            var_export(Plugins::getInstance()->getDebugInfo(), true) .
-            '';
-        echo '</textarea>    <br />';
-    } else {
-        echo '<p><strong>...</strong></p>';
-    }
-
-    echo '</ul>';
-    echo '</div>';
+    CSS;
 }
 
 /**

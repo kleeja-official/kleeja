@@ -201,15 +201,13 @@ class KleejaDatabase
             $this->set_error($e);
         }
 
-        //the values are kept only while developing, they can be private like passwords hashes
-        $this->debugr[$this->query_num + 1] = [
-            $query,
-            sprintf('%.5f', get_microtime() - $start),
-            defined('DEV_STAGE') ? $params : [],
-        ];
+        //for the debug panel, kept only while developing, the values can be private like passwords hashes
+        if (defined('DEV_STAGE')) {
+            $this->debugr[$this->query_num + 1] = [$query, sprintf('%.5f', get_microtime() - $start), $params];
+        }
 
         if (!$this->result) {
-            $this->error_msg('Error In query');
+            $this->error_msg('Error In query', $query);
 
             return false;
         }
@@ -454,12 +452,12 @@ class KleejaDatabase
      * show the error in Kleeja error page, or only log it if errors are hidden
      *
      * @param  string $msg
+     * @param  string $error_sql the query that failed, if any
      * @return void
      */
-    private function error_msg(string $msg): void
+    private function error_msg(string $msg, string $error_sql = ''): void
     {
         [$error_no, $error_msg] = $this->error;
-        $error_sql = $this->debugr[$this->query_num + 1][0] ?? '';
 
         //loggin -> error
         kleeja_log('[SQL ERROR] : ' . $msg . ' "' . $error_no . ' : ' . $error_msg . '" -->');
