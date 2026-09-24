@@ -191,7 +191,12 @@ if (!is_bot() && PHP_SESSION_ACTIVE !== session_status() && !headers_sent()) {
     }
 
     if (!session_start()) {
-        big_error('Session Error!', 'There is a problem with PHP session. We can not start it.');
+        kleeja_show_error(
+            E_USER_ERROR,
+            'There is a problem with PHP session. We can not start it.',
+            __FILE__,
+            __LINE__,
+        );
     }
 }
 
