@@ -16,7 +16,7 @@ if (!defined('IN_ADMIN')) {
 $stylee = 'admin_start';
 $h_lst_files = basename(ADMIN_PATH) . '?cp=c_files&amp;last_visit=';
 $h_lst_imgs = basename(ADMIN_PATH) . '?cp=d_img_ctrl&amp;last_visit=';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'general'));
 $GET_FORM_KEY = kleeja_add_form_key_get('adm_start_actions');
 
 //data
@@ -283,10 +283,10 @@ $go_menu = [
 
 // is there a last visit of images and files ?
 $files_last_visit = filter_exists('f_lastvisit', 'filter_uid', 'lastvisit', $userinfo['id'])
-    ? get_filter('f_lastvisit', 'lastvisit', true, 'filter_uid', $userinfo['id'])
+    ? get_filter('f_lastvisit', 'lastvisit', just_value: true, user_id: $userinfo['id'])
     : false;
 $image_last_visit = filter_exists('i_lastvisit', 'filter_uid', 'lastvisit', $userinfo['id'])
-    ? get_filter('i_lastvisit', 'lastvisit', true, 'filter_uid', $userinfo['id'])
+    ? get_filter('i_lastvisit', 'lastvisit', just_value: true, user_id: $userinfo['id'])
     : false;
 
 //hurry, hurry section, get languages

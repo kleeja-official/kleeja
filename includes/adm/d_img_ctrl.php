@@ -33,7 +33,7 @@ $is_search = false;
 //
 if (ip('submit')) {
     if (!kleeja_check_form_key('adm_img_ctrl')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 
     $del = [];
@@ -235,9 +235,9 @@ if (ip('submit')) {
     //update f_lastvisit
     if (!$is_search) {
         if (filter_exists('i_lastvisit', 'filter_uid', 'lastvisit', $userinfo['id'])) {
-            update_filter('i_lastvisit', time(), 'lastvisit', '', $userinfo['id']);
+            update_filter('i_lastvisit', time(), 'lastvisit', user_id: $userinfo['id']);
         } else {
-            insert_filter('lastvisit', time(), time(), $userinfo['id'], '', 'i_lastvisit');
+            insert_filter('lastvisit', time(), time(), $userinfo['id'], uid: 'i_lastvisit');
         }
     }
 

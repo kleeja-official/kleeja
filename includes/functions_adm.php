@@ -63,7 +63,7 @@ function kleeja_admin_err(
     }
 
     // assign {text} in err template
-    $text = $msg . ($redirect != false ? redirect($redirect, false, false, $rs, true) : '');
+    $text = $msg . ($redirect != false ? redirect($redirect, header: false, exit: false, sec: $rs, return: true) : '');
     $SHOW_LIST = $navigation;
 
     //header

@@ -156,7 +156,7 @@ class FetchFile
             ],
         ]);
 
-        $content = @file_get_contents($this->url, false, $stream_context);
+        $content = @file_get_contents($this->url, context: $stream_context);
 
         // Did we get anything?
         if ($content !== false) {

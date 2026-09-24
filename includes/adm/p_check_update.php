@@ -24,7 +24,7 @@ define('KLEEJA_VERSION_CHECK_LINK', 'https://api.github.com/repos/kleeja/kleeja/
 define('KLEEJA_LATEST_PACKAGE_LINK', 'https://api.github.com/repos/kleeja/kleeja/zipball/');
 
 $stylee = 'admin_check_update';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'general'));
 $update_link = $config['siteurl'] . 'install/update.php?lang=' . $config['language'];
 
 if (in_array($current_smt, ['update1', 'update2', 'update3'])) {
@@ -98,7 +98,7 @@ if ($current_smt == 'check') {
 
     $data = serialize($data);
 
-    update_config('new_version', $SQL->real_escape($data), false);
+    update_config('new_version', $SQL->real_escape($data), escape: false);
     delete_cache('data_config');
 
     $adminAjaxContent = $error . ':::' . $text;
@@ -337,7 +337,7 @@ elseif ($current_smt == 'update3') {
         // after a success update, delete files and folders in cache
         kleeja_unlink(PATH . "cache/kleeja-{$new_version}");
         kleeja_unlink(PATH . "cache/kleeja-{$new_version}.zip");
-        delete_cache('', true);
+        delete_cache('', all: true);
 
         $adminAjaxContent = '1:::' . sprintf($lang['UPDATE_PROCESS_DONE'], $new_version);
     }

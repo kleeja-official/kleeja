@@ -60,7 +60,9 @@ switch (g('step', 'str')) {
     default:
     case 'language':
         if (ig('ln')) {
-            echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' . g('ln', 'str', 'en') . '">';
+            echo '<meta http-equiv="refresh" content="0;url=./?step=what_is_kleeja&lang=' .
+                g('ln', default: 'en') .
+                '">';
 
             exit();
         }

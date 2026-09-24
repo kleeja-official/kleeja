@@ -31,7 +31,7 @@ if (
     in_array($case, ['clearc', 'sync_files', 'sync_images', 'sync_users', 'tables', 'sync_sizes', 'status_file'])
 ) {
     if (!kleeja_check_form_key_get('REPAIR_FORM_KEY')) {
-        kleeja_admin_err($lang['INVALID_GET_KEY'], true, $lang['ERROR'], true, basename(ADMIN_PATH), 2);
+        kleeja_admin_err($lang['INVALID_GET_KEY'], title: $lang['ERROR'], redirect: basename(ADMIN_PATH), rs: 2);
     }
 }
 
@@ -156,7 +156,7 @@ switch ($case):
     //
     case 'clearc':
         //clear cache
-        delete_cache('', true);
+        delete_cache('', all: true);
 
         //show done, msg
         $text .= '<li>' . $lang['REPAIRE_CACHE'] . '</li>';

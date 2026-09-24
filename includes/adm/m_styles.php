@@ -23,7 +23,7 @@ $style_delete_link = $action . '&amp;case=dfolder&amp;' . $GET_FORM_KEY . '&amp;
 $style_upload_link = $action . '&amp;case=upload';
 
 $stylee = 'admin_styles';
-$case = g('case', 'str', 'local');
+$case = g('case', default: 'local');
 
 //check _GET Csrf token
 if (!empty($case) && in_array($case, ['select', 'download', 'dfolder'])) {
@@ -37,7 +37,7 @@ if (!empty($case) && in_array($case, ['select', 'download', 'dfolder'])) {
 if (ip('newstyle')) {
     if (!kleeja_check_form_key('adm_styles')) {
         header('HTTP/1.0 401 Unauthorized');
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action);
     }
 
     $case = 'upload';
@@ -231,7 +231,7 @@ switch ($case):
         update_config('style_depend_on', isset($style_info['depend_on']) ? $style_info['depend_on'] : '');
 
         //delete all cache to get new style
-        delete_cache('', true);
+        delete_cache('', all: true);
 
         //show msg
         kleeja_admin_info(sprintf($lang['STYLE_NOW_IS_DEFAULT'], $style_name), $action);
@@ -273,7 +273,7 @@ switch ($case):
         }
 
         if (!sizeof($ERRORS)) {
-            kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], true, '', true, $action);
+            kleeja_admin_info($lang['NO_PROBLEM_AFTER_ZIP'], redirect: $action);
         } else {
             kleeja_admin_err('- ' . implode('<br>- ', $ERRORS), $action);
         }
@@ -285,7 +285,7 @@ switch ($case):
 
         //can not delete default style
         if ($config['style'] === $style_name) {
-            kleeja_admin_info($lang['CANT_DEL_DEFAULT_STYLE'], true, '', true, $action);
+            kleeja_admin_info($lang['CANT_DEL_DEFAULT_STYLE'], redirect: $action);
         }
 
         $style_folder_path = PATH . 'styles/' . $style_name;

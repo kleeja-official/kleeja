@@ -57,7 +57,7 @@ if (!ip('action_file_do')) {
 /**
  * Navigation ..
  */
-switch (g('step', 'str', 'action_file')) {
+switch (g('step', default: 'action_file')) {
     default:
     case 'update_now':
         $complete_update = true;
@@ -125,7 +125,7 @@ switch (g('step', 'str', 'action_file')) {
             }
         }
 
-        delete_cache('', true);
+        delete_cache('', all: true);
         echo gettpl('update_end.html');
 
         break;

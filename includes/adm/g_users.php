@@ -14,7 +14,7 @@ if (!defined('IN_ADMIN')) {
 
 //for style ..
 $stylee = 'admin_users';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'general'));
 
 $action =
     basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php') . (ig('page') ? '&amp;page=' . g('page', 'int') : '');
@@ -48,49 +48,54 @@ $H_FORM_KEYS8 = kleeja_add_form_key('adm_users_edituser');
 //
 if (ip('submit')) {
     if (!kleeja_check_form_key('adm_users')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
 if (ip('newuser')) {
     if (!kleeja_check_form_key('adm_users_newuser')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
 if (ip('edituser')) {
     if (!kleeja_check_form_key('adm_users_edituser')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action . '&uid=' . p('uid', 'int'), 1);
+        kleeja_admin_err(
+            $lang['INVALID_FORM_KEY'],
+            title: $lang['ERROR'],
+            redirect: $action . '&uid=' . p('uid', 'int'),
+            rs: 1,
+        );
     }
 }
 
 if (ip('delgroup')) {
     if (!kleeja_check_form_key('adm_users_delgroup')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
 if (ip('newgroup')) {
     if (!kleeja_check_form_key('adm_users_newgroup')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
 if (ip('editacl')) {
     if (!kleeja_check_form_key('adm_users_editacl')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
 if (ip('editdata')) {
     if (!kleeja_check_form_key('adm_users_editdata')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
 if (ip('newext') or ip('editexts')) {
     if (!kleeja_check_form_key('adm_users_editexts')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
@@ -100,7 +105,7 @@ if (ip('newext') or ip('editexts')) {
 if (ig('deleteuserfile')) {
     //check _GET Csrf token
     if (!kleeja_check_form_key_get('adm_users')) {
-        kleeja_admin_err($lang['INVALID_GET_KEY'], true, $lang['ERROR'], true, $action_all, 2);
+        kleeja_admin_err($lang['INVALID_GET_KEY'], title: $lang['ERROR'], redirect: $action_all, rs: 2);
     }
 
     //is exists ?
@@ -133,7 +138,7 @@ if (ig('deleteuserfile')) {
     $SQL->freeresult($result);
 
     if ($num == 0) {
-        kleeja_admin_err($lang['ADMIN_DELETE_NO_FILE'], true, '', true, $action_all, 2);
+        kleeja_admin_err($lang['ADMIN_DELETE_NO_FILE'], redirect: $action_all, rs: 2);
     } else {
         //update number of stats
         $update_query = [
@@ -155,7 +160,7 @@ if (ig('deleteuserfile')) {
 
         $SQL->build($d_query);
 
-        kleeja_admin_info($lang['ADMIN_DELETE_FILE_OK'], true, '', true, $action_all, 3);
+        kleeja_admin_info($lang['ADMIN_DELETE_FILE_OK'], redirect: $action_all, rs: 3);
     }
 }
 
@@ -165,7 +170,7 @@ if (ig('deleteuserfile')) {
 if (ig('del_user')) {
     //check _GET Csrf token
     if (!kleeja_check_form_key_get('adm_users')) {
-        kleeja_admin_err($lang['INVALID_GET_KEY'], true, $lang['ERROR'], true, $action_all, 2);
+        kleeja_admin_err($lang['INVALID_GET_KEY'], title: $lang['ERROR'], redirect: $action_all, rs: 2);
     }
 
     //is exists ?
@@ -181,7 +186,7 @@ if (ig('del_user')) {
 
     $SQL->build($d_query);
 
-    kleeja_admin_info($lang['USER_DELETED'], true, '', true, './');
+    kleeja_admin_info($lang['USER_DELETED'], redirect: './');
 }
 
 //
@@ -251,7 +256,7 @@ elseif (ip('newuser')) {
         }
 
         //User added ..
-        kleeja_admin_info($lang['USER_ADDED'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users', 3);
+        kleeja_admin_info($lang['USER_ADDED'], redirect: basename(ADMIN_PATH) . '?cp=g_users', rs: 3);
     } else {
         $errs = '';
 
@@ -272,7 +277,7 @@ if (ip('edituser')) {
 
     //is exists ?
     if (!$SQL->num_rows($SQL->query("SELECT id FROM {$dbprefix}users WHERE id=" . $userid))) {
-        kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'));
+        kleeja_admin_err('ERROR-NO-ID', redirect: basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'));
     }
 
     $query = [
@@ -369,28 +374,20 @@ if (ip('edituser')) {
         if ($SQL->affected()) {
             kleeja_admin_info(
                 $lang['USER_UPDATED'],
-                true,
-                '',
-                true,
-                basename(ADMIN_PATH) .
+                redirect: basename(ADMIN_PATH) .
                     '?cp=g_users&smt=show_group&qg=' .
                     p('l_qg', 'int') .
                     '&page=' .
                     p('l_page', 'int'),
-                2,
             );
         } else {
             kleeja_admin_info(
                 $lang['NO_UP_CHANGE_S'],
-                true,
-                '',
-                true,
-                basename(ADMIN_PATH) .
+                redirect: basename(ADMIN_PATH) .
                     '?cp=g_users&smt=show_group&qg=' .
                     p('l_qg', 'int') .
                     '&page=' .
                     p('l_page', 'int'),
-                2,
             );
         }
     } else {
@@ -440,7 +437,7 @@ if (ip('newgroup')) {
         $org_group_id = p('cfrom', 'int');
 
         if (!$new_group_id or !$org_group_id) {
-            kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'));
+            kleeja_admin_err('ERROR-NO-ID', redirect: basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'));
         }
 
         if ($org_group_id == -1) {
@@ -506,13 +503,7 @@ if (ip('newgroup')) {
 
         //show group-is-added message
         delete_cache('data_groups');
-        kleeja_admin_info(
-            sprintf($lang['GROUP_ADDED'], p('gname')),
-            true,
-            '',
-            true,
-            basename(ADMIN_PATH) . '?cp=g_users',
-        );
+        kleeja_admin_info(sprintf($lang['GROUP_ADDED'], p('gname')), redirect: basename(ADMIN_PATH) . '?cp=g_users');
     } else {
         $errs = '';
 
@@ -520,7 +511,7 @@ if (ip('newgroup')) {
             $errs .= '- ' . $r . '. <br />';
         }
 
-        kleeja_admin_err($errs, true, '', true, $action, 3);
+        kleeja_admin_err($errs, redirect: $action);
     }
 }
 
@@ -533,12 +524,12 @@ if (ip('delgroup')) {
 
     //if missing IDs of groups, deleted one and transfering-to one.
     if (!$from_group or !$to_group) {
-        kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
+        kleeja_admin_err('ERROR-NO-ID', redirect: basename(ADMIN_PATH) . '?cp=g_users');
     }
 
     //We can not move users to the same group we deleting ! that's stupid pro!
     if ($from_group == $to_group) {
-        kleeja_admin_err($lang['NO_MOVE_SAME_GRP'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
+        kleeja_admin_err($lang['NO_MOVE_SAME_GRP'], redirect: basename(ADMIN_PATH) . '?cp=g_users');
     }
 
     //to_group = '-1' : means default group .. so now we get the real ID.
@@ -548,7 +539,7 @@ if (ip('delgroup')) {
 
     //you can not delete default group !
     if ($from_group == (int) $config['default_group']) {
-        kleeja_admin_err($lang['DEFAULT_GRP_NO_DEL'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
+        kleeja_admin_err($lang['DEFAULT_GRP_NO_DEL'], redirect: basename(ADMIN_PATH) . '?cp=g_users');
     }
 
     //delete the exts
@@ -604,10 +595,7 @@ if (ip('delgroup')) {
     delete_cache('data_groups');
     kleeja_admin_info(
         sprintf($lang['GROUP_DELETED'], $group_name_from, $group_name_to),
-        true,
-        '',
-        true,
-        basename(ADMIN_PATH) . '?cp=g_users',
+        redirect: basename(ADMIN_PATH) . '?cp=g_users',
     );
 }
 
@@ -680,7 +668,7 @@ switch ($current_smt):
         $req_group = ig('qg') ? g('qg', 'int') : 0;
 
         if (!$req_group) {
-            kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
+            kleeja_admin_err('ERROR-NO-ID', redirect: basename(ADMIN_PATH) . '?cp=g_users');
         }
 
         $group_name = str_replace(
@@ -750,7 +738,7 @@ switch ($current_smt):
 
             //delete cache ..
             delete_cache('data_groups');
-            kleeja_admin_info($lang['CONFIGS_UPDATED'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
+            kleeja_admin_info($lang['CONFIGS_UPDATED'], redirect: basename(ADMIN_PATH) . '?cp=g_users');
         }
 
         break;
@@ -760,7 +748,7 @@ switch ($current_smt):
         $req_group = ig('qg') ? g('qg', 'int') : 0;
 
         if (!$req_group) {
-            kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
+            kleeja_admin_err('ERROR-NO-ID', redirect: basename(ADMIN_PATH) . '?cp=g_users');
         }
 
         // When user change language from start page, hurry hurry section, he comes here
@@ -769,11 +757,9 @@ switch ($current_smt):
             if (!kleeja_check_form_key_get('adm_start_actions')) {
                 kleeja_admin_err(
                     $lang['INVALID_GET_KEY'],
-                    true,
-                    $lang['ERROR'],
-                    true,
-                    basename(ADMIN_PATH) . '?cp=start',
-                    2,
+                    title: $lang['ERROR'],
+                    redirect: basename(ADMIN_PATH) . '?cp=start',
+                    rs: 2,
                 );
             }
 
@@ -786,12 +772,12 @@ switch ($current_smt):
 
                 //all groups
                 foreach ($d_groups as $group_id => $group_info) {
-                    update_config('language', $got_lang, true, $group_id);
+                    update_config('language', $got_lang, group: $group_id);
                 }
 
                 $group_name = $lang['ALL'];
             } else {
-                update_config('language', $got_lang, true, $req_group);
+                update_config('language', $got_lang, group: $req_group);
                 $group_name = str_replace(
                     ['{lang.ADMINS}', '{lang.USERS}', '{lang.GUESTS}'],
                     [$lang['ADMINS'], $lang['USERS'], $lang['GUESTS']],
@@ -812,10 +798,7 @@ switch ($current_smt):
                     $lang['FOR'] .
                     ':' .
                     $group_name,
-                true,
-                '',
-                true,
-                basename(ADMIN_PATH) . '?cp=start',
+                redirect: basename(ADMIN_PATH) . '?cp=start',
             );
         }
 
@@ -853,7 +836,7 @@ switch ($current_smt):
                     ? extract($plugin_run_result)
                     : null; //run hook
 
-                $new[$row['name']] = p($row['name'], 'str', $row['value']);
+                $new[$row['name']] = p($row['name'], default: $row['value']);
 
                 $update_query = [
                     'UPDATE' => "{$dbprefix}groups_data",
@@ -963,7 +946,7 @@ switch ($current_smt):
 
             //delete cache ..
             delete_cache('data_groups');
-            kleeja_admin_info($lang['CONFIGS_UPDATED'], true, '', true, basename(ADMIN_PATH) . '?cp=g_users');
+            kleeja_admin_info($lang['CONFIGS_UPDATED'], redirect: basename(ADMIN_PATH) . '?cp=g_users');
         }
 
         break;
@@ -973,7 +956,7 @@ switch ($current_smt):
         $req_group = ig('qg') ? g('qg', 'int') : 0;
 
         if (!$req_group) {
-            kleeja_admin_err('ERROR-NO-ID', true, '', true, basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'));
+            kleeja_admin_err('ERROR-NO-ID', redirect: basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'));
         }
 
         $group_name = str_replace(
@@ -988,13 +971,13 @@ switch ($current_smt):
         if (ig('del')) {
             //check _GET Csrf token
             if (!kleeja_check_form_key_get('adm_users')) {
-                kleeja_admin_err($lang['INVALID_GET_KEY'], true, $lang['ERROR'], true, $action, 2);
+                kleeja_admin_err($lang['INVALID_GET_KEY'], title: $lang['ERROR'], redirect: $action, rs: 2);
             }
 
             $req_ext = ig('del') ? g('del', 'int') : 0;
 
             if (!$req_ext) {
-                kleeja_admin_err('ERROR-NO-EXT-ID', true, '', true, $action, 2);
+                kleeja_admin_err('ERROR-NO-EXT-ID', redirect: $action, rs: 2);
             }
 
             $query_del = [
@@ -1018,10 +1001,7 @@ switch ($current_smt):
             if (!$new_ext) {
                 kleeja_admin_err(
                     $lang['EMPTY_EXT_FIELD'],
-                    true,
-                    '',
-                    true,
-                    basename(ADMIN_PATH) . '?cp=g_users&smt=group_exts&qg=' . $req_group,
+                    redirect: basename(ADMIN_PATH) . '?cp=g_users&smt=group_exts&qg=' . $req_group,
                 );
             }
 
@@ -1053,7 +1033,7 @@ switch ($current_smt):
             ];
 
             if (in_array($check_ext, $not_welcomed_exts)) {
-                kleeja_admin_err(sprintf($lang['FORBID_EXT'], $check_ext), true, '', true, $action);
+                kleeja_admin_err(sprintf($lang['FORBID_EXT'], $check_ext), redirect: $action);
             }
 
             //check if there is any exists of this ext in db
@@ -1066,7 +1046,7 @@ switch ($current_smt):
             $result = $SQL->build($query);
 
             if ($SQL->num_rows($result)) {
-                kleeja_admin_err(sprintf($lang['NEW_EXT_EXISTS_B4'], $new_ext), true, '', true, $action);
+                kleeja_admin_err(sprintf($lang['NEW_EXT_EXISTS_B4'], $new_ext), redirect: $action);
             }
 
             //add
@@ -1100,7 +1080,7 @@ switch ($current_smt):
 
                 //delete cache ..
                 delete_cache('data_groups');
-                kleeja_admin_info($lang['UPDATED_EXTS'], true, '', true, $action);
+                kleeja_admin_info($lang['UPDATED_EXTS'], redirect: $action);
             }
         }
 
@@ -1139,11 +1119,9 @@ switch ($current_smt):
         if (!$filter) {
             kleeja_admin_err(
                 $lang['ERROR_TRY_AGAIN'],
-                true,
-                $lang['ERROR'],
-                true,
-                basename(ADMIN_PATH) . '?cp=h_search&smt=users',
-                1,
+                title: $lang['ERROR'],
+                redirect: basename(ADMIN_PATH) . '?cp=h_search&smt=users',
+                rs: 1,
             );
         }
 
@@ -1278,10 +1256,7 @@ switch ($current_smt):
             if (!$SQL->num_rows($SQL->query("SELECT * FROM {$dbprefix}users WHERE id=" . $userid))) {
                 kleeja_admin_err(
                     $lang['NOT_EXSIT_USER'],
-                    true,
-                    '',
-                    true,
-                    basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
+                    redirect: basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
                 );
             }
         }
@@ -1297,10 +1272,7 @@ switch ($current_smt):
         if (!$SQL->num_rows($result)) {
             kleeja_admin_err(
                 $lang['NOT_EXSIT_USER'],
-                true,
-                '',
-                true,
-                basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
+                redirect: basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
             );
         }
         $udata = $SQL->fetch_array($result);
@@ -1315,18 +1287,15 @@ switch ($current_smt):
         if ($u_founder && !$im_founder) {
             kleeja_admin_err(
                 $lang['HV_NOT_PRVLG_ACCESS'],
-                true,
-                '',
-                true,
-                basename(ADMIN_PATH) . '?cp=g_users&smt=show_group&qg=' . $u_group,
+                redirect: basename(ADMIN_PATH) . '?cp=g_users&smt=show_group&qg=' . $u_group,
             );
         }
 
         $errs = isset($errs) ? $errs : false;
         //prepare them for the template
         $title_name = $udata['name'];
-        $u_name = p('l_name', 'str', $udata['name']);
-        $u_mail = p('l_mail', 'str', $udata['mail']);
+        $u_name = p('l_name', default: $udata['name']);
+        $u_mail = p('l_mail', default: $udata['mail']);
 
         $u_show_filecp = p('l_show_filecp', 'int', $udata['show_my_filecp']);
 

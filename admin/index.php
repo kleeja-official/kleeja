@@ -65,7 +65,7 @@ if (
                 : null; //run hook
 
             if (empty($ERRORS)) {
-                if ($f = $usrcp->data(p('lname'), p($pass_field), false, 3600 * 6, true)) {
+                if ($f = $usrcp->data(p('lname'), p($pass_field), expire: 3600 * 6, loginadm: true)) {
                     $_SESSION['USER_SESS'] = KJ_SESSION;
                     $_SESSION['ADMINLOGIN'] = md5(sha1($config['h_key']) . $usrcp->name() . $config['siteurl']);
                     //to make sure, sometime setting time from functions doesn't work
@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && defined('STOP_CSRF')) {
 
 //current admin theme color
 if (ig('change_theme')) {
-    $admin_theme_color = g('change_theme', 'str', 'dark');
+    $admin_theme_color = g('change_theme', default: 'dark');
 
     if (in_array($admin_theme_color, ['dark', 'light'])) {
         cookie()->set('klj_adm_theme_color', $admin_theme_color, time() + 31536000);

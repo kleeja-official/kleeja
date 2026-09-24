@@ -16,7 +16,7 @@ if (!defined('IN_ADMIN')) {
 @set_time_limit(0);
 
 //get current case
-$case = g('case', 'str', 'installed');
+$case = g('case', default: 'installed');
 
 //set _get form key
 $GET_FORM_KEY = kleeja_add_form_key_get('adm_plugins_get');
@@ -43,7 +43,7 @@ if (!empty($case) && in_array($case, ['install', 'uninstall', 'enable', 'disable
 if (ip('newplugin')) {
     if (!kleeja_check_form_key('adm_plugins')) {
         header('HTTP/1.0 401 Unauthorized');
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action);
     }
 
     $case = 'upload';
@@ -363,10 +363,7 @@ switch ($case):
                         KLEEJA_VERSION .
                         '|<|p.min:' .
                         $plugin_info['plugin_kleeja_version_min'],
-                    true,
-                    '',
-                    true,
-                    ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
+                    redirect: ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
                 );
 
                 exit();
@@ -381,17 +378,14 @@ switch ($case):
                         KLEEJA_VERSION .
                         '|>|p.max:' .
                         $plugin_info['plugin_kleeja_version_max'],
-                    true,
-                    '',
-                    true,
-                    ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
+                    redirect: ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
                 );
 
                 exit();
             }
         }
 
-        delete_cache('', true);
+        delete_cache('', all: true);
 
         if (is_array($plugin_info['plugin_description'])) {
             $plugin_info['plugin_description'] = !empty($plugin_info['plugin_description']['en'])
@@ -503,7 +497,7 @@ switch ($case):
             //sad to see you go, brother
             $uninstall_callback(!empty($pluginDatabaseInfo) ? $pluginDatabaseInfo['plg_id'] : 0);
 
-            delete_cache('', true);
+            delete_cache('', all: true);
 
             //remove from database
             $query_del = [
@@ -555,7 +549,7 @@ switch ($case):
 
             $SQL->build($update_query);
 
-            delete_cache('', true);
+            delete_cache('', all: true);
 
             //show done, msg
             $text = '<h3>' . $lang['PLGUIN_DISABLED_ENABLED'] . '</h3>';

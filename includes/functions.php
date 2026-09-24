@@ -313,7 +313,7 @@ function delete_cache(string|array $name, bool $all = false): bool
         if ($dh = @opendir($path_to_cache)) {
             while (($file = @readdir($dh)) !== false) {
                 if ($file != '.' && $file != '..' && !in_array($file, $exceptions)) {
-                    kleeja_unlink($path_to_cache . '/' . $file, true);
+                    kleeja_unlink($path_to_cache . '/' . $file, cache_file: true);
                 }
             }
             @closedir($dh);
@@ -327,7 +327,7 @@ function delete_cache(string|array $name, bool $all = false): bool
         $name = str_replace('.php', '', $name) . '.php';
 
         if (file_exists($path_to_cache . '/' . $name)) {
-            $del = kleeja_unlink($path_to_cache . '/' . $name, true);
+            $del = kleeja_unlink($path_to_cache . '/' . $name, cache_file: true);
         }
     }
 

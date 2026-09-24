@@ -585,7 +585,7 @@ class usrcp
             //verify the signature (constant-time) and that the cookie is not expired
             if (hash_equals($expected_signature, (string) $hashed_expire) && $expire_at > time()) {
                 if (user_can('enter_acp', $group_id)) {
-                    $user_data = $this->data($user_id, $hashed_password, true, $expire_at);
+                    $user_data = $this->data($user_id, $hashed_password, hashed: true, expire: $expire_at);
                 } else {
                     if (!empty($u_info)) {
                         $userinfo = unserialize(base64_decode($u_info), ['allowed_classes' => false]);

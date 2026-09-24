@@ -472,7 +472,7 @@ switch ($current_go_case) {
                         }
                         window.onload=confirm_from;
                     </script>';
-                kleeja_info($lang['ARE_YOU_SURE_DO_THIS'], '', true, false, 0, $extra_codes);
+                kleeja_info($lang['ARE_YOU_SURE_DO_THIS'], rs: 0, extra_code_header: $extra_codes);
             }
         } //else
 
@@ -595,7 +595,7 @@ switch ($current_go_case) {
                 //no start ? or there
                 $start = !ig('start') ? 0 : g('start', 'int');
 
-                $end = sync_total_files(true, $start);
+                $end = sync_total_files(files: true, start: $start);
 
                 //no end, then sync'ing is done...
                 if (!$end) {
@@ -620,7 +620,7 @@ switch ($current_go_case) {
                     '\';", 3000);</script>' .
                     "\n";
 
-                kleeja_info($text, $title, true, $link_to_go, 2);
+                kleeja_info($text, $title, redirect: $link_to_go, rs: 2);
 
                 break;
 
@@ -631,7 +631,7 @@ switch ($current_go_case) {
                 //no start ? or there
                 $start = !ig('start') ? 0 : g('start', 'int');
 
-                $end = sync_total_files(false, $start);
+                $end = sync_total_files(files: false, start: $start);
 
                 //no end, then sync'ing is done...
                 if (!$end) {
@@ -656,7 +656,7 @@ switch ($current_go_case) {
                     '\';", 3000);</script>' .
                     "\n";
 
-                kleeja_info($text, $title, true, $link_to_go, 2);
+                kleeja_info($text, $title, redirect: $link_to_go, rs: 2);
 
                 break;
         endswitch;

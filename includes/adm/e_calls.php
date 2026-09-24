@@ -14,7 +14,7 @@ if (!defined('IN_ADMIN')) {
 
 //for style ..
 $stylee = 'admin_calls';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'general'));
 $action =
     basename(ADMIN_PATH) .
     '?cp=' .
@@ -32,7 +32,7 @@ $there_queue = preg_match('!:del_[a-z0-9]{0,3}calls:!i', $config['queue']);
 //
 if (ip('submit')) {
     if (!kleeja_check_form_key('adm_calls')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
@@ -41,20 +41,15 @@ if ($current_smt == 'del_d30' || $current_smt == 'del_all') {
     if (strpos($config['queue'], ':' . $current_smt . 'calls:') !== false) {
         kleeja_admin_err(
             $lang['DELETE_PROCESS_IN_WORK'],
-            true,
-            $lang['ERROR'],
-            true,
-            basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
-            1,
+            title: $lang['ERROR'],
+            redirect: basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
+            rs: 1,
         );
     } else {
         update_config('queue', $config['queue'] . ':' . $current_smt . 'calls:');
         kleeja_admin_info(
             $lang['DELETE_PROCESS_QUEUED'],
-            true,
-            '',
-            true,
-            basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
+            redirect: basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php'),
         );
     }
 }
@@ -92,7 +87,7 @@ if ($nums_rows > 0) {
             'mail' => $row['mail'],
             'text' => htmlspecialchars($row['TEXT'] ?? $row['text']),
             'human_time' => kleeja_date($row['time']),
-            'time' => kleeja_date($row['time'], false),
+            'time' => kleeja_date($row['time'], human_time: false),
             'ip' => $row['ip'],
             'sent' => $row['id'] == $msg_sent,
             'ip_finder' => 'https://ipinfo.io/' . $row['ip'],
@@ -139,10 +134,7 @@ if ($nums_rows > 0) {
                     //
                     kleeja_admin_info(
                         $lang['IS_SEND_MAIL'],
-                        true,
-                        '',
-                        true,
-                        basename(ADMIN_PATH) .
+                        redirect: basename(ADMIN_PATH) .
                             '?cp=' .
                             basename(__FILE__, '.php') .
                             '&page=' .
@@ -153,10 +145,7 @@ if ($nums_rows > 0) {
                 } else {
                     kleeja_admin_err(
                         $lang['ERR_SEND_MAIL'],
-                        true,
-                        '',
-                        true,
-                        basename(ADMIN_PATH) .
+                        redirect: basename(ADMIN_PATH) .
                             '?cp=' .
                             basename(__FILE__, '.php') .
                             '&page=' .
@@ -197,7 +186,7 @@ if (ip('submit')) {
         $action .
         '\'); check_msg_and_reports();", 2000);</script>' .
         "\n";
-    kleeja_admin_info($text, true, '', true, $action);
+    kleeja_admin_info($text, redirect: $action);
 }
 
 //secondary menu

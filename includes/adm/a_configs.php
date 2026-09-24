@@ -14,7 +14,7 @@ if (!defined('IN_ADMIN')) {
 
 //for style ..
 $stylee = 'admin_configs';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'general'));
 //words
 $base_action = basename(ADMIN_PATH) . '?cp=options';
 $action = $base_action . '&amp;smt=' . $current_smt;
@@ -73,7 +73,7 @@ $go_menu['all'] = [
 //
 if (ip('submit')) {
     if (!kleeja_check_form_key('adm_configs')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
@@ -193,7 +193,7 @@ while ($row = $SQL->fetch_array($result)) {
     //when submit
     if (ip('submit')) {
         //-->
-        $new[$row['name']] = p($row['name'], 'str', $con[$row['name']]);
+        $new[$row['name']] = p($row['name'], default: $con[$row['name']]);
 
         //save them as you want ..
         if ($row['name'] == 'thumbs_imgs') {
@@ -237,7 +237,7 @@ while ($row = $SQL->fetch_array($result)) {
 
             //all groups
             foreach ($d_groups as $group_id => $group_info) {
-                update_config('language', $got_lang, true, $group_id);
+                update_config('language', $got_lang, group: $group_id);
             }
 
             delete_cache('data_lang' . $got_lang);
@@ -336,6 +336,6 @@ if (ip('submit')) {
         }
     }
 
-    kleeja_admin_info($lang['CONFIGS_UPDATED'], true, '', true, $action, 3);
+    kleeja_admin_info($lang['CONFIGS_UPDATED'], redirect: $action, rs: 3);
     //}
 } //submit

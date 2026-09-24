@@ -107,7 +107,7 @@ if (ig('id') || ig('filename')) {
                         : $config['siteurl'] . 'do.php?downex=' . $file_info['id'];
                 }
 
-                redirect($url_filex, false);
+                redirect($url_filex, header: false);
             }
         }
 

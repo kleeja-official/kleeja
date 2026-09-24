@@ -24,7 +24,7 @@ $H_FORM_KEYS = kleeja_add_form_key('adm_rules');
 //
 if (ip('submit')) {
     if (!kleeja_check_form_key('adm_rules')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
@@ -36,7 +36,7 @@ $query = [
 $result = $SQL->build($query);
 
 while ($row = $SQL->fetch_array($result)) {
-    $rules = p('rules_text', 'str', $row['rules']);
+    $rules = p('rules_text', default: $row['rules']);
 
     //when submit
     if (ip('submit')) {

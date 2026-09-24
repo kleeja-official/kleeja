@@ -88,7 +88,7 @@ switch (g('go')) {
                 : null; //run hook
 
             if (empty($ERRORS)) {
-                if (!$usrcp->data(p('lname'), p('lpass'), false, !ip('remme') ? false : p('remme'))) {
+                if (!$usrcp->data(p('lname'), p('lpass'), expire: !ip('remme') ? false : p('remme'))) {
                     $ERRORS['login_check'] = $lang['LOGIN_ERROR'];
                 } else {
                     $errorpage = true;
@@ -112,7 +112,7 @@ switch (g('go')) {
                         '">' .
                         $lang['HOME'] .
                         '</a>';
-                    kleeja_info($text, '', true, $config['siteurl'], 1);
+                    kleeja_info($text, redirect: $config['siteurl'], rs: 1);
                 }
             }
         }
@@ -290,8 +290,8 @@ switch (g('go')) {
                     }
 
                     //auto login
-                    $usrcp->data($t_lname, $t_lpass, false, false);
-                    kleeja_info($text, '', true, $config['siteurl'], 3);
+                    $usrcp->data($t_lname, $t_lpass, expire: false);
+                    kleeja_info($text, redirect: $config['siteurl'], rs: 3);
                 }
             }
         }
@@ -308,7 +308,7 @@ switch (g('go')) {
 
         if ($usrcp->logout()) {
             $text = $lang['LOGOUT_SUCCESFUL'] . '<br /> <a href="' . $config['siteurl'] . '">' . $lang['HOME'] . '</a>';
-            kleeja_info($text, $lang['LOGOUT'], true, $config['siteurl'], 1);
+            kleeja_info($text, $lang['LOGOUT'], redirect: $config['siteurl'], rs: 1);
         } else {
             kleeja_err($lang['LOGOUT_ERROR']);
         }
@@ -337,7 +337,7 @@ switch (g('go')) {
 
         //no logon before
         if (!$usrcp->name() && !ig('id')) {
-            kleeja_err($lang['USER_PLACE'], $lang['PLACE_NO_YOU'], true, 'index.php');
+            kleeja_err($lang['USER_PLACE'], $lang['PLACE_NO_YOU'], redirect: 'index.php');
         }
 
         //Not allowed to browse files's folders of other users
@@ -581,10 +581,10 @@ switch (g('go')) {
                     }
 
                     //delete is ok, show msg
-                    kleeja_info($lang['FILES_DELETED'], '', true, $linkgoto, 2);
+                    kleeja_info($lang['FILES_DELETED'], redirect: $linkgoto, rs: 2);
                 } else {
                     //no file selected, show msg
-                    kleeja_info($lang['NO_FILE_SELECTED'], '', true, $linkgoto, 2);
+                    kleeja_info($lang['NO_FILE_SELECTED'], redirect: $linkgoto, rs: 2);
                 }
             }
 
@@ -628,10 +628,10 @@ switch (g('go')) {
                     file_put_contents($last_id, $log_msg);
 
                     //delete all files , show msg
-                    kleeja_info($lang['ALL_DELETED'], '', true, $linkgoto, 2);
+                    kleeja_info($lang['ALL_DELETED'], redirect: $linkgoto, rs: 2);
                 } else {
                     //no file selected, show msg
-                    kleeja_info($lang['NO_FILES_DELETE'], '', true, $linkgoto, 2);
+                    kleeja_info($lang['NO_FILES_DELETE'], redirect: $linkgoto, rs: 2);
                 }
             }
         } //num result
@@ -783,7 +783,7 @@ switch (g('go')) {
                     $SQL->build($update_query);
                 }
 
-                kleeja_info($text, '', true, $action);
+                kleeja_info($text, redirect: $action);
             }
         } //else submit
 

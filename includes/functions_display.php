@@ -110,7 +110,7 @@ function Saaheader(string $title = '', string $extra = ''): void
     $tpl->assign('title', $title);
     $tpl->assign('side_menu', $side_menu);
     $tpl->assign('top_menu', $top_menu);
-    $tpl->assign('go_current', g('go', 'str', 'index'));
+    $tpl->assign('go_current', g('go', default: 'index'));
     $tpl->assign('go_back_browser', $lang['GO_BACK_BROWSER']);
     $tpl->assign('H_FORM_KEYS_LOGIN', kleeja_add_form_key('login'));
     $tpl->assign(
@@ -302,7 +302,7 @@ function kleeja_err(
         : null; //run hook
 
     // assign {text} in err template
-    $text = $message . ($redirect ? redirect($redirect, false, $exit, $rs, true) : '');
+    $text = $message . ($redirect ? redirect($redirect, header: false, exit: $exit, sec: $rs, return: true) : '');
     //header
     Saaheader($title, $extra_code_header);
     //show tpl
@@ -1117,7 +1117,7 @@ function shorten_text(string $text, int $until = 30): string
 
     if ($chars_len >= $until) {
         $return = function_exists('mb_substr')
-            ? mb_substr($text, 0, $until - 4, 'UTF-8') . ' ... ' . mb_substr($text, -4, null, 'UTF-8')
+            ? mb_substr($text, 0, $until - 4, 'UTF-8') . ' ... ' . mb_substr($text, -4, encoding: 'UTF-8')
             : substr($text, 0, $until - 4) . ' ... ' . substr($text, -4);
     } else {
         $return = $text;

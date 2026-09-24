@@ -26,7 +26,7 @@ $new_item_action = basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php') . 
 // Check form key
 //
 
-$case = g('case', 'str', 'view');
+$case = g('case', default: 'view');
 $update_ban_content = false;
 
 $query = [
@@ -66,7 +66,7 @@ if ($case == 'del' && ig('k')) {
 
 if ($case == 'new') {
     if (!kleeja_check_form_key('adm_ban')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 
     $to_add = p('k', 'str', '');

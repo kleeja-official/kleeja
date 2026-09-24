@@ -38,7 +38,7 @@ function getlang(bool $link = false): string
     $ln = 'en';
 
     if (ig('lang')) {
-        $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
+        $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', default: 'en'));
         $ln = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
     }
 

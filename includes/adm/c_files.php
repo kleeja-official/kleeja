@@ -41,7 +41,7 @@ $H_FORM_KEYS = kleeja_add_form_key('adm_files');
 if (ip('submit')) {
     //wrong form
     if (!kleeja_check_form_key('adm_files')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 
     $del = [];
@@ -353,7 +353,7 @@ if (ip('submit')) {
                 'ups' => $row['uploads'],
                 'direct' => $row['id_form'] == 'direct' ? true : false,
                 'time_human' => kleeja_date($row['time']),
-                'time' => kleeja_date($row['time'], false),
+                'time' => kleeja_date($row['time'], human_time: false),
                 'type' => $row['type'],
                 'typeicon' => file_exists(PATH . 'images/filetypes/' . $row['type'] . '.png')
                     ? PATH . 'images/filetypes/' . $row['type'] . '.png'
@@ -387,9 +387,9 @@ if (ip('submit')) {
     //update f_lastvisit
     if (!$is_search) {
         if (filter_exists('f_lastvisit', 'filter_uid', 'lastvisit', $userinfo['id'])) {
-            update_filter('f_lastvisit', time(), 'lastvisit', '', $userinfo['id']);
+            update_filter('f_lastvisit', time(), 'lastvisit', user_id: $userinfo['id']);
         } else {
-            insert_filter('lastvisit', time(), time(), $userinfo['id'], '', 'f_lastvisit');
+            insert_filter('lastvisit', time(), time(), $userinfo['id'], uid: 'f_lastvisit');
         }
     }
 
