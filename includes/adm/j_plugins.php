@@ -257,6 +257,19 @@ switch ($case):
                     if (!$zip->extractTo(PATH . KLEEJA_PLUGINS_FOLDER)) {
                         $ERRORS[] = sprintf($lang['EXTRACT_ZIP_FAILED'], KLEEJA_PLUGINS_FOLDER);
                     }
+
+                    $plugin_name = trim($zip->getNameIndex(0));
+                    $plugin_name_and_version = split_plugin_name_from_version($plugin_name);
+
+                    if (is_array($plugin_name_and_version)) {
+                        $plugin_name = $plugin_name_and_version['name'];
+                    }
+
+                    rename(
+                        PATH . KLEEJA_PLUGINS_FOLDER . '/' . trim($zip->getNameIndex(0), '/'),
+                        PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plugin_name,
+                    );
+
                     $zip->close();
                 } else {
                     $ERRORS[] = sprintf($lang['EXTRACT_ZIP_FAILED'], KLEEJA_PLUGINS_FOLDER);
