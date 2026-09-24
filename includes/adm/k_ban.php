@@ -51,7 +51,7 @@ if ($case == 'del' && ig('k')) {
 
     $to_delete = g('k');
 
-    $banned_items = array_filter($banned_items, function ($item) use ($to_delete, $lang, &$show_message) {
+    $banned_items = array_filter($banned_items, function (string $item) use ($to_delete, $lang, &$show_message): bool {
         if (md5($item) == $to_delete) {
             $show_message = sprintf($lang['ITEM_DELETED'], $item);
 
@@ -93,6 +93,6 @@ if ($update_ban_content) {
     }
 }
 
-array_walk($banned_items, function (&$value, &$key) {
+array_walk($banned_items, function (string &$value, int $key): void {
     $value = ['content' => $value, 'del_key' => md5($value), 'id' => $key + 1];
 });

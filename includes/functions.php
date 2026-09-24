@@ -131,7 +131,7 @@ function get_ban(): void
  * @param  string $plugin_name
  * @return string|false the plugin id, or false when it is not installed
  */
-function kleeja_plugin_exists(string $plugin_name)
+function kleeja_plugin_exists(string $plugin_name): string|false
 {
     global $SQL, $dbprefix;
 
@@ -148,7 +148,7 @@ function kleeja_plugin_exists(string $plugin_name)
         $d = $SQL->fetch($result);
         $SQL->freeresult();
 
-        return $d['plg_id'];
+        return $d['plg_id'] ?? false;
     }
 
     return false;
@@ -278,11 +278,11 @@ function send_mail(
 
 /**
  * Delete cache
- * @param  string $name
- * @param  bool   $all  if true, all cache in cache folder will be deleted
+ * @param  string|array $name
+ * @param  bool         $all  if true, all cache in cache folder will be deleted
  * @return bool
  */
-function delete_cache($name, bool $all = false): bool
+function delete_cache(string|array $name, bool $all = false): bool
 {
     //Those files are exceptions and not for deletion
     $exceptions = ['.htaccess', 'index.html', 'php.ini', 'web.config'];
@@ -859,7 +859,7 @@ function update_config(string $name, string $value, bool $escape = true, int $gr
 }
 
 // Delete config
-function delete_config($name): bool
+function delete_config(string|array $name): bool
 {
     if (is_array($name)) {
         foreach ($name as $n) {
@@ -967,11 +967,11 @@ function add_olang(array $words = [], string $lang = 'en', int $plg_id = 0): voi
 //
 /**
  * @param  string|array $words  language terms to use a in $olang[word] or olang.word
- * @param  string       $lang   langauge of given word
- * @param  string       $plg_id plugin id associated with these words, optional
+ * @param  string|array $lang   langauge of given word
+ * @param  int          $plg_id plugin id associated with these words, optional
  * @return bool
  */
-function delete_olang($words = '', $lang = 'en', int $plg_id = 0): bool
+function delete_olang(string|array $words = '', string|array $lang = 'en', int $plg_id = 0): bool
 {
     global $dbprefix, $SQL;
 
@@ -1010,7 +1010,7 @@ function delete_olang($words = '', $lang = 'en', int $plg_id = 0): bool
 
     $SQL->build($delete_query);
 
-    return $SQL->affected();
+    return (bool) $SQL->affected();
 }
 
 /**
@@ -1418,7 +1418,7 @@ function ip(string $name): bool
     return isset($_POST[$name]);
 }
 
-function g(string $name, string $type = 'str', string $default = '')
+function g(string $name, string $type = 'str', string $default = ''): string|int
 {
     if (isset($_GET[$name])) {
         return $type == 'str' ? htmlspecialchars($_GET[$name], ENT_QUOTES) : intval($_GET[$name]);
@@ -1427,7 +1427,7 @@ function g(string $name, string $type = 'str', string $default = '')
     return $type == 'str' ? htmlspecialchars($default, ENT_QUOTES) : intval($default);
 }
 
-function p(string $name, string $type = 'str', string $default = '')
+function p(string $name, string $type = 'str', string $default = ''): string|int
 {
     if (isset($_POST[$name])) {
         return $type == 'str'
@@ -1444,7 +1444,7 @@ function p(string $name, string $type = 'str', string $default = '')
  * @param  string       $unique_id useful for the deletion later
  * @return bool
  */
-function add_to_serve_rules($rules, string $unique_id = ''): bool
+function add_to_serve_rules(string|array $rules, string $unique_id = ''): bool
 {
     if (!file_exists(PATH . 'plugins_rules.php')) {
         if (!is_writable(PATH)) {

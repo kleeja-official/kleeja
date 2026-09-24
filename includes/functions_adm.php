@@ -16,7 +16,7 @@ if (!defined('IN_COMMON')) {
  * Print cp error function handler
  *
  * For admin
- * @param mixed $msg
+ * @param string      $msg
  * @param bool|string $navigation show navigation menu, or a link to redirect to
  * @param string      $title
  * @param bool        $exit
@@ -26,10 +26,10 @@ if (!defined('IN_COMMON')) {
  */
 function kleeja_admin_err(
     string $msg,
-    $navigation = true,
+    bool|string $navigation = true,
     string $title = '',
     bool $exit = true,
-    $redirect = false,
+    bool|string $redirect = false,
     int $rs = 3,
     string $style = 'admin_err',
 ): void {
@@ -84,19 +84,19 @@ function kleeja_admin_err(
  * Print information message on admin panel
  *
  * @adm
- * @param string $msg        information message
- * @param bool   $navigation show navigation menu or not
- * @param string $title      information heading title
- * @param bool   $exit       if true, then halt after message
- * @param bool   $redirect   redirect after showing the message
- * @param int    $rs         delay the redirect in seconds
+ * @param string      $msg        information message
+ * @param bool|string $navigation show navigation menu, or a link to redirect to
+ * @param string      $title      information heading title
+ * @param bool        $exit       if true, then halt after message
+ * @param bool|string $redirect   a link to redirect after showing the message, or false
+ * @param int         $rs         delay the redirect in seconds
  */
 function kleeja_admin_info(
     string $msg,
-    $navigation = true,
+    bool|string $navigation = true,
     string $title = '',
     bool $exit = true,
-    $redirect = false,
+    bool|string $redirect = false,
     int $rs = 2,
 ): void {
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_admin_info_func', get_defined_vars()))
@@ -117,8 +117,14 @@ function kleeja_admin_info(
  * @param  string       $uid    filter unique id, empty to generate one
  * @return string|false the filter unique id, or false when the insertion failed
  */
-function insert_filter(string $type, string $value, int $time = 0, int $user = 0, string $status = '', string $uid = '')
-{
+function insert_filter(
+    string $type,
+    string $value,
+    int $time = 0,
+    int $user = 0,
+    string $status = '',
+    string $uid = '',
+): string|false {
     global $SQL, $dbprefix, $userinfo;
 
     $user = !$user ? $userinfo['id'] : $user;
@@ -163,7 +169,7 @@ function insert_filter(string $type, string $value, int $time = 0, int $user = 0
  * @return bool
  */
 function update_filter(
-    $id_or_uid,
+    int|string $id_or_uid,
     string $value,
     string $filter_type = 'general',
     string $filter_status = '',
@@ -207,7 +213,7 @@ function update_filter(
  * @param  bool   $just_value  If true the return value should be just filter_value otherwise all filter rows
  * @param  string $get_by      The name of filter column we want to get the filter value from
  * @param  int    $user_id
- * @return mixed
+ * @return array|string|false the filter row, or just its value, or false when it is not found
  */
 function get_filter(
     string $item,
@@ -215,7 +221,7 @@ function get_filter(
     bool $just_value = false,
     string $get_by = 'filter_uid',
     int $user_id = 0,
-) {
+): array|string|false {
     global $dbprefix, $SQL;
 
     $valid_filter_columns = ['filter_id', 'filter_uid', 'filter_user', 'filter_status'];
@@ -245,6 +251,10 @@ function get_filter(
 
     $SQL->freeresult($result);
 
+    if ($v === false) {
+        return false;
+    }
+
     if ($just_value) {
         return $v['filter_value'];
     }
@@ -261,8 +271,12 @@ function get_filter(
  * @param  int       $user_id
  * @return int|false
  */
-function filter_exists(string $item, string $get_by = 'filter_id', string $filter_type = '', int $user_id = 0)
-{
+function filter_exists(
+    string $item,
+    string $get_by = 'filter_id',
+    string $filter_type = '',
+    int $user_id = 0,
+): int|false {
     global $dbprefix, $SQL;
 
     $query = [
@@ -289,10 +303,10 @@ function filter_exists(string $item, string $get_by = 'filter_id', string $filte
 /**
  * costruct a query for the searches..
  * @adm
- * @param  array  $search Search options
+ * @param  mixed  $search Search options, anything other than an array gives an empty query
  * @return string
  */
-function build_search_query($search): string
+function build_search_query(mixed $search): string
 {
     if (!is_array($search)) {
         return '';
@@ -380,7 +394,7 @@ function build_search_query($search): string
  * @param  int       $start
  * @return int|false
  */
-function sync_total_files(bool $files = true, int $start = 0)
+function sync_total_files(bool $files = true, int $start = 0): int|false
 {
     global $SQL, $dbprefix;
 

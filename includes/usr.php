@@ -41,7 +41,7 @@ class usrcp
     }
 
     //get username by id
-    public function usernamebyid(int $user_id)
+    public function usernamebyid(int $user_id): string|false
     {
         $return_now = $auth_status = false;
 
@@ -56,7 +56,7 @@ class usrcp
         //normal system
         $u = $this->get_data('name', $user_id);
 
-        return $u['name'];
+        return $u['name'] ?? false;
     }
 
     //now our table, normal user system
@@ -219,7 +219,7 @@ class usrcp
         get user data
         new function:1rc5+
     */
-    public function get_data(string $type = '*', int $user_id = 0)
+    public function get_data(string $type = '*', int $user_id = 0): array|false
     {
         global $dbprefix, $SQL;
 
@@ -246,7 +246,7 @@ class usrcp
     }
 
     // user ids
-    public function id()
+    public function id(): int|false
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('id_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -256,7 +256,7 @@ class usrcp
     }
 
     // group ids
-    public function group_id()
+    public function group_id(): int|false
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('group_id_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -266,7 +266,7 @@ class usrcp
     }
 
     // user name
-    public function name()
+    public function name(): string|false
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('name_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -276,7 +276,7 @@ class usrcp
     }
 
     // user mail
-    public function mail()
+    public function mail(): string|false
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('mail_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -450,7 +450,8 @@ class usrcp
     }
 
     //depand on phpass class
-    public function kleeja_hash_password(string $password, string $check_pass = '')
+    //return the hash of $password, or when $check_pass is given, whether $password matches it
+    public function kleeja_hash_password(string $password, string $check_pass = ''): string|bool
     {
         include_once 'phpass.php';
 
@@ -540,7 +541,7 @@ class usrcp
     //
     //get cookie
     //
-    public function kleeja_get_cookie(string $name)
+    public function kleeja_get_cookie(string $name): string|false
     {
         // for plugins that are still using old version of kleeja
         return cookie()->get($name);

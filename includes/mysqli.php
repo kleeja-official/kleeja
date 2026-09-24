@@ -18,8 +18,7 @@ if (!defined('SQL_LAYER')):
     class KleejaDatabase
     {
         private ?mysqli $connect_id = null;
-        /** @var mysqli_result|bool unset between queries, so it stays untyped */
-        private $result = null;
+        private mysqli_result|bool|null $result = null;
         public string $dbprefix = '';
         private string $dbname = '';
         public int $query_num = 0;
@@ -66,7 +65,7 @@ if (!defined('SQL_LAYER')):
                 $this->close();
                 $this->error_msg('We can not connect to the server ...');
 
-                return false;
+                return;
             }
 
             //connecting
@@ -77,8 +76,6 @@ if (!defined('SQL_LAYER')):
                     kleeja_log('[Set to UTF8] : --> ');
                 }
             }
-
-            return $this->connect_id;
         }
 
         public function __destruct()
@@ -88,10 +85,10 @@ if (!defined('SQL_LAYER')):
 
         public function is_connected(): bool
         {
-            return !(is_resource($this->connect_id) || empty($this->connect_id));
+            return $this->connect_id !== null;
         }
 
-        // close the connection
+        // finish pending work, the connection itself is released by PHP at the end of the request
         public function close(): bool
         {
             if (!$this->is_connected()) {
@@ -106,11 +103,7 @@ if (!defined('SQL_LAYER')):
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-            if (!is_resource($this->connect_id)) {
-                return true;
-            }
-
-            return @mysqli_close($this->connect_id);
+            return true;
         }
 
         // encoding functions
@@ -124,7 +117,7 @@ if (!defined('SQL_LAYER')):
             @mysqli_set_charset($this->connect_id, $charset);
         }
 
-        public function client_encoding()
+        public function client_encoding(): ?string
         {
             return mysqli_character_set_name($this->connect_id);
         }
@@ -143,9 +136,9 @@ if (!defined('SQL_LAYER')):
          *
          * @param  string  $query
          * @param  boolean $transaction
-         * @return bool
+         * @return mysqli_result|bool result set for reads, true for writes, false on failure
          */
-        public function query(string $query, bool $transaction = false)
+        public function query(string $query, bool $transaction = false): mysqli_result|bool
         {
             //no connection
             if (!$this->is_connected()) {
@@ -155,7 +148,7 @@ if (!defined('SQL_LAYER')):
             //
             // Remove any pre-existing queries
             //
-            unset($this->result);
+            $this->result = null;
 
             if (!empty($query)) {
                 //debug .. //////////////
@@ -217,9 +210,9 @@ if (!defined('SQL_LAYER')):
          * build structured query ['SELECT' => ..., 'FROM' => ..., ...]
          *
          * @param  array  $query
-         * @return string
+         * @return mysqli_result|bool
          */
-        public function build(array $query)
+        public function build(array $query): mysqli_result|bool
         {
             $sql = '';
 
@@ -291,16 +284,16 @@ if (!defined('SQL_LAYER')):
         /**
          * free the memmory from the last results
          *
-         * @param  integer $query_id optional
+         * @param  mysqli_result|bool|null $query_id optional, the last result by default
          * @return bool
          */
-        public function freeresult($query_id = 0): bool
+        public function freeresult(mysqli_result|bool|null $query_id = null): bool
         {
             if (!$query_id) {
                 $query_id = $this->result;
             }
 
-            if ($query_id) {
+            if ($query_id instanceof mysqli_result) {
                 mysqli_free_result($query_id);
 
                 return true;
@@ -312,10 +305,10 @@ if (!defined('SQL_LAYER')):
         /**
          * fetch results (alias of fetch_array)
          *
-         * @param  mysqli_result $query_id
-         * @return array
+         * @param  mysqli_result|bool|null $query_id optional, the last result by default
+         * @return array|false the next row, or false when there are no more rows
          */
-        public function fetch($query_id = 0)
+        public function fetch(mysqli_result|bool|null $query_id = null): array|false
         {
             return $this->fetch_array($query_id);
         }
@@ -323,41 +316,41 @@ if (!defined('SQL_LAYER')):
         /**
          * fetch results
          *
-         * @param  mysqli_result $query_id
-         * @return array
+         * @param  mysqli_result|bool|null $query_id optional, the last result by default
+         * @return array|false the next row, or false when there are no more rows
          */
-        public function fetch_array($query_id = 0)
+        public function fetch_array(mysqli_result|bool|null $query_id = null): array|false
         {
             if (!$query_id) {
                 $query_id = $this->result;
             }
 
-            return $query_id ? mysqli_fetch_array($query_id, MYSQLI_ASSOC) : false;
+            return $query_id instanceof mysqli_result ? mysqli_fetch_array($query_id, MYSQLI_ASSOC) ?? false : false;
         }
 
         /**
          * return number of rows of result (not efficient)
          *
-         * @param  mysqli_result $query_id
-         * @return int
+         * @param  mysqli_result|bool|null $query_id optional, the last result by default
+         * @return int|false
          */
-        public function num_rows($query_id = 0)
+        public function num_rows(mysqli_result|bool|null $query_id = null): int|false
         {
             if (!$query_id) {
                 $query_id = $this->result;
             }
 
-            return $query_id ? mysqli_num_rows($query_id) : false;
+            return $query_id instanceof mysqli_result ? (int) mysqli_num_rows($query_id) : false;
         }
 
         /**
          * return the id of latest inserted record
          *
-         * @return int
+         * @return int|false
          */
-        public function insert_id()
+        public function insert_id(): int|false
         {
-            return $this->is_connected() ? mysqli_insert_id($this->connect_id) : false;
+            return $this->is_connected() ? (int) mysqli_insert_id($this->connect_id) : false;
         }
 
         /**
@@ -395,11 +388,11 @@ if (!defined('SQL_LAYER')):
         /**
          * number of affected rows by latest action
          *
-         * @return int
+         * @return int|false
          */
-        public function affected()
+        public function affected(): int|false
         {
-            return $this->is_connected() ? mysqli_affected_rows($this->connect_id) : false;
+            return $this->is_connected() ? (int) mysqli_affected_rows($this->connect_id) : false;
         }
 
         /**
@@ -433,35 +426,35 @@ if (!defined('SQL_LAYER')):
             if (!defined('DEV_STAGE')) {
                 $error_sql = preg_replace_callback(
                     "#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#",
-                    function ($m) {
+                    function (array $m): string {
                         return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
                     },
                     $error_sql,
                 );
                 $error_msg = preg_replace_callback(
                     "#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#",
-                    function ($m) {
+                    function (array $m): string {
                         return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
                     },
                     $error_msg,
                 );
                 $error_sql = preg_replace_callback(
                     '#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i',
-                    function ($m) {
+                    function (array $m): string {
                         return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
                     },
                     $error_sql,
                 );
                 $error_msg = preg_replace_callback(
                     '#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i',
-                    function ($m) {
+                    function (array $m): string {
                         return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
                     },
                     $error_msg,
                 );
                 $error_msg = preg_replace_callback(
                     "#\s'([^']+)'@'([^']+)'#i",
-                    function ($m) {
+                    function (array $m): string {
                         return ' <span style="color:blue">hidden</span>@' . $m[2] . ' ';
                     },
                     $error_msg,

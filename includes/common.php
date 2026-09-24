@@ -67,14 +67,12 @@ function kleeja_show_error(
         case E_WARNING:
         case E_USER_WARNING:
         case E_USER_NOTICE:
-        case E_STRICT:
             if (function_exists('kleeja_log')) {
                 $error_name = [
                     2 => 'Warning',
                     8 => 'Notice',
                     512 => 'U_Warning',
                     1024 => 'U_Notice',
-                    2048 => 'Strict',
                 ][$error_number];
                 kleeja_log('[' . $error_name . '] ' . basename($error_file) . ':' . $error_line . ' ' . $error_string);
             }
@@ -99,7 +97,7 @@ function kleeja_show_error(
                     E_USER_DEPRECATED => 'E_USER_DEPRECATED',
                 ][$error_number] ?? 'E_UNKNOWN';
 
-            $escape = fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+            $escape = fn(string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
             $error_template = @file_get_contents(__DIR__ . '/error.html');
 
             if ($error_template === false) {
@@ -423,7 +421,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('end_common', get_defi
     ? extract($plugin_run_result)
     : null; //run hook
 
-register_shutdown_function(function () {
+register_shutdown_function(function (): void {
     session_write_close();
 
     $err = error_get_last();

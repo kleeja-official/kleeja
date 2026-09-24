@@ -290,7 +290,7 @@ function kleeja_err(
     string $message,
     string $title = '',
     bool $exit = true,
-    $redirect = false,
+    bool|string $redirect = false,
     int $rs = 2,
     string $extra_code_header = '',
     string $style = 'err',
@@ -331,7 +331,7 @@ function kleeja_info(
     string $message,
     string $title = '',
     bool $exit = true,
-    $redirect = false,
+    bool|string $redirect = false,
     int $rs = 5,
     string $extra_code_header = '',
 ): void {
@@ -459,10 +459,10 @@ function big_error(string $error_title, string $msg_text, bool $error = true): v
  * @param  bool   $exit   halt after echoing the redirect code
  * @param  int    $sec    delay in seconds
  * @param  bool   $return return the html code only
- * @return mixed
+ * @return string|null the html code when $return is true
  *
  */
-function redirect(string $url, bool $header = true, bool $exit = true, int $sec = 0, bool $return = false)
+function redirect(string $url, bool $header = true, bool $exit = true, int $sec = 0, bool $return = false): ?string
 {
     global $SQL;
 
@@ -674,7 +674,7 @@ function kleeja_get_link(string $pid, array $extra = []): string
  * Parse template of boxes and print them
  * @param  string $box_name html block name from up_boxes.html file
  * @param  array  $extra    variables to pass to the html block
- * @return mixed
+ * @return string
  */
 function get_up_tpl_box(string $box_name, array $extra = []): string
 {
@@ -739,10 +739,10 @@ function get_up_tpl_box(string $box_name, array $extra = []): string
 
 /**
  * Extract info of a style
- * @param  string     $style_name
- * @return array|bool
+ * @param  string      $style_name
+ * @return array|false
  */
-function kleeja_style_info(string $style_name)
+function kleeja_style_info(string $style_name): array|false
 {
     $inf_path = PATH . 'styles/' . $style_name . '/info.txt';
 

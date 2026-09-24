@@ -25,40 +25,43 @@ class FetchFile
         $this->url = $url;
     }
 
-    public static function make(string $url): self
+    public static function make(string $url): static
     {
         return new static($url);
     }
 
-    public function setTimeOut(int $seconds): self
+    public function setTimeOut(int $seconds): static
     {
         $this->timeout = $seconds;
 
         return $this;
     }
 
-    public function setDestinationPath(string $path): self
+    public function setDestinationPath(string $path): static
     {
         $this->destinationPath = $path;
 
         return $this;
     }
 
-    public function setMaxRedirects(int $limit): self
+    public function setMaxRedirects(int $limit): static
     {
         $this->maxRedirects = $limit;
 
         return $this;
     }
 
-    public function isBinaryFile(bool $val): self
+    public function isBinaryFile(bool $val): static
     {
         $this->binary = $val;
 
         return $this;
     }
 
-    public function get()
+    /**
+     * @return string|bool the content, or true when it was saved to the destination path, false on failure
+     */
+    public function get(): string|bool
     {
         $fetchType = '';
 
@@ -74,7 +77,7 @@ class FetchFile
 
         session_write_close();
 
-        $result = null;
+        $result = false;
 
         is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_fetch_file_start', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -98,7 +101,7 @@ class FetchFile
         session_start();
     }
 
-    protected function curl()
+    protected function curl(): string|bool
     {
         $ch = curl_init($this->url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -125,7 +128,6 @@ class FetchFile
                 kleeja_log(sprintf("cUrl error (#%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))));
             }
 
-            curl_close($ch);
             fclose($out);
 
             return true;
@@ -137,13 +139,12 @@ class FetchFile
                     sprintf("FetchFile error (curl: #%d): %s\n", curl_errno($ch), htmlspecialchars(curl_error($ch))),
                 );
             }
-            curl_close($ch);
 
             return $data;
         }
     }
 
-    protected function fopen()
+    protected function fopen(): string|bool
     {
         // Setup a stream context
         $stream_context = stream_context_create([

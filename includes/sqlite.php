@@ -18,8 +18,7 @@ if (!defined('SQL_LAYER')):
     class KleejaDatabase
     {
         private ?SQLite3 $connect_id = null;
-        /** @var SQLite3Result|bool unset between queries, so it stays untyped */
-        private $result = null;
+        private SQLite3Result|bool|null $result = null;
         public string $dbprefix = '';
         private string $dbname = '';
         public int $query_num = 0;
@@ -68,13 +67,11 @@ if (!defined('SQL_LAYER')):
                     'We can not connect to the sqlite database, check location or existence of the SQLite dirver ...',
                 );
 
-                return false;
+                return;
             }
 
             //connecting
             kleeja_log('[Connected] : ' . kleeja_get_page());
-
-            return $this->connect_id;
         }
 
         public function __destruct()
@@ -84,10 +81,10 @@ if (!defined('SQL_LAYER')):
 
         public function is_connected(): bool
         {
-            return !(is_null($this->connect_id) || empty($this->connect_id));
+            return $this->connect_id !== null;
         }
 
-        // close the connection
+        // finish pending work, the connection itself is released by PHP at the end of the request
         public function close(): bool
         {
             if (!$this->is_connected()) {
@@ -102,11 +99,7 @@ if (!defined('SQL_LAYER')):
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-            if (!is_resource($this->connect_id)) {
-                return true;
-            }
-
-            return @mysqli_close($this->connect_id);
+            return true;
         }
 
         // encoding functions
@@ -117,7 +110,10 @@ if (!defined('SQL_LAYER')):
 
         public function set_names(string $charset): void {}
 
-        public function client_encoding() {}
+        public function client_encoding(): ?string
+        {
+            return null;
+        }
 
         public function version(): string
         {
@@ -129,9 +125,9 @@ if (!defined('SQL_LAYER')):
          *
          * @param  string  $query
          * @param  boolean $transaction
-         * @return bool
+         * @return SQLite3Result|bool result set for reads, true for writes, false on failure
          */
-        public function query(string $query, bool $transaction = false)
+        public function query(string $query, bool $transaction = false): SQLite3Result|bool
         {
             //no connection
             if (!$this->is_connected()) {
@@ -141,7 +137,7 @@ if (!defined('SQL_LAYER')):
             //
             // Remove any pre-existing queries
             //
-            unset($this->result);
+            $this->result = null;
 
             if (strpos($query, 'CREATE TABLE') !== false || strpos($query, 'ALTER DATABASE') !== false) {
                 $sqlite_types = [
@@ -220,9 +216,9 @@ if (!defined('SQL_LAYER')):
          * build structured query ['SELECT' => ..., 'FROM' => ..., ...]
          *
          * @param  array  $query
-         * @return string
+         * @return SQLite3Result|bool
          */
-        public function build(array $query)
+        public function build(array $query): SQLite3Result|bool
         {
             $sql = '';
 
@@ -290,16 +286,16 @@ if (!defined('SQL_LAYER')):
         /**
          * free the memmory from the last results
          *
-         * @param  SQLite3Result $query_id optional
+         * @param  SQLite3Result|bool|null $query_id optional, the last result by default
          * @return bool
          */
-        public function freeresult($query_id = 0): bool
+        public function freeresult(SQLite3Result|bool|null $query_id = null): bool
         {
             if (!$query_id) {
                 $query_id = $this->result;
             }
 
-            if ($query_id) {
+            if ($query_id instanceof SQLite3Result) {
                 $query_id->finalize();
 
                 return true;
@@ -311,10 +307,10 @@ if (!defined('SQL_LAYER')):
         /**
          * fetch results (alias of fetch_array)
          *
-         * @param  SQLite3Result $query_id
-         * @return array
+         * @param  SQLite3Result|bool|null $query_id optional, the last result by default
+         * @return array|false the next row, or false when there are no more rows
          */
-        public function fetch($query_id = 0)
+        public function fetch(SQLite3Result|bool|null $query_id = null): array|false
         {
             return $this->fetch_array($query_id);
         }
@@ -322,16 +318,16 @@ if (!defined('SQL_LAYER')):
         /**
          * fetch results
          *
-         * @param  SQLite3Result $query_id
-         * @return array
+         * @param  SQLite3Result|bool|null $query_id optional, the last result by default
+         * @return array|false the next row, or false when there are no more rows
          */
-        public function fetch_array($query_id = 0)
+        public function fetch_array(SQLite3Result|bool|null $query_id = null): array|false
         {
             if (!$query_id) {
                 $query_id = $this->result;
             }
 
-            if ($query_id && $query_id->numColumns() > 0) {
+            if ($query_id instanceof SQLite3Result && $query_id->numColumns() > 0) {
                 return $query_id->fetchArray(SQLITE3_ASSOC);
             }
 
@@ -341,16 +337,16 @@ if (!defined('SQL_LAYER')):
         /**
          * return number of rows of result (not efficient)
          *
-         * @param  SQLite3Result $query_id
-         * @return int
+         * @param  SQLite3Result|bool|null $query_id optional, the last result by default
+         * @return int|false
          */
-        public function num_rows($query_id = 0)
+        public function num_rows(SQLite3Result|bool|null $query_id = null): int|false
         {
             if (!$query_id) {
                 $query_id = $this->result;
             }
 
-            if ($query_id && ($results = $query_id->numColumns())) {
+            if ($query_id instanceof SQLite3Result && ($results = $query_id->numColumns())) {
                 return $results;
             }
 
@@ -360,9 +356,9 @@ if (!defined('SQL_LAYER')):
         /**
          * return the id of latest inserted record
          *
-         * @return int
+         * @return int|false
          */
-        public function insert_id()
+        public function insert_id(): int|false
         {
             return $this->is_connected() ? $this->connect_id->lastInsertRowID() : false;
         }
@@ -397,9 +393,9 @@ if (!defined('SQL_LAYER')):
         /**
          * number of affected rows by latest action
          *
-         * @return int
+         * @return int|false
          */
-        public function affected()
+        public function affected(): int|false
         {
             return $this->is_connected() ? $this->connect_id->changes() : false;
         }
@@ -435,35 +431,35 @@ if (!defined('SQL_LAYER')):
             if (!defined('DEV_STAGE')) {
                 $error_sql = preg_replace_callback(
                     "#\s{1,3}`*{$this->dbprefix}([a-z0-9]+)`*\s{1,3}#",
-                    function ($m) {
+                    function (array $m): string {
                         return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
                     },
                     $error_sql,
                 );
                 $error_msg = preg_replace_callback(
                     "#{$this->dbname}.{$this->dbprefix}([a-z0-9]+)#",
-                    function ($m) {
+                    function (array $m): string {
                         return ' <span style="color:blue">' . substr($m[1], 0, 1) . '</span> ';
                     },
                     $error_msg,
                 );
                 $error_sql = preg_replace_callback(
                     '#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i',
-                    function ($m) {
+                    function (array $m): string {
                         return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
                     },
                     $error_sql,
                 );
                 $error_msg = preg_replace_callback(
                     '#\s{1,3}(from|update|into)\s{1,3}([a-z0-9]+)\s{1,3}#i',
-                    function ($m) {
+                    function (array $m): string {
                         return $m[1] . ' <span style="color:blue">' . substr($m[2], 0, 1) . '</span> ';
                     },
                     $error_msg,
                 );
                 $error_msg = preg_replace_callback(
                     "#\s'([^']+)'@'([^']+)'#i",
-                    function ($m) {
+                    function (array $m): string {
                         return ' <span style="color:blue">hidden</span>@' . $m[2] . ' ';
                     },
                     $error_msg,

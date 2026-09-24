@@ -290,7 +290,7 @@ elseif ($current_smt == 'update3') {
 
             $all_db_updates = array_keys($update_schema);
 
-            $available_db_updates = array_filter($all_db_updates, function ($v) use ($config) {
+            $available_db_updates = array_filter($all_db_updates, function (int $v) use ($config): bool {
                 return $v > $config['db_version'];
             });
 

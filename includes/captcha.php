@@ -106,9 +106,6 @@ function kleeja_cpatcha_image(): void
 
     //Output the newly created image in png format
     imagepng($image);
-
-    //Free up resources
-    imagedestroy($image);
 }
 
 //<--- EOF

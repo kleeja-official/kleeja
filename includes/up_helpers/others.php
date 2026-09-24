@@ -231,7 +231,6 @@ function check_mime_type(string $given_file_mime, string $file_ext, string $file
         } else {
             $f_info = finfo_open(FILEINFO_MIME_TYPE);
             $mime = finfo_file($f_info, $file_path);
-            finfo_close($f_info);
         }
     } elseif (!empty($given_file_mime)) {
         $mime = $given_file_mime;

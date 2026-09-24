@@ -66,7 +66,7 @@ switch (g('step', 'str', 'action_file')) {
 
         $all_db_updates = array_keys($update_schema);
 
-        $available_db_updates = array_filter($all_db_updates, function ($v) use ($current_db_version) {
+        $available_db_updates = array_filter($all_db_updates, function (int $v) use ($current_db_version): bool {
             return $v > $current_db_version;
         });
 

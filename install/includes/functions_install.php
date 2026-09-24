@@ -156,7 +156,7 @@ function get_microtime(): float
  * @param  string       $name
  * @return string|false
  */
-function inst_get_config(string $name)
+function inst_get_config(string $name): string|false
 {
     global $SQL, $dbprefix;
 
@@ -186,7 +186,7 @@ function inst_get_config(string $name)
     } else {
         $current_ver = $SQL->fetch_array($result);
 
-        return $current_ver['value'];
+        return $current_ver['value'] ?? false;
     }
 }
 
