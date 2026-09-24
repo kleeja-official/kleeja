@@ -45,6 +45,9 @@ define('ADM_FILES_PATH', PATH . 'includes/adm');
 
 //Report all errors, except notices
 error_reporting(defined('DEV_STAGE') ? E_ALL : E_ALL ^ E_NOTICE);
+if (defined('DEV_STAGE')) {
+    ini_set('display_errors', 1);
+}
 
 /**
  * functions for start
@@ -79,30 +82,45 @@ function kleeja_show_error(
             break;
 
         default:
-            header('HTTP/1.1 503 Service Temporarily Unavailable');
-            echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">' . "\n<head>\n";
-            echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' . "\n";
-            echo '<title>Kleeja Error</title>' . "\n" . '<style type="text/css">' . "\n\t";
-            echo '.error {color: #333;background:#ffebe8;float:left;width:73%;text-align:left;margin-top:10px;border: 1px solid #dd3c10; padding: 10px;font-family:tahoma,arial;font-size: 12px;}' .
-                "\n";
-            echo "</style>\n</head>\n<body>\n\t" .
-                '<div class="error">' .
-                "\n\n\t\t<h2>Kleeja error  : </h2><br />" .
-                "\n";
-            echo "\n\t\t<strong> [ " .
-                $error_number .
-                ':' .
-                basename($error_file) .
-                ':' .
-                $error_line .
-                ' ] </strong><br /><br />' .
-                "\n\t\t" .
-                $error_string .
-                "\n\t";
-            echo "\n\t\t" .
-                '<br /><br /><small>Visit <a href="https://kleeja.net/" title="kleeja">Kleeja</a> Website for more details.</small>' .
-                "\n\t";
-            echo "</div>\n</body>\n</html>";
+            if (!headers_sent()) {
+                header('HTTP/1.1 503 Service Temporarily Unavailable');
+                header('Content-Type: text/html; charset=UTF-8');
+            }
+
+            $error_name =
+                [
+                    E_ERROR => 'E_ERROR',
+                    E_PARSE => 'E_PARSE',
+                    E_CORE_ERROR => 'E_CORE_ERROR',
+                    E_COMPILE_ERROR => 'E_COMPILE_ERROR',
+                    E_USER_ERROR => 'E_USER_ERROR',
+                    E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
+                    E_DEPRECATED => 'E_DEPRECATED',
+                    E_USER_DEPRECATED => 'E_USER_DEPRECATED',
+                ][$error_number] ?? 'E_UNKNOWN';
+
+            $escape = fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+            $error_template = @file_get_contents(__DIR__ . '/error.html');
+
+            if ($error_template === false) {
+                echo '<strong>Kleeja error: [ ' .
+                    $error_number .
+                    ':' .
+                    $escape(basename($error_file)) .
+                    ':' .
+                    $error_line .
+                    ' ]</strong><br />' .
+                    $escape($error_string);
+            } else {
+                echo strtr($error_template, [
+                    '{ERROR_NAME}' => $error_name,
+                    '{ERROR_NUMBER}' => $error_number,
+                    '{ERROR_STRING}' => $escape($error_string),
+                    '{ERROR_FILE}' => $escape(basename($error_file)),
+                    '{ERROR_LINE}' => $error_line,
+                ]);
+            }
+
             global $SQL;
 
             if (isset($SQL)) {
