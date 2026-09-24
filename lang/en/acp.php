@@ -124,7 +124,7 @@ return [
     'UPDATE_KLJ_NOW' => 'update now!',
     'U_LAST_VER_KLJ' => 'You are using the latest version of Kleeja...',
     'U_USE_PRE_RE' =>
-        'You are using a Pre-release version, Click <a href="https://github.com/kleeja-official/kleeja/issues">here</a> to report any bugs or exploits.',
+        'You are using a Pre-release version, Click <a href="https://github.com/kleeja/kleeja/issues">here</a> to report any bugs or exploits.',
     'STYLE_IS_DEFAULT' => 'Default style',
     'MAKE_AS_DEFAULT' => 'Set as default',
     'STYLE_NOW_IS_DEFAULT' => 'The style "%s" was set as default',

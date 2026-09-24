@@ -125,7 +125,7 @@ return [
     'UPDATE_KLJ_NOW' => 'تحديث الآن!',
     'U_LAST_VER_KLJ' => 'أنت تستخدم آخر نسخة من كليجا. شكراً لمتابعة نسختك بإستمرار.',
     'U_USE_PRE_RE' =>
-        'أنت تستخدم نسخة تطويرية لم تصدر حتى الآن , اضغط <a href="https://github.com/kleeja-official/kleeja/issues">هنا</a> لإخبارنا بأي أخطاء برمجية وثغرات قد تقابلك.',
+        'أنت تستخدم نسخة تطويرية لم تصدر حتى الآن , اضغط <a href="https://github.com/kleeja/kleeja/issues">هنا</a> لإخبارنا بأي أخطاء برمجية وثغرات قد تقابلك.',
     'STYLE_IS_DEFAULT' => 'استايل افتراضي',
     'MAKE_AS_DEFAULT' => 'تعيينه افتراضي',
     'STYLE_NOW_IS_DEFAULT' => 'تم تعيين الاستايل "%s" ستايل افتراضي',

@@ -4,12 +4,12 @@
   "description": "The powerful and easiest way to run File Upload/sharing Service on your website. Trusted by thousands of webmasters since 2007.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kleeja-official/kleeja.git"
+    "url": "git+https://github.com/kleeja/kleeja.git"
   },
   "bugs": {
-    "url": "https://github.com/kleeja-official/kleeja/issues"
+    "url": "https://github.com/kleeja/kleeja/issues"
   },
-  "homepage": "https://github.com/kleeja-official/kleeja#readme",
+  "homepage": "https://github.com/kleeja/kleeja#readme",
   "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
