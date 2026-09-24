@@ -228,6 +228,7 @@ return [
     'UNKNOWN' => 'Unknown',
     'WE_UPDATING_KLEEJA_NOW' => 'Closed for maintenance, Check back soon...',
     'ERROR_TRY_AGAIN' => 'Error, try again.',
+    'ERROR' => 'Error',
     'VIEW' => 'View',
     'NONE' => 'None',
     'SEARCH_STAT' => 'Search Engines Stats',

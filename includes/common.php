@@ -67,12 +67,16 @@ function kleeja_show_error(
         case E_WARNING:
         case E_USER_WARNING:
         case E_USER_NOTICE:
+        case E_DEPRECATED:
+        case E_USER_DEPRECATED:
             if (function_exists('kleeja_log')) {
                 $error_name = [
-                    2 => 'Warning',
-                    8 => 'Notice',
-                    512 => 'U_Warning',
-                    1024 => 'U_Notice',
+                    E_WARNING => 'Warning',
+                    E_NOTICE => 'Notice',
+                    E_USER_WARNING => 'U_Warning',
+                    E_USER_NOTICE => 'U_Notice',
+                    E_DEPRECATED => 'Deprecated',
+                    E_USER_DEPRECATED => 'U_Deprecated',
                 ][$error_number];
                 kleeja_log('[' . $error_name . '] ' . basename($error_file) . ':' . $error_line . ' ' . $error_string);
             }
@@ -93,8 +97,6 @@ function kleeja_show_error(
                     E_COMPILE_ERROR => 'E_COMPILE_ERROR',
                     E_USER_ERROR => 'E_USER_ERROR',
                     E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
-                    E_DEPRECATED => 'E_DEPRECATED',
-                    E_USER_DEPRECATED => 'E_USER_DEPRECATED',
                 ][$error_number] ?? 'E_UNKNOWN';
 
             $escape = fn(string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');

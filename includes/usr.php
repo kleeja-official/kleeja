@@ -245,8 +245,8 @@ class usrcp
         return $data_user;
     }
 
-    // user ids
-    public function id(): int|false
+    // user ids, kept as the database gave it (a string with MySQL, an int with SQLite), plugins compare it with ===
+    public function id(): int|string|false
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('id_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)
@@ -255,8 +255,8 @@ class usrcp
         return defined('USER_ID') ? USER_ID : false;
     }
 
-    // group ids
-    public function group_id(): int|false
+    // group ids, kept as the database gave it, same as id()
+    public function group_id(): int|string|false
     {
         is_array($plugin_run_result = Plugins::getInstance()->run('group_id_func_usr_class', get_defined_vars()))
             ? extract($plugin_run_result)

@@ -129,9 +129,9 @@ function get_ban(): void
 /**
  * Check if the given plugin installed ?
  * @param  string $plugin_name
- * @return string|false the plugin id, or false when it is not installed
+ * @return int|string|false the plugin id as the database gave it, or false when it is not installed
  */
-function kleeja_plugin_exists(string $plugin_name): string|false
+function kleeja_plugin_exists(string $plugin_name): int|string|false
 {
     global $SQL, $dbprefix;
 
@@ -966,12 +966,12 @@ function add_olang(array $words = [], string $lang = 'en', int $plg_id = 0): voi
 //delete words from lang
 //
 /**
- * @param  string|array $words  language terms to use a in $olang[word] or olang.word
- * @param  string|array $lang   langauge of given word
- * @param  int          $plg_id plugin id associated with these words, optional
+ * @param  string|array|null $words  language terms to use a in $olang[word] or olang.word, empty for all the terms
+ * @param  string|array|null $lang   langauge of given word, empty for all the languages
+ * @param  int               $plg_id plugin id associated with these words, optional
  * @return bool
  */
-function delete_olang(string|array $words = '', string|array $lang = 'en', int $plg_id = 0): bool
+function delete_olang(string|array|null $words = '', string|array|null $lang = 'en', int $plg_id = 0): bool
 {
     global $dbprefix, $SQL;
 
@@ -1418,18 +1418,20 @@ function ip(string $name): bool
     return isset($_POST[$name]);
 }
 
+//an array given instead of a single value (name[]=...) is treated as not sent, so $default is returned
 function g(string $name, string $type = 'str', string $default = ''): string|int
 {
-    if (isset($_GET[$name])) {
+    if (isset($_GET[$name]) && is_string($_GET[$name])) {
         return $type == 'str' ? htmlspecialchars($_GET[$name], ENT_QUOTES) : intval($_GET[$name]);
     }
 
     return $type == 'str' ? htmlspecialchars($default, ENT_QUOTES) : intval($default);
 }
 
+//an array given instead of a single value (name[]=...) is treated as not sent, so $default is returned
 function p(string $name, string $type = 'str', string $default = ''): string|int
 {
-    if (isset($_POST[$name])) {
+    if (isset($_POST[$name]) && is_string($_POST[$name])) {
         return $type == 'str'
             ? str_replace(["\r\n", "\r", "\0"], ["\n", "\n", ''], htmlspecialchars(trim($_POST[$name]), ENT_QUOTES))
             : intval($_POST[$name]);
