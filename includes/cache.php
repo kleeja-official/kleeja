@@ -117,7 +117,8 @@ if (!($olang = $cache->get('data_lang' . $config['language']))) {
     $query = [
         'SELECT' => 'l.word, l.trans',
         'FROM' => "{$dbprefix}lang l",
-        'WHERE' => "l.lang_id='" . $SQL->escape($config['language']) . "'",
+        'WHERE' => 'l.lang_id = :lang_id',
+        'BIND' => ['lang_id' => kleeja_html_encode($config['language'])],
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_lang_cache', get_defined_vars()))
@@ -181,7 +182,8 @@ if (!($stats = $cache->get('data_stats'))) {
     $query = [
         'SELECT' => 'f.filter_uid',
         'FROM' => "{$dbprefix}filters f",
-        'WHERE' => "f.filter_type='stats_for_acp' AND f.filter_uid = '" . date('d-n-Y') . "'",
+        'WHERE' => "f.filter_type='stats_for_acp' AND f.filter_uid = :day",
+        'BIND' => ['day' => date('d-n-Y')],
     ];
 
     $result = $SQL->build($query);
@@ -190,23 +192,23 @@ if (!($stats = $cache->get('data_stats'))) {
     if ($SQL->num_rows($result)) {
         $f_query = [
             'UPDATE' => "{$dbprefix}filters",
-            'SET' =>
-                "filter_value='" .
-                implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]) .
-                "'",
-            'WHERE' => "filter_type='stats_for_acp' AND filter_uid = '" . date('d-n-Y') . "'",
+            'SET' => 'filter_value = :value',
+            'WHERE' => "filter_type='stats_for_acp' AND filter_uid = :day",
+            'BIND' => [
+                'value' => implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]),
+                'day' => date('d-n-Y'),
+            ],
         ];
     } else {
         $f_query = [
             'INSERT' => 'filter_uid, filter_type ,filter_value ,filter_time',
             'INTO' => "{$dbprefix}filters",
-            'VALUES' =>
-                "'" .
-                date('d-n-Y') .
-                "', 'stats_for_acp', '" .
-                implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]) .
-                "', " .
-                time(),
+            'VALUES' => ":day, 'stats_for_acp', :value, :time",
+            'BIND' => [
+                'day' => date('d-n-Y'),
+                'value' => implode(':', [$stats['stat_files'], $stats['stat_imgs'], $stats['stat_sizes']]),
+                'time' => time(),
+            ],
         ];
     }
 

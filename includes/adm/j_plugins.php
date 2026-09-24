@@ -398,16 +398,13 @@ switch ($case):
             'INSERT' =>
                 '`plg_name` ,`plg_ver`, `plg_author`, `plg_dsc`, `plg_icon`, `plg_uninstall`, `plg_instructions`, `plg_store`, `plg_files`',
             'INTO' => "{$dbprefix}plugins",
-            'VALUES' =>
-                "'" .
-                $SQL->escape($plg_name) .
-                "','" .
-                $SQL->escape($plugin_info['plugin_version']) .
-                "', '" .
-                $SQL->escape($plugin_info['plugin_developer']) .
-                "','" .
-                $SQL->escape($plugin_info['plugin_description']) .
-                "', '', '', '', '', ''",
+            'VALUES' => ":name, :version, :author, :description, '', '', '', '', ''",
+            'BIND' => [
+                'name' => kleeja_html_encode($plg_name),
+                'version' => kleeja_html_encode($plugin_info['plugin_version']),
+                'author' => kleeja_html_encode($plugin_info['plugin_developer']),
+                'description' => kleeja_html_encode($plugin_info['plugin_description']),
+            ],
         ];
 
         $SQL->build($insert_query);
@@ -487,7 +484,8 @@ switch ($case):
             $query = [
                 'SELECT' => 'plg_id',
                 'FROM' => "{$dbprefix}plugins",
-                'WHERE' => "plg_name='" . $SQL->escape($plg_name) . "'",
+                'WHERE' => 'plg_name = :name',
+                'BIND' => ['name' => kleeja_html_encode($plg_name)],
             ];
 
             $result = $SQL->build($query);
@@ -502,7 +500,8 @@ switch ($case):
             //remove from database
             $query_del = [
                 'DELETE' => "`{$dbprefix}plugins`",
-                'WHERE' => "plg_name='" . $SQL->escape($plg_name) . "'",
+                'WHERE' => 'plg_name = :name',
+                'BIND' => ['name' => kleeja_html_encode($plg_name)],
             ];
 
             $SQL->build($query_del);
@@ -544,7 +543,8 @@ switch ($case):
             $update_query = [
                 'UPDATE' => "{$dbprefix}plugins",
                 'SET' => 'plg_disabled=' . ($case == 'disable' ? 1 : 0),
-                'WHERE' => "plg_name='" . $SQL->escape($plg_name) . "'",
+                'WHERE' => 'plg_name = :name',
+                'BIND' => ['name' => kleeja_html_encode($plg_name)],
             ];
 
             $SQL->build($update_query);

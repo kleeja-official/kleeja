@@ -96,7 +96,8 @@ switch ($current_go_case) {
             $query = [
                 'SELECT' => 'f.real_filename, f.name',
                 'FROM' => "{$dbprefix}files f",
-                'WHERE' => 'id=' . $id_d,
+                'WHERE' => 'id = :id',
+                'BIND' => ['id' => $id_d],
             ];
 
             is_array($plugin_run_result = Plugins::getInstance()->run('qr_report_go_id', get_defined_vars()))
@@ -185,10 +186,10 @@ switch ($current_go_case) {
 
             //no error , lets do process
             if (empty($ERRORS)) {
-                $name = $NOT_USER ? (string) $SQL->escape(p('rname')) : $usrcp->name();
-                $text = (string) $SQL->escape(p('rtext'));
-                $mail = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('rmail')))) : $usrcp->mail();
-                $url = (string) ip('rid') ? $SQL->escape($url_id) : $SQL->real_escape(p('surl'));
+                $name = $NOT_USER ? kleeja_html_encode(p('rname')) : $usrcp->name();
+                $text = kleeja_html_encode(p('rtext'));
+                $mail = $NOT_USER ? strtolower(trim(kleeja_html_encode(p('rmail')))) : $usrcp->mail();
+                $url = ip('rid') ? kleeja_html_encode($url_id) : p('surl');
                 $time = (int) time();
                 $rid = ip('rid') ? 0 : p('rid', 'int');
                 $ip = get_ip();
@@ -196,7 +197,15 @@ switch ($current_go_case) {
                 $insert_query = [
                     'INSERT' => 'name ,mail ,url ,text ,time ,ip',
                     'INTO' => "{$dbprefix}reports",
-                    'VALUES' => "'$name', '$mail', '$url', '$text', $time, '$ip'",
+                    'VALUES' => ':name, :mail, :url, :text, :time, :ip',
+                    'BIND' => [
+                        'name' => $name,
+                        'mail' => $mail,
+                        'url' => $url,
+                        'text' => $text,
+                        'time' => $time,
+                        'ip' => $ip,
+                    ],
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_insert_new_report', get_defined_vars()))
@@ -209,7 +218,8 @@ switch ($current_go_case) {
                 $update_query = [
                     'UPDATE' => "{$dbprefix}files",
                     'SET' => 'report=report+1',
-                    'WHERE' => 'id=' . $rid,
+                    'WHERE' => 'id = :id',
+                    'BIND' => ['id' => $rid],
                 ];
 
                 is_array(
@@ -330,16 +340,17 @@ switch ($current_go_case) {
 
             //no errors ,lets do process
             if (empty($ERRORS)) {
-                $name = $NOT_USER ? (string) $SQL->escape(p('cname')) : $usrcp->name();
-                $text = (string) $SQL->escape(p('ctext'));
-                $mail = $NOT_USER ? (string) strtolower(trim($SQL->escape(p('cmail')))) : $usrcp->mail();
+                $name = $NOT_USER ? kleeja_html_encode(p('cname')) : $usrcp->name();
+                $text = kleeja_html_encode(p('ctext'));
+                $mail = $NOT_USER ? strtolower(trim(kleeja_html_encode(p('cmail')))) : $usrcp->mail();
                 $timee = (int) time();
                 $ip = get_ip();
 
                 $insert_query = [
                     'INSERT' => 'name ,text ,mail ,time ,ip',
                     'INTO' => "`{$dbprefix}call`",
-                    'VALUES' => "'$name', '$text', '$mail', $timee, '$ip'",
+                    'VALUES' => ':name, :text, :mail, :time, :ip',
+                    'BIND' => ['name' => $name, 'text' => $text, 'mail' => $mail, 'time' => $timee, 'ip' => $ip],
                 ];
 
                 is_array($plugin_run_result = Plugins::getInstance()->run('qr_insert_new_call', get_defined_vars()))
@@ -382,7 +393,7 @@ switch ($current_go_case) {
         //f2b3a82060a22a80283ed961d080b79f
         //aa92468375a456de21d7ca05ef945212
         //
-        $cd = preg_replace('/[^0-9a-z]/i', '', $SQL->escape(g('cd'))); // may.. will protect
+        $cd = preg_replace('/[^0-9a-z]/i', '', g('cd'));
 
         if (empty($cd)) {
             kleeja_err($lang['WRONG_URL']);
@@ -392,7 +403,8 @@ switch ($current_go_case) {
                 $query = [
                     'SELECT' => 'f.id, f.name, f.folder, f.size, f.type',
                     'FROM' => "{$dbprefix}files f",
-                    'WHERE' => "f.code_del='" . $cd . "'",
+                    'WHERE' => 'f.code_del = :code_del',
+                    'BIND' => ['code_del' => $cd],
                     'LIMIT' => '1',
                 ];
 
@@ -422,7 +434,8 @@ switch ($current_go_case) {
 
                         $query_del = [
                             'DELETE' => "{$dbprefix}files",
-                            'WHERE' => 'id=' . $row['id'],
+                            'WHERE' => 'id = :id',
+                            'BIND' => ['id' => $row['id']],
                         ];
 
                         is_array(
@@ -440,7 +453,8 @@ switch ($current_go_case) {
                             //update number of stats
                             $update_query = [
                                 'UPDATE' => "{$dbprefix}stats",
-                                'SET' => ($is_img ? 'imgs=imgs-1' : 'files=files-1') . ',sizes=sizes-' . $row['size'],
+                                'SET' => ($is_img ? 'imgs=imgs-1' : 'files=files-1') . ', sizes = sizes - :size',
+                                'BIND' => ['size' => $row['size']],
                             ];
 
                             $SQL->build($update_query);

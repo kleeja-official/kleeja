@@ -136,15 +136,20 @@ set_error_handler('kleeja_show_error');
 
 include PATH . 'includes/version.php';
 
+//the error handler is called directly, E_USER_ERROR is deprecated for trigger_error() since PHP 8.4
 if (version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
-    trigger_error(
-        'You are using an old PHP version (' . PHP_VERSION . '), to run Kleeja you should use PHP 8.0 or above.',
+    kleeja_show_error(
         E_USER_ERROR,
+        'You are using an old PHP version (' . PHP_VERSION . '), to run Kleeja you should use PHP 8.0 or above.',
+        __FILE__,
+        __LINE__,
     );
 } elseif (!class_exists('PDO') || !array_intersect(['mysql', 'sqlite'], PDO::getAvailableDrivers())) {
-    trigger_error(
-        'In order to use Kleeja, "pdo_mysql" or "pdo_sqlite" extension has to be installed on your server.',
+    kleeja_show_error(
         E_USER_ERROR,
+        'In order to use Kleeja, "pdo_mysql" or "pdo_sqlite" extension has to be installed on your server.',
+        __FILE__,
+        __LINE__,
     );
 }
 

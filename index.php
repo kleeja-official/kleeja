@@ -120,7 +120,8 @@ if ($show_online) {
     $query = [
         'SELECT' => 'u.name',
         'FROM' => "{$dbprefix}users u",
-        'WHERE' => "u.last_visit > $timeout2",
+        'WHERE' => 'u.last_visit > :time',
+        'BIND' => ['time' => $timeout2],
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_online_index_page', get_defined_vars()))

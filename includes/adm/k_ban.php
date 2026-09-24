@@ -83,7 +83,8 @@ if ($update_ban_content) {
     //update
     $update_query = [
         'UPDATE' => "{$dbprefix}stats",
-        'SET' => "ban='" . $SQL->escape(implode('|', $banned_items)) . "'",
+        'SET' => 'ban = :ban',
+        'BIND' => ['ban' => kleeja_html_encode(implode('|', $banned_items))],
     ];
 
     $SQL->build($update_query);

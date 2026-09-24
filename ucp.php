@@ -213,21 +213,17 @@ switch (g('go')) {
                 $ERRORS['lname'] = $lang['WRONG_NAME'];
             } elseif (
                 $SQL->num_rows(
-                    $SQL->query(
-                        "SELECT * FROM {$dbprefix}users WHERE clean_name='" .
-                            trim($SQL->escape($usrcp->cleanusername(p('lname')))) .
-                            "'",
-                    ),
+                    $SQL->query("SELECT * FROM {$dbprefix}users WHERE clean_name = :clean_name", [
+                        'clean_name' => trim(kleeja_html_encode($usrcp->cleanusername(p('lname')))),
+                    ]),
                 ) != 0
             ) {
                 $ERRORS['name_exists_before'] = $lang['EXIST_NAME'];
             } elseif (
                 $SQL->num_rows(
-                    $SQL->query(
-                        "SELECT * FROM {$dbprefix}users WHERE mail='" .
-                            strtolower(trim($SQL->escape(p('lmail')))) .
-                            "'",
-                    ),
+                    $SQL->query("SELECT * FROM {$dbprefix}users WHERE mail = :mail", [
+                        'mail' => strtolower(trim(kleeja_html_encode(p('lmail')))),
+                    ]),
                 ) != 0
             ) {
                 $ERRORS['mail_exists_before'] = $lang['EXIST_EMAIL'];
@@ -239,21 +235,28 @@ switch (g('go')) {
 
             //no errors, lets do process
             if (empty($ERRORS)) {
-                $name = (string) $SQL->escape(trim(p('lname')));
+                $name = kleeja_html_encode(trim(p('lname')));
                 $user_salt = (string) substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
-                $pass = (string) $usrcp->kleeja_hash_password($SQL->escape(trim(p('lpass'))) . $user_salt);
-                $mail = (string) strtolower(trim($SQL->escape(p('lmail'))));
+                //hash the same password text that the login checks
+                $pass = (string) $usrcp->kleeja_hash_password(trim(p('lpass')) . $user_salt);
+                $mail = strtolower(trim(kleeja_html_encode(p('lmail'))));
                 $session_id = (string) constant('KJ_SESSION');
                 $clean_name = (string) $usrcp->cleanusername($name);
 
                 $insert_query = [
                     'INSERT' => 'name ,password, password_salt ,mail, register_time, session_id, clean_name, group_id',
                     'INTO' => "{$dbprefix}users",
-                    'VALUES' =>
-                        "'$name', '$pass', '$user_salt', '$mail', " .
-                        time() .
-                        ", '$session_id','$clean_name', " .
-                        $config['default_group'],
+                    'VALUES' => ':name, :password, :salt, :mail, :time, :session_id, :clean_name, :group_id',
+                    'BIND' => [
+                        'name' => $name,
+                        'password' => $pass,
+                        'salt' => $user_salt,
+                        'mail' => $mail,
+                        'time' => time(),
+                        'session_id' => $session_id,
+                        'clean_name' => $clean_name,
+                        'group_id' => $config['default_group'],
+                    ],
                 ];
 
                 is_array(
@@ -275,7 +278,8 @@ switch (g('go')) {
                     //update number of stats
                     $update_query = [
                         'UPDATE' => "{$dbprefix}stats",
-                        'SET' => "users=users+1, lastuser='$name'",
+                        'SET' => 'users = users + 1, lastuser = :name',
+                        'BIND' => ['name' => $name],
                     ];
 
                     is_array(
@@ -384,7 +388,8 @@ switch (g('go')) {
         $query = [
             'SELECT' => 'f.id, f.name, f.real_filename, f.folder, f.type, f.uploads, f.time, f.size',
             'FROM' => "{$dbprefix}files f",
-            'WHERE' => 'f.user=' . $user_id,
+            'WHERE' => 'f.user = :user',
+            'BIND' => ['user' => $user_id],
             'ORDER BY' => 'f.id DESC',
         ];
 
@@ -431,7 +436,8 @@ switch (g('go')) {
 
             if (!ip('submit_all_files')) {
                 // in delete all files we do not need any limit;
-                $query['LIMIT'] = "$start, $perpage";
+                $query['LIMIT'] = ':start, :perpage';
+                $query['BIND'] += ['start' => $start, 'perpage' => $perpage];
             }
 
             is_array(
@@ -560,7 +566,8 @@ switch (g('go')) {
                 if (isset($ids) && !empty($ids)) {
                     $query_del = [
                         'DELETE' => "{$dbprefix}files",
-                        'WHERE' => 'id IN (' . implode(',', $ids) . ')',
+                        'WHERE' => 'id IN (:ids)',
+                        'BIND' => ['ids' => $ids],
                     ];
 
                     is_array(
@@ -574,7 +581,8 @@ switch (g('go')) {
                         //update number of stats
                         $update_query = [
                             'UPDATE' => "{$dbprefix}stats",
-                            'SET' => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                            'SET' => 'sizes = sizes - :sizes, files = files - :files, imgs = imgs - :imgs',
+                            'BIND' => ['sizes' => $sizes, 'files' => $files_num, 'imgs' => $imgs_num],
                         ];
 
                         $SQL->build($update_query);
@@ -592,7 +600,8 @@ switch (g('go')) {
                 if (isset($ids) && !empty($ids)) {
                     $query_del = [
                         'DELETE' => "{$dbprefix}files",
-                        'WHERE' => 'id IN (' . implode(',', $ids) . ')',
+                        'WHERE' => 'id IN (:ids)',
+                        'BIND' => ['ids' => $ids],
                     ];
 
                     is_array(
@@ -606,7 +615,8 @@ switch (g('go')) {
                         //update number of stats
                         $update_query = [
                             'UPDATE' => "{$dbprefix}stats",
-                            'SET' => "sizes=sizes-$sizes,files=files-$files_num, imgs=imgs-$imgs_num",
+                            'SET' => 'sizes = sizes - :sizes, files = files - :files, imgs = imgs - :imgs',
+                            'BIND' => ['sizes' => $sizes, 'files' => $files_num, 'imgs' => $imgs_num],
                         ];
 
                         $SQL->build($update_query);
@@ -729,11 +739,9 @@ switch (g('go')) {
                 //if email already exists
                 elseif (
                     $SQL->num_rows(
-                        $SQL->query(
-                            "SELECT * FROM {$dbprefix}users WHERE mail='" .
-                                strtolower(trim($SQL->escape(p('pmail')))) .
-                                "'",
-                        ),
+                        $SQL->query("SELECT * FROM {$dbprefix}users WHERE mail = :mail", [
+                            'mail' => strtolower(trim(kleeja_html_encode(p('pmail')))),
+                        ]),
                     ) != 0
                 ) {
                     $ERRORS['mail_exists_before'] = $lang['EXIST_EMAIL'];
@@ -749,25 +757,28 @@ switch (g('go')) {
             //no errors , do it
             if (empty($ERRORS)) {
                 $user_salt = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
-                $mail = $new_mail ? "mail='" . $SQL->escape(strtolower(trim(p('pmail')))) . "'" : '';
+                $mail = $new_mail ? 'mail = :mail' : '';
                 $showmyfile =
                     p('show_my_filecp', 'int') != $show_my_filecp
-                        ? ($mail == '' ? '' : ',') . "show_my_filecp='" . p('show_my_filecp', 'int') . "'"
+                        ? ($mail == '' ? '' : ', ') . 'show_my_filecp = :show_my_filecp'
                         : '';
                 $pass = !empty(p('ppass_new'))
-                    ? ($showmyfile != '' || $mail != '' ? ',' : '') .
-                        "password='" .
-                        $usrcp->kleeja_hash_password($SQL->escape(p('ppass_new')) . $user_salt) .
-                        "', password_salt='" .
-                        $user_salt .
-                        "'"
+                    ? ($showmyfile != '' || $mail != '' ? ', ' : '') . 'password = :password, password_salt = :salt'
                     : '';
                 $id = (int) $usrcp->id();
 
                 $update_query = [
                     'UPDATE' => "{$dbprefix}users",
                     'SET' => $mail . $showmyfile . $pass,
-                    'WHERE' => 'id=' . $id,
+                    'WHERE' => 'id = :id',
+                    'BIND' => [
+                        'mail' => kleeja_html_encode(strtolower(trim(p('pmail')))),
+                        'show_my_filecp' => p('show_my_filecp', 'int'),
+                        //hash the same password text that the login checks
+                        'password' => $pass ? $usrcp->kleeja_hash_password(p('ppass_new') . $user_salt) : '',
+                        'salt' => $user_salt,
+                        'id' => $id,
+                    ],
                 ];
 
                 is_array(
@@ -832,13 +843,10 @@ switch (g('go')) {
                 big_error('No hash key', 'This is not a good link ... try again!');
             }
 
-            $result = $SQL->query(
-                "SELECT new_password FROM {$dbprefix}users WHERE hash_key='" .
-                    $SQL->escape($h_key) .
-                    "' AND id=" .
-                    $u_id .
-                    '',
-            );
+            $result = $SQL->query("SELECT new_password FROM {$dbprefix}users WHERE hash_key = :hash_key AND id = :id", [
+                'hash_key' => $h_key,
+                'id' => $u_id,
+            ]);
 
             if ($SQL->num_rows($result)) {
                 $npass = $SQL->fetch_array($result);
@@ -846,8 +854,9 @@ switch (g('go')) {
                 //password now will be same as new password
                 $update_query = [
                     'UPDATE' => "{$dbprefix}users",
-                    'SET' => "password = '" . $npass . "', new_password = '', hash_key = ''",
-                    'WHERE' => 'id=' . $u_id,
+                    'SET' => "password = :password, new_password = '', hash_key = ''",
+                    'WHERE' => 'id = :id',
+                    'BIND' => ['password' => $npass, 'id' => $u_id],
                 ];
 
                 is_array(
@@ -926,9 +935,9 @@ switch (g('go')) {
                 $ERRORS['rmail'] = $lang['WRONG_EMAIL'];
             } elseif (
                 $SQL->num_rows(
-                    $SQL->query(
-                        "SELECT name FROM {$dbprefix}users WHERE mail='" . $SQL->escape(strtolower(p('rmail'))) . "'",
-                    ),
+                    $SQL->query("SELECT name FROM {$dbprefix}users WHERE mail = :mail", [
+                        'mail' => kleeja_html_encode(strtolower(p('rmail'))),
+                    ]),
                 ) == 0
             ) {
                 $ERRORS['no_rmail'] = $lang['WRONG_DB_EMAIL'];
@@ -943,7 +952,8 @@ switch (g('go')) {
                 $query = [
                     'SELECT' => 'u.*',
                     'FROM' => "{$dbprefix}users u",
-                    'WHERE' => "u.mail='" . $SQL->escape(strtolower(trim(p('rmail')))) . "'",
+                    'WHERE' => 'u.mail = :mail',
+                    'BIND' => ['mail' => kleeja_html_encode(strtolower(trim(p('rmail'))))],
                 ];
 
                 is_array(
@@ -964,7 +974,7 @@ switch (g('go')) {
                 }
 
                 $hash_key = md5($newpass . time());
-                $pass = (string) $usrcp->kleeja_hash_password($SQL->escape($newpass) . $row['password_salt']);
+                $pass = (string) $usrcp->kleeja_hash_password($newpass . $row['password_salt']);
                 $to = $row['mail'];
                 $subject = $lang['GET_LOSTPASS'] . ':' . $config['sitename'];
                 $activation_link =
@@ -984,8 +994,9 @@ switch (g('go')) {
 
                 $update_query = [
                     'UPDATE' => "{$dbprefix}users",
-                    'SET' => "new_password = '" . $SQL->escape($pass) . "', hash_key = '" . $hash_key . "'",
-                    'WHERE' => 'id=' . $row['id'],
+                    'SET' => 'new_password = :new_password, hash_key = :hash_key',
+                    'WHERE' => 'id = :id',
+                    'BIND' => ['new_password' => $pass, 'hash_key' => $hash_key, 'id' => $row['id']],
                 ];
 
                 is_array(

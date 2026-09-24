@@ -391,6 +391,14 @@ function kleeja_debug(): void
                 $val[0] .
                 '';
             echo '</textarea>    <br />';
+
+            //values of the placeholders, they are kept only in DEV_STAGE
+            if (!empty($val[2])) {
+                echo 'Values :' .
+                    htmlspecialchars(json_encode($val[2], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE)) .
+                    '<br />';
+            }
+
             echo 'Duration :' . $val[1] . '';
             echo '</fieldset>';
             echo '<br /><br />';

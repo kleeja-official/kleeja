@@ -76,9 +76,11 @@ class usrcp
         ];
 
         if ($hashed) {
-            $query['WHERE'] = 'id=' . intval($name) . " and password='" . $SQL->escape($pass) . "'";
+            $query['WHERE'] = 'id = :id AND password = :password';
+            $query['BIND'] = ['id' => intval($name), 'password' => kleeja_html_encode($pass)];
         } else {
-            $query['WHERE'] = "clean_name='" . $SQL->real_escape($this->cleanusername($name)) . "'";
+            $query['WHERE'] = 'clean_name = :clean_name';
+            $query['BIND'] = ['clean_name' => $this->cleanusername($name)];
         }
 
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_usrdata_n_usr_class', get_defined_vars()))
@@ -118,8 +120,9 @@ class usrcp
                         ////update now !!
                         $update_query = [
                             'UPDATE' => "{$dbprefix}users",
-                            'SET' => "password='" . $new_password . "' ,password_salt='" . $new_salt . "'",
-                            'WHERE' => 'id=' . intval($row['id']),
+                            'SET' => 'password = :password, password_salt = :salt',
+                            'WHERE' => 'id = :id',
+                            'BIND' => ['password' => $new_password, 'salt' => $new_salt, 'id' => intval($row['id'])],
                         ];
 
                         $SQL->build($update_query);
@@ -189,8 +192,9 @@ class usrcp
                 if (empty($row['last_visit']) || time() - $row['last_visit'] > 60) {
                     $update_last_visit = [
                         'UPDATE' => "{$dbprefix}users",
-                        'SET' => 'last_visit=' . time(),
-                        'WHERE' => 'id=' . intval($row['id']),
+                        'SET' => 'last_visit = :time',
+                        'WHERE' => 'id = :id',
+                        'BIND' => ['time' => time(), 'id' => intval($row['id'])],
                     ];
 
                     $SQL->build($update_last_visit);
@@ -234,7 +238,8 @@ class usrcp
         $query_name = [
             'SELECT' => $type,
             'FROM' => "{$dbprefix}users",
-            'WHERE' => 'id=' . intval($user_id),
+            'WHERE' => 'id = :id',
+            'BIND' => ['id' => intval($user_id)],
         ];
 
         is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_userdata_in_usrclass', get_defined_vars()))

@@ -20,7 +20,8 @@ class KleejaDatabase
         '/VARCHAR\s?(\\([0-9]+\\))?/i' => 'TEXT',
         '/COLLATE\s+([a-z0-9_]+)/i' => '',
         '/(TINY|SMALL|MEDIUM|BIG)?INT\s?(\([0-9]+\))?\s?(UNSIGNED)?/i' => 'INTEGER ',
-        '/(TINY|MEDIUM|LONG)?TEXT/i' => 'TEXT',
+        //not a column named `text`
+        '/\b(TINY|MEDIUM|LONG)?TEXT\b(?!`)/i' => 'TEXT',
         '/KEY\s`?([a-z0-9_]+)`?\s\(`?([a-z0-9_]+)`?(\([0-9]+\))?\)\s?,?/i' => '',
         '/\)(\s{0,4}ENGINE=([a-z0-9_]+))?(\s{0,4}DEFAULT)?(\s{0,4}CHARSET=([a-z0-9_]+))?(\s{0,4}COLLATE=([a-z0-9_]+))?(\s{0,4}AUTOINCREMENT)?(\s{0,4}=\s?1)?(\s{0,4};)?/i' =>
             ')',
@@ -89,6 +90,8 @@ class KleejaDatabase
                 $options[
                     PHP_VERSION_ID >= 80400 ? Pdo\Mysql::ATTR_MULTI_STATEMENTS : PDO::MYSQL_ATTR_MULTI_STATEMENTS
                 ] = false;
+                //prepared by the server, so the values are sent apart from the query, not quoted into it
+                $options[PDO::ATTR_EMULATE_PREPARES] = false;
             }
 
             $this->pdo = new PDO($dsn, $this->db_username, $this->db_password, $options);
@@ -150,7 +153,9 @@ class KleejaDatabase
     }
 
     /**
-     * execute a query, values of $params are bound to its ? or :name placeholders
+     * execute a query, values of $params are bound to its :name (or ?) placeholders,
+     * and an array value is bound as a list, so 'id IN (:ids)' with ['ids' => [1, 2]] becomes 'id IN (:ids_0, :ids_1)',
+     * see bind_names() for the rest
      *
      * @param  string            $query
      * @param  array             $params
@@ -170,17 +175,38 @@ class KleejaDatabase
             $query = preg_replace(array_keys(self::SQLITE_TYPES), self::SQLITE_TYPES, $query);
         }
 
+        [$query, $params] = $this->bind_names($query, $params);
+
         $start = get_microtime();
 
         try {
             $this->result = $this->pdo->prepare($query);
-            $this->result->execute($params);
+
+            foreach ($params as $name => $value) {
+                //numbers are bound as numbers, so they work where a text does not, like LIMIT
+                $this->result->bindValue(
+                    is_int($name) ? $name + 1 : $name,
+                    $value,
+                    match (true) {
+                        is_int($value), is_bool($value) => PDO::PARAM_INT,
+                        $value === null => PDO::PARAM_NULL,
+                        default => PDO::PARAM_STR,
+                    },
+                );
+            }
+
+            $this->result->execute();
         } catch (PDOException $e) {
             $this->result = null;
             $this->set_error($e);
         }
 
-        $this->debugr[$this->query_num + 1] = [$query, sprintf('%.5f', get_microtime() - $start)];
+        //the values are kept only while developing, they can be private like passwords hashes
+        $this->debugr[$this->query_num + 1] = [
+            $query,
+            sprintf('%.5f', get_microtime() - $start),
+            defined('DEV_STAGE') ? $params : [],
+        ];
 
         if (!$this->result) {
             $this->error_msg('Error In query');
@@ -195,13 +221,70 @@ class KleejaDatabase
     }
 
     /**
-     * build structured query ['SELECT' => ..., 'FROM' => ..., ...]
+     * match the :name placeholders of a query with the values of $params, texts between quotes are skipped:
+     * - an array value becomes a list of placeholders, and an empty list becomes a subquery without rows,
+     *   so 'IN (:ids)' matches nothing and 'NOT IN (:ids)' matches all
+     * - a placeholder used again gets a numbered copy, server prepared statements of MySQL can not use a name twice
+     * - values of placeholders not in the query are dropped, like when a plugin hook replaces the WHERE
+     *
+     * @param  string $query
+     * @param  array  $params
+     * @return array  [the query, values by their placeholders]
+     */
+    private function bind_names(string $query, array $params): array
+    {
+        //only the named placeholders, ? placeholders are bound by their order as they are
+        if (!array_filter(array_keys($params), 'is_string')) {
+            return [$query, $params];
+        }
+
+        $bound = $used = [];
+
+        $query = preg_replace_callback(
+            //quoted texts and `names` are matched first, so what looks like a placeholder inside them is kept as it is
+            '/\'(?:[^\'\\\\]++|\\\\.|\'\')*\'|"(?:[^"\\\\]++|\\\\.|"")*"|`[^`]*`|(?<!:):([a-z_][a-z0-9_]*)/i',
+            function (array $match) use ($params, &$bound, &$used): string {
+                $name = $match[1] ?? '';
+
+                if ($name === '' || !array_key_exists($name, $params)) {
+                    return $match[0];
+                }
+
+                $used[$name] = ($used[$name] ?? -1) + 1;
+                $base = $used[$name] ? "{$name}__{$used[$name]}" : $name;
+
+                if (!is_array($params[$name])) {
+                    $bound[$base] = $params[$name];
+
+                    return ":{$base}";
+                }
+
+                if (!$params[$name]) {
+                    return 'SELECT NULL WHERE 1 = 0';
+                }
+
+                $names = [];
+
+                foreach (array_values($params[$name]) as $i => $item) {
+                    $bound[($names[] = "{$base}_{$i}")] = $item;
+                }
+
+                return ':' . implode(', :', $names);
+            },
+            $query,
+        );
+
+        return [$query, $bound];
+    }
+
+    /**
+     * build structured query ['SELECT' => ..., 'FROM' => ..., 'WHERE' => 'id = :id', 'BIND' => ['id' => $id]],
+     * BIND has the values of the placeholders, see query()
      *
      * @param  array             $query
-     * @param  array             $params values of the query placeholders
      * @return PDOStatement|false
      */
-    public function build(array $query, array $params = []): PDOStatement|false
+    public function build(array $query): PDOStatement|false
     {
         $sql = '';
         $where = empty($query['WHERE']) ? '' : ' WHERE ' . $query['WHERE'];
@@ -229,7 +312,7 @@ class KleejaDatabase
             $sql = "DELETE FROM {$query['DELETE']}{$where}";
         }
 
-        return $this->query($sql, $params);
+        return $this->query($sql, $query['BIND'] ?? []);
     }
 
     /**
@@ -306,6 +389,8 @@ class KleejaDatabase
     /**
      * escape a text for HTML then for SQL
      *
+     * @deprecated bind the values with BIND of build() or $params of query(), and use kleeja_html_encode() for HTML,
+     *             it is kept for the plugins that still put the values in their queries
      * @param  string|null $msg
      * @return string
      */
@@ -317,6 +402,8 @@ class KleejaDatabase
     /**
      * escape a text for SQL, to be put between single quotes
      *
+     * @deprecated bind the values with BIND of build() or $params of query(),
+     *             it is kept for the plugins that still put the values in their queries
      * @param  string $msg
      * @return string
      */
@@ -398,22 +485,27 @@ class KleejaDatabase
 
         global $config;
 
-        //Kleeja error handler shows it in the error page as a text, then stops the script
-        trigger_error(
-            implode(
-                "\n",
-                array_filter([
-                    "{$msg}: [{$error_no}] {$error_msg}",
-                    $error_sql === '' ? '' : "Query: {$error_sql}",
-                    //is this error related to updating?
-                    str_contains($error_msg, 'Unknown column') || str_contains($error_msg, 'no such')
-                        ? 'Your Kleeja database might be old, try to update it now from: ' .
-                            rtrim($config['siteurl'] ?? '', '/') .
-                            "/install\nIf this error happened after installing a plugin, add define('STOP_PLUGINS', true); to end of config.php file."
-                        : '',
-                ]),
-            ),
-            E_USER_ERROR,
+        $message = implode(
+            "\n",
+            array_filter([
+                "{$msg}: [{$error_no}] {$error_msg}",
+                $error_sql === '' ? '' : "Query: {$error_sql}",
+                //is this error related to updating?
+                str_contains($error_msg, 'Unknown column') || str_contains($error_msg, 'no such')
+                    ? 'Your Kleeja database might be old, try to update it now from: ' .
+                        rtrim($config['siteurl'] ?? '', '/') .
+                        "/install\nIf this error happened after installing a plugin, add define('STOP_PLUGINS', true); to end of config.php file."
+                    : '',
+            ]),
         );
+
+        //Kleeja error handler shows it in the error page as a text, then stops the script,
+        //it is called directly, E_USER_ERROR is deprecated for trigger_error() since PHP 8.4
+        if (function_exists('kleeja_show_error')) {
+            kleeja_show_error(E_USER_ERROR, $message, __FILE__, __LINE__);
+        }
+
+        //no Kleeja error handler, stop the script like the E_USER_ERROR did
+        throw new RuntimeException($message);
     }
 }

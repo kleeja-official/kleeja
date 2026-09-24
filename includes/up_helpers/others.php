@@ -304,7 +304,8 @@ function user_is_flooding(int $user_id = -1): bool
     $query = [
         'SELECT' => 'f.time',
         'FROM' => "{$dbprefix}files f",
-        'WHERE' => 'f.time >= ' . $time . ' AND f.user_ip = \'' . $SQL->escape(get_ip()) . '\'',
+        'WHERE' => 'f.time >= :time AND f.user_ip = :ip',
+        'BIND' => ['time' => $time, 'ip' => kleeja_html_encode(get_ip())],
     ];
 
     if ($SQL->num_rows($SQL->build($query))) {

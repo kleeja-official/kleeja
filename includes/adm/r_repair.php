@@ -100,7 +100,8 @@ switch ($case):
 
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => 'files=' . $files_number . ', sizes=' . $files_sizes,
+            'SET' => 'files = :files, sizes = :sizes',
+            'BIND' => ['files' => $files_number, 'sizes' => $files_sizes],
         ];
 
         if ($SQL->build($update_query)) {
@@ -133,7 +134,8 @@ switch ($case):
 
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => 'users=' . $user_number,
+            'SET' => 'users = :users',
+            'BIND' => ['users' => $user_number],
         ];
 
         $result = $SQL->build($update_query);

@@ -13,7 +13,7 @@ if (!defined('IN_ADMIN')) {
 }
 
 //number of images per page
-$files_acp_perpage = defined('ACP_FILES_PER_PAGE') ? ACP_FILES_PER_PAGE : 20;
+$files_acp_perpage = defined('ACP_FILES_PER_PAGE') ? (int) ACP_FILES_PER_PAGE : 20;
 
 //display
 $stylee = 'admin_files';
@@ -62,7 +62,8 @@ if (ip('submit')) {
         $query = [
             'SELECT' => 'f.id, f.name, f.folder, f.size, f.type',
             'FROM' => "{$dbprefix}files f",
-            'WHERE' => 'f.id = ' . intval($id),
+            'WHERE' => 'f.id = :id',
+            'BIND' => ['id' => intval($id)],
         ];
 
         $result = $SQL->build($query);
@@ -99,7 +100,8 @@ if (ip('submit')) {
     if (isset($ids) && sizeof($ids)) {
         $query_del = [
             'DELETE' => "{$dbprefix}files",
-            'WHERE' => '`id` IN (' . implode(',', $ids) . ')',
+            'WHERE' => '`id` IN (:ids)',
+            'BIND' => ['ids' => $ids],
         ];
 
         $SQL->build($query_del);
@@ -107,7 +109,8 @@ if (ip('submit')) {
         //update number of stats
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => "sizes=sizes-$sizes, files=files-$files_num, imgs=imgs-$imgs_num",
+            'SET' => 'sizes = sizes - :sizes, files = files - :files, imgs = imgs - :imgs',
+            'BIND' => ['sizes' => $sizes, 'files' => $files_num, 'imgs' => $imgs_num],
         ];
 
         $SQL->build($update_query);
@@ -143,7 +146,7 @@ if (ip('submit')) {
             kleeja_admin_err($lang['ADMIN_DELETE_FILES_NOF']);
         }
 
-        $query['WHERE'] = build_search_query(
+        [$query['WHERE'], $query['BIND']] = build_search_query(
             unserialize(htmlspecialchars_decode($filter['filter_value']), ['allowed_classes' => false]),
         );
 
@@ -184,7 +187,8 @@ if (ip('submit')) {
             //update number of stats
             $update_query = [
                 'UPDATE' => "{$dbprefix}stats",
-                'SET' => "sizes=sizes-$sizes, files=files-$files_num, imgs=imgs-$imgs_num",
+                'SET' => 'sizes = sizes - :sizes, files = files - :files, imgs = imgs - :imgs',
+                'BIND' => ['sizes' => (int) $sizes, 'files' => $files_num, 'imgs' => $imgs_num],
             ];
 
             $SQL->build($update_query);
@@ -196,7 +200,8 @@ if (ip('submit')) {
             //delete all files in just one query
             $query_del = [
                 'DELETE' => "{$dbprefix}files",
-                'WHERE' => '`id` IN (' . implode(',', $ids) . ')',
+                'WHERE' => '`id` IN (:ids)',
+                'BIND' => ['ids' => $ids],
             ];
 
             $SQL->build($query_del);
@@ -233,11 +238,12 @@ if (ip('submit')) {
         $filter = get_filter(g('search_id'), 'file_search', false, 'filter_uid');
         $deletelink = basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php') . '&deletefiles=' . g('search_id');
         $is_search = true;
-        $query['WHERE'] = build_search_query(
+        [$query['WHERE'], $query['BIND']] = build_search_query(
             unserialize(htmlspecialchars_decode($filter['filter_value']), ['allowed_classes' => false]),
         );
     } elseif (isset($_REQUEST['last_visit'])) {
-        $query['WHERE'] = 'f.time > ' . intval($_REQUEST['last_visit']);
+        $query['WHERE'] = 'f.time > :last_visit';
+        $query['BIND'] = ['last_visit' => intval($_REQUEST['last_visit'])];
     }
 
     //to-be-deleted
@@ -245,19 +251,13 @@ if (ip('submit')) {
 
     if (
         isset($_REQUEST['order_by']) &&
-        in_array($_REQUEST['order_by'], [
-            'real_filename',
-            'size',
-            'user',
-            'user_ip',
-            'uploads',
-            'time',
-            'type',
-            'folder',
-            'report',
-        ])
+        in_array(
+            $_REQUEST['order_by'],
+            ['real_filename', 'size', 'user', 'user_ip', 'uploads', 'time', 'type', 'folder', 'report'],
+            true,
+        )
     ) {
-        $query['ORDER BY'] = 'f.' . $SQL->escape($_REQUEST['order_by']);
+        $query['ORDER BY'] = 'f.' . $_REQUEST['order_by'];
     } else {
         $do_not_query_total_files = true;
     }
@@ -265,11 +265,8 @@ if (ip('submit')) {
     if (!ig('search_id')) {
         //display files or display pics and files only in search
         $img_types = ['gif', 'jpg', 'png', 'bmp', 'jpeg', 'GIF', 'JPG', 'PNG', 'BMP', 'JPEG'];
-        $query['WHERE'] =
-            (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') .
-            "f.type NOT IN ('" .
-            implode("', '", $img_types) .
-            "')";
+        $query['WHERE'] = (empty($query['WHERE']) ? '' : $query['WHERE'] . ' AND ') . 'f.type NOT IN (:img_types)';
+        $query['BIND']['img_types'] = $img_types;
     } else {
         $do_not_query_total_files = false;
     }
@@ -300,7 +297,9 @@ if (ip('submit')) {
 
     if ($nums_rows > 0) {
         $query['SELECT'] = 'f.*' . ((int) $config['user_system'] == 1 ? ', u.name AS username' : '');
-        $query['LIMIT'] = "$start, $files_acp_perpage";
+        $query['LIMIT'] = ':start, :perpage';
+        $query['BIND']['start'] = $start;
+        $query['BIND']['perpage'] = $files_acp_perpage;
         $result = $SQL->build($query);
         $sizes = false;
         $num = 0;

@@ -98,7 +98,7 @@ if ($current_smt == 'check') {
 
     $data = serialize($data);
 
-    update_config('new_version', $SQL->real_escape($data), escape: false);
+    update_config('new_version', $data, escape: false);
     delete_cache('data_config');
 
     $adminAjaxContent = $error . ':::' . $text;
@@ -322,11 +322,9 @@ elseif ($current_smt == 'update3') {
                         }
                     }
 
-                    $SQL->query(
-                        "UPDATE `{$dbprefix}config` SET `value` = '" .
-                            $db_update_version .
-                            "' WHERE `name` = 'db_version'",
-                    );
+                    $SQL->query("UPDATE `{$dbprefix}config` SET `value` = :version WHERE `name` = 'db_version'", [
+                        'version' => $db_update_version,
+                    ]);
                 }
             }
         }

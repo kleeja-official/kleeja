@@ -13,7 +13,7 @@ if (!defined('IN_ADMIN')) {
 }
 
 //number of images per page
-$images_acp_perpage = defined('ACP_IMAGES_PER_PAGE') ? ACP_IMAGES_PER_PAGE : 20;
+$images_acp_perpage = defined('ACP_IMAGES_PER_PAGE') ? (int) ACP_IMAGES_PER_PAGE : 20;
 
 //display
 $stylee = 'admin_img';
@@ -50,7 +50,8 @@ if (ip('submit')) {
         $query = [
             'SELECT' => '*',
             'FROM' => "{$dbprefix}files",
-            'WHERE' => '`id` = ' . intval($id),
+            'WHERE' => '`id` = :id',
+            'BIND' => ['id' => intval($id)],
         ];
 
         $result = $SQL->build($query);
@@ -79,7 +80,8 @@ if (ip('submit')) {
     if (isset($ids) && sizeof($ids)) {
         $query_del = [
             'DELETE' => "{$dbprefix}files",
-            'WHERE' => '`id` IN (' . implode(',', $ids) . ')',
+            'WHERE' => '`id` IN (:ids)',
+            'BIND' => ['ids' => $ids],
         ];
 
         $SQL->build($query_del);
@@ -87,7 +89,8 @@ if (ip('submit')) {
         //update number of stats
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => "sizes=sizes-$sizes, imgs=imgs-$num",
+            'SET' => 'sizes = sizes - :sizes, imgs = imgs - :imgs',
+            'BIND' => ['sizes' => $sizes, 'imgs' => $num],
         ];
 
         $SQL->build($update_query);
@@ -130,18 +133,14 @@ if (ip('submit')) {
 
     $img_types = ['gif', 'jpg', 'png', 'bmp', 'jpeg', 'GIF', 'JPG', 'PNG', 'BMP', 'JPEG'];
 
-    //
-    // There is a bug with IN statement in MySQL and they said it will solved at 6.0 version
-    // forums.mysql.com/read.php?10,243691,243888#msg-243888
-    // $query['WHERE']    = "f.type IN ('" . implode("', '", $img_types) . "')";
-    //
-
-    $query['WHERE'] = "(f.type = '" . implode("' OR f.type = '", $img_types) . "')";
+    $query['WHERE'] = 'f.type IN (:img_types)';
+    $query['BIND'] = ['img_types' => $img_types];
 
     $do_not_query_total_files = false;
 
     if (ig('last_visit')) {
-        $query['WHERE'] .= ' AND f.time > ' . g('last_visit', 'int');
+        $query['WHERE'] .= ' AND f.time > :last_visit';
+        $query['BIND']['last_visit'] = g('last_visit', 'int');
     } else {
         $do_not_query_total_files = true;
     }
@@ -170,7 +169,8 @@ if (ip('submit')) {
 
     if ($nums_rows > 0) {
         $query['SELECT'] = 'f.*' . ((int) $config['user_system'] == 1 ? ', u.name AS username' : '');
-        $query['LIMIT'] = "$start, $images_acp_perpage";
+        $query['LIMIT'] = ':start, :perpage';
+        $query['BIND'] += ['start' => $start, 'perpage' => $images_acp_perpage];
         $result = $SQL->build($query);
 
         $tdnum = $num = 0;

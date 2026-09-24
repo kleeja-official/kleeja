@@ -400,7 +400,8 @@ if ($cf_num > 3) {
     if ($cf_num > 10) {
         $query_del = [
             'DELETE' => "{$dbprefix}filters",
-            'WHERE' => "filter_type = 'stats_for_acp' AND filter_time < " . (time() - 3600 * 24 * 10),
+            'WHERE' => "filter_type = 'stats_for_acp' AND filter_time < :time",
+            'BIND' => ['time' => time() - 3600 * 24 * 10],
         ];
         $SQL->build($query_del);
     }

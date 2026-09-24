@@ -91,11 +91,12 @@ $query = [
     'ORDER BY' => 'display_order, type ASC',
 ];
 
-$CONFIGEXTEND = $SQL->escape($current_smt);
+$CONFIGEXTEND = kleeja_html_encode($current_smt);
 $CONFIGEXTENDLANG = $go_menu[$current_smt]['name'];
 
 if ($current_smt != 'all') {
-    $query['WHERE'] = "type = '" . $SQL->escape($current_smt) . "' OR type = ''";
+    $query['WHERE'] = "type = :type OR type = ''";
+    $query['BIND'] = ['type' => kleeja_html_encode($current_smt)];
 
     if ($current_smt == 'interface') {
         $query['WHERE'] .= " OR name='language'";
@@ -233,7 +234,7 @@ while ($row = $SQL->fetch_array($result)) {
                 }
             }
         } elseif ($row['name'] == 'language') {
-            $got_lang = preg_replace('[^a-zA-Z0-9]', '', $new[$row['name']]);
+            $got_lang = preg_replace('/[^a-zA-Z0-9]/', '', $new[$row['name']]);
 
             //all groups
             foreach ($d_groups as $group_id => $group_info) {
@@ -249,13 +250,10 @@ while ($row = $SQL->fetch_array($result)) {
 
         $update_query = [
             'UPDATE' => "{$dbprefix}config",
-            'SET' => "value='" . $SQL->escape($new[$row['name']]) . "'",
-            'WHERE' => "name='" . $row['name'] . "'",
+            'SET' => 'value = :value',
+            'WHERE' => 'name = :name',
+            'BIND' => ['value' => kleeja_html_encode($new[$row['name']]), 'name' => $row['name']],
         ];
-
-        if ($current_smt != 'all') {
-            $query['WHERE'] .= " AND type = '" . $SQL->escape($current_smt) . "'";
-        }
 
         $SQL->build($update_query);
     }

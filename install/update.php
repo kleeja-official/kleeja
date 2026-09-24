@@ -115,9 +115,9 @@ switch (g('step', default: 'action_file')) {
                     }
                 }
 
-                $sql =
-                    "UPDATE `{$dbprefix}config` SET `value` = '" . UPDATE_DB_VERSION . "' WHERE `name` = 'db_version'";
-                $SQL->query($sql);
+                $SQL->query("UPDATE `{$dbprefix}config` SET `value` = :version WHERE `name` = 'db_version'", [
+                    'version' => UPDATE_DB_VERSION,
+                ]);
             }
         }
 

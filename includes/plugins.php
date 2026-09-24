@@ -135,11 +135,14 @@ class Plugins
                     //update current plugin version
                     $update_query = [
                         'UPDATE' => "{$dbprefix}plugins",
-                        'SET' =>
-                            "plg_ver='" .
-                            $SQL->escape($kleeja_plugin[$plugin_name]['information']['plugin_version']) .
-                            "'",
-                        'WHERE' => "plg_name='" . $SQL->escape($plugin_name) . "'",
+                        'SET' => 'plg_ver = :version',
+                        'WHERE' => 'plg_name = :name',
+                        'BIND' => [
+                            'version' => kleeja_html_encode(
+                                $kleeja_plugin[$plugin_name]['information']['plugin_version'],
+                            ),
+                            'name' => kleeja_html_encode($plugin_name),
+                        ],
                     ];
 
                     $SQL->build($update_query);

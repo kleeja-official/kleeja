@@ -203,15 +203,14 @@ SOFTWARE.';
 
             $user_salt = substr(base64_encode(pack('H*', sha1(mt_rand()))), 0, 7);
             $user_pass = $usrcp->kleeja_hash_password(p('password') . $user_salt);
-            $user_name = $SQL->escape(p('username'));
-            $user_mail = $SQL->escape(p('email'));
-            $config_sitename = $SQL->escape(p('sitename'));
-            $config_siteurl = $SQL->escape(p('siteurl'));
-            $config_sitemail = $SQL->escape(p('sitemail'));
-            $config_time_zone = $SQL->escape(p('time_zone'));
-            //$config_style        = ip('style') ? $SQL->escape(p('style')) : '';
+            $user_name = kleeja_html_encode(p('username'));
+            $user_mail = kleeja_html_encode(p('email'));
+            $config_sitename = kleeja_html_encode(p('sitename'));
+            $config_siteurl = kleeja_html_encode(p('siteurl'));
+            $config_sitemail = kleeja_html_encode(p('sitemail'));
+            $config_time_zone = kleeja_html_encode(p('time_zone'));
             $config_urls_type = in_array(p('urls_type'), ['id', 'filename', 'direct']) ? p('urls_type') : 'id';
-            $clean_name = $usrcp->cleanusername($SQL->escape($user_name));
+            $clean_name = $usrcp->cleanusername(kleeja_html_encode($user_name));
 
             /// ok .. we will get sqls now ..
             include 'includes/install_sqls.php';
@@ -232,7 +231,7 @@ SOFTWARE.';
                     continue;
                 }
 
-                if ($SQL->query($sql_content)) {
+                if ($SQL->query($sql_content, $install_params[$name] ?? [])) {
                     if ($name == 'call') {
                         $sqls_done[] = $lang['INST_CRT_CALL'];
                     } elseif ($name == 'reports') {
@@ -274,9 +273,9 @@ SOFTWARE.';
                         $cn[6] = 0;
                     }
 
-                    $sql = "INSERT INTO `{$dbprefix}config` (`name`, `value`, `option`, `display_order`, `type`, `plg_id`, `dynamic`) VALUES ('$cn[0]', '$cn[1]', '$cn[2]', '$cn[3]', '$cn[4]', '$cn[5]', '$cn[6]');";
+                    $sql = "INSERT INTO `{$dbprefix}config` (`name`, `value`, `option`, `display_order`, `type`, `plg_id`, `dynamic`) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
-                    if (!$SQL->query($sql)) {
+                    if (!$SQL->query($sql, array_slice($cn, 0, 7))) {
                         $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
                         $sql_err[] = $lang['INST_SQL_ERR'] . ' : [configs_values] ' . $cn;
                         $err++;
@@ -289,15 +288,9 @@ SOFTWARE.';
                         continue;
                     }
 
-                    $itxt = '';
+                    $sql = "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) VALUES (1, :name, :value), (2, :name, :value), (3, :name, :value);";
 
-                    foreach ([1, 2, 3] as $im) {
-                        $itxt .= ($itxt == '' ? '' : ',') . "($im, '$cn[0]', '$cn[1]')";
-                    }
-
-                    $sql = "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) VALUES " . $itxt . ';';
-
-                    if (!$SQL->query($sql)) {
+                    if (!$SQL->query($sql, ['name' => $cn[0], 'value' => $cn[1]])) {
                         $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
                         $sql_err[] = $lang['INST_SQL_ERR'] . ' : [groups_configs_values] ' . $cn;
                         $err++;
@@ -307,14 +300,16 @@ SOFTWARE.';
                 //add exts
                 foreach ($ext_values as $gid => $exts) {
                     $itxt = '';
+                    $params = [];
 
                     foreach ($exts as $t => $v) {
-                        $itxt .= ($itxt == '' ? '' : ',') . "('$t', $gid, $v)";
+                        $itxt .= ($itxt == '' ? '' : ',') . '(?, ?, ?)';
+                        array_push($params, $t, $gid, $v);
                     }
 
                     $sql = "INSERT INTO `{$dbprefix}groups_exts` (`ext`, `group_id`, `size`) VALUES " . $itxt . ';';
 
-                    if (!$SQL->query($sql)) {
+                    if (!$SQL->query($sql, $params)) {
                         $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
                         $sql_err[] = $lang['INST_SQL_ERR'] . ' : [ext_values] ' . $gid;
                         $err++;
@@ -325,16 +320,18 @@ SOFTWARE.';
                 foreach ($acls_values as $cn => $ct) {
                     $it = 1;
                     $itxt = '';
+                    $params = [];
 
                     foreach ($ct as $ctk) {
-                        $itxt .= ($itxt == '' ? '' : ',') . "('$cn', '$it', '$ctk')";
+                        $itxt .= ($itxt == '' ? '' : ',') . '(?, ?, ?)';
+                        array_push($params, $cn, $it, $ctk);
                         $it++;
                     }
 
                     $sql =
                         "INSERT INTO `{$dbprefix}groups_acl` (`acl_name`, `group_id`, `acl_can`) VALUES " . $itxt . ';';
 
-                    if (!$SQL->query($sql)) {
+                    if (!$SQL->query($sql, $params)) {
                         $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
                         $sql_err[] = $lang['INST_SQL_ERR'] . ' : [acl_values] ' . $cn;
                         $err++;

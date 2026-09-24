@@ -61,7 +61,8 @@ $query = [
 ];
 
 if ($current_smt == 'show_h24') {
-    $query['WHERE'] = 'r.time > ' . intval(time() - 3600 * 24);
+    $query['WHERE'] = 'r.time > :time';
+    $query['BIND'] = ['time' => time() - 3600 * 24];
 }
 
 $result = $SQL->build($query);
@@ -76,7 +77,9 @@ $no_results = false;
 $del_nums = [];
 
 if ($nums_rows > 0) {
-    $query['LIMIT'] = "$start, $perpage";
+    $query['LIMIT'] = ':start, :perpage';
+    $query['BIND']['start'] = $start;
+    $query['BIND']['perpage'] = $perpage;
     $result = $SQL->build($query);
 
     while ($row = $SQL->fetch_array($result)) {
@@ -168,7 +171,8 @@ if ($nums_rows > 0) {
 if (sizeof($del_nums)) {
     $query_del = [
         'DELETE' => "{$dbprefix}reports",
-        'WHERE' => "id IN('" . implode("', '", $del_nums) . "')",
+        'WHERE' => 'id IN (:ids)',
+        'BIND' => ['ids' => $del_nums],
     ];
 
     $SQL->build($query_del);

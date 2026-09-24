@@ -178,8 +178,7 @@ function inst_get_config(string $name): string|false
         return false;
     }
 
-    $sql = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
-    $result = $SQL->query($sql);
+    $result = $SQL->query("SELECT value FROM `{$dbprefix}config` WHERE `name` = :name", ['name' => $name]);
 
     if ($SQL->num_rows($result) == 0) {
         return false;

@@ -45,16 +45,19 @@ if (ip('submit')) {
 
     if (g('smt') == 'fe') {
         $ex_footer = p('ex_footer', 'str');
-        $update_sql = "ex_footer = '" . $SQL->real_escape(htmlspecialchars_decode($ex_footer)) . "'";
+        $update_sql = 'ex_footer = :value';
+        $update_value = htmlspecialchars_decode($ex_footer);
     } else {
         $ex_header = p('ex_header', 'str');
-        $update_sql = "ex_header = '" . $SQL->real_escape(htmlspecialchars_decode($ex_header)) . "'";
+        $update_sql = 'ex_header = :value';
+        $update_value = htmlspecialchars_decode($ex_header);
     }
 
     //update
     $update_query = [
         'UPDATE' => "{$dbprefix}stats",
         'SET' => $update_sql,
+        'BIND' => ['value' => $update_value],
     ];
 
     $SQL->build($update_query);

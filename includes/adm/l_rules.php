@@ -43,7 +43,8 @@ while ($row = $SQL->fetch_array($result)) {
         //update
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => "rules = '" . $SQL->real_escape(htmlspecialchars_decode($rules)) . "'",
+            'SET' => 'rules = :rules',
+            'BIND' => ['rules' => htmlspecialchars_decode($rules)],
         ];
 
         $SQL->build($update_query);

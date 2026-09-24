@@ -42,16 +42,13 @@ if (ig('id') || ig('filename')) {
     }
 
     if (ig('filename')) {
-        $filename_l = (string) $SQL->escape(g('filename'));
-
-        if (ig('x')) {
-            $query['WHERE'] = "f.name='" . $filename_l . '.' . $SQL->escape(g('x')) . "'";
-        } else {
-            $query['WHERE'] = "f.name='" . $filename_l . "'";
-        }
+        $filename_l = kleeja_html_encode(g('filename'));
+        $query['WHERE'] = 'f.name = :name';
+        $query['BIND'] = ['name' => $filename_l . (ig('x') ? '.' . kleeja_html_encode(g('x')) : '')];
     } else {
         $id_l = g('id', 'int');
-        $query['WHERE'] = 'f.id=' . $id_l;
+        $query['WHERE'] = 'f.id = :id';
+        $query['BIND'] = ['id' => $id_l];
     }
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_download_id_filename', get_defined_vars()))
@@ -263,9 +260,9 @@ elseif (
 
         //x, represent the extension, came from html links
         if (ig('x') && $var) {
-            $filename = $SQL->escape(g($var)) . '.' . $SQL->escape(g('x'));
+            $filename = kleeja_html_encode(g($var)) . '.' . kleeja_html_encode(g('x'));
         } else {
-            $filename = $SQL->escape(g($var));
+            $filename = kleeja_html_encode(g($var));
         }
     } else {
         $id = ig('down')
@@ -291,12 +288,10 @@ elseif (
         'SELECT' => 'f.id, f.name, f.real_filename, f.folder, f.type, f.size, f.time',
         'FROM' => "{$dbprefix}files f",
         'WHERE' => $is_id_filename
-            ? "f.name='" .
-                $filename .
-                "'" .
-                (ig('downexf') ? " AND f.type IN ('" . implode("', '", $livexts) . "')" : '')
-            : 'f.id=' . $id . (ig('downex') ? " AND f.type IN ('" . implode("', '", $livexts) . "')" : ''),
+            ? 'f.name = :name' . (ig('downexf') ? ' AND f.type IN (:livexts)' : '')
+            : 'f.id = :id' . (ig('downex') ? ' AND f.type IN (:livexts)' : ''),
         'LIMIT' => '1',
+        'BIND' => ['name' => $filename ?? '', 'id' => $id ?? 0, 'livexts' => $livexts],
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_down_go_page_filename', get_defined_vars()))
@@ -343,8 +338,9 @@ elseif (
                 //updates number of uploads ..
                 $update_query = [
                     'UPDATE' => "{$dbprefix}files",
-                    'SET' => 'uploads=uploads+1, last_down=' . time(),
-                    'WHERE' => $is_id_filename ? "name='" . $filename . "'" : 'id=' . $id,
+                    'SET' => 'uploads = uploads + 1, last_down = :time',
+                    'WHERE' => $is_id_filename ? 'name = :name' : 'id = :id',
+                    'BIND' => ['time' => time(), 'name' => $filename ?? '', 'id' => $id ?? 0],
                 ];
 
                 is_array(

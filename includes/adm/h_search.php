@@ -49,11 +49,8 @@ if (ip('search_file')) {
     //delete all searches greater than 3 days
     $query_del = [
         'DELETE' => "{$dbprefix}filters",
-        'WHERE' =>
-            "filter_type='file_search' AND filter_user=" .
-            $userinfo['id'] .
-            ' AND filter_time > ' .
-            (time() - 3600 * 24 * 3),
+        'WHERE' => "filter_type='file_search' AND filter_user = :user AND filter_time < :time",
+        'BIND' => ['user' => $userinfo['id'], 'time' => time() - 3600 * 24 * 3],
     ];
 
     $SQL->build($query_del);
@@ -98,11 +95,8 @@ if (ip('search_user')) {
     //delete all searches greater than 3 days
     $query_del = [
         'DELETE' => "{$dbprefix}filters",
-        'WHERE' =>
-            "filter_type='user_search' AND filter_user=" .
-            $userinfo['id'] .
-            ' AND filter_time > ' .
-            (time() - 3600 * 24 * 3),
+        'WHERE' => "filter_type='user_search' AND filter_user = :user AND filter_time < :time",
+        'BIND' => ['user' => $userinfo['id'], 'time' => time() - 3600 * 24 * 3],
     ];
 
     $SQL->build($query_del);
