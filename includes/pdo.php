@@ -1,0 +1,419 @@
+<?php
+/**
+ *
+ * @package Kleeja
+ * @copyright (c) 2007 Kleeja.net
+ * @license ./docs/license.txt
+ *
+ */
+
+//no for directly open
+if (!defined('IN_COMMON')) {
+    exit();
+}
+
+class KleejaDatabase
+{
+    //MySQL definitions that SQLite does not understand, used to convert CREATE TABLE queries
+    private const SQLITE_TYPES = [
+        '/AUTO_INCREMENT/i' => '',
+        '/VARCHAR\s?(\\([0-9]+\\))?/i' => 'TEXT',
+        '/COLLATE\s+([a-z0-9_]+)/i' => '',
+        '/(TINY|SMALL|MEDIUM|BIG)?INT\s?(\([0-9]+\))?\s?(UNSIGNED)?/i' => 'INTEGER ',
+        '/(TINY|MEDIUM|LONG)?TEXT/i' => 'TEXT',
+        '/KEY\s`?([a-z0-9_]+)`?\s\(`?([a-z0-9_]+)`?(\([0-9]+\))?\)\s?,?/i' => '',
+        '/\)(\s{0,4}ENGINE=([a-z0-9_]+))?(\s{0,4}DEFAULT)?(\s{0,4}CHARSET=([a-z0-9_]+))?(\s{0,4}COLLATE=([a-z0-9_]+))?(\s{0,4}AUTOINCREMENT)?(\s{0,4}=\s?1)?(\s{0,4};)?/i' =>
+            ')',
+        '/,\s+\)/' => ')',
+        '/INTEGER\s{0,4}NOT\s{0,4}NULL/i' => 'INTEGER',
+    ];
+
+    //mysql or sqlite
+    public string $driver;
+    public int $query_num = 0;
+    public array $debugr = [];
+    public bool $show_errors = true;
+    private ?PDO $pdo = null;
+    private ?PDOStatement $result = null;
+    //[code, message] of the last error
+    private array $error = [0, ''];
+    //set by close(), so the connection can be opened again if it is needed after that
+    private bool $closed = false;
+
+    /**
+     * connect
+     *
+     * @param string $host        MySQL server, with an optional :port
+     * @param string $db_username MySQL user
+     * @param string $db_password MySQL password
+     * @param string $db_name     MySQL database name, or path of the SQLite file from Kleeja folder
+     * @param string $dbprefix    tables prefix
+     * @param string $driver      mysql or sqlite
+     */
+    public function __construct(
+        private string $host,
+        private string $db_username,
+        #[\SensitiveParameter] private string $db_password,
+        private string $db_name,
+        public string $dbprefix,
+        string $driver = 'mysql',
+    ) {
+        $this->driver = $driver === 'sqlite' ? 'sqlite' : 'mysql';
+
+        if (!$this->connect()) {
+            $this->error_msg('We can not connect to the database');
+        }
+    }
+
+    private function connect(): bool
+    {
+        //return values as strings like mysqli did, the code compares them that way
+        $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_STRINGIFY_FETCHES => true];
+
+        try {
+            if (!in_array($this->driver, PDO::getAvailableDrivers(), true)) {
+                throw new PDOException("PDO driver of {$this->driver} is not installed in your server!");
+            }
+
+            if ($this->driver === 'sqlite') {
+                //PDO creates missing files, and a new empty database is never what we want
+                if (!is_file(PATH . $this->db_name)) {
+                    throw new PDOException('SQLite database file is not found.');
+                }
+
+                $dsn = 'sqlite:' . PATH . $this->db_name;
+            } else {
+                [$host, $port] = explode(':', $this->host, 2) + [1 => ''];
+                $dsn = "mysql:host={$host};port=" . ((int) $port ?: 3306) . ";dbname={$this->db_name};charset=utf8";
+                //one statement per query, so an SQL injection can not add more statements
+                $options[
+                    PHP_VERSION_ID >= 80400 ? Pdo\Mysql::ATTR_MULTI_STATEMENTS : PDO::MYSQL_ATTR_MULTI_STATEMENTS
+                ] = false;
+            }
+
+            $this->pdo = new PDO($dsn, $this->db_username, $this->db_password, $options);
+        } catch (PDOException $e) {
+            $this->set_error($e);
+
+            return false;
+        }
+
+        kleeja_log('[Connected] : ' . kleeja_get_page());
+
+        return true;
+    }
+
+    /**
+     * open the connection again if it was closed by close(), for code that still needs the database after that,
+     * like plugins hooked after the page footer or after a download started
+     *
+     * @return bool
+     */
+    private function reopen(): bool
+    {
+        if (!$this->pdo && $this->closed) {
+            $this->closed = false;
+
+            if (!$this->connect()) {
+                $this->error_msg('We can not connect to the database');
+            }
+        }
+
+        return $this->is_connected();
+    }
+
+    public function is_connected(): bool
+    {
+        return $this->pdo !== null;
+    }
+
+    // close the connection, it will be opened again if a query comes after this
+    public function close(): bool
+    {
+        if ($this->pdo) {
+            kleeja_log('[Closing connection] : ' . kleeja_get_page());
+
+            $this->pdo = $this->result = null;
+            $this->closed = true;
+        }
+
+        return true;
+    }
+
+    public function version(): string
+    {
+        $row = $this->fetch_array(
+            $this->query('SELECT ' . ($this->driver === 'sqlite' ? 'sqlite_version()' : 'VERSION()') . ' AS v'),
+        );
+
+        return explode('-', $row['v'] ?? '')[0];
+    }
+
+    /**
+     * execute a query, values of $params are bound to its ? or :name placeholders
+     *
+     * @param  string            $query
+     * @param  array             $params
+     * @return PDOStatement|false
+     */
+    public function query(string $query, array $params = []): PDOStatement|false
+    {
+        $this->result = null;
+        $this->error = [0, ''];
+
+        if ($query === '' || !$this->reopen()) {
+            return false;
+        }
+
+        if ($this->driver === 'sqlite' && str_contains($query, 'CREATE TABLE')) {
+            //todo extract keys and add as CREATE INDEX index_name ON table (column);
+            $query = preg_replace(array_keys(self::SQLITE_TYPES), self::SQLITE_TYPES, $query);
+        }
+
+        $start = get_microtime();
+
+        try {
+            $this->result = $this->pdo->prepare($query);
+            $this->result->execute($params);
+        } catch (PDOException $e) {
+            $this->result = null;
+            $this->set_error($e);
+        }
+
+        $this->debugr[$this->query_num + 1] = [$query, sprintf('%.5f', get_microtime() - $start)];
+
+        if (!$this->result) {
+            $this->error_msg('Error In query');
+
+            return false;
+        }
+
+        kleeja_log('[Query] : --> ' . $query);
+        $this->query_num++;
+
+        return $this->result;
+    }
+
+    /**
+     * build structured query ['SELECT' => ..., 'FROM' => ..., ...]
+     *
+     * @param  array             $query
+     * @param  array             $params values of the query placeholders
+     * @return PDOStatement|false
+     */
+    public function build(array $query, array $params = []): PDOStatement|false
+    {
+        $sql = '';
+        $where = empty($query['WHERE']) ? '' : ' WHERE ' . $query['WHERE'];
+
+        if (isset($query['SELECT'], $query['FROM'])) {
+            $sql = "SELECT {$query['SELECT']} FROM {$query['FROM']}";
+
+            foreach ($query['JOINS'] ?? [] as $join) {
+                $type = array_key_first($join);
+                $sql .= " {$type} {$join[$type]} ON {$join['ON']}";
+            }
+
+            $sql .= $where;
+
+            foreach (['GROUP BY', 'HAVING', 'ORDER BY', 'LIMIT'] as $clause) {
+                $sql .= empty($query[$clause]) ? '' : " {$clause} {$query[$clause]}";
+            }
+        } elseif (isset($query['INSERT']) || isset($query['REPLACE'])) {
+            $verb = isset($query['INSERT']) ? 'INSERT' : 'REPLACE';
+            $sql = "{$verb} INTO {$query['INTO']}" . (empty($query[$verb]) ? '' : " ({$query[$verb]})");
+            $sql .= " VALUES({$query['VALUES']})";
+        } elseif (isset($query['UPDATE'])) {
+            $sql = "UPDATE {$query['UPDATE']} SET {$query['SET']}{$where}";
+        } elseif (isset($query['DELETE'])) {
+            $sql = "DELETE FROM {$query['DELETE']}{$where}";
+        }
+
+        return $this->query($sql, $params);
+    }
+
+    /**
+     * free the memmory from the last results
+     *
+     * @param  PDOStatement|false|null $query_id optional, the last result by default
+     * @return bool
+     */
+    public function freeresult(PDOStatement|false|null $query_id = null): bool
+    {
+        return ($query_id ?: $this->result)?->closeCursor() ?? false;
+    }
+
+    /**
+     * fetch results (alias of fetch_array)
+     *
+     * @param  PDOStatement|false|null $query_id optional, the last result by default
+     * @return array|false             the next row, or false when there are no more rows
+     */
+    public function fetch(PDOStatement|false|null $query_id = null): array|false
+    {
+        return $this->fetch_array($query_id);
+    }
+
+    /**
+     * fetch results
+     *
+     * @param  PDOStatement|false|null $query_id optional, the last result by default
+     * @return array|false             the next row, or false when there are no more rows
+     */
+    public function fetch_array(PDOStatement|false|null $query_id = null): array|false
+    {
+        $query_id = $query_id ?: $this->result;
+
+        //only reading queries have rows
+        return $query_id?->columnCount() ? $query_id->fetch(PDO::FETCH_ASSOC) : false;
+    }
+
+    /**
+     * return number of rows of result
+     *
+     * @param  PDOStatement|false|null $query_id optional, the last result by default
+     * @return int|false
+     */
+    public function num_rows(PDOStatement|false|null $query_id = null): int|false
+    {
+        $query_id = $query_id ?: $this->result;
+
+        if (!$query_id?->columnCount()) {
+            return false;
+        }
+
+        if ($this->driver === 'mysql') {
+            return $query_id->rowCount();
+        }
+
+        //SQLite does not give the number of rows, so count them then run the query again to go back to the first row
+        $rows = iterator_count($query_id);
+        $query_id->execute();
+
+        return $rows;
+    }
+
+    /**
+     * return the id of latest inserted record
+     *
+     * @return int|false
+     */
+    public function insert_id(): int|false
+    {
+        return $this->pdo ? (int) $this->pdo->lastInsertId() : false;
+    }
+
+    /**
+     * escape a text for HTML then for SQL
+     *
+     * @param  string|null $msg
+     * @return string
+     */
+    public function escape(?string $msg): string
+    {
+        return $this->real_escape(htmlspecialchars($msg ?? '', ENT_QUOTES));
+    }
+
+    /**
+     * escape a text for SQL, to be put between single quotes
+     *
+     * @param  string $msg
+     * @return string
+     */
+    public function real_escape(string $msg): string
+    {
+        //null bytes are never valid text, and PDO can not quote them for SQLite
+        //quote() escapes by the connection charset and adds quotes around the text, so we remove them
+        return $this->reopen() ? substr($this->pdo->quote(str_replace("\0", '', $msg)), 1, -1) : '';
+    }
+
+    /**
+     * number of affected rows by latest action
+     *
+     * @return int|false
+     */
+    public function affected(): int|false
+    {
+        return $this->result?->rowCount() ?? false;
+    }
+
+    /**
+     * information
+     *
+     * @return string
+     */
+    public function server_info(): string
+    {
+        return ($this->driver === 'sqlite' ? 'SQLite ' : 'MySQL ') . $this->version();
+    }
+
+    /**
+     * return last error as [code, message]
+     *
+     * @return array
+     */
+    public function get_error(): array
+    {
+        return $this->error;
+    }
+
+    private function set_error(PDOException $e): void
+    {
+        //errorInfo is [SQLSTATE, driver error code, driver error message], it is empty for our own exceptions
+        $this->error = [$e->errorInfo[1] ?? $e->getCode(), $e->errorInfo[2] ?? $e->getMessage()];
+    }
+
+    /**
+     * show the error in Kleeja error page, or only log it if errors are hidden
+     *
+     * @param  string $msg
+     * @return void
+     */
+    private function error_msg(string $msg): void
+    {
+        [$error_no, $error_msg] = $this->error;
+        $error_sql = $this->debugr[$this->query_num + 1][0] ?? '';
+
+        //loggin -> error
+        kleeja_log('[SQL ERROR] : ' . $msg . ' "' . $error_no . ' : ' . $error_msg . '" -->');
+
+        if (!$this->show_errors || defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')) {
+            return;
+        }
+
+        //some ppl want hide their table names
+        if (!defined('DEV_STAGE')) {
+            [$error_sql, $error_msg] = preg_replace(
+                [
+                    '#\s{1,3}`*' . preg_quote($this->dbprefix, '#') . '([a-z0-9])[a-z0-9]*`*\s{1,3}#',
+                    '#' . preg_quote($this->db_name . '.' . $this->dbprefix, '#') . '([a-z0-9])[a-z0-9]*#',
+                    '#\s{1,3}(from|update|into)\s{1,3}([a-z0-9])[a-z0-9]*\s{1,3}#i',
+                    "#\s'[^']+'@'([^']+)'#",
+                    "#password\s*=\s*'[^']+'#i",
+                ],
+                [' $1*** ', '$1***', ' $1 $2*** ', " '***'@'$1'", "password='***'"],
+                [$error_sql, (string) $error_msg],
+            );
+        }
+
+        global $config;
+
+        //Kleeja error handler shows it in the error page as a text, then stops the script
+        trigger_error(
+            implode(
+                "\n",
+                array_filter([
+                    "{$msg}: [{$error_no}] {$error_msg}",
+                    $error_sql === '' ? '' : "Query: {$error_sql}",
+                    //is this error related to updating?
+                    str_contains($error_msg, 'Unknown column') || str_contains($error_msg, 'no such')
+                        ? 'Your Kleeja database might be old, try to update it now from: ' .
+                            rtrim($config['siteurl'] ?? '', '/') .
+                            "/install\nIf this error happened after installing a plugin, add define('STOP_PLUGINS', true); to end of config.php file."
+                        : '',
+                ]),
+            ),
+            E_USER_ERROR,
+        );
+    }
+}

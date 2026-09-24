@@ -26,11 +26,7 @@ include_once PATH . 'includes/functions_display.php';
 include_once PATH . 'includes/functions_alternative.php';
 include_once PATH . 'includes/functions.php';
 
-if (isset($dbtype) && $dbtype == 'sqlite') {
-    include PATH . 'includes/sqlite.php';
-} else {
-    include PATH . 'includes/mysqli.php';
-}
+include_once PATH . 'includes/pdo.php';
 
 include_once 'includes/functions_install.php';
 
@@ -139,12 +135,12 @@ SOFTWARE.';
             }
 
             //connect .. for check
-            $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+            $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 
             if (!$SQL->is_connected()) {
                 $no_connection = true;
             } else {
-                if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli') {
+                if ($SQL->driver === 'mysql') {
                     if (!empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<')) {
                         $mysql_ver = $SQL->version();
                     }
@@ -199,7 +195,7 @@ SOFTWARE.';
             }
 
             //connect .. for check
-            $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+            $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 
             include_once PATH . 'includes/usr.php';
             include_once PATH . 'includes/functions_alternative.php';
@@ -224,8 +220,10 @@ SOFTWARE.';
             $err = $dots = 0;
             $errors = '';
 
-            //do important alter before
-            $SQL->query($install_sqls['ALTER_DATABASE_UTF']);
+            //do important alter before, SQLite has no database charset
+            if ($SQL->driver === 'mysql') {
+                $SQL->query($install_sqls['ALTER_DATABASE_UTF']);
+            }
 
             $sqls_done = $sql_err = [];
 

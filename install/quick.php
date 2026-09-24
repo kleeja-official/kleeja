@@ -23,11 +23,7 @@ include_once PATH . 'includes/functions_display.php';
 include_once PATH . 'includes/functions_alternative.php';
 include_once PATH . 'includes/functions.php';
 
-if (isset($dbtype) && $dbtype == 'sqlite') {
-    include PATH . 'includes/sqlite.php';
-} else {
-    include PATH . 'includes/mysqli.php';
-}
+include_once PATH . 'includes/pdo.php';
 
 include_once 'includes/functions_install.php';
 
@@ -46,13 +42,13 @@ if (file_exists(PATH . 'config.php')) {
     exit('`config.php` was missing! so we created one for you, kindly edit the file with database information.');
 }
 
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 
 if (!$SQL->is_connected()) {
     exit('Can not connect to database, please make sure the data in `config.php` is correct!');
 }
 
-if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli') {
+if ($SQL->driver === 'mysql') {
     if (!empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<')) {
         exit('The required MySQL version is `' . MIN_MYSQL_VERSION . '` and yours is `' . $SQL->version() . '`!');
     }
@@ -69,7 +65,7 @@ foreach (['cache', 'uploads', 'uploads/thumbs'] as $folder) {
 }
 
 //install
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 
 include_once PATH . 'includes/usr.php';
 include_once PATH . 'includes/functions_alternative.php';
@@ -91,7 +87,10 @@ $config_time_zone = 'Asia/Buraydah';
 include 'includes/install_sqls.php';
 include 'includes/default_values.php';
 
-$SQL->query($install_sqls['ALTER_DATABASE_UTF']);
+//SQLite has no database charset
+if ($SQL->driver === 'mysql') {
+    $SQL->query($install_sqls['ALTER_DATABASE_UTF']);
+}
 
 $err = 0;
 $errors = '';

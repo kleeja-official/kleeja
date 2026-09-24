@@ -110,12 +110,12 @@ function kleeja_show_error(
                     ':' .
                     $error_line .
                     ' ]</strong><br />' .
-                    $escape($error_string);
+                    nl2br($escape($error_string));
             } else {
                 echo strtr($error_template, [
                     '{ERROR_NAME}' => $error_name,
                     '{ERROR_NUMBER}' => $error_number,
-                    '{ERROR_STRING}' => $escape($error_string),
+                    '{ERROR_STRING}' => nl2br($escape($error_string)),
                     '{ERROR_FILE}' => $escape(basename($error_file)),
                     '{ERROR_LINE}' => $error_line,
                 ]);
@@ -138,7 +138,12 @@ include PATH . 'includes/version.php';
 
 if (version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
     trigger_error(
-        'You are using an old PHP version (' . PHP_VERSION_ID . '), to run Kleeja you should use PHP 8.0 or above.',
+        'You are using an old PHP version (' . PHP_VERSION . '), to run Kleeja you should use PHP 8.0 or above.',
+        E_USER_ERROR,
+    );
+} elseif (!class_exists('PDO') || !array_intersect(['mysql', 'sqlite'], PDO::getAvailableDrivers())) {
+    trigger_error(
+        'In order to use Kleeja, "pdo_mysql" or "pdo_sqlite" extension has to be installed on your server.',
         E_USER_ERROR,
     );
 }
@@ -195,11 +200,7 @@ define('K_DIR_CHMOD', defined('HAS_SUEXEC') ? 0755 & ~umask() : 0755);
 
 include PATH . 'includes/functions_alternative.php';
 
-if (isset($dbtype) && $dbtype == 'sqlite') {
-    include PATH . 'includes/sqlite.php';
-} else {
-    include PATH . 'includes/mysqli.php';
-}
+include_once PATH . 'includes/pdo.php';
 
 include PATH . 'includes/style.php';
 include PATH . 'includes/usr.php';
@@ -220,7 +221,7 @@ if (empty($script_encoding)) {
 }
 
 //start classes ..
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 //no need after now
 unset($dbpass);
 

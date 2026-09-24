@@ -10,7 +10,7 @@
             <td class="TdInput">
                 <select name="db_type" id="db_type" style="text-align:left;direction:ltr">
                     <option value="mysql" selected>{{echo $lang['DB_TYPE_MYSQL']}}</option>
-                    {{if (class_exists('SQLite3')):}}
+                    {{if (in_array('sqlite', PDO::getAvailableDrivers())):}}
                     <option value="sqlite">{{echo $lang['DB_TYPE_SQLITE']}}</option>
                     {{endif;}}
                 </select>

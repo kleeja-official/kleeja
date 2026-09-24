@@ -171,7 +171,7 @@ function inst_get_config(string $name): string|false
             @touch(PATH . $dbname);
         }
 
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
     }
 
     if (empty($SQL)) {

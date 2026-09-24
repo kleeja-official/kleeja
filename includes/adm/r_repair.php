@@ -43,7 +43,7 @@ switch ($case):
     //
     case 'tables':
         //SQLite has no REPAIR TABLE, rebuilding the indexes of each table is the closest thing to it
-        $is_sqlite = SQL_LAYER == 'sqlite';
+        $is_sqlite = $SQL->driver === 'sqlite';
 
         $query = $is_sqlite
             ? "SELECT name AS Name FROM sqlite_master WHERE type = 'table' AND substr(name, 1, 7) <> 'sqlite_'"

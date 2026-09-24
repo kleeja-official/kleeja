@@ -27,9 +27,11 @@ if (version_compare(PHP_VERSION, 8.0, '<')) {
     );
 }
 
-// if mysqli is not installed
-if (!function_exists('mysqli_connect')) {
-    exit('<h2>In order to use Kleeja, "<b>php_mysqli</b>" extension has to be installed on your server.</h2>');
+// if PDO or its drivers are not installed
+if (!class_exists('PDO') || !array_intersect(['mysql', 'sqlite'], PDO::getAvailableDrivers())) {
+    exit(
+        '<h2>In order to use Kleeja, "<b>pdo_mysql</b>" or "<b>pdo_sqlite</b>" extension has to be installed on your server.</h2>'
+    );
 }
 
 if (file_exists(PATH . 'config.php')) {
@@ -38,11 +40,7 @@ if (file_exists(PATH . 'config.php')) {
 
 include_once PATH . 'includes/functions.php';
 
-if (isset($dbtype) && $dbtype == 'sqlite') {
-    include PATH . 'includes/sqlite.php';
-} else {
-    include PATH . 'includes/mysqli.php';
-}
+include_once PATH . 'includes/pdo.php';
 
 include_once 'includes/functions_install.php';
 

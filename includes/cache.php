@@ -15,9 +15,6 @@ if (!defined('IN_COMMON')) {
 //we are in cache now ..
 define('IN_CACHE', true);
 
-//make sure it's utf8 data
-$SQL->set_utf8();
-
 //
 //In the future here will be a real cache class
 //this codes, it's just a sample and usefull for

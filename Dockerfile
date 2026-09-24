@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install mysqli gd zip \
+    && docker-php-ext-install pdo_mysql gd zip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupmod -o -g "${GID}" www-data \
