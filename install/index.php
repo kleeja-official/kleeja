@@ -19,11 +19,11 @@ define('IN_COMMON', true);
 define('PATH', '../');
 
 //before anything check PHP version compatibility
-if (!function_exists('version_compare') || version_compare(PHP_VERSION, 7.0, '<')) {
+if (version_compare(PHP_VERSION, 8.0, '<')) {
     exit(
         '<h2>You are using an old PHP version (' .
             PHP_VERSION .
-            '), to run Kleeja you should use PHP 7.0 or above.</h2>'
+            '), to run Kleeja you should use PHP 8.0 or above.</h2>'
     );
 }
 
