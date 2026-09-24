@@ -25,6 +25,8 @@ if (!defined('SQL_LAYER')):
         private bool $in_transaction = false;
         public array $debugr = [];
         private bool $show_errors = true;
+        //set by close(), so the connection can be opened again if it is needed after that
+        private bool $closed = false;
 
         /**
          * connect
@@ -42,18 +44,14 @@ if (!defined('SQL_LAYER')):
             string $db_name,
             string $dbprefix,
         ) {
-            try {
-                if (class_exists('SQLite3')) {
-                    $this->connect_id = new SQLite3(PATH . $db_name, SQLITE3_OPEN_READWRITE);
-                } else {
-                    $this->error_msg('SQLite3 extension is not installed in your server!');
-                }
-            } catch (Exception $e) {
-                //...
-            }
-
             $this->dbprefix = $dbprefix;
             $this->dbname = $db_name;
+
+            if (class_exists('SQLite3')) {
+                $this->connect();
+            } else {
+                $this->error_msg('SQLite3 extension is not installed in your server!');
+            }
 
             //no error
             if (defined('SQL_NO_ERRORS')) {
@@ -66,12 +64,48 @@ if (!defined('SQL_LAYER')):
                 $this->error_msg(
                     'We can not connect to the sqlite database, check location or existence of the SQLite dirver ...',
                 );
+            }
+        }
 
-                return;
+        private function connect(): bool
+        {
+            try {
+                $this->connect_id = new SQLite3(PATH . $this->dbname, SQLITE3_OPEN_READWRITE);
+            } catch (Exception $e) {
+                $this->connect_id = null;
+
+                return false;
             }
 
             //connecting
             kleeja_log('[Connected] : ' . kleeja_get_page());
+
+            return true;
+        }
+
+        /**
+         * open the connection again if it was closed by close(), for code that still needs the database after that,
+         * like plugins hooked after the page footer or after a download started
+         *
+         * @return bool
+         */
+        private function reopen(): bool
+        {
+            if ($this->is_connected() || !$this->closed) {
+                return $this->is_connected();
+            }
+
+            $this->closed = false;
+
+            if (!$this->connect()) {
+                $this->error_msg(
+                    'We can not connect to the sqlite database, check location or existence of the SQLite dirver ...',
+                );
+
+                return false;
+            }
+
+            return true;
         }
 
         public function __destruct()
@@ -84,7 +118,7 @@ if (!defined('SQL_LAYER')):
             return $this->connect_id !== null;
         }
 
-        // finish pending work, the connection itself is released by PHP at the end of the request
+        // close the connection, it will be opened again if a query comes after this
         public function close(): bool
         {
             if (!$this->is_connected()) {
@@ -94,12 +128,17 @@ if (!defined('SQL_LAYER')):
             // Commit any remaining transactions
             if ($this->in_transaction) {
                 $this->query('COMMIT;');
+                $this->in_transaction = false;
             }
 
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-            return true;
+            $closed = @$this->connect_id->close();
+            $this->connect_id = null;
+            $this->closed = true;
+
+            return $closed;
         }
 
         // encoding functions
@@ -130,7 +169,7 @@ if (!defined('SQL_LAYER')):
         public function query(string $query, bool $transaction = false): SQLite3Result|bool
         {
             //no connection
-            if (!$this->is_connected()) {
+            if (!$this->reopen()) {
                 return false;
             }
 
@@ -346,11 +385,21 @@ if (!defined('SQL_LAYER')):
                 $query_id = $this->result;
             }
 
-            if ($query_id instanceof SQLite3Result && ($results = $query_id->numColumns())) {
-                return $results;
+            //only reading queries have rows, and stepping other results would run their query again
+            if (!($query_id instanceof SQLite3Result) || $query_id->numColumns() === 0) {
+                return false;
             }
 
-            return false;
+            //SQLite does not give the number of rows, so count them then go back to the first row
+            $rows = 0;
+
+            while ($query_id->fetchArray(SQLITE3_NUM) !== false) {
+                $rows++;
+            }
+
+            $query_id->reset();
+
+            return $rows;
         }
 
         /**

@@ -990,7 +990,7 @@ function delete_olang(string|array|null $words = '', string|array|null $lang = '
 
     if (!empty($lang)) {
         $lang_sql = is_array($lang)
-            ? "(lang_id = '" . implode("' AND lang_id = '", array_map([$SQL, 'escape'], $lang)) . "')"
+            ? "lang_id IN ('" . implode("', '", array_map([$SQL, 'escape'], $lang)) . "')"
             : "lang_id = '" . $SQL->escape($lang) . "'";
 
         $delete_query['WHERE'] .= (empty($delete_query['WHERE']) ? '' : ' AND ') . $lang_sql;

@@ -25,6 +25,9 @@ if (!defined('SQL_LAYER')):
         private bool $in_transaction = false;
         public array $debugr = [];
         private bool $show_errors = true;
+        //connection details, kept to open the connection again if it is needed after close()
+        private array $connect_args = [];
+        private bool $closed = false;
 
         /**
          * connect
@@ -51,21 +54,31 @@ if (!defined('SQL_LAYER')):
 
             $this->dbprefix = $dbprefix;
             $this->dbname = $db_name;
-
-            $connection = @mysqli_connect($host, $db_username, $db_password, $db_name, $port);
-            $this->connect_id = $connection === false ? null : $connection;
+            $this->connect_args = [$host, $db_username, $db_password, $db_name, $port];
 
             //no error
             if (defined('SQL_NO_ERRORS') || defined('MYSQL_NO_ERRORS')) {
                 $this->show_errors = false;
             }
 
-            if (!$this->connect_id) {
+            if (!$this->connect()) {
                 //loggin -> no database -> close connection
                 $this->close();
                 $this->error_msg('We can not connect to the server ...');
+            }
+        }
 
-                return;
+        private function connect(): bool
+        {
+            //PHP 8.1+ throws exceptions from mysqli by default, but failures here are handled by
+            //checking the returned values, and SQL_NO_ERRORS expects failed queries to return false
+            mysqli_report(MYSQLI_REPORT_OFF);
+
+            $connection = @mysqli_connect(...$this->connect_args);
+            $this->connect_id = $connection === false ? null : $connection;
+
+            if (!$this->connect_id) {
+                return false;
             }
 
             //connecting
@@ -76,6 +89,31 @@ if (!defined('SQL_LAYER')):
                     kleeja_log('[Set to UTF8] : --> ');
                 }
             }
+
+            return true;
+        }
+
+        /**
+         * open the connection again if it was closed by close(), for code that still needs the database after that,
+         * like plugins hooked after the page footer or after a download started
+         *
+         * @return bool
+         */
+        private function reopen(): bool
+        {
+            if ($this->is_connected() || !$this->closed) {
+                return $this->is_connected();
+            }
+
+            $this->closed = false;
+
+            if (!$this->connect()) {
+                $this->error_msg('We can not connect to the server ...');
+
+                return false;
+            }
+
+            return true;
         }
 
         public function __destruct()
@@ -88,7 +126,7 @@ if (!defined('SQL_LAYER')):
             return $this->connect_id !== null;
         }
 
-        // finish pending work, the connection itself is released by PHP at the end of the request
+        // close the connection, it will be opened again if a query comes after this
         public function close(): bool
         {
             if (!$this->is_connected()) {
@@ -98,12 +136,17 @@ if (!defined('SQL_LAYER')):
             // Commit any remaining transactions
             if ($this->in_transaction) {
                 mysqli_commit($this->connect_id);
+                $this->in_transaction = false;
             }
 
             //loggin -> close connection
             kleeja_log('[Closing connection] : ' . kleeja_get_page());
 
-            return true;
+            $closed = @mysqli_close($this->connect_id);
+            $this->connect_id = null;
+            $this->closed = true;
+
+            return $closed;
         }
 
         // encoding functions
@@ -114,12 +157,14 @@ if (!defined('SQL_LAYER')):
 
         public function set_names(string $charset): void
         {
-            @mysqli_set_charset($this->connect_id, $charset);
+            if ($this->reopen()) {
+                @mysqli_set_charset($this->connect_id, $charset);
+            }
         }
 
         public function client_encoding(): ?string
         {
-            return mysqli_character_set_name($this->connect_id);
+            return $this->reopen() ? mysqli_character_set_name($this->connect_id) : null;
         }
 
         public function version(): string
@@ -141,7 +186,7 @@ if (!defined('SQL_LAYER')):
         public function query(string $query, bool $transaction = false): mysqli_result|bool
         {
             //no connection
-            if (!$this->is_connected()) {
+            if (!$this->reopen()) {
                 return false;
             }
 
@@ -378,7 +423,7 @@ if (!defined('SQL_LAYER')):
          */
         public function real_escape(string $msg): string
         {
-            if (!$this->is_connected()) {
+            if (!$this->reopen()) {
                 return '';
             }
 
