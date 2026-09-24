@@ -497,3 +497,17 @@ function adm_is_start_box_hidden(string $name): bool
 
     return in_array($name, $boxes);
 }
+
+function split_plugin_name_from_version(string $fileName): ?array
+{
+    $baseName = pathinfo($fileName, PATHINFO_FILENAME);
+
+    if (preg_match('/^(.+?)-v?(\d.*)$/', $baseName, $matches)) {
+        return [
+            'name' => str_replace('-', '_', $matches[1]),
+            'version' => $matches[2],
+        ];
+    }
+
+    return null;
+}
