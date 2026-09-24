@@ -109,7 +109,7 @@ function do_config_export(string $srv, string $usr, string $pass, string $nm, st
 {
     $data = '<?php' . "\n\n" . '//fill these variables with your data' . "\n";
     $data .= '//for more information about this file, visit: ' . "\n";
-    $data .= '//https://github.com/kleeja-official/kleeja/wiki/config.php-file' . "\n\n";
+    $data .= '//https://github.com/kleeja/kleeja/wiki/config.php-file' . "\n\n";
 
     if (!empty($type) && $type != 'mysql') {
         if ($type == 'sqlite' && strpos($nm, '.') === false) {

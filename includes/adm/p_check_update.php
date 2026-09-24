@@ -20,8 +20,8 @@ $new_version = empty($new_version['version_number']) ? KLEEJA_VERSION : $new_ver
 $backup_archive_path = PATH . 'cache/backup.zip';
 $GET_FORM_KEY = kleeja_add_form_key_get('UPDATER_FORM_KEY');
 
-define('KLEEJA_VERSION_CHECK_LINK', 'https://api.github.com/repos/kleeja-official/kleeja/releases/latest');
-define('KLEEJA_LATEST_PACKAGE_LINK', 'https://api.github.com/repos/kleeja-official/kleeja/zipball/');
+define('KLEEJA_VERSION_CHECK_LINK', 'https://api.github.com/repos/kleeja/kleeja/releases/latest');
+define('KLEEJA_LATEST_PACKAGE_LINK', 'https://api.github.com/repos/kleeja/kleeja/zipball/');
 
 $stylee = 'admin_check_update';
 $current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));

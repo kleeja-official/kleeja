@@ -117,5 +117,5 @@ return [
 
     'KLEEJA_TEAM_MSG_NAME' => 'Kleeja Development Team',
     'KLEEJA_TEAM_MSG_TEXT' =>
-        "Thank you for choosing Kleeja to empower your website,\n We really hope you enjoy the unique experience that Kleeja offers to you.\nDon't forget to visit https://kleeja.net for future updates, to report bugs/issues kindly visit our <a href=\"https://github.com/kleeja-official/kleeja/issues\">Issues page</a>",
+        "Thank you for choosing Kleeja to empower your website,\n We really hope you enjoy the unique experience that Kleeja offers to you.\nDon't forget to visit https://kleeja.net for future updates, to report bugs/issues kindly visit our <a href=\"https://github.com/kleeja/kleeja/issues\">Issues page</a>",
 ];
