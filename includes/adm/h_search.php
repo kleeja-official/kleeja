@@ -23,7 +23,7 @@ $default_user_system = (int) $config['user_system'] == 1;
 $H_FORM_KEYS = kleeja_add_form_key('adm_files_search');
 $H_FORM_KEYS2 = kleeja_add_form_key('adm_users_search');
 
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'files'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'files'));
 
 //filling the inputs automatically via GET
 $filled_ip = $filled_username = '';
@@ -40,22 +40,17 @@ if (ip('search_file')) {
     if (!kleeja_check_form_key('adm_files_search')) {
         kleeja_admin_err(
             $lang['INVALID_FORM_KEY'],
-            true,
-            $lang['ERROR'],
-            true,
-            basename(ADMIN_PATH) . '?cp=h_search',
-            1,
+            title: $lang['ERROR'],
+            redirect: basename(ADMIN_PATH) . '?cp=h_search',
+            rs: 1,
         );
     }
 
     //delete all searches greater than 3 days
     $query_del = [
         'DELETE' => "{$dbprefix}filters",
-        'WHERE' =>
-            "filter_type='file_search' AND filter_user=" .
-            $userinfo['id'] .
-            ' AND filter_time > ' .
-            (time() - 3600 * 24 * 3),
+        'WHERE' => "filter_type='file_search' AND filter_user = :user AND filter_time < :time",
+        'BIND' => ['user' => $userinfo['id'], 'time' => time() - 3600 * 24 * 3],
     ];
 
     $SQL->build($query_del);
@@ -76,15 +71,13 @@ if (ip('search_file')) {
 
     if ($search_id = insert_filter('file_search', $d)) {
         $filter = get_filter($search_id, 'file_search');
-        redirect(basename(ADMIN_PATH) . '?cp=c_files&search_id=' . $filter['filter_uid'], false);
+        redirect(basename(ADMIN_PATH) . '?cp=c_files&search_id=' . $filter['filter_uid'], header: false);
     } else {
         kleeja_admin_err(
             $lang['ERROR_TRY_AGAIN'],
-            true,
-            $lang['ERROR'],
-            true,
-            basename(ADMIN_PATH) . '?cp=h_search',
-            1,
+            title: $lang['ERROR'],
+            redirect: basename(ADMIN_PATH) . '?cp=h_search',
+            rs: 1,
         );
     }
 }
@@ -93,22 +86,17 @@ if (ip('search_user')) {
     if (!kleeja_check_form_key('adm_users_search')) {
         kleeja_admin_err(
             $lang['INVALID_FORM_KEY'],
-            true,
-            $lang['ERROR'],
-            true,
-            basename(ADMIN_PATH) . '?cp=h_search&smt=users',
-            1,
+            title: $lang['ERROR'],
+            redirect: basename(ADMIN_PATH) . '?cp=h_search&smt=users',
+            rs: 1,
         );
     }
 
     //delete all searches greater than 3 days
     $query_del = [
         'DELETE' => "{$dbprefix}filters",
-        'WHERE' =>
-            "filter_type='user_search' AND filter_user=" .
-            $userinfo['id'] .
-            ' AND filter_time > ' .
-            (time() - 3600 * 24 * 3),
+        'WHERE' => "filter_type='user_search' AND filter_user = :user AND filter_time < :time",
+        'BIND' => ['user' => $userinfo['id'], 'time' => time() - 3600 * 24 * 3],
     ];
 
     $SQL->build($query_del);
@@ -120,15 +108,13 @@ if (ip('search_user')) {
 
     if ($search_id = insert_filter('user_search', $d)) {
         $filter = get_filter($search_id, 'user_search');
-        redirect(basename(ADMIN_PATH) . '?cp=g_users&smt=show_su&search_id=' . $filter['filter_uid'], false);
+        redirect(basename(ADMIN_PATH) . '?cp=g_users&smt=show_su&search_id=' . $filter['filter_uid'], header: false);
     } else {
         kleeja_admin_err(
             $lang['ERROR_TRY_AGAIN'],
-            true,
-            $lang['ERROR'],
-            true,
-            basename(ADMIN_PATH) . '?cp=h_search&smt=users',
-            1,
+            title: $lang['ERROR'],
+            redirect: basename(ADMIN_PATH) . '?cp=h_search&smt=users',
+            rs: 1,
         );
     }
 }

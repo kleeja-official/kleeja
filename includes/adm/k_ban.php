@@ -26,7 +26,7 @@ $new_item_action = basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php') . 
 // Check form key
 //
 
-$case = g('case', 'str', 'view');
+$case = g('case', default: 'view');
 $update_ban_content = false;
 
 $query = [
@@ -51,7 +51,7 @@ if ($case == 'del' && ig('k')) {
 
     $to_delete = g('k');
 
-    $banned_items = array_filter($banned_items, function ($item) use ($to_delete, $lang, &$show_message) {
+    $banned_items = array_filter($banned_items, function (string $item) use ($to_delete, $lang, &$show_message): bool {
         if (md5($item) == $to_delete) {
             $show_message = sprintf($lang['ITEM_DELETED'], $item);
 
@@ -66,7 +66,7 @@ if ($case == 'del' && ig('k')) {
 
 if ($case == 'new') {
     if (!kleeja_check_form_key('adm_ban')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 
     $to_add = p('k', 'str', '');
@@ -83,7 +83,8 @@ if ($update_ban_content) {
     //update
     $update_query = [
         'UPDATE' => "{$dbprefix}stats",
-        'SET' => "ban='" . $SQL->escape(implode('|', $banned_items)) . "'",
+        'SET' => 'ban = :ban',
+        'BIND' => ['ban' => kleeja_html_encode(implode('|', $banned_items))],
     ];
 
     $SQL->build($update_query);
@@ -93,6 +94,6 @@ if ($update_ban_content) {
     }
 }
 
-array_walk($banned_items, function (&$value, &$key) {
+array_walk($banned_items, function (string &$value, int $key): void {
     $value = ['content' => $value, 'del_key' => md5($value), 'id' => $key + 1];
 });

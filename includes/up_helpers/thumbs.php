@@ -82,11 +82,6 @@ function helper_thumb(string $source_path, string $ext, string $dest_image, int 
             break;
 
         case 'bmp':
-            if (!defined('BMP_CLASS_INCLUDED')) {
-                include dirname(__FILE__) . '/BMP.php';
-                define('BMP_CLASS_INCLUDED', true);
-            }
-
             $source_gdim = imagecreatefrombmp($source_path);
 
             break;
@@ -149,9 +144,6 @@ function helper_thumb(string $source_path, string $ext, string $dest_image, int 
 
             break;
     }
-
-    @imagedestroy($desired_gdim);
-    @imagedestroy($source_gdim);
 
     return $return;
 }

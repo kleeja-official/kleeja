@@ -30,6 +30,10 @@ class Plugins
      * All hooks from all plugins listed in this variable
      */
     private array $all_plugins_hooks = [];
+    /**
+     * Names of the plugins of each hook, in the same order of $all_plugins_hooks, kept only in DEV_STAGE for debugging
+     */
+    private array $hooks_plugins = [];
     private array $installed_plugins = [];
     private array $installed_plugins_info = [];
 
@@ -135,11 +139,14 @@ class Plugins
                     //update current plugin version
                     $update_query = [
                         'UPDATE' => "{$dbprefix}plugins",
-                        'SET' =>
-                            "plg_ver='" .
-                            $SQL->escape($kleeja_plugin[$plugin_name]['information']['plugin_version']) .
-                            "'",
-                        'WHERE' => "plg_name='" . $SQL->escape($plugin_name) . "'",
+                        'SET' => 'plg_ver = :version',
+                        'WHERE' => 'plg_name = :name',
+                        'BIND' => [
+                            'version' => kleeja_html_encode(
+                                $kleeja_plugin[$plugin_name]['information']['plugin_version'],
+                            ),
+                            'name' => kleeja_html_encode($plugin_name),
+                        ],
                     ];
 
                     $SQL->build($update_query);
@@ -155,6 +162,11 @@ class Plugins
                 }
                 array_push($this->all_plugins_hooks[$hook_name][$priority], $hook_value);
                 krsort($this->all_plugins_hooks[$hook_name]);
+
+                if (defined('DEV_STAGE')) {
+                    $this->hooks_plugins[$hook_name][$priority][] = $plugin_name;
+                    krsort($this->hooks_plugins[$hook_name]);
+                }
             }
         }
 
@@ -230,6 +242,7 @@ class Plugins
 
         return [
             'all_plugins_hooks' => $this->all_plugins_hooks,
+            'hooks_plugins' => $this->hooks_plugins,
             'installed_plugins' => $this->installed_plugins,
         ];
     }

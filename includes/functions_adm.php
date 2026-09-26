@@ -16,7 +16,7 @@ if (!defined('IN_COMMON')) {
  * Print cp error function handler
  *
  * For admin
- * @param mixed $msg
+ * @param string      $msg
  * @param bool|string $navigation show navigation menu, or a link to redirect to
  * @param string      $title
  * @param bool        $exit
@@ -26,10 +26,10 @@ if (!defined('IN_COMMON')) {
  */
 function kleeja_admin_err(
     string $msg,
-    $navigation = true,
+    bool|string $navigation = true,
     string $title = '',
     bool $exit = true,
-    $redirect = false,
+    bool|string $redirect = false,
     int $rs = 3,
     string $style = 'admin_err',
 ): void {
@@ -63,7 +63,7 @@ function kleeja_admin_err(
     }
 
     // assign {text} in err template
-    $text = $msg . ($redirect != false ? redirect($redirect, false, false, $rs, true) : '');
+    $text = $msg . ($redirect != false ? redirect($redirect, header: false, exit: false, sec: $rs, return: true) : '');
     $SHOW_LIST = $navigation;
 
     //header
@@ -84,19 +84,19 @@ function kleeja_admin_err(
  * Print information message on admin panel
  *
  * @adm
- * @param string $msg        information message
- * @param bool   $navigation show navigation menu or not
- * @param string $title      information heading title
- * @param bool   $exit       if true, then halt after message
- * @param bool   $redirect   redirect after showing the message
- * @param int    $rs         delay the redirect in seconds
+ * @param string      $msg        information message
+ * @param bool|string $navigation show navigation menu, or a link to redirect to
+ * @param string      $title      information heading title
+ * @param bool        $exit       if true, then halt after message
+ * @param bool|string $redirect   a link to redirect after showing the message, or false
+ * @param int         $rs         delay the redirect in seconds
  */
 function kleeja_admin_info(
     string $msg,
-    $navigation = true,
+    bool|string $navigation = true,
     string $title = '',
     bool $exit = true,
-    $redirect = false,
+    bool|string $redirect = false,
     int $rs = 2,
 ): void {
     is_array($plugin_run_result = Plugins::getInstance()->run('kleeja_admin_info_func', get_defined_vars()))
@@ -117,8 +117,14 @@ function kleeja_admin_info(
  * @param  string       $uid    filter unique id, empty to generate one
  * @return string|false the filter unique id, or false when the insertion failed
  */
-function insert_filter(string $type, string $value, int $time = 0, int $user = 0, string $status = '', string $uid = '')
-{
+function insert_filter(
+    string $type,
+    string $value,
+    int $time = 0,
+    int $user = 0,
+    string $status = '',
+    string $uid = '',
+): string|false {
     global $SQL, $dbprefix, $userinfo;
 
     $user = !$user ? $userinfo['id'] : $user;
@@ -128,20 +134,15 @@ function insert_filter(string $type, string $value, int $time = 0, int $user = 0
     $insert_query = [
         'INSERT' => 'filter_uid, filter_type ,filter_value ,filter_time ,filter_user, filter_status',
         'INTO' => "{$dbprefix}filters",
-        'VALUES' =>
-            "'" .
-            $uid .
-            "', '" .
-            $SQL->escape($type) .
-            "','" .
-            $SQL->escape($value) .
-            "', " .
-            intval($time) .
-            ',' .
-            intval($user) .
-            ",'" .
-            $SQL->escape($status) .
-            "'",
+        'VALUES' => ':uid, :type, :value, :time, :user, :status',
+        'BIND' => [
+            'uid' => $uid,
+            'type' => kleeja_html_encode($type),
+            'value' => kleeja_html_encode($value),
+            'time' => $time,
+            'user' => (int) $user,
+            'status' => kleeja_html_encode($status),
+        ],
     ];
     is_array($plugin_run_result = Plugins::getInstance()->run('insert_sql_insert_filter_func', get_defined_vars()))
         ? extract($plugin_run_result)
@@ -163,7 +164,7 @@ function insert_filter(string $type, string $value, int $time = 0, int $user = 0
  * @return bool
  */
 function update_filter(
-    $id_or_uid,
+    int|string $id_or_uid,
     string $value,
     string $filter_type = 'general',
     string $filter_status = '',
@@ -171,19 +172,22 @@ function update_filter(
 ): bool {
     global $SQL, $dbprefix;
 
+    $by_id = strval(intval($id_or_uid)) == strval($id_or_uid);
+
     $update_query = [
         'UPDATE' => "{$dbprefix}filters",
-        'SET' =>
-            "filter_value='" .
-            $SQL->escape($value) .
-            "'" .
-            ($filter_status ? ", filter_status='" . $SQL->escape($filter_status) . "'" : ''),
+        'SET' => 'filter_value = :value' . ($filter_status ? ', filter_status = :status' : ''),
         'WHERE' =>
-            (strval(intval($id_or_uid)) == strval($id_or_uid)
-                ? 'filter_id=' . intval($id_or_uid)
-                : "filter_uid='" . $SQL->escape($id_or_uid) . "'") .
-            ($filter_type ? " AND filter_type='" . $SQL->escape($filter_type) . "'" : '') .
-            ($user_id ? ' AND filter_user=' . intval($user_id) . '' : ''),
+            ($by_id ? 'filter_id = :id' : 'filter_uid = :id') .
+            ($filter_type ? ' AND filter_type = :type' : '') .
+            ($user_id ? ' AND filter_user = :user' : ''),
+        'BIND' => [
+            'value' => kleeja_html_encode($value),
+            'status' => kleeja_html_encode($filter_status),
+            'id' => $by_id ? (int) $id_or_uid : kleeja_html_encode($id_or_uid),
+            'type' => kleeja_html_encode($filter_type),
+            'user' => $user_id,
+        ],
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('update_filter_func', get_defined_vars()))
@@ -200,6 +204,18 @@ function update_filter(
 }
 
 /**
+ * a column of the filters table to find the filters by, it is put in the query as it is, so only these are allowed
+ *
+ * @param  string $column
+ * @param  string $default used when $column is not one of them
+ * @return string
+ */
+function valid_filter_column(string $column, string $default): string
+{
+    return in_array($column, ['filter_id', 'filter_uid', 'filter_user', 'filter_status'], true) ? $column : $default;
+}
+
+/**
  * Get filter from db..
  *
  * @param  string $item        The value of $get_by, to get the filter depend on it
@@ -207,7 +223,7 @@ function update_filter(
  * @param  bool   $just_value  If true the return value should be just filter_value otherwise all filter rows
  * @param  string $get_by      The name of filter column we want to get the filter value from
  * @param  int    $user_id
- * @return mixed
+ * @return array|string|false the filter row, or just its value, or false when it is not found
  */
 function get_filter(
     string $item,
@@ -215,25 +231,23 @@ function get_filter(
     bool $just_value = false,
     string $get_by = 'filter_uid',
     int $user_id = 0,
-) {
+): array|string|false {
     global $dbprefix, $SQL;
 
-    $valid_filter_columns = ['filter_id', 'filter_uid', 'filter_user', 'filter_status'];
-
-    if (!in_array($get_by, $valid_filter_columns)) {
-        $get_by = 'filter_uid';
-    }
+    $get_by = valid_filter_column($get_by, 'filter_uid');
 
     $query = [
         'SELECT' => $just_value ? 'f.filter_value' : 'f.*',
         'FROM' => "{$dbprefix}filters f",
         'WHERE' =>
-            'f.' .
-            $get_by .
-            ' = ' .
-            ($get_by == 'filter_id' ? intval($item) : "'" . $SQL->escape($item) . "'") .
-            ($filter_type ? " AND f.filter_type='" . $SQL->escape($filter_type) . "'" : '') .
-            ($user_id ? ' AND f.filter_user=' . intval($user_id) . '' : ''),
+            "f.{$get_by} = :item" .
+            ($filter_type ? ' AND f.filter_type = :type' : '') .
+            ($user_id ? ' AND f.filter_user = :user' : ''),
+        'BIND' => [
+            'item' => $get_by == 'filter_id' ? intval($item) : kleeja_html_encode($item),
+            'type' => kleeja_html_encode($filter_type),
+            'user' => $user_id,
+        ],
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('get_filter_func', get_defined_vars()))
@@ -244,6 +258,10 @@ function get_filter(
     $v = $SQL->fetch($result);
 
     $SQL->freeresult($result);
+
+    if ($v === false) {
+        return false;
+    }
 
     if ($just_value) {
         return $v['filter_value'];
@@ -261,20 +279,28 @@ function get_filter(
  * @param  int       $user_id
  * @return int|false
  */
-function filter_exists(string $item, string $get_by = 'filter_id', string $filter_type = '', int $user_id = 0)
-{
+function filter_exists(
+    string $item,
+    string $get_by = 'filter_id',
+    string $filter_type = '',
+    int $user_id = 0,
+): int|false {
     global $dbprefix, $SQL;
+
+    $get_by = valid_filter_column($get_by, 'filter_id');
 
     $query = [
         'SELECT' => 'f.filter_id',
         'FROM' => "{$dbprefix}filters f",
         'WHERE' =>
-            'f.' .
-            $get_by .
-            ' = ' .
-            ($get_by == 'filter_id' ? intval($item) : "'" . $SQL->escape($item) . "'") .
-            ($filter_type ? " AND f.filter_type='" . $SQL->escape($filter_type) . "'" : '') .
-            ($user_id ? ' AND f.filter_user=' . intval($user_id) . '' : ''),
+            "f.{$get_by} = :item" .
+            ($filter_type ? ' AND f.filter_type = :type' : '') .
+            ($user_id ? ' AND f.filter_user = :user' : ''),
+        'BIND' => [
+            'item' => $get_by == 'filter_id' ? intval($item) : kleeja_html_encode($item),
+            'type' => kleeja_html_encode($filter_type),
+            'user' => $user_id,
+        ],
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('filter_exists_func', get_defined_vars()))
@@ -289,13 +315,13 @@ function filter_exists(string $item, string $get_by = 'filter_id', string $filte
 /**
  * costruct a query for the searches..
  * @adm
- * @param  array  $search Search options
- * @return string
+ * @param  mixed $search Search options, anything other than an array gives an empty query
+ * @return array [WHERE of the query, values of its placeholders]
  */
-function build_search_query($search): string
+function build_search_query(mixed $search): array
 {
     if (!is_array($search)) {
-        return '';
+        return ['', []];
     }
 
     global $SQL, $dbprefix, $config;
@@ -319,7 +345,8 @@ function build_search_query($search): string
         $query = [
             'SELECT' => 'u.id',
             'FROM' => "{$dbprefix}users u",
-            'WHERE' => "u.name LIKE '%" . $SQL->escape($search['username']) . "%'",
+            'WHERE' => 'u.name LIKE :name',
+            'BIND' => ['name' => '%' . kleeja_html_encode($search['username']) . '%'],
         ];
 
         is_array(
@@ -331,47 +358,41 @@ function build_search_query($search): string
             ? extract($plugin_run_result)
             : null; //run hook
         $result = $SQL->build($query);
+        $user_ids = [];
 
         while ($row = $SQL->fetch_array($result)) {
-            $usernamee .= ($usernamee != '' ? ' OR ' : '') . 'f.user=' . $row['id'];
+            $user_ids[] = $row['id'];
         }
 
         $SQL->freeresult($result);
 
-        if (!empty($usernamee)) {
-            $usernamee = 'AND (' . $usernamee . ')';
-        }
+        //no user has this name, so no files, the empty list matches nothing
+        $usernamee = 'AND f.user IN (:user_ids)';
     }
 
     //build query
-    $file_namee =
-        $search['filename'] != ''
-            ? 'AND (f.real_filename LIKE \'%' .
-                $SQL->escape($search['filename']) .
-                '%\' OR f.name LIKE \'%' .
-                $SQL->escape($search['filename']) .
-                '%\')'
-            : '';
-    $size_than = ' f.size ' . ($search['than'] != 1 ? '<=' : '>=') . intval($search['size']) * 1024 . ' ';
-    $ups_than =
-        $search['ups'] != ''
-            ? 'AND f.uploads ' . ($search['uthan'] != 1 ? '<' : '>') . intval($search['ups']) . ' '
-            : '';
-    $rep_than =
-        $search['rep'] != ''
-            ? 'AND f.report ' . ($search['rthan'] != 1 ? '<' : '>') . intval($search['rep']) . ' '
-            : '';
-    $lstd_than =
-        $search['lastdown'] != ''
-            ? 'AND f.last_down =' . (time() - intval($search['lastdown']) * (24 * 60 * 60)) . ' '
-            : '';
-    $exte =
-        $search['ext'] != ''
-            ? "AND f.type IN ('" . implode("', '", @explode(',', $SQL->escape($search['ext']))) . "')"
-            : '';
-    $ipp = $search['user_ip'] != '' ? 'AND f.user_ip LIKE \'%' . $SQL->escape($search['user_ip']) . '%\' ' : '';
+    $file_namee = $search['filename'] != '' ? 'AND (f.real_filename LIKE :filename OR f.name LIKE :filename)' : '';
+    $size_than = ' f.size ' . ($search['than'] != 1 ? '<=' : '>=') . ' :size ';
+    $ups_than = $search['ups'] != '' ? 'AND f.uploads ' . ($search['uthan'] != 1 ? '<' : '>') . ' :ups ' : '';
+    $rep_than = $search['rep'] != '' ? 'AND f.report ' . ($search['rthan'] != 1 ? '<' : '>') . ' :rep ' : '';
+    $lstd_than = $search['lastdown'] != '' ? 'AND f.last_down = :last_down ' : '';
+    $exte = $search['ext'] != '' ? 'AND f.type IN (:exts)' : '';
+    $ipp = $search['user_ip'] != '' ? 'AND f.user_ip LIKE :user_ip ' : '';
 
-    return "$size_than $file_namee $ups_than $exte $rep_than $usernamee $lstd_than $exte $ipp";
+    //values of placeholders that are not in the query are skipped
+    return [
+        "$size_than $file_namee $ups_than $exte $rep_than $usernamee $lstd_than $ipp",
+        [
+            'user_ids' => $user_ids ?? [],
+            'filename' => '%' . kleeja_html_encode($search['filename']) . '%',
+            'size' => intval($search['size']) * 1024,
+            'ups' => intval($search['ups']),
+            'rep' => intval($search['rep']),
+            'last_down' => time() - intval($search['lastdown']) * (24 * 60 * 60),
+            'exts' => explode(',', kleeja_html_encode($search['ext'])),
+            'user_ip' => '%' . kleeja_html_encode($search['user_ip']) . '%',
+        ],
+    ];
 }
 
 /**
@@ -380,7 +401,7 @@ function build_search_query($search): string
  * @param  int       $start
  * @return int|false
  */
-function sync_total_files(bool $files = true, int $start = 0)
+function sync_total_files(bool $files = true, int $start = 0): int|false
 {
     global $SQL, $dbprefix;
 
@@ -391,7 +412,8 @@ function sync_total_files(bool $files = true, int $start = 0)
 
     //!files == images
     $img_types = ['gif', 'jpg', 'png', 'bmp', 'jpeg', 'GIF', 'JPG', 'PNG', 'BMP', 'JPEG'];
-    $query['WHERE'] = 'f.type' . ($files ? ' NOT' : '') . " IN ('" . implode("', '", $img_types) . "')";
+    $query['WHERE'] = 'f.type' . ($files ? ' NOT' : '') . ' IN (:img_types)';
+    $query['BIND'] = ['img_types' => $img_types];
 
     $result = $SQL->build($query);
     $v = $SQL->fetch($result);
@@ -413,7 +435,8 @@ function sync_total_files(bool $files = true, int $start = 0)
     unset($v, $result);
 
     $query['SELECT'] = 'COUNT(f.id) as num_files';
-    $query['WHERE'] .= ' AND f.id BETWEEN ' . $start . ' AND ' . $end;
+    $query['WHERE'] .= ' AND f.id BETWEEN :start AND :end';
+    $query['BIND'] += ['start' => $start, 'end' => $end];
 
     $result = $SQL->build($query);
     $v = $SQL->fetch($result);
@@ -437,7 +460,8 @@ function sync_total_files(bool $files = true, int $start = 0)
         $SQL->build($update_query);
     }
 
-    $update_query['SET'] = ($files ? 'files' : 'imgs') . '=' . ($files ? 'files' : 'imgs') . '+' . $this_step_count;
+    $update_query['SET'] = ($files ? 'files' : 'imgs') . '=' . ($files ? 'files' : 'imgs') . ' + :count';
+    $update_query['BIND'] = ['count' => (int) $this_step_count];
     $SQL->build($update_query);
 
     return $end;

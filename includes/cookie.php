@@ -77,7 +77,7 @@ class KleejaCookie
         );
     }
 
-    public function get(string $name)
+    public function get(string $name): string|false
     {
         global $config;
         is_array(
@@ -86,7 +86,9 @@ class KleejaCookie
             ? extract($plugin_run_result)
             : null; //run hook
 
-        return $_COOKIE[$config['cookie_name'] . '_' . $name] ?? false;
+        $value = $_COOKIE[$config['cookie_name'] . '_' . $name] ?? false;
+
+        return is_string($value) ? $value : false;
     }
 
     public function exists(string $name): bool

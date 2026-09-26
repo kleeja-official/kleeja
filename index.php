@@ -120,7 +120,8 @@ if ($show_online) {
     $query = [
         'SELECT' => 'u.name',
         'FROM' => "{$dbprefix}users u",
-        'WHERE' => "u.last_visit > $timeout2",
+        'WHERE' => 'u.last_visit > :time',
+        'BIND' => ['time' => $timeout2],
     ];
 
     is_array($plugin_run_result = Plugins::getInstance()->run('qr_select_online_index_page', get_defined_vars()))
@@ -165,7 +166,7 @@ if ($show_online) {
         update_config('most_user_online_ever', $current_online_users . ':' . time());
     }
 
-    $online_time = kleeja_date($online_time, true, 'd-m-Y h:i a');
+    $online_time = kleeja_date($online_time, format: 'd-m-Y h:i a');
 
     //before 1.8, styles computability
     $usersnum = $current_online_users;

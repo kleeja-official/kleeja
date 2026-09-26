@@ -25,16 +25,12 @@ include_once PATH . 'includes/plugins.php';
 include_once PATH . 'includes/functions.php';
 include_once PATH . 'includes/functions_alternative.php';
 
-if (isset($dbtype) && $dbtype == 'sqlite') {
-    include PATH . 'includes/sqlite.php';
-} else {
-    include PATH . 'includes/mysqli.php';
-}
+include_once PATH . 'includes/pdo.php';
 
 include_once 'includes/functions_install.php';
 include_once 'includes/update_schema.php';
 
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 
 //
 // fix missing db_version
@@ -57,7 +53,7 @@ if (!ip('action_file_do')) {
 /**
  * Navigation ..
  */
-switch (g('step', 'str', 'action_file')) {
+switch (g('step', default: 'action_file')) {
     default:
     case 'update_now':
         $complete_update = true;
@@ -66,7 +62,7 @@ switch (g('step', 'str', 'action_file')) {
 
         $all_db_updates = array_keys($update_schema);
 
-        $available_db_updates = array_filter($all_db_updates, function ($v) use ($current_db_version) {
+        $available_db_updates = array_filter($all_db_updates, function (int $v) use ($current_db_version): bool {
             return $v > $current_db_version;
         });
 
@@ -119,13 +115,13 @@ switch (g('step', 'str', 'action_file')) {
                     }
                 }
 
-                $sql =
-                    "UPDATE `{$dbprefix}config` SET `value` = '" . UPDATE_DB_VERSION . "' WHERE `name` = 'db_version'";
-                $SQL->query($sql);
+                $SQL->query("UPDATE `{$dbprefix}config` SET `value` = :version WHERE `name` = 'db_version'", [
+                    'version' => UPDATE_DB_VERSION,
+                ]);
             }
         }
 
-        delete_cache('', true);
+        delete_cache('', all: true);
         echo gettpl('update_end.html');
 
         break;

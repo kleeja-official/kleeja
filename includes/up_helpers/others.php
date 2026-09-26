@@ -119,8 +119,8 @@ function make_folder(string $folder): bool
         //create empty index so nobody can see the contents
         $fo = @fopen($path . $sub_folder . '/index.html', 'w');
         $fo2 = @fopen($path . $sub_folder . '/thumbs/index.html', 'w');
-        @fwrite($fo, '<a href="https://kleeja.com"><p>KLEEJA ..</p></a>');
-        @fwrite($fo2, '<a href="https://kleeja.com"><p>KLEEJA ..</p></a>');
+        @fwrite($fo, '<a href="https://kleeja.net"><p>KLEEJA ..</p></a>');
+        @fwrite($fo2, '<a href="https://kleeja.net"><p>KLEEJA ..</p></a>');
 
         $path .= $sub_folder . '/';
     }
@@ -231,7 +231,6 @@ function check_mime_type(string $given_file_mime, string $file_ext, string $file
         } else {
             $f_info = finfo_open(FILEINFO_MIME_TYPE);
             $mime = finfo_file($f_info, $file_path);
-            finfo_close($f_info);
         }
     } elseif (!empty($given_file_mime)) {
         $mime = $given_file_mime;
@@ -305,7 +304,8 @@ function user_is_flooding(int $user_id = -1): bool
     $query = [
         'SELECT' => 'f.time',
         'FROM' => "{$dbprefix}files f",
-        'WHERE' => 'f.time >= ' . $time . ' AND f.user_ip = \'' . $SQL->escape(get_ip()) . '\'',
+        'WHERE' => 'f.time >= :time AND f.user_ip = :ip',
+        'BIND' => ['time' => $time, 'ip' => kleeja_html_encode(get_ip())],
     ];
 
     if ($SQL->num_rows($SQL->build($query))) {

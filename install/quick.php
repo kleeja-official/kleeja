@@ -23,11 +23,7 @@ include_once PATH . 'includes/functions_display.php';
 include_once PATH . 'includes/functions_alternative.php';
 include_once PATH . 'includes/functions.php';
 
-if (isset($dbtype) && $dbtype == 'sqlite') {
-    include PATH . 'includes/sqlite.php';
-} else {
-    include PATH . 'includes/mysqli.php';
-}
+include_once PATH . 'includes/pdo.php';
 
 include_once 'includes/functions_install.php';
 
@@ -46,13 +42,13 @@ if (file_exists(PATH . 'config.php')) {
     exit('`config.php` was missing! so we created one for you, kindly edit the file with database information.');
 }
 
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 
 if (!$SQL->is_connected()) {
     exit('Can not connect to database, please make sure the data in `config.php` is correct!');
 }
 
-if (defined('SQL_LAYER') && SQL_LAYER == 'mysqli') {
+if ($SQL->driver === 'mysql') {
     if (!empty($SQL->version()) && version_compare($SQL->version(), MIN_MYSQL_VERSION, '<')) {
         exit('The required MySQL version is `' . MIN_MYSQL_VERSION . '` and yours is `' . $SQL->version() . '`!');
     }
@@ -69,7 +65,7 @@ foreach (['cache', 'uploads', 'uploads/thumbs'] as $folder) {
 }
 
 //install
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 
 include_once PATH . 'includes/usr.php';
 include_once PATH . 'includes/functions_alternative.php';
@@ -91,7 +87,10 @@ $config_time_zone = 'Asia/Buraydah';
 include 'includes/install_sqls.php';
 include 'includes/default_values.php';
 
-$SQL->query($install_sqls['ALTER_DATABASE_UTF']);
+//SQLite has no database charset
+if ($SQL->driver === 'mysql') {
+    $SQL->query($install_sqls['ALTER_DATABASE_UTF']);
+}
 
 $err = 0;
 $errors = '';
@@ -101,7 +100,7 @@ foreach ($install_sqls as $name => $sql_content) {
         continue;
     }
 
-    if (!$SQL->query($sql_content)) {
+    if (!$SQL->query($sql_content, $install_params[$name] ?? [])) {
         $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
         echo $lang['INST_SQL_ERR'] . ' : ' . $name . '[basic]' . (CLI ? PHP_EOL : '<br>');
         $err++;
@@ -115,9 +114,9 @@ if ($err == 0) {
             $cn[6] = 0;
         }
 
-        $sql = "INSERT INTO `{$dbprefix}config` (`name`, `value`, `option`, `display_order`, `type`, `plg_id`, `dynamic`) VALUES ('$cn[0]', '$cn[1]', '$cn[2]', '$cn[3]', '$cn[4]', '$cn[5]', '$cn[6]');";
+        $sql = "INSERT INTO `{$dbprefix}config` (`name`, `value`, `option`, `display_order`, `type`, `plg_id`, `dynamic`) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
-        if (!$SQL->query($sql)) {
+        if (!$SQL->query($sql, array_slice($cn, 0, 7))) {
             $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
             echo $lang['INST_SQL_ERR'] . ' : [configs_values] ' . $cn . (CLI ? PHP_EOL : '<br>');
             $err++;
@@ -130,15 +129,9 @@ if ($err == 0) {
             continue;
         }
 
-        $itxt = '';
+        $sql = "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) VALUES (1, :name, :value), (2, :name, :value), (3, :name, :value);";
 
-        foreach ([1, 2, 3] as $im) {
-            $itxt .= ($itxt == '' ? '' : ',') . "($im, '$cn[0]', '$cn[1]')";
-        }
-
-        $sql = "INSERT INTO `{$dbprefix}groups_data` (`group_id`, `name`, `value`) VALUES " . $itxt . ';';
-
-        if (!$SQL->query($sql)) {
+        if (!$SQL->query($sql, ['name' => $cn[0], 'value' => $cn[1]])) {
             $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
             echo $lang['INST_SQL_ERR'] . ' : [groups_configs_values] ' . $cn . (CLI ? PHP_EOL : '<br>');
             $err++;
@@ -148,14 +141,16 @@ if ($err == 0) {
     //add exts
     foreach ($ext_values as $gid => $exts) {
         $itxt = '';
+        $params = [];
 
         foreach ($exts as $t => $v) {
-            $itxt .= ($itxt == '' ? '' : ',') . "('$t', $gid, $v)";
+            $itxt .= ($itxt == '' ? '' : ',') . '(?, ?, ?)';
+            array_push($params, $t, $gid, $v);
         }
 
         $sql = "INSERT INTO `{$dbprefix}groups_exts` (`ext`, `group_id`, `size`) VALUES " . $itxt . ';';
 
-        if (!$SQL->query($sql)) {
+        if (!$SQL->query($sql, $params)) {
             $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
             echo $lang['INST_SQL_ERR'] . ' : [ext_values] ' . $gid . (CLI ? PHP_EOL : '<br>');
             $err++;
@@ -166,15 +161,17 @@ if ($err == 0) {
     foreach ($acls_values as $cn => $ct) {
         $it = 1;
         $itxt = '';
+        $params = [];
 
         foreach ($ct as $ctk) {
-            $itxt .= ($itxt == '' ? '' : ',') . "('$cn', '$it', '$ctk')";
+            $itxt .= ($itxt == '' ? '' : ',') . '(?, ?, ?)';
+            array_push($params, $cn, $it, $ctk);
             $it++;
         }
 
         $sql = "INSERT INTO `{$dbprefix}groups_acl` (`acl_name`, `group_id`, `acl_can`) VALUES " . $itxt . ';';
 
-        if (!$SQL->query($sql)) {
+        if (!$SQL->query($sql, $params)) {
             $errors .= implode(':', $SQL->get_error()) . '' . "\n___\n";
             echo $lang['INST_SQL_ERR'] . ' : [acl_values] ' . $cn . (CLI ? PHP_EOL : '<br>');
             $err++;

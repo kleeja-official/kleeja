@@ -16,6 +16,11 @@ if (empty($install_sqls) || !is_array($install_sqls)) {
     $install_sqls = [];
 }
 
+//values of the placeholders of $install_sqls queries, by the same keys
+if (empty($install_params) || !is_array($install_params)) {
+    $install_params = [];
+}
+
 $install_sqls['ALTER_DATABASE_UTF'] = "
 ALTER DATABASE `{$dbname}` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin
 ";
@@ -207,28 +212,30 @@ CREATE TABLE `{$dbprefix}filters` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 ";
 
-$install_sqls['stats_insert'] =
-    "INSERT INTO `{$dbprefix}stats`  VALUES (0,0,1,0,0," . time() . ",0,0,0,0,'',0,0,0,0,'','','','')";
-$install_sqls['users_insert'] =
-    "INSERT INTO `{$dbprefix}users` (`id`,`name`,`group_id`,`password`,`password_salt`,`mail`,`founder`,`clean_name`) VALUES (1,'" .
-    $user_name .
-    "', 1, '" .
-    $user_pass .
-    "','" .
-    $user_salt .
-    "', '" .
-    $user_mail .
-    "', 1,'" .
-    $clean_name .
-    "')";
-$install_sqls['TeamMsg_insert'] =
-    "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES ('" .
-    $SQL->escape($lang['KLEEJA_TEAM_MSG_NAME']) .
-    "', '" .
-    $SQL->escape($lang['KLEEJA_TEAM_MSG_TEXT']) .
-    "','info@kleeja.net', " .
-    time() .
-    ", '127.0.0.1')";
+$install_sqls[
+    'stats_insert'
+] = "INSERT INTO `{$dbprefix}stats`  VALUES (0,0,1,0,0,:time,0,0,0,0,'',0,0,0,0,'','','','')";
+$install_params['stats_insert'] = ['time' => time()];
+
+$install_sqls[
+    'users_insert'
+] = "INSERT INTO `{$dbprefix}users` (`id`,`name`,`group_id`,`password`,`password_salt`,`mail`,`founder`,`clean_name`) VALUES (1, :name, 1, :password, :salt, :mail, 1, :clean_name)";
+$install_params['users_insert'] = [
+    'name' => $user_name,
+    'password' => $user_pass,
+    'salt' => $user_salt,
+    'mail' => $user_mail,
+    'clean_name' => $clean_name,
+];
+
+$install_sqls[
+    'TeamMsg_insert'
+] = "INSERT INTO `{$dbprefix}call` (`name`,`text`,`mail`,`time`,`ip`) VALUES (:name, :text, 'info@kleeja.net', :time, '127.0.0.1')";
+$install_params['TeamMsg_insert'] = [
+    'name' => kleeja_html_encode($lang['KLEEJA_TEAM_MSG_NAME']),
+    'text' => kleeja_html_encode($lang['KLEEJA_TEAM_MSG_TEXT']),
+    'time' => time(),
+];
 $install_sqls[
     'groups_insert'
 ] = "INSERT INTO `{$dbprefix}groups` (`group_id`, `group_name`, `group_is_default`, `group_is_essential`) VALUES

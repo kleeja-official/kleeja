@@ -150,7 +150,11 @@ class defaultUploader implements KleejaUploader
         $insert_query = [
             'INSERT' => '`' . implode('` , `', array_keys($queryValues)) . '`',
             'INTO' => "{$dbprefix}files",
-            'VALUES' => "'" . implode("', '", array_map([$SQL, 'escape'], array_values($queryValues))) . "'",
+            'VALUES' => ':' . implode(', :', array_keys($queryValues)),
+            'BIND' => array_map(
+                fn(mixed $value): mixed => is_string($value) ? kleeja_html_encode($value) : $value,
+                $queryValues,
+            ),
         ];
 
         // do the query
@@ -162,7 +166,8 @@ class defaultUploader implements KleejaUploader
         // update Kleeja stats
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => ($is_img ? 'imgs=imgs+1' : 'files=files+1') . ',sizes=sizes+' . intval($fileInfo['fileSize']) . '',
+            'SET' => ($is_img ? 'imgs=imgs+1' : 'files=files+1') . ', sizes = sizes + :size',
+            'BIND' => ['size' => intval($fileInfo['fileSize'])],
         ];
 
         $SQL->build($update_query);

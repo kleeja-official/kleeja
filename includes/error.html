@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Kleeja Error</title>
+    <title>{TITLE}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <style>
@@ -18,6 +18,7 @@
             --kj-navy-200: #D9DCE0;
             --kj-navy-600: #546275;
             --kj-error: #C2323F;
+            --kj-info: #2D6CB5;
 
             --kj-bg: var(--kj-navy-50);
             --kj-surface: #FFFFFF;
@@ -43,6 +44,7 @@
                 --kj-badge-bg: #582126;
                 --kj-badge-text: #FCD4D8;
                 --kj-danger: #F78C96;
+                --kj-info: #7FA8DB;
             }
         }
 
@@ -81,6 +83,8 @@
             overflow-wrap: anywhere;
         }
 
+        .kj-message-info { border-inline-start-color: var(--kj-info); }
+
         .kj-details {
             --bs-table-bg: transparent;
             --bs-table-color: var(--kj-text);
@@ -108,11 +112,16 @@
 </head>
 <body class="d-flex align-items-center py-5">
     <!--
-        Rendered by kleeja_show_error() in includes/common.php.
-        Placeholders, written as {NAME} in the markup below (values are HTML-escaped):
+        Rendered by kleeja_show_error() in includes/common.php and big_error() in includes/functions_display.php.
+        Placeholders, written as {NAME} in the markup below:
+            TITLE         page title and heading
+            BADGE         short label under the heading
+            TYPE          "error" or "info", selects the message style
+            MESSAGE       the message, HTML
+        Only used by kleeja_show_error(), inside the BEGIN DETAILS / END DETAILS blocks
+        that big_error() removes (values are HTML-escaped):
             ERROR_NAME    error type name, e.g. E_USER_ERROR
             ERROR_NUMBER  $error_number
-            ERROR_STRING  $error_string
             ERROR_FILE    basename($error_file)
             ERROR_LINE    $error_line
     -->
@@ -124,20 +133,23 @@
                     <img src="https://kleeja.net/images/logo.svg" alt="Kleeja" width="48" height="48">
                 </picture>
                 <div>
-                    <h1 class="h4 fw-bold mb-1">Kleeja Error</h1>
-                    <span class="kj-badge">HTTP 503 · Service Temporarily Unavailable</span>
+                    <h1 class="h4 fw-bold mb-1">{TITLE}</h1>
+                    <span class="kj-badge">{BADGE}</span>
                 </div>
             </div>
 
+            <!-- BEGIN DETAILS -->
             <p class="kj-muted mb-3">
                 Something went wrong while processing your request. The details below can help the site
                 administrator fix the problem.
             </p>
+            <!-- END DETAILS -->
 
-            <div class="kj-message mb-4" dir="auto">
-                {ERROR_STRING}
+            <div class="kj-message kj-message-{TYPE} mb-4" dir="auto">
+                {MESSAGE}
             </div>
 
+            <!-- BEGIN DETAILS -->
             <table class="table kj-details mb-4">
                 <tbody>
                     <tr>
@@ -158,6 +170,7 @@
                     </tr>
                 </tbody>
             </table>
+            <!-- END DETAILS -->
 
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 small kj-muted">
                 <span>

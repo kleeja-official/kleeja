@@ -31,51 +31,42 @@ if (
     in_array($case, ['clearc', 'sync_files', 'sync_images', 'sync_users', 'tables', 'sync_sizes', 'status_file'])
 ) {
     if (!kleeja_check_form_key_get('REPAIR_FORM_KEY')) {
-        kleeja_admin_err($lang['INVALID_GET_KEY'], true, $lang['ERROR'], true, basename(ADMIN_PATH), 2);
+        kleeja_admin_err($lang['INVALID_GET_KEY'], title: $lang['ERROR'], redirect: basename(ADMIN_PATH), rs: 2);
     }
 }
 
 $text = '';
 
 switch ($case):
-    default:
-        // Get real number from database right now
-        $all_files = get_actual_stats('files');
-        $all_images = get_actual_stats('imgs');
-        $all_users = get_actual_stats('users');
-        $all_sizes = readable_size(get_actual_stats('sizes'));
-
-        //links
-        $del_cache_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . $GET_FORM_KEY;
-        $resync_files_link = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_files';
-        $resync_images_link = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_images';
-        $resync_users_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_users&amp;' . $GET_FORM_KEY;
-        $resync_sizes_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_sizes&amp;' . $GET_FORM_KEY;
-        $repair_tables_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=tables&amp;' . $GET_FORM_KEY;
-
-        $queue_cron_job_url = $config['siteurl'] . 'go.php?go=queue';
-
-        $stylee = 'admin_repair';
-
-        break;
-
     //
     //fix tables ..
     //
     case 'tables':
-        $query = 'SHOW TABLE STATUS';
+        //SQLite has no REPAIR TABLE, rebuilding the indexes of each table is the closest thing to it
+        $is_sqlite = $SQL->driver === 'sqlite';
+
+        $query = $is_sqlite
+            ? "SELECT name AS Name FROM sqlite_master WHERE type = 'table' AND substr(name, 1, 7) <> 'sqlite_'"
+            : 'SHOW TABLE STATUS';
         $result = $SQL->query($query);
 
-        while ($row = $SQL->fetch_array($result)) {
-            $queryf = 'REPAIR TABLE `' . $row['Name'] . '`';
-            $resultf = $SQL->query($queryf);
+        //get the names first, SQLite can not change a table while reading the tables list
+        $tables = [];
 
-            if ($resultf) {
-                $text .= '<li>' . $lang['REPAIRE_TABLE'] . $row['Name'] . '</li>';
-            }
+        while ($row = $SQL->fetch_array($result)) {
+            $tables[] = $row['Name'];
         }
 
         $SQL->freeresult($result);
+
+        foreach ($tables as $table) {
+            $queryf = $is_sqlite ? 'REINDEX "' . str_replace('"', '""', $table) . '"' : 'REPAIR TABLE `' . $table . '`';
+            $resultf = $SQL->query($queryf);
+
+            if ($resultf) {
+                $text .= '<li>' . $lang['REPAIRE_TABLE'] . $table . '</li>';
+            }
+        }
 
         $text .=
             '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' .
@@ -109,7 +100,8 @@ switch ($case):
 
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => 'files=' . $files_number . ', sizes=' . $files_sizes,
+            'SET' => 'files = :files, sizes = :sizes',
+            'BIND' => ['files' => $files_number, 'sizes' => $files_sizes],
         ];
 
         if ($SQL->build($update_query)) {
@@ -142,7 +134,8 @@ switch ($case):
 
         $update_query = [
             'UPDATE' => "{$dbprefix}stats",
-            'SET' => 'users=' . $user_number,
+            'SET' => 'users = :users',
+            'BIND' => ['users' => $user_number],
         ];
 
         $result = $SQL->build($update_query);
@@ -165,7 +158,7 @@ switch ($case):
     //
     case 'clearc':
         //clear cache
-        delete_cache('', true);
+        delete_cache('', all: true);
 
         //show done, msg
         $text .= '<li>' . $lang['REPAIRE_CACHE'] . '</li>';
@@ -182,7 +175,7 @@ switch ($case):
 
     //toggle admin start boxes
     case 'toggle_start_box':
-        if (!kleeja_check_form_key_get('adm_start_actions', 3600)) {
+        if (!kleeja_check_form_key_get('adm_start_actions')) {
             header('HTTP/1.1 405 Method Not Allowed');
             $adminAjaxContent = $lang['INVALID_FORM_KEY'];
         } else {
@@ -192,10 +185,12 @@ switch ($case):
             $name = g('name');
             $hide = g('toggle', 'int') == 1;
 
+            //showing a box that is not hidden changes nothing
+            $new_items = $items;
+
             if (in_array($name, $items) && !$hide) {
                 $new_items = array_diff($items, [$name]);
             } elseif ($hide) {
-                $new_items = $items;
                 $new_items[] = $name;
             }
 
@@ -205,6 +200,27 @@ switch ($case):
 
             $adminAjaxContent = $lang['CONFIGS_UPDATED'];
         }
+
+        break;
+
+    default:
+        // Get real number from database right now
+        $all_files = get_actual_stats('files');
+        $all_images = get_actual_stats('imgs');
+        $all_users = get_actual_stats('users');
+        $all_sizes = readable_size(get_actual_stats('sizes'));
+
+        //links
+        $del_cache_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=clearc&amp;' . $GET_FORM_KEY;
+        $resync_files_link = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_files';
+        $resync_images_link = $config['siteurl'] . 'go.php?go=resync&amp;case=sync_images';
+        $resync_users_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_users&amp;' . $GET_FORM_KEY;
+        $resync_sizes_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=sync_sizes&amp;' . $GET_FORM_KEY;
+        $repair_tables_link = basename(ADMIN_PATH) . '?cp=r_repair&amp;case=tables&amp;' . $GET_FORM_KEY;
+
+        $queue_cron_job_url = $config['siteurl'] . 'go.php?go=queue';
+
+        $stylee = 'admin_repair';
 
         break;
 endswitch;

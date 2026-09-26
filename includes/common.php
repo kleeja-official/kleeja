@@ -67,14 +67,16 @@ function kleeja_show_error(
         case E_WARNING:
         case E_USER_WARNING:
         case E_USER_NOTICE:
-        case E_STRICT:
+        case E_DEPRECATED:
+        case E_USER_DEPRECATED:
             if (function_exists('kleeja_log')) {
                 $error_name = [
-                    2 => 'Warning',
-                    8 => 'Notice',
-                    512 => 'U_Warning',
-                    1024 => 'U_Notice',
-                    2048 => 'Strict',
+                    E_WARNING => 'Warning',
+                    E_NOTICE => 'Notice',
+                    E_USER_WARNING => 'U_Warning',
+                    E_USER_NOTICE => 'U_Notice',
+                    E_DEPRECATED => 'Deprecated',
+                    E_USER_DEPRECATED => 'U_Deprecated',
                 ][$error_number];
                 kleeja_log('[' . $error_name . '] ' . basename($error_file) . ':' . $error_line . ' ' . $error_string);
             }
@@ -95,11 +97,9 @@ function kleeja_show_error(
                     E_COMPILE_ERROR => 'E_COMPILE_ERROR',
                     E_USER_ERROR => 'E_USER_ERROR',
                     E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
-                    E_DEPRECATED => 'E_DEPRECATED',
-                    E_USER_DEPRECATED => 'E_USER_DEPRECATED',
                 ][$error_number] ?? 'E_UNKNOWN';
 
-            $escape = fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+            $escape = fn(string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
             $error_template = @file_get_contents(__DIR__ . '/error.html');
 
             if ($error_template === false) {
@@ -110,12 +110,15 @@ function kleeja_show_error(
                     ':' .
                     $error_line .
                     ' ]</strong><br />' .
-                    $escape($error_string);
+                    nl2br($escape($error_string));
             } else {
                 echo strtr($error_template, [
+                    '{TITLE}' => 'Kleeja Error',
+                    '{BADGE}' => 'HTTP 503 · Service Temporarily Unavailable',
+                    '{TYPE}' => 'error',
+                    '{MESSAGE}' => nl2br($escape($error_string)),
                     '{ERROR_NAME}' => $error_name,
                     '{ERROR_NUMBER}' => $error_number,
-                    '{ERROR_STRING}' => $escape($error_string),
                     '{ERROR_FILE}' => $escape(basename($error_file)),
                     '{ERROR_LINE}' => $error_line,
                 ]);
@@ -136,10 +139,20 @@ set_error_handler('kleeja_show_error');
 
 include PATH . 'includes/version.php';
 
+//the error handler is called directly, E_USER_ERROR is deprecated for trigger_error() since PHP 8.4
 if (version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
-    trigger_error(
-        'You are using an old PHP version (' . PHP_VERSION_ID . '), to run Kleeja you should use PHP 8.0 or above.',
+    kleeja_show_error(
         E_USER_ERROR,
+        'You are using an old PHP version (' . PHP_VERSION . '), to run Kleeja you should use PHP 8.0 or above.',
+        __FILE__,
+        __LINE__,
+    );
+} elseif (!class_exists('PDO') || !array_intersect(['mysql', 'sqlite'], PDO::getAvailableDrivers())) {
+    kleeja_show_error(
+        E_USER_ERROR,
+        'In order to use Kleeja, "pdo_mysql" or "pdo_sqlite" extension has to be installed on your server.',
+        __FILE__,
+        __LINE__,
     );
 }
 
@@ -178,7 +191,12 @@ if (!is_bot() && PHP_SESSION_ACTIVE !== session_status() && !headers_sent()) {
     }
 
     if (!session_start()) {
-        big_error('Session Error!', 'There is a problem with PHP session. We can not start it.');
+        kleeja_show_error(
+            E_USER_ERROR,
+            'There is a problem with PHP session. We can not start it.',
+            __FILE__,
+            __LINE__,
+        );
     }
 }
 
@@ -195,11 +213,7 @@ define('K_DIR_CHMOD', defined('HAS_SUEXEC') ? 0755 & ~umask() : 0755);
 
 include PATH . 'includes/functions_alternative.php';
 
-if (isset($dbtype) && $dbtype == 'sqlite') {
-    include PATH . 'includes/sqlite.php';
-} else {
-    include PATH . 'includes/mysqli.php';
-}
+include_once PATH . 'includes/pdo.php';
 
 include PATH . 'includes/style.php';
 include PATH . 'includes/usr.php';
@@ -220,7 +234,7 @@ if (empty($script_encoding)) {
 }
 
 //start classes ..
-$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+$SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
 //no need after now
 unset($dbpass);
 
@@ -423,7 +437,7 @@ is_array($plugin_run_result = Plugins::getInstance()->run('end_common', get_defi
     ? extract($plugin_run_result)
     : null; //run hook
 
-register_shutdown_function(function () {
+register_shutdown_function(function (): void {
     session_write_close();
 
     $err = error_get_last();

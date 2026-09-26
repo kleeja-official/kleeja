@@ -38,7 +38,7 @@ function getlang(bool $link = false): string
     $ln = 'en';
 
     if (ig('lang')) {
-        $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', 'str', 'en'));
+        $lang = preg_replace('/[^a-z0-9]/i', '', g('lang', default: 'en'));
         $ln = file_exists(PATH . 'lang/' . $lang . '/install.php') ? $lang : 'en';
     }
 
@@ -156,7 +156,7 @@ function get_microtime(): float
  * @param  string       $name
  * @return string|false
  */
-function inst_get_config(string $name)
+function inst_get_config(string $name): string|false
 {
     global $SQL, $dbprefix;
 
@@ -171,22 +171,21 @@ function inst_get_config(string $name)
             @touch(PATH . $dbname);
         }
 
-        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix);
+        $SQL = new KleejaDatabase($dbserver, $dbuser, $dbpass, $dbname, $dbprefix, $dbtype ?? 'mysql');
     }
 
     if (empty($SQL)) {
         return false;
     }
 
-    $sql = "SELECT value FROM `{$dbprefix}config` WHERE `name` = '" . $name . "'";
-    $result = $SQL->query($sql);
+    $result = $SQL->query("SELECT value FROM `{$dbprefix}config` WHERE `name` = :name", ['name' => $name]);
 
     if ($SQL->num_rows($result) == 0) {
         return false;
     } else {
         $current_ver = $SQL->fetch_array($result);
 
-        return $current_ver['value'];
+        return $current_ver['value'] ?? false;
     }
 }
 

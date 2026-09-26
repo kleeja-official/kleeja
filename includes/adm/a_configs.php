@@ -14,7 +14,7 @@ if (!defined('IN_ADMIN')) {
 
 //for style ..
 $stylee = 'admin_configs';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'general'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'general'));
 //words
 $base_action = basename(ADMIN_PATH) . '?cp=options';
 $action = $base_action . '&amp;smt=' . $current_smt;
@@ -73,7 +73,7 @@ $go_menu['all'] = [
 //
 if (ip('submit')) {
     if (!kleeja_check_form_key('adm_configs')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
@@ -91,11 +91,12 @@ $query = [
     'ORDER BY' => 'display_order, type ASC',
 ];
 
-$CONFIGEXTEND = $SQL->escape($current_smt);
+$CONFIGEXTEND = kleeja_html_encode($current_smt);
 $CONFIGEXTENDLANG = $go_menu[$current_smt]['name'];
 
 if ($current_smt != 'all') {
-    $query['WHERE'] = "type = '" . $SQL->escape($current_smt) . "' OR type = ''";
+    $query['WHERE'] = "type = :type OR type = ''";
+    $query['BIND'] = ['type' => kleeja_html_encode($current_smt)];
 
     if ($current_smt == 'interface') {
         $query['WHERE'] .= " OR name='language'";
@@ -193,7 +194,7 @@ while ($row = $SQL->fetch_array($result)) {
     //when submit
     if (ip('submit')) {
         //-->
-        $new[$row['name']] = p($row['name'], 'str', $con[$row['name']]);
+        $new[$row['name']] = p($row['name'], default: $con[$row['name']]);
 
         //save them as you want ..
         if ($row['name'] == 'thumbs_imgs') {
@@ -233,11 +234,11 @@ while ($row = $SQL->fetch_array($result)) {
                 }
             }
         } elseif ($row['name'] == 'language') {
-            $got_lang = preg_replace('[^a-zA-Z0-9]', '', $new[$row['name']]);
+            $got_lang = preg_replace('/[^a-zA-Z0-9]/', '', $new[$row['name']]);
 
             //all groups
             foreach ($d_groups as $group_id => $group_info) {
-                update_config('language', $got_lang, true, $group_id);
+                update_config('language', $got_lang, group: $group_id);
             }
 
             delete_cache('data_lang' . $got_lang);
@@ -249,13 +250,10 @@ while ($row = $SQL->fetch_array($result)) {
 
         $update_query = [
             'UPDATE' => "{$dbprefix}config",
-            'SET' => "value='" . $SQL->escape($new[$row['name']]) . "'",
-            'WHERE' => "name='" . $row['name'] . "'",
+            'SET' => 'value = :value',
+            'WHERE' => 'name = :name',
+            'BIND' => ['value' => kleeja_html_encode($new[$row['name']]), 'name' => $row['name']],
         ];
-
-        if ($current_smt != 'all') {
-            $query['WHERE'] .= " AND type = '" . $SQL->escape($current_smt) . "'";
-        }
 
         $SQL->build($update_query);
     }
@@ -336,6 +334,6 @@ if (ip('submit')) {
         }
     }
 
-    kleeja_admin_info($lang['CONFIGS_UPDATED'], true, '', true, $action, 3);
+    kleeja_admin_info($lang['CONFIGS_UPDATED'], redirect: $action, rs: 3);
     //}
 } //submit

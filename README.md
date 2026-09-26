@@ -45,7 +45,7 @@ See the [full feature list](https://github.com/kleeja/kleeja/wiki/Key-Features-&
 
 ## Requirements
 
-- PHP 8.0 or later with the `mysqli` extension (`gd` and `zip` recommended)
+- PHP 8.0 or later with the `pdo_mysql` or `pdo_sqlite` extension (`gd` and `zip` recommended)
 - MySQL or MariaDB
 - A web server such as Apache or IIS (sample `htaccess.txt` and `web.config` included)
 

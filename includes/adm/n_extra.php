@@ -14,7 +14,7 @@ if (!defined('IN_ADMIN')) {
 
 //for style ..
 $stylee = 'admin_extra';
-$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', 'str', 'he'));
+$current_smt = preg_replace('/[^a-z0-9_]/i', '', g('smt', default: 'he'));
 $action = basename(ADMIN_PATH) . '?cp=' . basename(__FILE__, '.php') . '&amp;smt=' . $current_smt;
 $H_FORM_KEYS = kleeja_add_form_key('adm_extra');
 
@@ -23,7 +23,7 @@ $H_FORM_KEYS = kleeja_add_form_key('adm_extra');
 //
 if (ip('submit')) {
     if (!kleeja_check_form_key('adm_extra')) {
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action, 1);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action, rs: 1);
     }
 }
 
@@ -45,16 +45,19 @@ if (ip('submit')) {
 
     if (g('smt') == 'fe') {
         $ex_footer = p('ex_footer', 'str');
-        $update_sql = "ex_footer = '" . $SQL->real_escape(htmlspecialchars_decode($ex_footer)) . "'";
+        $update_sql = 'ex_footer = :value';
+        $update_value = htmlspecialchars_decode($ex_footer);
     } else {
         $ex_header = p('ex_header', 'str');
-        $update_sql = "ex_header = '" . $SQL->real_escape(htmlspecialchars_decode($ex_header)) . "'";
+        $update_sql = 'ex_header = :value';
+        $update_value = htmlspecialchars_decode($ex_header);
     }
 
     //update
     $update_query = [
         'UPDATE' => "{$dbprefix}stats",
         'SET' => $update_sql,
+        'BIND' => ['value' => $update_value],
     ];
 
     $SQL->build($update_query);
@@ -76,7 +79,7 @@ $SQL->freeresult($result);
 
 //after submit
 if (ip('submit')) {
-    kleeja_admin_info($affected ? $lang['EXTRA_UPDATED'] : $lang['NO_UP_CHANGE_S'], true, '', true, $action);
+    kleeja_admin_info($affected ? $lang['EXTRA_UPDATED'] : $lang['NO_UP_CHANGE_S'], redirect: $action);
 }
 
 //secondary menu

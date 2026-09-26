@@ -16,7 +16,7 @@ if (!defined('IN_ADMIN')) {
 @set_time_limit(0);
 
 //get current case
-$case = g('case', 'str', 'installed');
+$case = g('case', default: 'installed');
 
 //set _get form key
 $GET_FORM_KEY = kleeja_add_form_key_get('adm_plugins_get');
@@ -43,7 +43,7 @@ if (!empty($case) && in_array($case, ['install', 'uninstall', 'enable', 'disable
 if (ip('newplugin')) {
     if (!kleeja_check_form_key('adm_plugins')) {
         header('HTTP/1.0 401 Unauthorized');
-        kleeja_admin_err($lang['INVALID_FORM_KEY'], true, $lang['ERROR'], true, $action);
+        kleeja_admin_err($lang['INVALID_FORM_KEY'], title: $lang['ERROR'], redirect: $action);
     }
 
     $case = 'upload';
@@ -307,148 +307,137 @@ switch ($case):
             }
             //no plugin selected? back
             redirect(ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'));
-        } else {
-            if (!file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php')) {
-                if (defined('DEV_STAGE')) {
-                    exit('!file_exists($plg_name)');
-                }
+            exit();
+        }
 
-                redirect(ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'));
-
-                exit();
+        if (!file_exists(PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php')) {
+            if (defined('DEV_STAGE')) {
+                exit('!file_exists($plg_name)');
             }
 
-            //if already installed, show a message
-            if (!empty(Plugins::getInstance()->installed_plugin_info($plg_name))) {
+            redirect(ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'));
+
+            exit();
+        }
+
+        //if already installed, show a message
+        if (!empty(Plugins::getInstance()->installed_plugin_info($plg_name))) {
+            kleeja_admin_info(
+                $lang['PLUGIN_EXISTS_BEFORE'],
+                redirect: ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
+            );
+
+            exit();
+        }
+
+        $kleeja_plugin = [];
+
+        //don't show mysql errors
+        if (!defined('SQL_NO_ERRORS')) {
+            define('SQL_NO_ERRORS', true);
+        }
+
+        @include PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php';
+
+        $install_callback = $kleeja_plugin[$plg_name]['install'];
+        $plugin_info = $kleeja_plugin[$plg_name]['information'];
+        $plugin_first_run = false;
+
+        if (!empty($kleeja_plugin[$plg_name]['first_run'][$config['language']])) {
+            $plugin_first_run = $kleeja_plugin[$plg_name]['first_run'][$config['language']];
+        } elseif (!empty($kleeja_plugin[$plg_name]['first_run']['en'])) {
+            $plugin_first_run = $kleeja_plugin[$plg_name]['first_run']['en'];
+        }
+
+        //check if compatible with kleeja
+        //'plugin_kleeja_version_min' => '1.8',
+        // Max version of Kleeja that's required to run this plugin
+        //'plugin_kleeja_version_max' => '3.8',
+        //3.1.0 < 3.1.0
+
+        if (!empty($plugin_info['plugin_kleeja_version_min'])) {
+            if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<')) {
                 kleeja_admin_info(
-                    $lang['PLUGIN_EXISTS_BEFORE'],
-                    true,
-                    '',
-                    true,
-                    ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
+                    $lang['PACKAGE_N_CMPT_KLJ'] .
+                        '<br>k:' .
+                        KLEEJA_VERSION .
+                        '|<|p.min:' .
+                        $plugin_info['plugin_kleeja_version_min'],
+                    redirect: ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
                 );
 
                 exit();
             }
-
-            $kleeja_plugin = [];
-
-            //don't show mysql errors
-            if (!defined('SQL_NO_ERRORS')) {
-                define('SQL_NO_ERRORS', true);
-            }
-
-            @include PATH . KLEEJA_PLUGINS_FOLDER . '/' . $plg_name . '/init.php';
-
-            $install_callback = $kleeja_plugin[$plg_name]['install'];
-            $plugin_info = $kleeja_plugin[$plg_name]['information'];
-            $plugin_first_run = false;
-
-            if (!empty($kleeja_plugin[$plg_name]['first_run'][$config['language']])) {
-                $plugin_first_run = $kleeja_plugin[$plg_name]['first_run'][$config['language']];
-            } elseif (!empty($kleeja_plugin[$plg_name]['first_run']['en'])) {
-                $plugin_first_run = $kleeja_plugin[$plg_name]['first_run']['en'];
-            }
-
-            //check if compatible with kleeja
-            //'plugin_kleeja_version_min' => '1.8',
-            // Max version of Kleeja that's required to run this plugin
-            //'plugin_kleeja_version_max' => '3.8',
-            //3.1.0 < 3.1.0
-
-            if (!empty($plugin_info['plugin_kleeja_version_min'])) {
-                if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_min'], '<')) {
-                    kleeja_admin_info(
-                        $lang['PACKAGE_N_CMPT_KLJ'] .
-                            '<br>k:' .
-                            KLEEJA_VERSION .
-                            '|<|p.min:' .
-                            $plugin_info['plugin_kleeja_version_min'],
-                        true,
-                        '',
-                        true,
-                        ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
-                    );
-
-                    exit();
-                }
-            }
-
-            if (!empty($plugin_info['plugin_kleeja_version_max'])) {
-                if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_max'], '>')) {
-                    kleeja_admin_info(
-                        $lang['PACKAGE_N_CMPT_KLJ'] .
-                            '<br>k:' .
-                            KLEEJA_VERSION .
-                            '|>|p.max:' .
-                            $plugin_info['plugin_kleeja_version_max'],
-                        true,
-                        '',
-                        true,
-                        ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
-                    );
-
-                    exit();
-                }
-            }
-
-            delete_cache('', true);
-
-            if (is_array($plugin_info['plugin_description'])) {
-                $plugin_info['plugin_description'] = !empty($plugin_info['plugin_description']['en'])
-                    ? $plugin_info['plugin_description']['en']
-                    : $plugin_info['plugin_description'][0];
-            }
-
-            //add to database
-            $insert_query = [
-                'INSERT' =>
-                    '`plg_name` ,`plg_ver`, `plg_author`, `plg_dsc`, `plg_icon`, `plg_uninstall`, `plg_instructions`, `plg_store`, `plg_files`',
-                'INTO' => "{$dbprefix}plugins",
-                'VALUES' =>
-                    "'" .
-                    $SQL->escape($plg_name) .
-                    "','" .
-                    $SQL->escape($plugin_info['plugin_version']) .
-                    "', '" .
-                    $SQL->escape($plugin_info['plugin_developer']) .
-                    "','" .
-                    $SQL->escape($plugin_info['plugin_description']) .
-                    "', '', '', '', '', ''",
-            ];
-
-            $SQL->build($insert_query);
-
-            //may God protect you brother.
-            if (is_callable($install_callback)) {
-                $install_callback($SQL->insert_id());
-            }
-
-            //show done, msg
-            $text = '<h3>' . $lang['NEW_PLUGIN_ADDED'] . '</h3>';
-
-            if ($plugin_first_run) {
-                $text .= $plugin_first_run;
-                $text .=
-                    '<br><hr><a href="' .
-                    ADMIN_PATH .
-                    '?cp=' .
-                    basename(__FILE__, '.php') .
-                    '" class="btn btn-primary btn-lg">' .
-                    $lang['GO_BACK_BROWSER'] .
-                    '</a>';
-            } else {
-                $text .=
-                    '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' .
-                    ADMIN_PATH .
-                    '?cp=' .
-                    basename(__FILE__, '.php') .
-                    '\');", 2000);</script>' .
-                    "\n";
-            }
-
-            $stylee = 'admin_info';
         }
+
+        if (!empty($plugin_info['plugin_kleeja_version_max'])) {
+            if (version_compare(KLEEJA_VERSION, $plugin_info['plugin_kleeja_version_max'], '>')) {
+                kleeja_admin_info(
+                    $lang['PACKAGE_N_CMPT_KLJ'] .
+                        '<br>k:' .
+                        KLEEJA_VERSION .
+                        '|>|p.max:' .
+                        $plugin_info['plugin_kleeja_version_max'],
+                    redirect: ADMIN_PATH . '?cp=' . basename(__FILE__, '.php'),
+                );
+
+                exit();
+            }
+        }
+
+        delete_cache('', all: true);
+
+        if (is_array($plugin_info['plugin_description'])) {
+            $plugin_info['plugin_description'] = !empty($plugin_info['plugin_description']['en'])
+                ? $plugin_info['plugin_description']['en']
+                : $plugin_info['plugin_description'][0];
+        }
+
+        //add to database
+        $insert_query = [
+            'INSERT' =>
+                '`plg_name` ,`plg_ver`, `plg_author`, `plg_dsc`, `plg_icon`, `plg_uninstall`, `plg_instructions`, `plg_store`, `plg_files`',
+            'INTO' => "{$dbprefix}plugins",
+            'VALUES' => ":name, :version, :author, :description, '', '', '', '', ''",
+            'BIND' => [
+                'name' => kleeja_html_encode($plg_name),
+                'version' => kleeja_html_encode($plugin_info['plugin_version']),
+                'author' => kleeja_html_encode($plugin_info['plugin_developer']),
+                'description' => kleeja_html_encode($plugin_info['plugin_description']),
+            ],
+        ];
+
+        $SQL->build($insert_query);
+
+        //may God protect you brother.
+        if (is_callable($install_callback)) {
+            $install_callback($SQL->insert_id());
+        }
+
+        //show done, msg
+        $text = '<h3>' . $lang['NEW_PLUGIN_ADDED'] . '</h3>';
+
+        if ($plugin_first_run) {
+            $text .= $plugin_first_run;
+            $text .=
+                '<br><hr><a href="' .
+                ADMIN_PATH .
+                '?cp=' .
+                basename(__FILE__, '.php') .
+                '" class="btn btn-primary btn-lg">' .
+                $lang['GO_BACK_BROWSER'] .
+                '</a>';
+        } else {
+            $text .=
+                '<script type="text/javascript"> setTimeout("get_kleeja_link(\'' .
+                ADMIN_PATH .
+                '?cp=' .
+                basename(__FILE__, '.php') .
+                '\');", 2000);</script>' .
+                "\n";
+        }
+
+        $stylee = 'admin_info';
 
         break;
     //
@@ -495,7 +484,8 @@ switch ($case):
             $query = [
                 'SELECT' => 'plg_id',
                 'FROM' => "{$dbprefix}plugins",
-                'WHERE' => "plg_name='" . $SQL->escape($plg_name) . "'",
+                'WHERE' => 'plg_name = :name',
+                'BIND' => ['name' => kleeja_html_encode($plg_name)],
             ];
 
             $result = $SQL->build($query);
@@ -505,12 +495,13 @@ switch ($case):
             //sad to see you go, brother
             $uninstall_callback(!empty($pluginDatabaseInfo) ? $pluginDatabaseInfo['plg_id'] : 0);
 
-            delete_cache('', true);
+            delete_cache('', all: true);
 
             //remove from database
             $query_del = [
                 'DELETE' => "`{$dbprefix}plugins`",
-                'WHERE' => "plg_name='" . $SQL->escape($plg_name) . "'",
+                'WHERE' => 'plg_name = :name',
+                'BIND' => ['name' => kleeja_html_encode($plg_name)],
             ];
 
             $SQL->build($query_del);
@@ -552,12 +543,13 @@ switch ($case):
             $update_query = [
                 'UPDATE' => "{$dbprefix}plugins",
                 'SET' => 'plg_disabled=' . ($case == 'disable' ? 1 : 0),
-                'WHERE' => "plg_name='" . $SQL->escape($plg_name) . "'",
+                'WHERE' => 'plg_name = :name',
+                'BIND' => ['name' => kleeja_html_encode($plg_name)],
             ];
 
             $SQL->build($update_query);
 
-            delete_cache('', true);
+            delete_cache('', all: true);
 
             //show done, msg
             $text = '<h3>' . $lang['PLGUIN_DISABLED_ENABLED'] . '</h3>';
