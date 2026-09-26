@@ -127,7 +127,7 @@ if ($nums_rows > 0) {
                     $lang['ADMIN_REPLIED'] .
                     "\r\n" .
                     $sen[$row['id']] .
-                    "\r\n\r\n Kleeja.com ";
+                    "\r\n\r\n Kleeja.net ";
 
                 $send = send_mail($to, $message, $subject, $config['sitemail'], $config['sitename']);
 
